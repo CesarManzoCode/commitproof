@@ -1,0 +1,74 @@
+sprint: K1
+status: BLOCKED
+contract_version: "1.0.0"
+commits:
+  - {sha: "a22c0814bab28250b1a3719cc22f5291ba7ea89a", message: "docs: K0 foundation — contract v1.0.0, ADRs, research, prompts"}  # present at session start
+  - {sha: "b0b4bfa", message: "build(prereq): add make prereq-check per PREREQUISITES.md"}
+  - {sha: "(the commit that adds this file)", message: "test(prereq): record K1 prerequisite check — BLOCKED"}
+gate:
+  command: "cpgate K1 --evidence evidence/K1 --negative-controls"
+  exit_code: null            # not run: sprint stopped at prompt §2 (prerequisites)
+  criteria:
+    - {id: "K1.1", result: NOT_RUN, evidence: null, sha256: null}
+    - {id: "K1.2", result: NOT_RUN, evidence: null, sha256: null}
+    - {id: "K1.3", result: NOT_RUN, evidence: null, sha256: null}
+    - {id: "K1.4", result: NOT_RUN, evidence: null, sha256: null}
+    - {id: "K1.5", result: NOT_RUN, evidence: null, sha256: null}
+    - {id: "K1.6", result: NOT_RUN, evidence: null, sha256: null}
+    - {id: "K1.7", result: NOT_RUN, evidence: null, sha256: null}
+    - {id: "K1.8", result: NOT_RUN, evidence: null, sha256: null}
+  negative_controls: []
+demonstrated:
+  # No claims.yaml exists yet (K7 deliverable); each line cites its artifact and sha256 instead.
+  - "make prereq-check checks all 26 rows of docs/PREREQUISITES.md §1–§4, §6 and records PASS/FAIL with observed values: 12 PASS, 14 FAIL (evidence/K1/prereq.json sha256 4c3021756c476061349e5ddb63915153f9b2add6f9cc6ea359ea2ee96f9d0730; command record evidence/K1/commands.jsonl, stdout sha256 bb0a585ce501f134d69d94ddc63755c2e08199ed25150b57700e657c17bda97f)"
+not_demonstrated:
+  - "K1.1–K1.8: nothing beyond the prerequisite check was built or run (Go module, images, lock, Compose topology, HEALTHY predicate, runner, plan, workloads W1–W4, history/observation writers, seal, cpcheck verify-seal, cpgate K1, CI workflow)"
+findings: []
+adrs_added: []
+deviations_from_prompt:
+  - "Prompt §1 (foundation commit) was already done before this session: commit a22c081 has the exact message and DCO sign-off; K0 documents were not re-committed or edited."
+  - "PREREQUISITES §1 'Sleep' row has no check command ('owner's choice of power settings'). prereq-check verifies it fail-closed as `systemctl is-enabled sleep.target` == masked (sleep.target is required by every suspend/hibernate target); any other state is FAIL."
+  - "Disk rows ('≥ 40 GB', '≥ 5 GB') are evaluated in GiB, which is stricter than GB."
+  - "Kernel-module rows accept a module loaded (lsmod, as documented) or built into the running kernel (modules.builtin); both mean the facility is available."
+  - "commands.jsonl records exit_code 2 for `make prereq-check`: make maps the recipe's exit 3 (CONTRACT §5.6 prerequisite error, visible in the recorded stderr 'Error 3') to its own exit 2."
+blocked:
+  condition: >-
+    make prereq-check: 14 of 26 PREREQUISITES items FAIL. R1 RAM available 11.27 GiB < 12 GiB;
+    R3 /var/lib/docker absent; R5 sleep.target not masked (static); P1–P3 docker, docker-buildx,
+    docker-compose not installed; P8 jq not installed; D1 docker.service not found/inactive;
+    D2 user not in docker group; D3–D5 unverifiable without Docker (fail-closed);
+    K2 nft_compat and K3 sch_netem not loaded, and cannot be loaded without a reboot because the
+    running kernel 7.2.6-arch2-1 has no /lib/modules directory (installed kernel package is linux 7.2.9.arch1-1).
+  evidence:
+    command: "scripts/record-command.sh evidence/K1/commands.jsonl evidence/K1/logs prereq-check -- make prereq-check"
+    output_excerpt: |
+      FAIL  R1    RAM available                 observed=MemAvailable=11.27 GiB (MemTotal=14.91 GiB)
+      FAIL  R3    Disk (Docker root)            observed=/var/lib/docker: No such file or directory
+      FAIL  R5    No suspend during campaigns   observed=sleep.target=static
+      FAIL  P1    docker                        observed=docker: command not found; error: package 'docker' was not found
+      FAIL  P2    docker-buildx                 observed=docker: command not found; error: package 'docker-buildx' was not found
+      FAIL  P3    docker-compose                observed=docker: command not found; error: package 'docker-compose' was not found
+      FAIL  P8    jq                            observed=jq: command not found; error: package 'jq' was not found
+      FAIL  D1    Docker daemon running         observed=is-active=inactive; is-enabled=not-found
+      FAIL  D2    User in docker group          observed=groups: cesarmanzocode wheel; docker info without sudo: docker: command not found
+      FAIL  D3    cgroup v2                     observed=docker: command not found
+      FAIL  D4    Storage driver                observed=docker: command not found
+      FAIL  D5    Bridge subnet free            observed=ip routes in 10.77.0.0/24: 0; docker networks: unverifiable (docker: command not found)
+      FAIL  K2    kernel module nft_compat      observed=not loaded; kernel 7.2.6-arch2-1; /lib/modules/7.2.6-arch2-1 missing (installed: 7.2.9-arch1-1) — modprobe cannot load modules until reboot
+      FAIL  K3    kernel module sch_netem       observed=not loaded; kernel 7.2.6-arch2-1; /lib/modules/7.2.6-arch2-1 missing (installed: 7.2.9-arch1-1) — modprobe cannot load modules until reboot
+      {"command":"prereq-check","fail":14,"output":"evidence/K1/prereq.json","pass":12,"result":"FAIL","total":26}
+  owner_action: >-
+    Install and configure the host prerequisites, then reboot:
+    `sudo pacman -S --needed docker docker-buildx docker-compose jq &&
+    sudo systemctl enable docker.service &&
+    sudo usermod -aG docker cesarmanzocode &&
+    printf 'nf_tables\nnft_compat\nsch_netem\nfuse\n' | sudo tee /etc/modules-load.d/commitproof.conf &&
+    sudo systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target &&
+    sudo reboot`
+    — the reboot boots the installed 7.2.9 kernel (whose modules exist), loads the modules,
+    starts Docker and applies the docker group. Then, with memory-heavy applications closed so
+    MemAvailable ≥ 12 GiB, run `make prereq-check` (expect 26/26 PASS) and restart sprint K1.
+    (Masking sleep targets is reversible with `sudo systemctl unmask …`.)
+pending_user_actions:
+  - "Run the owner_action above, confirm `make prereq-check` passes, then re-run prompts/K1.md."
+next_sprint_ready: false

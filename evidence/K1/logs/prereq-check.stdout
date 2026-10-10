@@ -1,0 +1,27 @@
+FAIL  R1    RAM available                 observed=MemAvailable=11.27 GiB (MemTotal=14.91 GiB)
+PASS  R2    CPU cores                     observed=12
+FAIL  R3    Disk (Docker root)            observed=/var/lib/docker: No such file or directory
+PASS  R4    Disk (repository)             observed=repository filesystem: 404.2 GiB free
+FAIL  R5    No suspend during campaigns   observed=sleep.target=static
+FAIL  P1    docker                        observed=docker: command not found; error: package 'docker' was not found
+FAIL  P2    docker-buildx                 observed=docker: command not found; error: package 'docker-buildx' was not found
+FAIL  P3    docker-compose                observed=docker: command not found; error: package 'docker-compose' was not found
+PASS  P4    go                            observed=go version go1.27.2-X:nodwarf5 linux/amd64; go 2:1.27.2-1
+PASS  P5    git                           observed=git version 2.56.0
+PASS  P6    make                          observed=GNU Make 4.4.1
+PASS  P7    zstd                          observed=*** Zstandard CLI (64-bit) v1.5.7, by Yann Collet ***
+FAIL  P8    jq                            observed=jq: command not found; error: package 'jq' was not found
+FAIL  D1    Docker daemon running         observed=is-active=inactive; is-enabled=not-found
+FAIL  D2    User in docker group          observed=groups: cesarmanzocode wheel; docker info without sudo: docker: command not found
+FAIL  D3    cgroup v2                     observed=docker: command not found
+FAIL  D4    Storage driver                observed=docker: command not found
+FAIL  D5    Bridge subnet free            observed=ip routes in 10.77.0.0/24: 0; docker networks: unverifiable (docker: command not found)
+PASS  K1    kernel module nf_tables       observed=loaded (lsmod); kernel 7.2.6-arch2-1
+FAIL  K2    kernel module nft_compat      observed=not loaded; kernel 7.2.6-arch2-1; /lib/modules/7.2.6-arch2-1 missing (installed: 7.2.9-arch1-1) — modprobe cannot load modules until reboot
+FAIL  K3    kernel module sch_netem       observed=not loaded; kernel 7.2.6-arch2-1; /lib/modules/7.2.6-arch2-1 missing (installed: 7.2.9-arch1-1) — modprobe cannot load modules until reboot
+PASS  K4    /dev/fuse                     observed=crw-rw-rw- 1 root root 10, 229 Oct 10 16:36 /dev/fuse
+PASS  G1    Repository                    observed=## main...origin/main
+PASS  G2    Git identity                  observed=user.name=Manzo Olivares César Alberto; user.email=cesarmanzocode@gmail.com
+PASS  G3    Claude Code                   observed=2.1.296 (Claude Code)
+PASS  G4    GitHub remote                 observed=1 remote(s) configured
+{"command":"prereq-check","fail":14,"output":"evidence/K1/prereq.json","pass":12,"result":"FAIL","total":26}
