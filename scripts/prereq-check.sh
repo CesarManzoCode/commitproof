@@ -137,7 +137,9 @@ record P1 "docker" ">= ${REQ_DOCKER_VERSION}" "docker version --format '{{.Serve
 if has docker; then
 	v=$(run docker buildx version | oneline)
 	res=FAIL
-	[[ $v =~ v([0-9]+\.[0-9]+\.[0-9]+) ]] && ver_ge "${BASH_REMATCH[1]}" "$REQ_BUILDX_VERSION" && res=PASS
+	# Upstream prints "github.com/docker/buildx v0.38.0 <commit>"; the Arch
+	# package prints "github.com/docker/buildx 0.38.0 <commit>" (no "v").
+	[[ $v =~ v?([0-9]+\.[0-9]+\.[0-9]+) ]] && ver_ge "${BASH_REMATCH[1]}" "$REQ_BUILDX_VERSION" && res=PASS
 	obs="$v; $(pkg docker-buildx)"
 else
 	obs="docker: command not found; $(pkg docker-buildx)"
