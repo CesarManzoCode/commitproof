@@ -22,6 +22,11 @@ json_str() {
 
 mkdir -p "$LOGDIR" "$(dirname "$JSONL")"
 out="$LOGDIR/$NAME.stdout" err="$LOGDIR/$NAME.stderr"
+# Earlier records reference their logs by hash; never overwrite them.
+if [ -e "$out" ] || [ -e "$err" ]; then
+	echo "record-command.sh: $out or $err already exists; choose a new name" >&2
+	exit 3
+fi
 start=$(date -u +%Y-%m-%dT%H:%M:%S.%3NZ)
 "$@" > >(tee "$out") 2>"$err"
 rc=$?
