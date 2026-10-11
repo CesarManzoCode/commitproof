@@ -308,8 +308,12 @@ func (r *Run) plantW1Ordered(class string, at int64) {
 	} else if suffix != "-realtime" {
 		panic("unknown W1 plant " + class)
 	}
-	A := func(mops ...[]any) gtx { return gtx{proc: pa, typ: history.TypeOK, mops: ms_(mops...), inv: seqA[0], cmp: seqA[1]} }
-	B := func(mops ...[]any) gtx { return gtx{proc: pb, typ: history.TypeOK, mops: ms_(mops...), inv: seqB[0], cmp: seqB[1]} }
+	A := func(mops ...[]any) gtx {
+		return gtx{proc: pa, typ: history.TypeOK, mops: ms_(mops...), inv: seqA[0], cmp: seqA[1]}
+	}
+	B := func(mops ...[]any) gtx {
+		return gtx{proc: pb, typ: history.TypeOK, mops: ms_(mops...), inv: seqB[0], cmp: seqB[1]}
+	}
 	O := func(j int, mops ...[]any) gtx {
 		i, cm := seqOther(j)
 		return gtx{proc: -1, typ: history.TypeOK, mops: ms_(mops...), inv: i, cmp: cm}

@@ -83,7 +83,7 @@ type Run struct {
 	PreFinal []func(r *Run)
 	Post     []func(r *Run)
 	// Meta holds generator bookkeeping per op (never written).
-	Meta map[*Op]map[string]any
+	Meta      map[*Op]map[string]any
 	Expected  map[string]*Expect
 	Verdict   string
 	extraKeys map[int64]bool
