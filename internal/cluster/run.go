@@ -143,8 +143,16 @@ func RunPlan(ctx context.Context, root, profile, mutant string, p *plan.Plan, ou
 		reason = fmt.Sprintf("cluster up exit %d: %v", up.ExitCode, up.Summary["error"])
 		hostOnlyHistory(dir, reason)
 	} else {
+		rel, err := filepath.Rel(root, dir)
+		if err != nil || strings.HasPrefix(rel, "..") {
+			// The output directory is outside the repository: the mount
+			// source must then be absolute.
+			rel = dir
+		} else {
+			rel = "./" + filepath.ToSlash(rel)
+		}
 		r := c.run(ctx, runnerTimeout(p), "runner-run",
-			c.RunnerArgs([]string{dir + ":/run-dir"}, "__runner", "run", "--run-dir=/run-dir"), cmdlog.Opts{})
+			c.RunnerArgs([]string{rel + ":/run-dir"}, "__runner", "run", "--run-dir=/run-dir"), cmdlog.Opts{})
 		rs, err := LastJSON(r.Stdout)
 		switch {
 		case r.Err != nil:

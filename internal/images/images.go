@@ -112,9 +112,11 @@ func tail(b []byte) string {
 // EnsureSource clones the pinned commit into the build cache if absent and
 // verifies that the checkout is exactly the pinned tree (fail closed).
 func (b *Builder) EnsureSource(ctx context.Context) error {
-	dir := filepath.Join(b.Root, SourceDir)
-	if _, err := os.Stat(filepath.Join(dir, ".git")); errors.Is(err, os.ErrNotExist) {
-		if err := os.MkdirAll(dir, 0o755); err != nil {
+	// Commands run in the repository root with relative paths, so recorded
+	// argv carry no host-specific absolute paths (AGENTS.md §4).
+	dir := SourceDir
+	if _, err := os.Stat(filepath.Join(b.Root, dir, ".git")); errors.Is(err, os.ErrNotExist) {
+		if err := os.MkdirAll(filepath.Join(b.Root, dir), 0o755); err != nil {
 			return err
 		}
 		steps := [][]string{
@@ -148,7 +150,7 @@ func (b *Builder) EnsureSource(ctx context.Context) error {
 
 // upstreamFile returns a file of the pinned tree.
 func (b *Builder) upstreamFile(ctx context.Context, name string) ([]byte, error) {
-	r, err := b.cmd(ctx, "git-show-"+name, []string{"git", "-C", filepath.Join(b.Root, SourceDir), "show", params.MultigresCommit + ":" + name}, cmdlog.Opts{}, "")
+	r, err := b.cmd(ctx, "git-show-"+name, []string{"git", "-C", SourceDir, "show", params.MultigresCommit + ":" + name}, cmdlog.Opts{}, "")
 	return r.Stdout, err
 }
 
@@ -213,14 +215,14 @@ func (b *Builder) Build(ctx context.Context, noCache bool) (map[string]any, erro
 	imgs := map[string]any{}
 	for _, s := range specs {
 		argv := []string{"docker", "buildx", "build", "--progress=plain", "--provenance=false", "--sbom=false",
-			"--file", filepath.Join(b.Root, s.Dockerfile), "--tag", s.Tag}
+			"--file", s.Dockerfile, "--tag", s.Tag}
 		for _, a := range s.BuildArgs {
 			argv = append(argv, "--build-arg", a[0]+"="+a[1])
 		}
 		if noCache {
 			argv = append(argv, "--no-cache")
 		}
-		argv = append(argv, filepath.Join(b.Root, s.Context))
+		argv = append(argv, s.Context)
 		// Up to three attempts: the builds download Go modules and apt
 		// packages, and a transient network failure (seen in K1: an IPv6
 		// "network is unreachable" from proxy.golang.org) is not a property

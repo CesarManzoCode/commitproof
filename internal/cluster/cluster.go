@@ -68,9 +68,10 @@ func (c *Cluster) env() ([]string, error) {
 }
 
 func (c *Cluster) compose(args ...string) []string {
+	// Relative to the repository root, the working directory of every
+	// compose command: recorded argv carry no host-specific paths.
 	return append([]string{"docker", "compose", "--project-name", Project,
-		"--file", filepath.Join(c.Root, "deploy", "compose.yaml"),
-		"--project-directory", filepath.Join(c.Root, "deploy")}, args...)
+		"--file", "deploy/compose.yaml", "--project-directory", "deploy"}, args...)
 }
 
 func (c *Cluster) run(ctx context.Context, timeout time.Duration, name string, argv []string, o cmdlog.Opts) cmdlog.Result {
@@ -237,7 +238,9 @@ func (c *Cluster) Up(ctx context.Context) UpResult {
 }
 
 // RunnerArgs builds `docker compose run` for the runner service as the
-// invoking user (so files written into bind mounts are the user's).
+// invoking user (so files written into bind mounts are the user's). Mount
+// sources are paths relative to the repository root ("./runs/<id>"); compose
+// resolves them against its working directory.
 func (c *Cluster) RunnerArgs(mounts []string, args ...string) []string {
 	argv := c.compose("run", "--rm", "--no-deps", "--quiet-pull", "--user", fmt.Sprintf("%d:%d", os.Getuid(), os.Getgid()))
 	for _, m := range mounts {

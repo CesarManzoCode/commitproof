@@ -11,7 +11,10 @@ set -u -o pipefail
 
 EV=${CP_EVIDENCE:-evidence/K1}
 REC=(scripts/record-command.sh "$EV/commands.jsonl" "$EV/logs")
-STATE=$(mktemp -d)
+# Scratch state inside the git-ignored runs/ (relative: recorded argv carry
+# no host-specific paths, AGENTS.md §4).
+STATE=runs/.k1-evidence-state
+rm -rf "$STATE" && mkdir -p "$STATE"
 trap 'rm -rf "$STATE"' EXIT
 
 step() { # name argv...

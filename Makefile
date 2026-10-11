@@ -46,7 +46,7 @@ check-dockerfile-derivation:
 ## lint-workflow: actionlint (pinned image, CONTRACT §14) on .github/workflows
 ACTIONLINT := rhysd/actionlint:1.7.12@sha256:b1934ee5f1c509618f2508e6eb47ee0d3520686341fec936f3b79331f9315667
 lint-workflow:
-	timeout 300 docker run --rm --network none -v "$(CURDIR):/repo:ro" -w /repo $(ACTIONLINT) -verbose
+	timeout 300 docker run --rm --network none -v ./:/repo:ro -w /repo $(ACTIONLINT) -verbose
 
 ## tidy: go mod tidy for both modules
 tidy:
