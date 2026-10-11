@@ -1,0 +1,6 @@
+# Runner image context (build/Dockerfile.runner): only the Go sources.
+*
+!go.mod
+!go.sum
+!cmd/
+!internal/
