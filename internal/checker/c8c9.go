@@ -308,7 +308,8 @@ func overloadRules(h *History, c *collector, stats map[string]any) string {
 // CheckAvailability is C9 (CONTRACT §10.10). Stats: unavailability windows
 // per fault and gateway, latency percentiles before/during/after faults,
 // error class counts. G8 (profile buffered only): within an F6 switchover
-// window (inject to healed), a fail or info on a single autocommit statement
+// window (inject to healed; an operation is within it if [invoke,
+// completion] overlaps it), a fail or info on a single autocommit statement
 // (W4 insert, W2 op, autocommit append) is planned-failover-error; an
 // explicit transaction (W1 txn, W3) may fail only with 40001.
 func CheckAvailability(h *History) Result {
@@ -333,7 +334,10 @@ func CheckAvailability(h *History) Result {
 			}
 			s, e := f.Start, f.End
 			for _, o := range h.Ops {
-				if o.F == "final-read" || o.Type == history.TypeOK || o.Invoke > e || o.End() < s {
+				// The client observes an outcome at the completion event, also
+				// for info ops (their effect time is unbounded, but the error the
+				// client saw is not).
+				if o.F == "final-read" || o.Type == history.TypeOK || o.Invoke > e || o.Complete < s {
 					continue
 				}
 				explicit := (o.WL == "append" && o.F == "txn") || o.WL == "bank"
