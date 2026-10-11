@@ -13,6 +13,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"math/big"
+	"reflect"
 	"sort"
 	"strconv"
 	"unicode/utf8"
@@ -205,6 +206,24 @@ func encode(b *bytes.Buffer, v any) error {
 	case float32, float64:
 		return fmt.Errorf("canonjson: floats are not allowed (%v)", x)
 	default:
+		// Other string-keyed maps and slices (e.g. map[string][]string) are
+		// converted element by element; their elements obey the same rules.
+		rv := reflect.ValueOf(v)
+		switch {
+		case rv.Kind() == reflect.Map && rv.Type().Key().Kind() == reflect.String:
+			m := make(map[string]any, rv.Len())
+			it := rv.MapRange()
+			for it.Next() {
+				m[it.Key().String()] = it.Value().Interface()
+			}
+			return encode(b, m)
+		case rv.Kind() == reflect.Slice || rv.Kind() == reflect.Array:
+			l := make([]any, rv.Len())
+			for i := range l {
+				l[i] = rv.Index(i).Interface()
+			}
+			return encode(b, l)
+		}
 		return fmt.Errorf("canonjson: unsupported type %T", v)
 	}
 	return nil

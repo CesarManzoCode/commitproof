@@ -16,6 +16,7 @@ func TestMarshalCanonical(t *testing.T) {
 		{"é", "\"é\""}, // NFD → NFC
 		{json.Number("12345678901234567890"), `12345678901234567890`},
 		{[]int64{3, 1}, `[3,1]`},
+		{map[string][]string{"b": {"x"}, "a": {}}, `{"a":[],"b":["x"]}`},
 	}
 	for _, c := range cases {
 		got, err := Marshal(c.in)
@@ -32,7 +33,7 @@ func TestMarshalCanonical(t *testing.T) {
 }
 
 func TestRejects(t *testing.T) {
-	for _, v := range []any{1.5, float32(2), struct{}{}, map[string]any{"a": 0.1}, json.Number("1.0")} {
+	for _, v := range []any{1.5, float32(2), struct{}{}, map[string]any{"a": 0.1}, json.Number("1.0"), map[string][]float64{"a": {1}}} {
 		if _, err := Marshal(v); err == nil {
 			t.Errorf("Marshal(%v) accepted a non-canonical value", v)
 		}
