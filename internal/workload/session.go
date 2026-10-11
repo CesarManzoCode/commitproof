@@ -141,7 +141,9 @@ func (s *Session) Do(parent context.Context, autocommit bool, exec func(ctx cont
 	v, err := exec(ctx, s.conn, &a)
 	if err != nil {
 		fill(&a, err, ctx)
-		if a.SQLState == "" || s.conn.IsClosed() {
+		// exec may already have dropped the connection (a failed rollback
+		// closes it).
+		if a.SQLState == "" || s.conn == nil || s.conn.IsClosed() {
 			s.Close() // transport failure or timeout: never reuse
 		}
 	}
