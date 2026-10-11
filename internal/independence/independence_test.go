@@ -95,8 +95,12 @@ func TestExpectationsIndependentOfCheckers(t *testing.T) {
 }
 
 // sabotageMarker is the symbol prefix only sabotage builds define
-// (internal/checker/sabotage_*_on.go, CONTRACT §15 K2.6).
+// (internal/checker/sabotage_*_on.go, CONTRACT §15 K2.6;
+// internal/nemesis/sabotage_*_on.go, §15 K3.2–K3.3).
 const sabotageMarker = "cpSabotageActive"
+
+// sabotageDirs may declare sabotage build tags; nowhere else may.
+var sabotageDirs = []string{filepath.Join("internal", "checker"), filepath.Join("internal", "nemesis")}
 
 func buildAndNM(t *testing.T, tags, pkg string) string {
 	t.Helper()
@@ -130,9 +134,20 @@ func TestProductBinariesHaveNoSabotage(t *testing.T) {
 	if !strings.Contains(buildAndNM(t, "cp_sabotage_bank_sum", "./cmd/cpcheck"), sabotageMarker+"_bank_sum") {
 		t.Error("control: a cp_sabotage_bank_sum build of cpcheck lacks the marker; the check would not notice sabotage")
 	}
-	// No build-tag file outside internal/checker may name a sabotage tag.
+	if !strings.Contains(buildAndNM(t, "cp_sabotage_inject_f1a", "./cmd/commitproof"), sabotageMarker+"_inject_f1a") {
+		t.Error("control: a cp_sabotage_inject_f1a build of commitproof lacks the marker; the check would not notice sabotage")
+	}
+	// No build-tag file outside the sabotage packages may name a sabotage tag.
+	inSabotageDir := func(p string) bool {
+		for _, d := range sabotageDirs {
+			if strings.Contains(p, d) {
+				return true
+			}
+		}
+		return false
+	}
 	filepath.WalkDir(filepath.Join("..", ".."), func(p string, d os.DirEntry, err error) error {
-		if err != nil || d.IsDir() || !strings.HasSuffix(p, ".go") || strings.Contains(p, filepath.Join("internal", "checker")) {
+		if err != nil || d.IsDir() || !strings.HasSuffix(p, ".go") || inSabotageDir(p) {
 			if d != nil && d.IsDir() && (d.Name() == ".cache" || d.Name() == "testdata" || d.Name() == "evidence") {
 				return filepath.SkipDir
 			}
@@ -140,7 +155,7 @@ func TestProductBinariesHaveNoSabotage(t *testing.T) {
 		}
 		b, _ := os.ReadFile(p)
 		if bytes.Contains(b, []byte("//go:"+"build cp_sabotage")) {
-			t.Errorf("%s declares a sabotage build tag outside internal/checker", p)
+			t.Errorf("%s declares a sabotage build tag outside %v", p, sabotageDirs)
 		}
 		return nil
 	})
