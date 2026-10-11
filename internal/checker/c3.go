@@ -22,6 +22,10 @@ import (
 //   - wr: writer(e_i) → T if T read [e1 … ei];
 //   - rw: T → writer(e_{i+1}) if T read [e1 … ei] (i may be 0: an empty or
 //     null read);
+//   - appends of committed transactions that no read observed lie after the
+//     longest read (versions are prefixes of the final list), in an unknown
+//     order: ww from the writer of its last element to each of their
+//     writers, rw from each reader of the longest version to each of them;
 //   - process: consecutive transactions of one process;
 //   - realtime: T1 → T2 if T1 completed before T2 was invoked (transitively
 //     reduced; info transactions never complete).
@@ -335,6 +339,33 @@ func CheckListAppend(h *History) Result {
 			}
 			if i < len(ws) && isNode(ws[i]) && !sabotageRWEdge {
 				g.add(r.t.node, ws[i].node, lRW, k)
+			}
+		}
+		// Committed appends no read observed lie after the longest read (every
+		// version is a prefix of the final list), in an unknown order: they
+		// follow the last observed writer (ww) and every reader of the longest
+		// version precedes them (rw).
+		inOrder := map[int64]bool{}
+		for _, v := range ord {
+			inOrder[v] = true
+		}
+		var unobserved []*c3txn
+		for _, t := range g.txns {
+			for _, v := range t.appends[k] {
+				if !inOrder[v] {
+					unobserved = append(unobserved, t)
+					break
+				}
+			}
+		}
+		for _, u := range unobserved {
+			if n := len(ws); n > 0 && isNode(ws[n-1]) {
+				g.add(ws[n-1].node, u.node, lWW, k)
+			}
+			for _, r := range readsByKey[k] {
+				if len(r.vals) == len(ord) && !sabotageRWEdge {
+					g.add(r.t.node, u.node, lRW, k)
+				}
 			}
 		}
 	}
