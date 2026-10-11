@@ -11,9 +11,9 @@ W=runs/.ci-checkers
 if [ -d "$W" ]; then chmod -R u+w "$W" && rm -rf "${W:?}"; fi
 mkdir -p "$W"
 go run ./internal/tools/gencorpus --verify --out testdata
-bin/cpcheck corpus testdata/corpus --elle-oracle --out "$W/corpus" >"$W/corpus.out" || true
+bin/cpcheck corpus testdata/corpus --elle-oracle --out "$W/corpus" >"$W/corpus.out" 2>"$W/corpus.err" || true
 for rule in $(go run ./internal/tools/k2check --list-rules); do
-	scripts/sabotage-corpus.sh "$rule" testdata/corpus "$W/sabotage/$rule" >"$W/sabotage-$rule.out" || true
+	scripts/sabotage-corpus.sh "$rule" testdata/corpus "$W/sabotage/$rule" >"$W/sabotage-$rule.out" 2>"$W/sabotage-$rule.err" || true
 done
 cp -r testdata/pathological/porcupine-timeout/run "$W/porcupine-timeout"
 rc=0
