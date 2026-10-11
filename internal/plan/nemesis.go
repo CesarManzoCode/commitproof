@@ -43,23 +43,47 @@ func Healable(kind string) bool { return kind != "F5a" && kind != "F5b" }
 // instead, where "rest" means every other running network namespace. Pick
 // selects among candidates for random roles (candidate index = pick mod the
 // number of candidates, candidates sorted by name).
+//
+// K4 roles (ADR-0024): "random-node" (any running node), "base-follower:<k>"
+// (the k-th of n1–n3, sorted, without the leader: the "other two followers"
+// of D2, the same under every build whatever the cohort records), "same:<j>"
+// (the node element j of the same step resolved to), and "followers" in an
+// F1b set (every running follower of the leader's cohort).
+//
+// HoldMS is how long the nemesis waits after this element is confirmed
+// before injecting the next element of the step (0 for the last element:
+// the step's DurationMS applies).
 type Element struct {
 	Kind    string
 	Targets []string
 	A, B    []string
 	Pick    int64
+	HoldMS  int64
+}
+
+// Heal is one entry of a step's explicit heal sequence: element Element is
+// healed DelayMS after the previous entry's heal is confirmed (the first
+// entry: after the step's DurationMS).
+type Heal struct {
+	Element int
+	DelayMS int64
 }
 
 // Step is one plan step. The first step starts DelayMS after workload start
 // (P05: t = 10 s); every later step starts DelayMS (P05: 10 s + seeded jitter
 // in [0, 5) s) after the previous step's last heal is confirmed. Each fault
 // lasts DurationMS after its last element is confirmed.
+//
+// Heals, when set, replaces the default heal order (reverse injection
+// order, no delays) with an explicit sequence; elements without a heal
+// (F5a, F5b) are not listed.
 type Step struct {
 	Index      int
-	After      string // "workload-start" or "previous-heal"
+	After      string // "workload-start", "previous-heal" or "new-leader"
 	DelayMS    int64
 	DurationMS int64
 	Elements   []Element
+	Heals      []Heal
 }
 
 // Step anchors.
@@ -73,6 +97,8 @@ const (
 type stepSpec struct {
 	Duration time.Duration
 	Elements []Element
+	After    string // "" or AfterNewLeader (other steps follow P05)
+	Heals    []Heal
 }
 
 func el(kind string, targets ...string) Element { return Element{Kind: kind, Targets: targets} }
@@ -129,11 +155,11 @@ func nemesisCampaigns() map[string]Campaign {
 	}
 	// CI nemesis smoke (§13): one 45 s run per fault kind, one fault each.
 	for kind, spec := range map[string]stepSpec{
-		"f1a": {holdNetwork, []Element{el("F1a", "leader")}},
-		"f2a": {0, []Element{el("F2a", "leader")}},
-		"f3a": {params.PauseShort, []Element{el("F3a", "leader")}},
-		"f4a": {holdNetwork, []Element{el("F4a", "leader")}},
-		"f7":  {holdNetwork, []Element{el("F7", "leader")}},
+		"f1a": {Duration: holdNetwork, Elements: []Element{el("F1a", "leader")}},
+		"f2a": {Duration: 0, Elements: []Element{el("F2a", "leader")}},
+		"f3a": {Duration: params.PauseShort, Elements: []Element{el("F3a", "leader")}},
+		"f4a": {Duration: holdNetwork, Elements: []Element{el("F4a", "leader")}},
+		"f7":  {Duration: holdNetwork, Elements: []Element{el("F7", "leader")}},
 	} {
 		name := "nsmoke-" + kind
 		out[name] = Campaign{Name: name, Duration: params.SmokeDuration, Nemesis: true, steps: []stepSpec{spec}}
@@ -141,16 +167,24 @@ func nemesisCampaigns() map[string]Campaign {
 	return out
 }
 
-// genNemesis draws the P05 jitter and the role picks from the nemesis
-// stream.
+// genNemesis draws the step shapes (K4 campaigns), the P05 jitter and the
+// role picks from the nemesis stream.
 func genNemesis(c Campaign, seed uint64) []Step {
 	r := stream(c.Name, seed, "nemesis")
+	specs := c.steps
+	if c.shape != nil {
+		specs = c.shape(r, seed)
+	}
 	var out []Step
-	for i, s := range c.steps {
-		st := Step{Index: i, DurationMS: s.Duration.Milliseconds()}
-		if i == 0 {
+	for i, s := range specs {
+		st := Step{Index: i, DurationMS: s.Duration.Milliseconds(), Heals: s.Heals}
+		switch {
+		case i == 0:
 			st.After, st.DelayMS = AfterWorkloadStart, params.FirstFaultAt.Milliseconds()
-		} else {
+		case s.After == AfterNewLeader:
+			st.After = AfterNewLeader
+			st.DelayMS = NewLeaderDelayMin.Milliseconds() + r.Int64N(NewLeaderDelaySpan.Milliseconds())
+		default:
 			st.After = AfterPreviousHeal
 			st.DelayMS = params.FaultGap.Milliseconds() + r.Int64N(params.FaultJitterMax.Milliseconds())
 		}
@@ -181,9 +215,35 @@ func (s Step) Map() map[string]any {
 		} else {
 			m["targets"] = strList(e.Targets)
 		}
+		if e.HoldMS > 0 {
+			m["hold_ms"] = e.HoldMS
+		}
 		els[i] = m
 	}
-	return map[string]any{"step": s.Index, "after": s.After, "delay_ms": s.DelayMS, "duration_ms": s.DurationMS, "elements": els}
+	m := map[string]any{"step": s.Index, "after": s.After, "delay_ms": s.DelayMS, "duration_ms": s.DurationMS, "elements": els}
+	if len(s.Heals) > 0 {
+		hs := make([]any, len(s.Heals))
+		for i, h := range s.Heals {
+			hs[i] = map[string]any{"element": int64(h.Element), "delay_ms": h.DelayMS}
+		}
+		m["heals"] = hs
+	}
+	return m
+}
+
+// HealSequence returns the step's heal sequence: Heals if set, else every
+// healable element in reverse injection order with no delay.
+func (s Step) HealSequence() []Heal {
+	if len(s.Heals) > 0 {
+		return s.Heals
+	}
+	var out []Heal
+	for k := len(s.Elements) - 1; k >= 0; k-- {
+		if Healable(s.Elements[k].Kind) {
+			out = append(out, Heal{Element: k})
+		}
+	}
+	return out
 }
 
 // FaultID names element k of step s in history events: "f<s>" for a simple
@@ -214,7 +274,7 @@ func ParseSteps(v any) ([]Step, error) {
 		st.DelayMS, err = toInt(m["delay_ms"])
 		dur, e2 := toInt(m["duration_ms"])
 		st.DurationMS, st.Index = dur, int(idx)
-		if err != nil || e1 != nil || e2 != nil || (st.After != AfterWorkloadStart && st.After != AfterPreviousHeal) || st.Index != i {
+		if err != nil || e1 != nil || e2 != nil || (st.After != AfterWorkloadStart && st.After != AfterPreviousHeal && st.After != AfterNewLeader) || st.Index != i {
 			return nil, fmt.Errorf("plan nemesis[%d]: bad step header", i)
 		}
 		els, _ := m["elements"].([]any)
@@ -232,7 +292,31 @@ func ParseSteps(v any) ([]Step, error) {
 				return nil, fmt.Errorf("plan nemesis[%d].elements[%d]: pick: %w", i, k, err)
 			}
 			e.Targets, e.A, e.B = strs(em["targets"]), strs(em["a"]), strs(em["b"])
+			if h, ok := em["hold_ms"]; ok {
+				if e.HoldMS, err = toInt(h); err != nil || e.HoldMS < 0 {
+					return nil, fmt.Errorf("plan nemesis[%d].elements[%d]: bad hold_ms", i, k)
+				}
+			}
 			st.Elements = append(st.Elements, e)
+		}
+		if hv, ok := m["heals"].([]any); ok {
+			seen := map[int]bool{}
+			for j, x := range hv {
+				hm, _ := x.(map[string]any)
+				el, e1 := toInt(hm["element"])
+				d, e2 := toInt(hm["delay_ms"])
+				if e1 != nil || e2 != nil || el < 0 || int(el) >= len(st.Elements) || d < 0 || seen[int(el)] ||
+					!Healable(st.Elements[el].Kind) {
+					return nil, fmt.Errorf("plan nemesis[%d].heals[%d]: bad heal", i, j)
+				}
+				seen[int(el)] = true
+				st.Heals = append(st.Heals, Heal{Element: int(el), DelayMS: d})
+			}
+			for k, e := range st.Elements {
+				if Healable(e.Kind) && !seen[k] {
+					return nil, fmt.Errorf("plan nemesis[%d]: element %d has no heal in the heal sequence", i, k)
+				}
+			}
 		}
 		out = append(out, st)
 	}
@@ -285,8 +369,14 @@ func NemesisBound(steps []Step) time.Duration {
 	var d time.Duration
 	for _, s := range steps {
 		d += time.Duration(s.DelayMS+s.DurationMS) * time.Millisecond
+		if s.After == AfterNewLeader {
+			d += NewLeaderDeadline
+		}
+		for _, h := range s.Heals {
+			d += time.Duration(h.DelayMS) * time.Millisecond
+		}
 		for _, e := range s.Elements {
-			d += ConfirmDeadline(e.Kind) + 2*params.HealConfirmDeadline + 2*commandSlack
+			d += ConfirmDeadline(e.Kind) + 2*params.HealConfirmDeadline + 2*commandSlack + time.Duration(e.HoldMS)*time.Millisecond
 			if e.Kind == "F5b" {
 				d += 30 * time.Second // docker stop -t 30 of pooler-n4 (§8)
 			}

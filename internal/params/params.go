@@ -12,7 +12,7 @@ import (
 
 // ContractVersion is the docs/CONTRACT.md version this code implements
 // (checked against the contract header by params_test.go).
-const ContractVersion = "1.0.4"
+const ContractVersion = "1.0.5"
 
 // Typed values. Each one is tied to its row's text by Param.Derived.
 const (
@@ -164,4 +164,7 @@ const (
 	MultigresRepository = "https://github.com/multigres/multigres.git"
 	MultigresCommit     = "e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73"
 	MultigresCommitDate = "2026-10-09T14:17:55+02:00"
+	// H1Commit is the historical control source (§5.5 profile h1, §9.4,
+	// §14).
+	H1Commit = "4bca1d5770a6bd425bde5a61eaad240431242cd5"
 )

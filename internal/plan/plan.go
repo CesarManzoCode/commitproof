@@ -28,6 +28,7 @@ const (
 	WLRegister = "register"
 	WLBank     = "bank"
 	WLLedger   = "ledger"
+	WLProbe    = "probe"
 )
 
 // Gateways in cell order.
@@ -43,16 +44,38 @@ type Campaign struct {
 	// Nemesis is false for campaigns without faults.
 	Nemesis bool
 	steps   []stepSpec
+	// shape draws the steps from the nemesis stream (K4 campaigns); nil
+	// means the fixed steps above.
+	shape func(r *rand.Rand, seed uint64) []stepSpec
+	// Workloads lists the campaign's workloads (nil: W1–W4); clients of other
+	// workloads are omitted, the others keep their P02 numbers.
+	Workloads []string
+	// Directed is the directed schedule id (§9.2, §9.4) of D1, D2, DH1.
+	Directed string
+	// Profiles restricts the profiles the campaign runs on (nil: any).
+	Profiles []string
+	// isoBySeed: W1 runs serializable on odd seeds and repeatable-read on
+	// even ones (C3, "both isolation levels across runs").
+	isoBySeed bool
+	// c7: W4 sessions run with statement_timeout P19 and W1 clients send a
+	// CancelRequest C7CancelAfter after COMMIT is sent (C7).
+	c7 bool
+	// Probes are the probe suite's statements (one client per gateway).
+	Probes []Probe
 }
 
 // Campaigns implemented so far. K1: smoke (W1–W4, no nemesis, P04 smoke).
 // K3: one fault campaign per fault kind (k3-*), a composite, and the CI
-// nemesis smoke runs (nsmoke-*), all with W1–W4 (nemesis.go).
+// nemesis smoke runs (nsmoke-*), all with W1–W4 (nemesis.go). K4: C1–C7,
+// the directed schedules D1, D2, DH1 and the probe suite (k4.go).
 func Campaigns() map[string]Campaign {
 	cs := map[string]Campaign{
 		"smoke": {Name: "smoke", Duration: params.SmokeDuration},
 	}
 	for n, c := range nemesisCampaigns() {
+		cs[n] = c
+	}
+	for n, c := range k4Campaigns() {
 		cs[n] = c
 	}
 	return cs
@@ -71,6 +94,12 @@ type Client struct {
 	GW     string
 	Iso    string // txn workloads only
 	Ops    []Op
+	// StatementTimeoutMS: the session sets statement_timeout to this value
+	// after connecting (C7, P19); 0 = not set.
+	StatementTimeoutMS int64
+	// CancelCommitAfterMS: the client sends a CancelRequest this long after
+	// COMMIT is sent if COMMIT has not returned (C7); 0 = never.
+	CancelCommitAfterMS int64
 }
 
 // Plan is plan.json.
@@ -85,6 +114,11 @@ type Plan struct {
 	ClientTimeoutMS int64
 	Clients         []Client
 	Steps           []Step // nemesis schedule (§6.3, §8)
+	// Derivation of a minimized candidate (§12.2): the plan.json sha256 it
+	// was reduced from and the reductions applied, in order. Empty for plans
+	// produced by Generate.
+	ReducedFrom string
+	Reductions  []string
 }
 
 func fnv1a64(s string) uint64 {
@@ -116,8 +150,14 @@ func Generate(campaign string, seed uint64, profile, directed string) (*Plan, er
 	if !known {
 		return nil, fmt.Errorf("unknown profile %q (CONTRACT §5.5: %v)", profile, Profiles)
 	}
-	if directed != "" {
-		return nil, fmt.Errorf("directed schedule %q: none defined before K4", directed)
+	// An empty directed id means "the campaign's own" (D1, D2, DH1 are
+	// directed schedules; every other campaign has none).
+	if directed != "" && directed != c.Directed {
+		return nil, fmt.Errorf("campaign %q has directed schedule %q, not %q", campaign, c.Directed, directed)
+	}
+	directed = c.Directed
+	if c.Profiles != nil && !contains(c.Profiles, profile) {
+		return nil, fmt.Errorf("campaign %q runs on profiles %v, not %q", campaign, c.Profiles, profile)
 	}
 	p := &Plan{
 		ContractVersion: params.ContractVersion,
@@ -131,6 +171,17 @@ func Generate(campaign string, seed uint64, profile, directed string) (*Plan, er
 	}
 	if c.Nemesis {
 		p.Steps = genNemesis(c, seed)
+	}
+	if len(c.Probes) > 0 {
+		// One probe client per gateway, each issuing every probe once.
+		for g, gw := range Gateways {
+			cl := Client{Client: g, WL: WLProbe, GW: gw}
+			for _, pr := range c.Probes {
+				cl.Ops = append(cl.Ops, Op{F: "probe", Value: map[string]any{"id": pr.ID, "sql": pr.SQL}})
+			}
+			p.Clients = append(p.Clients, cl)
+		}
+		return p, nil
 	}
 	// Client layout (P02): append 0–3, register 4–5, bank 6–7, ledger 8–9.
 	// Gateway: client i uses Gateways[i mod 3].
@@ -147,14 +198,28 @@ func Generate(campaign string, seed uint64, profile, directed string) (*Plan, er
 	for range params.ClientsLedger {
 		wls = append(wls, WLLedger)
 	}
-	rngs := make([]*rand.Rand, len(wls))
+	var rngs []*rand.Rand
 	for i, wl := range wls {
+		if c.Workloads != nil && !contains(c.Workloads, wl) {
+			continue
+		}
 		cl := Client{Client: i, WL: wl, GW: Gateways[i%len(Gateways)]}
 		if wl == WLAppend || wl == WLBank {
 			cl.Iso = "serializable"
 		}
+		if wl == WLAppend && c.isoBySeed && seed%2 == 0 {
+			cl.Iso = "repeatable-read"
+		}
+		if c.c7 {
+			switch wl {
+			case WLLedger:
+				cl.StatementTimeoutMS = params.C7StatementTimeout.Milliseconds()
+			case WLAppend:
+				cl.CancelCommitAfterMS = C7CancelAfter.Milliseconds()
+			}
+		}
 		p.Clients = append(p.Clients, cl)
-		rngs[i] = stream(c.Name, seed, fmt.Sprintf("client-%d", i))
+		rngs = append(rngs, stream(c.Name, seed, fmt.Sprintf("client-%d", i)))
 	}
 	g := newGen()
 	n := int(c.Duration / params.Pacing)
@@ -254,13 +319,19 @@ func (p *Plan) Map() map[string]any {
 		if c.Iso != "" {
 			m["iso"] = c.Iso
 		}
+		if c.StatementTimeoutMS > 0 {
+			m["statement_timeout_ms"] = c.StatementTimeoutMS
+		}
+		if c.CancelCommitAfterMS > 0 {
+			m["cancel_commit_after_ms"] = c.CancelCommitAfterMS
+		}
 		clients[i] = m
 	}
 	nemesis := make([]any, len(p.Steps))
 	for i, s := range p.Steps {
 		nemesis[i] = s.Map()
 	}
-	return map[string]any{
+	m := map[string]any{
 		"campaign":          p.Campaign,
 		"client_timeout_ms": p.ClientTimeoutMS,
 		"clients":           clients,
@@ -279,9 +350,23 @@ func (p *Plan) Map() map[string]any {
 			"register_keys":      params.RegisterKeys,
 		},
 	}
+	if p.ReducedFrom != "" {
+		m["reduced_from"] = p.ReducedFrom
+		m["reductions"] = strList(p.Reductions)
+	}
+	return m
 }
 
 // Canonical returns plan.json bytes (no trailing newline).
 func (p *Plan) Canonical() ([]byte, error) {
 	return canonjson.Marshal(p.Map())
+}
+
+func contains(xs []string, x string) bool {
+	for _, y := range xs {
+		if y == x {
+			return true
+		}
+	}
+	return false
 }

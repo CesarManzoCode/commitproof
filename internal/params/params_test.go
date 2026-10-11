@@ -118,6 +118,7 @@ func TestSourcePins(t *testing.T) {
 		"`GIT_COMMIT=" + MultigresCommit + "`",
 		"`COMMIT_DATE=" + MultigresCommitDate + "`",
 		"| Multigres source | `" + MultigresCommit + "` |",
+		"| Historical control source | `" + H1Commit + "` |",
 	} {
 		if !strings.Contains(string(b), want) {
 			t.Errorf("CONTRACT.md lacks %s", want)
