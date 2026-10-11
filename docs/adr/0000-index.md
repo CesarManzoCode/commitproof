@@ -27,5 +27,6 @@
 | [0023](0023-nemesis-lifecycle-from-runner.md) | Nemesis lifecycle commands from the runner: n4 created at run start, nem-runner started by the runner | Accepted (K3, contract 1.0.4) |
 | [0024](0024-k4-schedules-fixed-before-runs.md) | K4 schedules, directed-schedule timing, the probe checker and minimization details, fixed before any K4 run | Accepted (K4, contract 1.0.5) |
 | [0025](0025-h1-profile-derivation.md) | Profile h1: images from the historical commit, its demo topology, and a HEALTHY predicate it can answer | Accepted (K4, contract 1.0.5) |
+| [0026](0026-f5b-during-f1a-confirmed-after-heal.md) | "F5b during F1a(leader)": F5b's confirmation is evaluated after F1a heals | Accepted (K4, contract 1.0.6) |
 
 New ADRs continue the numbering. Each ADR: Context, Decision, Alternatives rejected, Consequences, Sources.

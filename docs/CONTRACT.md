@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Contract version | **1.0.5** (K0; K1 corrections: ADR-0019, ADR-0020, ADR-0021; K3 corrections: ADR-0022, ADR-0023; K4 clarifications: ADR-0024, ADR-0025) |
+| Contract version | **1.0.6** (K0; K1 corrections: ADR-0019, ADR-0020, ADR-0021; K3 corrections: ADR-0022, ADR-0023; K4 clarifications and corrections: ADR-0024, ADR-0025, ADR-0026) |
 | Date | 2026-10-09 |
 | Owner | César Manzo (GitHub `CesarManzoCode`) |
 | System under test | Multigres, `github.com/multigres/multigres` @ `e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73` |
@@ -365,7 +365,7 @@ Every fault has: an injection mechanism, a **confirmation predicate** evaluated 
 | F6 | Graceful switchover | `docker kill -s TERM pooler-<leader>` (graceful drain, S15) then `docker start` after the plan's duration | the decided rule's leader changes (rule number increases) within 60 s | container running, `/ready` = 200 |
 | F7 | Network delay | `tc qdisc add dev eth0 root netem delay 50ms` in the target netns | TCP connect RTT from a peer helper to the target increases by ≥ 40 ms vs. pre-fault probe (P18) | `tc qdisc del`; RTT within 10 ms of baseline |
 
-**Composite faults** are ordered sequences of the above in one plan step, each element confirmed before the next starts (e.g. F5a → F3a(n2,n3) → F2a(leader)).
+**Composite faults** are ordered sequences of the above in one plan step, each element confirmed before the next starts (e.g. F5a → F3a(n2,n3) → F2a(leader)) — except an element marked `confirm_after_heals`, which is injected in its place and whose unchanged predicate is evaluated, with its unchanged deadline, after the step's heals (ADR-0026: F5b during F1a(leader)).
 
 **Excluded faults** (ADR-0005): clock skew (impossible per node on one host for static Go binaries), power loss / page-cache loss (containers share the host page cache), disk full, packet corruption, DNS faults. Each is listed in LIMITATIONS.
 
@@ -671,7 +671,7 @@ Negative controls: standard evidence sabotage per criterion (K2.6 is itself a ch
 | C1 failover-kill | W1, W3, W4 | F2a, F2b on leader or random node; F2c, F2d random |
 | C2 partition | W1, W2, W4 | F1a (leader/follower), F1b, F1c, F1d |
 | C3 pause | W1 (both isolation levels across runs), W2, W4 | F3a short/long on leader and follower; F3b on pooler/orch/gateway |
-| C4 membership | W1, W4 | F5a/F5b sequences; composite F5a→F2a(leader); composite F5a→F3a(followers)→F2a(leader) (D2 shape); F5b during F1a(leader) |
+| C4 membership | W1, W4 | F5a/F5b sequences; composite F5a→F2a(leader); composite F5a→F3a(followers)→F2a(leader) (D2 shape); F5b during F1a(leader) (F5b confirmed after F1a heals, ADR-0026) |
 | C5 slow-disk | W1, W4 | F4a on leader or follower, combined with F2a |
 | C6 rewind | W1, W4 | F2a(leader) then, 3–8 s after the new leader is observed, F2a(new leader); repeated twice per run |
 | C7 commit-cancel | W4 with session `statement_timeout` P19, W1 | F1b with A = {all followers' nodes}, B = everything else (commits block) for 15 s, then F2a on the leader; also client `CancelRequest` 1 s after `COMMIT` is sent |
