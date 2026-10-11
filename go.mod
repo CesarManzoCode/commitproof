@@ -4,7 +4,9 @@ go 1.26.9
 
 require (
 	github.com/anishathalye/porcupine v1.3.1
+	github.com/hanwen/go-fuse/v2 v2.12.0
 	github.com/jackc/pgx/v5 v5.11.0
+	github.com/klauspost/compress v1.20.1
 	github.com/multigres/multigres v0.0.0-20261009121755-e3cbdbbb0b94
 	golang.org/x/sys v0.49.0
 	golang.org/x/text v0.43.0
