@@ -344,10 +344,13 @@ func (b *Builder) buildSpecs(ctx context.Context, t tree, specs []Spec, noCache 
 		}
 		imgs[s.Tag] = entry
 	}
-	for k := range prev {
-		delete(imgs, k)
+	// Return only the images built here (prev serves Extends lookups; an
+	// earlier entry of a rebuilt tag is replaced, not dropped).
+	built := map[string]any{}
+	for _, s := range specs {
+		built[s.Tag] = imgs[s.Tag]
 	}
-	return imgs, dockerfiles, bases, nil
+	return built, dockerfiles, bases, nil
 }
 
 // checkLayers requires the layers of base to be a prefix of derived's: the
