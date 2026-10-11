@@ -6,6 +6,8 @@
 package independence
 
 import (
+	"bytes"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
@@ -27,6 +29,7 @@ var forbidden = []string{
 	module + "/internal/host",
 	module + "/internal/cmdlog",
 	module + "/internal/plan",
+	module + "/internal/synth",
 	"github.com/multigres/",
 	"github.com/jackc/pgx",
 	"google.golang.org/grpc",
@@ -71,4 +74,74 @@ func TestControlIsSensitive(t *testing.T) {
 			t.Errorf("commitproof does not depend on %s; the independence test would not notice a leak", want)
 		}
 	}
+}
+
+// TestExpectationsIndependentOfCheckers enforces AGENTS.md: expected outputs
+// of the synthetic corpus are never produced by running the code under
+// test. The generator must not link the checkers, and the checkers must not
+// link the generator.
+func TestExpectationsIndependentOfCheckers(t *testing.T) {
+	for _, c := range []struct{ pkg, forbid string }{
+		{"./internal/synth", module + "/internal/checker"},
+		{"./internal/tools/gencorpus", module + "/internal/checker"},
+		{"./internal/checker", module + "/internal/synth"},
+	} {
+		for _, p := range deps(t, c.pkg) {
+			if strings.HasPrefix(p, c.forbid) {
+				t.Errorf("%s depends on %s", c.pkg, p)
+			}
+		}
+	}
+}
+
+// sabotageMarker is the symbol prefix only sabotage builds define
+// (internal/checker/sabotage_*_on.go, CONTRACT §15 K2.6).
+const sabotageMarker = "cpSabotageActive"
+
+func buildAndNM(t *testing.T, tags, pkg string) string {
+	t.Helper()
+	out := filepath.Join(t.TempDir(), "bin")
+	args := []string{"build", "-o", out}
+	if tags != "" {
+		args = append(args, "-tags", tags)
+	}
+	cmd := exec.Command("go", append(args, pkg)...)
+	cmd.Dir = filepath.Join("..", "..")
+	if b, err := cmd.CombinedOutput(); err != nil {
+		t.Fatalf("go build %s %s: %v\n%s", tags, pkg, err, b)
+	}
+	nm, err := exec.Command("go", "tool", "nm", out).Output()
+	if err != nil {
+		t.Fatalf("go tool nm: %v", err)
+	}
+	return string(nm)
+}
+
+// TestProductBinariesHaveNoSabotage builds the release binaries as `make
+// build` does (no tags) and asserts no sabotage symbol is linked; the
+// control builds cpcheck with one sabotage tag and requires the symbol, so
+// the check can fail.
+func TestProductBinariesHaveNoSabotage(t *testing.T) {
+	for _, bin := range []string{"./cmd/cpcheck", "./cmd/cpgate", "./cmd/commitproof"} {
+		if strings.Contains(buildAndNM(t, "", bin), sabotageMarker) {
+			t.Errorf("%s contains %s symbols", bin, sabotageMarker)
+		}
+	}
+	if !strings.Contains(buildAndNM(t, "cp_sabotage_bank_sum", "./cmd/cpcheck"), sabotageMarker+"_bank_sum") {
+		t.Error("control: a cp_sabotage_bank_sum build of cpcheck lacks the marker; the check would not notice sabotage")
+	}
+	// No build-tag file outside internal/checker may name a sabotage tag.
+	filepath.WalkDir(filepath.Join("..", ".."), func(p string, d os.DirEntry, err error) error {
+		if err != nil || d.IsDir() || !strings.HasSuffix(p, ".go") || strings.Contains(p, filepath.Join("internal", "checker")) {
+			if d != nil && d.IsDir() && (d.Name() == ".cache" || d.Name() == "testdata" || d.Name() == "evidence") {
+				return filepath.SkipDir
+			}
+			return nil
+		}
+		b, _ := os.ReadFile(p)
+		if bytes.Contains(b, []byte("//go:"+"build cp_sabotage")) {
+			t.Errorf("%s declares a sabotage build tag outside internal/checker", p)
+		}
+		return nil
+	})
 }
