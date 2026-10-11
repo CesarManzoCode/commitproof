@@ -74,6 +74,20 @@ func Launch(cfg LaunchConfig) int {
 		return 2
 	}
 	logf("slowfs: mounted %s on %s (control %s)", cfg.Backing, cfg.Mount, cfg.Control)
+	// go-fuse v2.12.0's direct mount returns the /dev/fuse descriptor
+	// without close-on-exec (only its fusermount path sets it), so pgctld,
+	// PostgreSQL and every backend would inherit it. A process holding the
+	// device keeps the connection alive after the daemon dies, and backends
+	// exiting with files open on the mount then wait forever for replies
+	// nobody serves (observed in K3 development: postgres processes stuck
+	// in D state after teardown). Mark it close-on-exec before any child
+	// starts.
+	n, err := cloexecFuseFDs()
+	if err != nil || n == 0 {
+		logf("slowfs: close-on-exec on /dev/fuse: %d descriptors, %v", n, err)
+		srv.Unmount()
+		return 2
+	}
 	ctx, cancel := context.WithCancel(context.Background())
 	go WatchControl(ctx, cfg.Control, delay, ControlPollInterval, logf)
 	var binds []string
@@ -105,8 +119,63 @@ func Launch(cfg LaunchConfig) int {
 		logf("slowfs: bypass %s (bind of %s)", dst, src)
 	}
 	code := runChild(cfg)
+	// The command is gone; whatever it left (PostgreSQL after a failed
+	// stop, SIGSTOPped backends) is killed and reaped while this process
+	// still serves the mount, so nothing exits against a dead daemon.
+	killRemaining(10 * time.Second)
 	cleanup()
 	return code
+}
+
+// cloexecFuseFDs sets FD_CLOEXEC on every descriptor of this process that
+// refers to /dev/fuse and returns how many it found.
+func cloexecFuseFDs() (int, error) {
+	ents, err := os.ReadDir("/proc/self/fd")
+	if err != nil {
+		return 0, err
+	}
+	n := 0
+	for _, e := range ents {
+		fd, err := strconv.Atoi(e.Name())
+		if err != nil {
+			continue
+		}
+		if t, err := os.Readlink("/proc/self/fd/" + e.Name()); err == nil && t == "/dev/fuse" {
+			if _, err := unix.FcntlInt(uintptr(fd), unix.F_SETFD, unix.FD_CLOEXEC); err != nil {
+				return n, err
+			}
+			n++
+		}
+	}
+	return n, nil
+}
+
+// killRemaining sends SIGKILL to every other process of the PID namespace
+// (kill(-1) from PID 1) and reaps them, for at most d.
+func killRemaining(d time.Duration) {
+	if os.Getpid() != 1 {
+		return
+	}
+	if err := unix.Kill(-1, unix.SIGKILL); err != nil && !errors.Is(err, unix.ESRCH) {
+		logf("slowfs: kill remaining: %v", err)
+	}
+	end := time.Now().Add(d)
+	for time.Now().Before(end) {
+		var ws unix.WaitStatus
+		pid, err := unix.Wait4(-1, &ws, unix.WNOHANG, nil)
+		switch {
+		case errors.Is(err, unix.ECHILD):
+			return
+		case err != nil && !errors.Is(err, unix.EINTR):
+			logf("slowfs: wait4: %v", err)
+			return
+		case pid > 0:
+			logf("slowfs: reaped pid %d at shutdown (%s)", pid, describe(ws))
+		default:
+			time.Sleep(20 * time.Millisecond)
+		}
+	}
+	logf("slowfs: processes remain after %s", d)
 }
 
 func ensureDir(p string, uid, gid int) error {
