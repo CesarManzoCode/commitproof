@@ -173,11 +173,35 @@ func (p *partition) inject(ctx context.Context) []Probe {
 	})
 }
 
+// present splits the fault's namespaces into those whose owner container
+// and helper still run and those that went away while the fault held (a
+// composite's later element may stop a node, e.g. C4's F5b during F1a,
+// ADR-0026): a vanished namespace holds no rules and cannot be probed.
+func (p *partition) present(ctx context.Context, tag string) (map[string]bool, []string, Probe) {
+	pr, running := p.e.runningContainers(ctx, p.id+"-"+tag+"-ps")
+	alive := map[string]bool{}
+	var gone []string
+	for _, n := range p.namespaces() {
+		if !pr.OK() || n == "runner" || (running[OwnerContainer(n)] && running[Helper(n)]) {
+			alive[n] = true
+		} else {
+			gone = append(gone, n)
+		}
+	}
+	return alive, gone, pr
+}
+
 func (p *partition) heal(ctx context.Context) []Probe {
-	ns := p.namespaces()
-	return parallel(len(ns), func(k int) Probe {
+	alive, _, pr := p.present(ctx, "heal")
+	var ns []string
+	for _, n := range p.namespaces() {
+		if alive[n] {
+			ns = append(ns, n)
+		}
+	}
+	return append([]Probe{pr}, parallel(len(ns), func(k int) Probe {
 		return p.e.exec(ctx, p.id+"-heal-"+ns[k], Helper(ns[k]), "sh", "-c", p.removeScript())
-	})
+	})...)
 }
 
 // connectRound probes every pair, one `cpnet connect` per source helper.
@@ -310,18 +334,30 @@ func (p *partition) confirm(ctx context.Context) (bool, []Probe, map[string]any)
 	return len(problems) == 0, append(cp, sp...), map[string]any{"problems": strList(problems), "counters": counts}
 }
 
-// healed: every pair connects and no chain of this fault remains.
+// healed: every pair between namespaces that still exist connects and no
+// chain of this fault remains in them. Namespaces that went away while the
+// fault held are listed, not probed.
 func (p *partition) healed(ctx context.Context) (bool, []Probe, map[string]any) {
-	cp, res := p.connectRound(ctx, "healed", append(append([][2]string{}, p.fail...), p.ok...))
+	alive, gone, pp := p.present(ctx, "healed")
+	var prs [][2]string
+	for _, x := range append(append([][2]string{}, p.fail...), p.ok...) {
+		if alive[x[0]] && alive[x[1]] {
+			prs = append(prs, x)
+		}
+	}
+	cp, res := p.connectRound(ctx, "healed", prs)
 	sp, _, raw := p.saveRound(ctx, "healed")
 	var problems []string
-	for _, x := range append(append([][2]string{}, p.fail...), p.ok...) {
+	for _, x := range prs {
 		if !res[x].AllOK() {
 			problems = append(problems, fmt.Sprintf("%s->%s did not connect", x[0], x[1]))
 		}
 	}
 	o, i := p.chains()
 	for _, n := range p.namespaces() {
+		if !alive[n] {
+			continue
+		}
 		r, ok := raw[n]
 		switch {
 		case !ok:
@@ -330,7 +366,11 @@ func (p *partition) healed(ctx context.Context) (bool, []Probe, map[string]any) 
 			problems = append(problems, n+": chains of the fault remain")
 		}
 	}
-	return len(problems) == 0, append(cp, sp...), map[string]any{"problems": strList(problems)}
+	det := map[string]any{"problems": strList(problems)}
+	if len(gone) > 0 {
+		det["namespaces_gone"] = strList(gone)
+	}
+	return len(problems) == 0, append(append([]Probe{pp}, cp...), sp...), det
 }
 
 // delay is F7: netem delay on the target's eth0 (P18).
