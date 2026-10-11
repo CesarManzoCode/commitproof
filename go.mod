@@ -3,6 +3,7 @@ module github.com/CesarManzoCode/commitproof
 go 1.26.9
 
 require (
+	github.com/anishathalye/porcupine v1.3.1
 	github.com/jackc/pgx/v5 v5.11.0
 	github.com/multigres/multigres v0.0.0-20261009121755-e3cbdbbb0b94
 	golang.org/x/sys v0.49.0
