@@ -3,6 +3,7 @@ package nemesis
 import (
 	"reflect"
 	"sort"
+	"strings"
 	"testing"
 )
 
@@ -13,15 +14,24 @@ func TestLeaderOf(t *testing.T) {
 		{Node: "n2", OK: true, Name: "n2", Decision: r},
 		{Node: "n3", OK: false},
 	}
-	l, rule, err := leaderOf(sts)
-	if err != nil || l != "n2" || rule.key() != "2.0" {
-		t.Fatalf("leader %q %v %v", l, rule, err)
+	l, rule, claims, err := leaderOf(sts)
+	if err != nil || l != "n2" || rule.key() != "2.0" || len(claims) != 1 {
+		t.Fatalf("leader %q %v %v %v", l, rule, claims, err)
 	}
-	// Two self-reported leaders: ambiguous, never resolved.
-	old := &ruleObs{CoordinatorTerm: 1, Leader: "n1", Cohort: []string{"n1", "n2", "n3"}}
-	sts[0].Decision = old
-	if _, _, err := leaderOf(sts); err == nil {
-		t.Fatal("two leaders resolved")
+	// n1 still reports itself leader of the older rule 1.0: superseded by
+	// n2's 2.0 (the K3 F2a observation).
+	sts[0].Decision = &ruleObs{CoordinatorTerm: 1, Leader: "n1", Cohort: []string{"n1", "n2", "n3"}}
+	l, _, claims, err = leaderOf(sts)
+	if err != nil || l != "n2" || strings.Join(claims, ",") != "n1@1.0,n2@2.0" {
+		t.Fatalf("superseded leader: %q %v %v", l, claims, err)
+	}
+	// Two nodes claiming the same highest rule number: ambiguous.
+	sts[0].Decision = &ruleObs{CoordinatorTerm: 2, Leader: "n1"}
+	if _, _, _, err := leaderOf(sts); err == nil {
+		t.Fatal("tie resolved")
+	}
+	if _, _, _, err := leaderOf([]statusObs{{Node: "n1", OK: false}}); err == nil {
+		t.Fatal("no leader resolved")
 	}
 	if (&ruleObs{CoordinatorTerm: 1, LeaderSubterm: 5}).after(&ruleObs{CoordinatorTerm: 2}) {
 		t.Fatal("rule order")

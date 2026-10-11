@@ -49,22 +49,38 @@ func (e *Env) statusProbe(ctx context.Context, name string, nodes []string) (Pro
 	return p, out.Statuses, nil
 }
 
-// leaderOf returns the single pooler that reports itself leader of its
-// decided rule. Zero or several self-reported leaders is an error: roles
-// are resolved only on an unambiguous view.
-func leaderOf(sts []statusObs) (string, *ruleObs, error) {
-	var leaders []string
+// leaderOf returns the leader: among the poolers that report themselves
+// leader of their decided rule, the one whose rule number is the highest
+// (rule numbers are totally ordered, S06; a pooler still reporting itself
+// leader of an older rule is superseded, as observed in K3 after F2a on
+// the leader). No self-reported leader, or two different nodes on the same
+// highest rule number, is an error: roles are resolved only on an
+// unambiguous view. It also returns every self-reported leader ("n1@1.0").
+func leaderOf(sts []statusObs) (string, *ruleObs, []string, error) {
+	var leader string
 	var rule *ruleObs
+	var all []string
+	tie := false
 	for _, s := range sts {
-		if s.OK && s.Decision != nil && s.Decision.Leader == s.Name && s.Name == s.Node {
-			leaders = append(leaders, s.Node)
-			rule = s.Decision
+		if !(s.OK && s.Decision != nil && s.Decision.Leader == s.Name && s.Name == s.Node) {
+			continue
+		}
+		all = append(all, s.Node+"@"+s.Decision.key())
+		switch {
+		case rule == nil || s.Decision.after(rule):
+			leader, rule, tie = s.Node, s.Decision, false
+		case !rule.after(s.Decision) && s.Node != leader:
+			tie = true
 		}
 	}
-	if len(leaders) != 1 {
-		return "", nil, fmt.Errorf("%d poolers report themselves leader %v", len(leaders), leaders)
+	sort.Strings(all)
+	if rule == nil {
+		return "", nil, all, fmt.Errorf("no pooler reports itself leader")
 	}
-	return leaders[0], rule, nil
+	if tie {
+		return "", nil, all, fmt.Errorf("poolers %v report themselves leader of the same highest rule %s", all, rule.key())
+	}
+	return leader, rule, all, nil
 }
 
 // view is the state roles are resolved against.
@@ -75,6 +91,7 @@ type view struct {
 	rule     *ruleObs
 	probes   []Probe
 	leaderOK bool
+	claims   []string // every self-reported leader ("node@rule")
 }
 
 // observeView lists running containers and, if needLeader, the leader.
@@ -99,7 +116,7 @@ func (e *Env) observeView(ctx context.Context, id string, needLeader bool) (view
 	if err != nil {
 		return v, err
 	}
-	v.leader, v.rule, err = leaderOf(sts)
+	v.leader, v.rule, v.claims, err = leaderOf(sts)
 	v.leaderOK = err == nil
 	return v, err
 }
@@ -210,6 +227,9 @@ func (v view) evidence(e plan.Element, resolved map[string]any) map[string]any {
 		"resolved": resolved, "probes": evidenceList(v.probes)}
 	if e.Kind == "F1b" {
 		m["roles_a"], m["roles_b"] = strList(e.A), strList(e.B)
+	}
+	if v.claims != nil {
+		m["self_reported_leaders"] = strList(v.claims)
 	}
 	if v.leaderOK {
 		m["leader"] = v.leader
