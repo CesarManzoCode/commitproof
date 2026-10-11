@@ -40,15 +40,22 @@ var Profiles = []string{"baseline", "buffered", "slotless", "replica-port", "h1"
 type Campaign struct {
 	Name     string
 	Duration time.Duration
-	// Nemesis is empty for campaigns without faults.
+	// Nemesis is false for campaigns without faults.
 	Nemesis bool
+	steps   []stepSpec
 }
 
 // Campaigns implemented so far. K1: smoke (W1–W4, no nemesis, P04 smoke).
+// K3: one fault campaign per fault kind (k3-*), a composite, and the CI
+// nemesis smoke runs (nsmoke-*), all with W1–W4 (nemesis.go).
 func Campaigns() map[string]Campaign {
-	return map[string]Campaign{
+	cs := map[string]Campaign{
 		"smoke": {Name: "smoke", Duration: params.SmokeDuration},
 	}
+	for n, c := range nemesisCampaigns() {
+		cs[n] = c
+	}
+	return cs
 }
 
 // Op is one planned client operation.
@@ -77,7 +84,7 @@ type Plan struct {
 	PacingMS        int64
 	ClientTimeoutMS int64
 	Clients         []Client
-	Nemesis         []any
+	Steps           []Step // nemesis schedule (§6.3, §8)
 }
 
 func fnv1a64(s string) uint64 {
@@ -121,7 +128,9 @@ func Generate(campaign string, seed uint64, profile, directed string) (*Plan, er
 		DurationMS:      c.Duration.Milliseconds(),
 		PacingMS:        params.Pacing.Milliseconds(),
 		ClientTimeoutMS: params.ClientOpTimeout.Milliseconds(),
-		Nemesis:         []any{},
+	}
+	if c.Nemesis {
+		p.Steps = genNemesis(c, seed)
 	}
 	// Client layout (P02): append 0–3, register 4–5, bank 6–7, ledger 8–9.
 	// Gateway: client i uses Gateways[i mod 3].
@@ -247,6 +256,10 @@ func (p *Plan) Map() map[string]any {
 		}
 		clients[i] = m
 	}
+	nemesis := make([]any, len(p.Steps))
+	for i, s := range p.Steps {
+		nemesis[i] = s.Map()
+	}
 	return map[string]any{
 		"campaign":          p.Campaign,
 		"client_timeout_ms": p.ClientTimeoutMS,
@@ -254,7 +267,7 @@ func (p *Plan) Map() map[string]any {
 		"contract_version":  p.ContractVersion,
 		"directed":          p.Directed,
 		"duration_ms":       p.DurationMS,
-		"nemesis":           p.Nemesis,
+		"nemesis":           nemesis,
 		"pacing_ms":         p.PacingMS,
 		"profile":           p.Profile,
 		"seed":              p.Seed,
