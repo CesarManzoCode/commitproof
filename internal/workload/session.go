@@ -30,6 +30,8 @@ type Session struct {
 	GW      string
 	AppName string
 	Timeout time.Duration
+	// Port overrides GatewayPort (tests drive a fake server, K2.5).
+	Port int
 
 	conn    *pgx.Conn
 	mu      sync.Mutex
@@ -46,8 +48,12 @@ type Outcome struct {
 }
 
 func (s *Session) config() (*pgx.ConnConfig, error) {
+	port := GatewayPort
+	if s.Port != 0 {
+		port = s.Port
+	}
 	cfg, err := pgx.ParseConfig(fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
-		s.GW, GatewayPort, DBUser, DBPassword, DBName))
+		s.GW, port, DBUser, DBPassword, DBName))
 	if err != nil {
 		return nil, err
 	}
