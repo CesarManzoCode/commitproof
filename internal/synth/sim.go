@@ -17,6 +17,13 @@ import (
 	"github.com/CesarManzoCode/commitproof/internal/params"
 )
 
+// CorpusContractVersion is the contract version the K2 corpus was generated
+// and validated under. The corpus is committed evidence referenced by seal
+// root (gate K2), so a contract change that leaves the history model and
+// the checkers alone (§6, §10) must not regenerate it; a change to either
+// regenerates it and re-runs gate K2 (CONTRACT §15 K4 "Do not change").
+const CorpusContractVersion = "1.0.3"
+
 // Times are nanoseconds since run start. Workload operations sit on a
 // microsecond grid; planted ("gadget") operations are offset by 1–999 ns so
 // that no two events of different operations share a timestamp.
@@ -263,7 +270,7 @@ func (r *Run) assignProcs() {
 // reads like the runner (CONTRACT §6.4, P06–P08), and returns the history
 // events in order.
 func (r *Run) Finish() []map[string]any {
-	r.Mark(100*us, "run-start", map[string]any{"contract_version": params.ContractVersion, "synthetic": true})
+	r.Mark(100*us, "run-start", map[string]any{"contract_version": CorpusContractVersion, "synthetic": true})
 	r.Mark(1*ms, "setup-begin", map[string]any{"gw": "gw-z1"})
 	r.Mark(13*ms, "setup-end", map[string]any{"result": "ok"})
 	r.Mark(r.T0-us, "workload-start", nil)
@@ -416,7 +423,7 @@ func (r *Run) Write(dir string) error {
 		hb.Write(line)
 		hb.WriteByte('\n')
 	}
-	plan := map[string]any{"campaign": "synthetic", "contract_version": params.ContractVersion, "profile": r.Profile,
+	plan := map[string]any{"campaign": "synthetic", "contract_version": CorpusContractVersion, "profile": r.Profile,
 		"seed": int64(seedOf(r.ID) >> 1), "directed": "", "clients": []any{}, "nemesis": []any{},
 		"setup": map[string]any{"append_active_keys": params.AppendActiveKeys, "append_retire_at": params.AppendKeyRetireAt,
 			"bank_accounts": params.BankAccounts, "bank_initial": params.BankInitialBalance, "register_keys": params.RegisterKeys},
@@ -426,7 +433,7 @@ func (r *Run) Write(dir string) error {
 		return err
 	}
 	ps := sha256.Sum256(pb)
-	man := map[string]any{"contract_version": params.ContractVersion, "run_id": r.ID, "campaign": "synthetic", "profile": r.Profile,
+	man := map[string]any{"contract_version": CorpusContractVersion, "run_id": r.ID, "campaign": "synthetic", "profile": r.Profile,
 		"seed": plan["seed"], "mutant": "none", "plan_sha256": hex.EncodeToString(ps[:]), "synthetic": true,
 		"generator": "internal/synth (cmd: go run ./internal/tools/gencorpus)"}
 	mb, err := canonjson.Marshal(man)
