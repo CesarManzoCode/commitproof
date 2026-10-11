@@ -16,15 +16,15 @@ CP_COMMIT := $(shell git rev-parse HEAD 2>/dev/null || echo unknown)
 CP_DIRTY := $(shell test -z "$$(git status --porcelain -- . ':(exclude)evidence' ':(exclude)images.lock.json' 2>/dev/null)" && echo false || echo true)
 LDFLAGS := -X $(PKG)/internal/buildinfo.Commit=$(CP_COMMIT) -X $(PKG)/internal/buildinfo.Dirty=$(CP_DIRTY)
 
-.PHONY: prereq-check build ci-unit ci-checkers ci-cluster-smoke ci-nemesis-smoke sabotage-nemesis check-dockerfile-derivation lint-workflow tidy elle-oracle corpus
+.PHONY: prereq-check build ci-unit ci-checkers ci-cluster-smoke ci-nemesis-smoke ci-mutant-smoke sabotage-nemesis check-dockerfile-derivation lint-workflow tidy elle-oracle corpus
 
 ## prereq-check: verify docs/PREREQUISITES.md; writes evidence/K1/prereq.json; exit 3 on any FAIL
 prereq-check:
 	@scripts/prereq-check.sh $(EVIDENCE_K1)/prereq.json
 
-## build: commitproof, cpcheck, cpgate into bin/
+## build: commitproof, cpcheck, cpgate, quorumxcheck into bin/
 build:
-	go build -trimpath -ldflags "$(LDFLAGS)" -o $(BIN)/ ./cmd/commitproof ./cmd/cpcheck ./cmd/cpgate
+	go build -trimpath -ldflags "$(LDFLAGS)" -o $(BIN)/ ./cmd/commitproof ./cmd/cpcheck ./cmd/cpgate ./cmd/quorumxcheck
 
 ## ci-unit: gofmt, go vet, staticcheck (tools/go.mod), unit tests incl. the
 ## independence (§5.3) and parameters-table (§5.7) tests
@@ -56,6 +56,11 @@ ci-cluster-smoke: build
 ## when /dev/fuse exists, else a SKIPPED-WITH-REASON line), cpcheck on each
 ci-nemesis-smoke: build
 	scripts/ci-nemesis-smoke.sh
+
+## ci-mutant-smoke: build mutant M1, run its directed schedule D1 once,
+## require cpcheck FAIL with C1 lost-write (CONTRACT §13)
+ci-mutant-smoke: build
+	scripts/ci-mutant-smoke.sh
 
 ## sabotage-nemesis: K3.2/K3.3 fixtures — host binaries and runner images
 ## built with each cp_sabotage_inject_<kind> / cp_sabotage_heal_<kind> tag

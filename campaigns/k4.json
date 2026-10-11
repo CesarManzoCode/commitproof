@@ -1,0 +1,21 @@
+{
+  "name": "k4",
+  "minimize_failures": true,
+  "replays": 5,
+  "entries": [
+    {"campaign": "D1", "mutant": "M1", "seeds": [1, 2, 3, 4, 5]},
+    {"campaign": "D1", "seeds": [1, 2, 3, 4, 5]},
+    {"campaign": "D2", "mutant": "M2", "seeds": [1, 2, 3, 4, 5]},
+    {"campaign": "D2", "seeds": [1, 2, 3, 4, 5]},
+    {"campaign": "claims", "mutant": "M4", "seeds": [1, 2, 3, 4, 5]},
+    {"campaign": "claims", "seeds": [1, 2, 3, 4, 5]},
+    {"campaign": "C1", "seeds": [1, 2, 3]},
+    {"campaign": "C2", "seeds": [1, 2, 3]},
+    {"campaign": "C3", "seeds": [1, 2, 3]},
+    {"campaign": "C4", "seeds": [1, 2, 3]},
+    {"campaign": "C5", "seeds": [1, 2, 3]},
+    {"campaign": "C6", "seeds": [1, 2, 3]},
+    {"campaign": "C7", "seeds": [1, 2, 3]},
+    {"campaign": "DH1", "profile": "h1", "seeds": [1, 2, 3, 4, 5]}
+  ]
+}
