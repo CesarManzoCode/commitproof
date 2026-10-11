@@ -98,12 +98,12 @@ All paths below are relative to the repository root at that commit.
 | ID | Source | Status | Value observed |
 |---|---|---|---|
 | S80 | https://go.dev/dl/?mode=json | VERIFIED-SUMMARY | Stable: go1.27.2 and **go1.26.9** (linux-amd64 sha256 `42d158b4d8f7b61ac0a830567c940a86098fb7aac52e467a5ebec03ef5cc2f8d`). |
-| S81 | Docker Hub API `library/golang:1.26.9-alpine` | VERIFIED-SUMMARY | index `sha256:cdfd4fe2da6b225d8b40c6b7a105736e548e83ff56d5d8f9394446eeb5eb84e0` (updated 2026-10-08). |
+| S81 | Docker Hub API `library/golang:1.26.9-alpine` | VERIFIED-SUMMARY | index `sha256:cdfd4fe2da6b225d8b40c6b7a105736e548e83ff56d5d8f9394446eeb5eb84e0` (updated 2026-10-08). **Re-resolved in K1 (2026-10-10/11): `sha256:3082400e…7ade` (ADR-0020).** |
 | S82 | Docker Hub API `library/postgres:17.7` | VERIFIED-SUMMARY | index `sha256:2006493727bd5277eece187319af1ef82b4cf82cf4fc1ed00da0775b646ac2a4` (updated 2026-02-04). |
-| S83 | Docker Hub API `library/debian:bookworm-slim` | VERIFIED-SUMMARY | index `sha256:abd67ffcfa541b485a3dff59865ab629aa048a6c613e639d36e7456b0b229241` (updated 2026-08-05). |
+| S83 | Docker Hub API `library/debian:bookworm-slim` | VERIFIED-SUMMARY | index `sha256:abd67ffcfa541b485a3dff59865ab629aa048a6c613e639d36e7456b0b229241` (updated 2026-08-05). **Re-resolved in K1 (2026-10-10/11): `sha256:7c7b2c96…c587` (ADR-0020).** |
 | S84 | Docker Hub API `library/alpine:3.24.2` | VERIFIED-SUMMARY | index `sha256:294b683cb724975bec92580e1e685676bd4b50bda910ddb8c51d4cabeaec77e6` (updated 2026-09-18). |
 | S85 | Docker Hub API `library/clojure:temurin-21-lein-2.13.0-bookworm` | VERIFIED-SUMMARY | index `sha256:724a7f5840394bf9e659730e5039bf7498f31185e747e3586dbab626b717c34f` (updated 2026-10-07). |
-| S86 | quay.io `coreos/etcd:v3.6.4` | NOT LOADED (robots) | Digest resolved and locked in K1. Version choice from S01. |
+| S86 | quay.io `coreos/etcd:v3.6.4` | NOT LOADED (robots) | Digest resolved and locked in K1: `sha256:885a73b0…e232` (`docker buildx imagetools inspect`, ADR-0020). Version choice from S01. |
 | S87 | Arch Linux packages (archlinux.org/packages) | VERIFIED-SUMMARY | `docker 1:29.9.0-1` (2026-10-09), `docker-compose 5.6.0-1` (2026-10-02), `docker-buildx 0.38.0-1` (2026-10-08), `go 2:1.27.1-1` (2026-09-11). |
 | S88 | https://docs.github.com/en/actions/reference/runners/github-hosted-runners and …/reference/limits | VERIFIED-SUMMARY | Public-repo standard Linux runner (`ubuntu-latest` = `ubuntu-24.04`): 4 CPU, 16 GB RAM, 14 GB SSD; 6 h per job; 20 concurrent jobs on Free. |
 | S89 | Go modules: `jackc/pgx` latest `v5.11.0`; `hanwen/go-fuse` latest `v2.12.0`; `jackc/pglogrepl` untagged, HEAD `662581bb6bb6de4da82805879643f1dc39e41fad` | VERIFIED (`git ls-remote`) | Versions pinned in CONTRACT §14. |

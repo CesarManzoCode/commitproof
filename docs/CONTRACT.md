@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Contract version | **1.0.1** (K0; K1 corrections: ADR-0019) |
+| Contract version | **1.0.2** (K0; K1 corrections: ADR-0019, ADR-0020) |
 | Date | 2026-10-09 |
 | Owner | César Manzo (GitHub `CesarManzoCode`) |
 | System under test | Multigres, `github.com/multigres/multigres` @ `e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73` |
@@ -146,7 +146,7 @@ Compose project name **`commitproof`**. One user-defined bridge network `cpnet`,
 
 | Service | Image | Address | Cell | Process(es) / key flags |
 |---|---|---|---|---|
-| `etcd` | `quay.io/coreos/etcd:v3.6.4` (digest locked in K1) | 10.77.0.10 | — | client port 2379 |
+| `etcd` | `quay.io/coreos/etcd:v3.6.4` (digest locked in K1, §14) | 10.77.0.10 | — | client port 2379 |
 | `pg-n1` … `pg-n4` | `commitproof/pgctld` (built, §5.2) | .11 … .14 | n1 zone1, n2 zone2, n3 zone3, n4 zone1 | `pgctld server` with S03 flags (`--pooler-dir=/data --grpc-port=16200 --pg-port=5432 --pgbackrest-port=8432 --pgbackrest-cert-dir=/certs`) |
 | `pooler-n1` … `pooler-n4` | `commitproof/multigres` | shares `pg-nX` netns (`network_mode: service:pg-nX`) | as node | `multipooler` with S03 flags (`--http-port=16000 --grpc-port=16100 --pgctld-addr=localhost:16200 --connpool-global-capacity=50 --enable-slot-based-replication=true`), `--service-id=nX`, `--cell=<zone>` |
 | `orch-z1` … `orch-z3` | `commitproof/multigres` | .21 … .23 | zone1…zone3 | `multiorch --http-port=17000 --grpc-port=17100 --watch-targets=postgres --pooler-health-check-interval=500ms --recovery-cycle-interval=500ms` (S03 values) |
@@ -550,10 +550,10 @@ Versions observed 2026-10-09 (RESEARCH §5). K1 re-resolves every image digest w
 | Multigres source | `e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73` | S01 |
 | Historical control source | `4bca1d5770a6bd425bde5a61eaad240431242cd5` | S33, S51 |
 | Go (CommitProof and Multigres builds) | `go1.26.9` via `GOTOOLCHAIN=go1.26.9` (host `go` ≥ 1.21 downloads it); `go.mod`: `go 1.26.9` with no `toolchain` line (the go command rejects a `toolchain` line equal to the `go` line; ADR-0019) | S80, S02 |
-| Builder image | `golang:1.26.9-alpine@sha256:cdfd4fe2da6b225d8b40c6b7a105736e548e83ff56d5d8f9394446eeb5eb84e0` | S81 |
-| Multigres runtime base | `debian:bookworm-slim@sha256:abd67ffcfa541b485a3dff59865ab629aa048a6c613e639d36e7456b0b229241` | S83 |
+| Builder image | `golang:1.26.9-alpine@sha256:3082400e369fa24d5fc60bca20edab3f6d604e0c5a690ec66b295eff4dd87ade` (re-resolved in K1; the 2026-10-09 digest `cdfd4fe2…` is superseded, ADR-0020) | S81 |
+| Multigres runtime base | `debian:bookworm-slim@sha256:7c7b2c966bc9ee8cedfeef67e0e279108992c77681fa595db4a9d65c06ccc587` (re-resolved in K1; the 2026-10-09 digest `abd67ffc…` is superseded, ADR-0020) | S83 |
 | PostgreSQL base | `postgres:17.7@sha256:2006493727bd5277eece187319af1ef82b4cf82cf4fc1ed00da0775b646ac2a4` | S82 |
-| etcd | `quay.io/coreos/etcd:v3.6.4@<resolved in K1>` | S01, S86 |
+| etcd | `quay.io/coreos/etcd:v3.6.4@sha256:885a73b09cde0293c84adad3d589cc5d091f03e61d390b94413c0a866ccfe232` (resolved in K1, ADR-0020) | S01, S86 |
 | Nemesis/helper base | `alpine:3.24.2@sha256:294b683cb724975bec92580e1e685676bd4b50bda910ddb8c51d4cabeaec77e6` | S84 |
 | Elle oracle runtime | `clojure:temurin-21-lein-2.13.0-bookworm@sha256:724a7f5840394bf9e659730e5039bf7498f31185e747e3586dbab626b717c34f` | S85 |
 | elle-cli | commit `9c2a18b3719f573dab06ae05c955c9c9d5225673` (0.1.11; Elle 0.2.7) built inside the oracle image | S73 |
@@ -564,8 +564,8 @@ Versions observed 2026-10-09 (RESEARCH §5). K1 re-resolves every image digest w
 | Multigres Go packages (observations, quorumxcheck) | `github.com/multigres/multigres` at the pinned commit (pseudo-version) | S01 |
 | Host | Arch Linux; `docker 1:29.9.0-1`, `docker-compose 5.6.0-1`, `docker-buildx 0.38.0-1` or newer | S87 |
 | CI runner | `ubuntu-24.04` | S88 |
-| Lint | `staticcheck` version pinned in `tools/go.mod` at K1 (latest release at K1 time, recorded) | — |
-| Workflow lint | `rhysd/actionlint` container image, latest release digest resolved and locked in K1 | — |
+| Lint | `staticcheck` `honnef.co/go/tools v0.8.1` pinned in `tools/go.mod` (latest release at K1 time) | — |
+| Workflow lint | `rhysd/actionlint:1.7.12@sha256:b1934ee5f1c509618f2508e6eb47ee0d3520686341fec936f3b79331f9315667` (latest release, resolved in K1, ADR-0020) | — |
 
 ---
 
