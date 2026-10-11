@@ -73,6 +73,11 @@ type Result struct {
 	Stdout   []byte // nil when Opts.Stdout redirected it to a file
 	Stderr   []byte
 	Err      error // start failure or timeout (ExitCode is then -1)
+	// Seq and Name identify the commands.jsonl record (Name includes the
+	// recorder's prefix); StartNS/EndNS are its CLOCK_MONOTONIC times.
+	Seq            int
+	Name           string
+	StartNS, EndNS int64
 }
 
 var unsafeName = regexp.MustCompile(`[^A-Za-z0-9._-]+`)
@@ -100,7 +105,7 @@ func (r *Recorder) Run(ctx context.Context, timeout time.Duration, name string, 
 	if o.Stdin != nil {
 		cmd.Stdin = o.Stdin
 	}
-	var res Result
+	res := Result{Seq: seq, Name: r.prefix + name}
 	var stdoutBuf, stderrBuf bytes.Buffer
 	outF, err := os.OpenFile(stdoutPath, os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0o644)
 	if err != nil {
@@ -119,6 +124,7 @@ func (r *Recorder) Run(ctx context.Context, timeout time.Duration, name string, 
 	start := MonoNS()
 	runErr := cmd.Run()
 	end := MonoNS()
+	res.StartNS, res.EndNS = start, end
 	outF.Close()
 	if err := os.WriteFile(stderrPath, stderrBuf.Bytes(), 0o644); err != nil {
 		res.Err = errors.Join(res.Err, fmt.Errorf("cmdlog: %w", err))
