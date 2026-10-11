@@ -25,6 +25,22 @@ jobs:
       - name: make ci-unit
         run: make ci-unit
 
+  ci-checkers:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: "1.26.9"
+          cache: false
+      # Builds the Elle oracle image (clojure base by digest, elle-cli by
+      # commit; Clojars/Maven Central dependencies) and runs the K2 corpus.
+      - name: make ci-checkers
+        run: make ci-checkers
+
   ci-cluster-smoke:
     runs-on: ubuntu-24.04
     timeout-minutes: 120
