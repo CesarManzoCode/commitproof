@@ -1,0 +1,84 @@
+[
+  {
+    "criterion": "K3.1",
+    "sabotage": "point the k3-f1a run record at the K3.3 F1a heal-sabotage run (hashes kept consistent)",
+    "failed": [
+      "K3.1"
+    ],
+    "failed_only_target": true,
+    "target_problems": [
+      "k3-f1a: run built with sabotage [cp_sabotage_heal_f1a]",
+      "k3-f1a: runner reports sabotage [cp_sabotage_heal_f1a]",
+      "k3-f1a: run-end status \"invalid\" (fault f0 (F1a) not-healed: heal predicate did not hold within 30s)",
+      "k3-f1a: fault f0 (F1a) not-healed",
+      "k3-f1a: no final reads",
+      "F1a: fault f0 phases [inject confirmed heal not-healed]",
+      "F1a: 0 complete applications in k3-f1a, planned 3, want ≥ 3"
+    ]
+  },
+  {
+    "criterion": "K3.2",
+    "sabotage": "point the F2a inject-sabotage record at the K3.1 F2a run (hashes kept consistent)",
+    "failed": [
+      "K3.2"
+    ],
+    "failed_only_target": true,
+    "target_problems": [
+      "k3-sab-inject-f2a: manifest sabotage [], want [cp_sabotage_inject_f2a]",
+      "k3-sab-inject-f2a: runner sabotage [], want [cp_sabotage_inject_f2a]",
+      "k3-sab-inject-f2a: run-end status \"complete\", want invalid",
+      "k3-sab-inject-f2a: no F2a fault ended not-applied",
+      "k3-sabcheck-inject-f2a checked evidence/K3/runs/20261011T184121Z-k3-f2a-1-real-f3b8f225, not evidence/K3/runs/20261011T180945Z-k3-f2a-1-real-f3b8f225",
+      "k3-sabcheck-inject-f2a: verdict INVALID seal 59ae696027a1b7cfe16d21bda9456be0d619887deb69a1f377379c7986611914"
+    ]
+  },
+  {
+    "criterion": "K3.3",
+    "sabotage": "point the F3a heal-sabotage record at the K3.1 F3a run (hashes kept consistent)",
+    "failed": [
+      "K3.3"
+    ],
+    "failed_only_target": true,
+    "target_problems": [
+      "k3-sab-heal-f3a: manifest sabotage [], want [cp_sabotage_heal_f3a]",
+      "k3-sab-heal-f3a: runner sabotage [], want [cp_sabotage_heal_f3a]",
+      "k3-sab-heal-f3a: run-end status \"complete\", want invalid",
+      "k3-sab-heal-f3a: no F3a fault ended not-healed",
+      "k3-sabcheck-heal-f3a checked evidence/K3/runs/20261011T185951Z-k3-f3a-1-real-ea0b08a2, not evidence/K3/runs/20261011T182122Z-k3-f3a-1-real-ea0b08a2",
+      "k3-sabcheck-heal-f3a: verdict INVALID seal 36f00267de6c2804aaad100417e6dcc64a85e029cf87ba9f5410172665363580"
+    ]
+  },
+  {
+    "criterion": "K3.4",
+    "sabotage": "in the F7 run, change the recorded stdout sha256 of the first confirmation probe and re-seal consistently (checks.json and its record follow)",
+    "failed": [
+      "K3.4"
+    ],
+    "failed_only_target": true,
+    "target_problems": [
+      "k3-f7 fault f0 confirmed: probe runner-f0-confirm-rtt#7: stdout sha256 d6a9a5a1bbce1163bc7f43670c95e83788e8ae377e9ce2b73d65c5176b77810f, evidence says d6a9a5a1bbce1163bc7f43670c95e83788e8ae377e9ce2b73d65c5176b77810f, record 0000000000000000000000000000000000000000000000000000000000000000"
+    ]
+  },
+  {
+    "criterion": "K3.5",
+    "sabotage": "delete the checks.json of the F7 run",
+    "failed": [
+      "K3.5"
+    ],
+    "failed_only_target": true,
+    "target_problems": [
+      "k3-check-f7: checks.json: open /tmp/cpgate-K3.5-2200231388/evidence/K3/runs/20261011T183249Z-k3-f7-1-real-fc484e0f.checks.json: no such file or directory"
+    ]
+  },
+  {
+    "criterion": "K3.6",
+    "sabotage": "replace the recorded exit code of `make ci-unit ci-checkers ci-cluster-smoke ci-nemesis-smoke` with 1",
+    "failed": [
+      "K3.6"
+    ],
+    "failed_only_target": true,
+    "target_problems": [
+      "ci exited 1"
+    ]
+  }
+]

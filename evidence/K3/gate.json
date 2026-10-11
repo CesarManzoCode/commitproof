@@ -1,0 +1,121 @@
+{
+  "sprint": "K3",
+  "contract_version": "1.0.4",
+  "evidence": "evidence/K3",
+  "result": "PASS",
+  "criteria": [
+    {
+      "id": "K3.1",
+      "name": "Each fault confirmed",
+      "result": "PASS",
+      "evidence": "runs/",
+      "sha256": "",
+      "problems": [],
+      "details": [
+        "F1a: 3 applications confirmed and healed in 20261011T180033Z-k3-f1a-1-real-54451565",
+        "F1b: 3 applications confirmed and healed in 20261011T180252Z-k3-f1b-1-real-9ac4fcb0",
+        "F1c: 3 applications confirmed and healed in 20261011T180511Z-k3-f1c-1-real-d27a6b82",
+        "F1d: 3 applications confirmed and healed in 20261011T180728Z-k3-f1d-1-real-4a8c61a9",
+        "F2a: 3 applications confirmed and healed in 20261011T180945Z-k3-f2a-1-real-f3b8f225",
+        "F2b: 3 applications confirmed and healed in 20261011T181206Z-k3-f2b-1-real-fd00f96f",
+        "F2c: 3 applications confirmed and healed in 20261011T181425Z-k3-f2c-1-real-17d5a8f6",
+        "F2d: 3 applications confirmed and healed in 20261011T181646Z-k3-f2d-1-real-aef4ff11",
+        "F2e: 3 applications confirmed and healed in 20261011T181904Z-k3-f2e-1-real-d9ee78e2",
+        "F3a: 3 applications confirmed and healed in 20261011T182122Z-k3-f3a-1-real-ea0b08a2",
+        "F3b: 3 applications confirmed and healed in 20261011T182338Z-k3-f3b-1-real-a17ba17c",
+        "F4a: 3 applications confirmed and healed in 20261011T182556Z-k3-f4a-1-real-c43147f1",
+        "F5a: 1 applications confirmed and healed in 20261011T182813Z-k3-f5-1-real-021a2161",
+        "F5b: 1 applications confirmed and healed in 20261011T182813Z-k3-f5-1-real-021a2161",
+        "F6: 2 applications confirmed and healed in 20261011T183032Z-k3-f6-1-real-2a13a090",
+        "F7: 3 applications confirmed and healed in 20261011T183249Z-k3-f7-1-real-fc484e0f",
+        "composite [F5a F3a F2a]: injected and confirmed in order, healed in reverse (20261011T183506Z-k3-composite-1-real-1c2d4fbc)"
+      ]
+    },
+    {
+      "id": "K3.2",
+      "name": "Fail-closed",
+      "result": "PASS",
+      "evidence": "runs/",
+      "sha256": "",
+      "problems": [],
+      "details": [
+        "F1a: injector no-op → not-applied, INVALID, exit 2",
+        "F1b: injector no-op → not-applied, INVALID, exit 2",
+        "F1c: injector no-op → not-applied, INVALID, exit 2",
+        "F1d: injector no-op → not-applied, INVALID, exit 2",
+        "F2a: injector no-op → not-applied, INVALID, exit 2",
+        "F2b: injector no-op → not-applied, INVALID, exit 2",
+        "F2c: injector no-op → not-applied, INVALID, exit 2",
+        "F2d: injector no-op → not-applied, INVALID, exit 2",
+        "F2e: injector no-op → not-applied, INVALID, exit 2",
+        "F3a: injector no-op → not-applied, INVALID, exit 2",
+        "F3b: injector no-op → not-applied, INVALID, exit 2",
+        "F4a: injector no-op → not-applied, INVALID, exit 2",
+        "F5a: injector no-op → not-applied, INVALID, exit 2",
+        "F5b: injector no-op → not-applied, INVALID, exit 2",
+        "F6: injector no-op → not-applied, INVALID, exit 2",
+        "F7: injector no-op → not-applied, INVALID, exit 2"
+      ]
+    },
+    {
+      "id": "K3.3",
+      "name": "Heal fail-closed",
+      "result": "PASS",
+      "evidence": "runs/",
+      "sha256": "",
+      "problems": [],
+      "details": [
+        "F1a: heal no-op → not-healed, INVALID, exit 2",
+        "F3a: heal no-op → not-healed, INVALID, exit 2"
+      ]
+    },
+    {
+      "id": "K3.4",
+      "name": "Observability of confirmation",
+      "result": "PASS",
+      "evidence": "runs/",
+      "sha256": "",
+      "problems": [],
+      "details": [
+        "46 confirmation events, 756 probe/command entries verified against commands.jsonl"
+      ]
+    },
+    {
+      "id": "K3.5",
+      "name": "Checkers on real runs",
+      "result": "PASS",
+      "evidence": "runs/",
+      "sha256": "",
+      "problems": [],
+      "details": [
+        "k3-f1a: PASS []",
+        "k3-f1b: PASS []",
+        "k3-f1c: PASS []",
+        "k3-f1d: PASS []",
+        "k3-f2a: PASS []",
+        "k3-f2b: PASS []",
+        "k3-f2c: PASS []",
+        "k3-f2d: PASS []",
+        "k3-f2e: PASS []",
+        "k3-f3a: PASS []",
+        "k3-f3b: PASS []",
+        "k3-f4a: PASS []",
+        "k3-f5: PASS []",
+        "k3-f6: PASS []",
+        "k3-f7: PASS []",
+        "k3-composite: PASS []"
+      ]
+    },
+    {
+      "id": "K3.6",
+      "name": "CI-equivalent",
+      "result": "PASS",
+      "evidence": "commands.jsonl",
+      "sha256": "7be7d485f4bd1266bc179d15898188797d8c699d5079e0370ed9250f868d0355",
+      "problems": [],
+      "details": [
+        "argv [\"make\" \"ci-unit\" \"ci-checkers\" \"ci-cluster-smoke\" \"ci-nemesis-smoke\"] exit 0"
+      ]
+    }
+  ]
+}

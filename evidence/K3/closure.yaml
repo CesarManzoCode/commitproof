@@ -1,0 +1,72 @@
+sprint: K3
+status: DONE
+contract_version: "1.0.4"
+commits:
+  - {sha: "70cbe43", message: "docs(contract): slowfs stage FROM the local upstream-derived tag; F5a and nem-runner from the runner (ADR-0022, ADR-0023)"}
+  - {sha: "357ddbc", message: "fix(params): implement contract 1.0.4; pin the K2 corpus's contract version"}
+  - {sha: "a3bbce1", message: "fix(workload): do not use a connection that a failed rollback dropped"}  # harness defect found by the first F2a run
+  - {sha: "382c2a3", message: "build: go-fuse v2.12.0 (slowfs) and klauspost/compress (zstd run archives)"}
+  - {sha: "cbda782", message: "feat(slowfs): FUSE slow-disk pass-through, node launcher and node probes"}
+  - {sha: "e487df3", message: "feat(plan): fault steps, composites and the K3 campaigns"}
+  - {sha: "111d2e6", message: "feat(nemesis): helper image with iptables, iproute2 and the cpnet probe tool"}
+  - {sha: "9773722", message: "feat(nemesis): fault catalog F1a–F7 with confirmation and heal predicates"}
+  - {sha: "942a58b", message: "feat(runner): nemesis alongside the workload, fail-closed abort"}
+  - {sha: "269decd", message: "feat(cluster): slowfs nodes, nemesis helpers and sabotage runner images"}
+  - {sha: "143e225", message: "feat(gate): cpgate K3 and its negative controls"}
+  - {sha: "ef6428b", message: "test(independence): nemesis sabotage tags; no sabotage in product binaries"}
+  - {sha: "b2e3354", message: "ci: make ci-nemesis-smoke, sabotage fixtures and the K3 evidence script"}
+  - {sha: "9f102db", message: "docs(limitations): LIM-05, LIM-11 and LIM-27–LIM-29 (K3)"}
+  - {sha: "b686376", message: "fix(slowfs): close-on-exec on /dev/fuse; kill and reap the namespace before unmounting"}  # harness defect: teardown deadlock
+  - {sha: "090a366", message: "fix(nemesis): the leader is the self-reported leader of the highest decided rule"}  # harness defect found by evidence attempt 1; evidence produced on this commit
+  - {sha: "b653ee5", message: "build(images): lock the K3 images of the final evidence run"}
+  - {sha: "(the commit that adds this file)", message: "test(gate): K3 evidence — gate PASS with negative controls"}
+gate:
+  command: "cpgate K3 --evidence evidence/K3 --negative-controls"
+  exit_code: 0   # record cpgate-k3 in evidence/K3/commands.jsonl, stdout sha256 373a90be85fbd12448d9d5754a9b4f35bfa4fea7f4fbfaa91b5729749dfafcbe; gate.json sha256 5cdddbf141572c5a8a18d95fa1415d6060477e12f7851cd71942770e0f044704
+  criteria:   # commands.jsonl sha256 below is the file as cpgate read it, before the cpgate-k3 record was appended; runs are runs/<id>.tar.zst (seal roots in NOTES §7)
+    - {id: "K3.1", result: PASS, evidence: "evidence/K3/commands.jsonl (k3-run-*) + runs/*.tar.zst", sha256: "7be7d485f4bd1266bc179d15898188797d8c699d5079e0370ed9250f868d0355"}  # 16 runs: F1a–F1d, F2a–F2e, F3a, F3b, F4a, F7 ×3, F6 ×2, F5a+F5b, composite F5a→F3a→F2a
+    - {id: "K3.2", result: PASS, evidence: "evidence/K3/commands.jsonl (k3-sab-inject-*, k3-sabcheck-inject-*) + runs/*.tar.zst", sha256: "7be7d485f4bd1266bc179d15898188797d8c699d5079e0370ed9250f868d0355"}  # 16 kinds: not-applied, INVALID, exit 2
+    - {id: "K3.3", result: PASS, evidence: "evidence/K3/commands.jsonl (k3-sab-heal-f1a, k3-sab-heal-f3a) + runs/*.tar.zst", sha256: "7be7d485f4bd1266bc179d15898188797d8c699d5079e0370ed9250f868d0355"}  # not-healed, INVALID, exit 2
+    - {id: "K3.4", result: PASS, evidence: "evidence/K3/runs/*.tar.zst (history.jsonl evidence vs commands.jsonl of each K3.1 run)", sha256: "5cdddbf141572c5a8a18d95fa1415d6060477e12f7851cd71942770e0f044704"}  # sha256 of gate.json; 46 confirmation events, 756 probe/command entries verified
+    - {id: "K3.5", result: PASS, evidence: "evidence/K3/runs/*.checks.json (k3-check-*)", sha256: "bf74735967ce74305d44eaa811fbc6512daf732c51494f8cddc4c08eebd565b4"}  # sha256 of the F7 run's checks.json (20261011T183249Z-k3-f7-…), equal to k3-check-f7's checks_sha256; all 16 verdicts PASS
+    - {id: "K3.6", result: PASS, evidence: "evidence/K3/commands.jsonl (ci)", sha256: "7be7d485f4bd1266bc179d15898188797d8c699d5079e0370ed9250f868d0355"}  # make ci-unit ci-checkers ci-cluster-smoke ci-nemesis-smoke, exit 0
+  negative_controls:   # evidence/K3/negative-controls.json, sha256 e1b16fcd554d1cbcf860352b03ed38d11981d6c02e34e3cc8e68a974d9167f96
+    - {criterion: "K3.1", sabotage: "point the k3-f1a run record at the K3.3 F1a heal-sabotage run (hashes kept consistent)", failed_only_target: true}
+    - {criterion: "K3.2", sabotage: "point the F2a inject-sabotage record at the K3.1 F2a run (hashes kept consistent)", failed_only_target: true}
+    - {criterion: "K3.3", sabotage: "point the F3a heal-sabotage record at the K3.1 F3a run (hashes kept consistent)", failed_only_target: true}
+    - {criterion: "K3.4", sabotage: "in the F7 run, change the recorded stdout sha256 of the first confirmation probe and re-seal consistently (checks.json and its record follow)", failed_only_target: true}
+    - {criterion: "K3.5", sabotage: "delete the checks.json of the F7 run", failed_only_target: true}
+    - {criterion: "K3.6", sabotage: "replace the recorded exit code of `make ci-unit ci-checkers ci-cluster-smoke ci-nemesis-smoke` with 1", failed_only_target: true}
+demonstrated:
+  # No claims.yaml exists yet (K7 deliverable, §17); each line cites its record and artifact (details in evidence/K3/NOTES.md).
+  - "Every fault of CONTRACT §8 (F1a, F1b, F1c, F1d, F2a–F2e, F3a, F3b, F4a, F5a, F5b, F6, F7) and the composite F5a → F3a → F2a(leader) was injected on the real baseline cluster (Multigres e3cbdbb), confirmed by predicates over raw probe outputs within P27/P28 (F5a/F5b 120 s, F6 60 s), healed and heal-confirmed: 3 applications each (F6 2, F5a/F5b 1) in 16 sealed runs, all complete (records k3-run-*; gate K3.1)."
+  - "Each confirmation and heal event carries the raw outputs of its probes and commands; 756 entries in 46 confirmation events and their heal events match their commands.jsonl records and output files (gate K3.4)."
+  - "With each injector sabotaged to a no-op (cp_sabotage_inject_<kind>, 16 kinds) and with the F1a and F3a heals sabotaged (cp_sabotage_heal_f1a/_f3a), every run ended not-applied / not-healed, INVALID, exit 2 from commitproof run and from cpcheck (records k3-sab-*, k3-sabcheck-*; gates K3.2, K3.3)."
+  - "slowfs at delay 0 kept the baseline HEALTHY (26.4–30.2 s) and the smoke checkers PASS (record slowfs-smoke-check, seal root 2653ee7f…), so F4a is used, not the F4b fallback; its overhead per 4 KiB write+fsync was about 70–83 µs (record slowfs-overhead)."
+  - "cpcheck returned PASS, all nine checkers valid, on all 16 faulted runs of the real build (records k3-check-*; gate K3.5); one run per kind, no statistical claim."
+  - "make ci-unit ci-checkers ci-cluster-smoke ci-nemesis-smoke exits 0 locally, ci-nemesis-smoke including F4a (record ci; gate K3.6); the workflow with the new job passes actionlint (record lint-workflow)."
+not_demonstrated:
+  - "Any campaign result or statistical bound about Multigres (K4, K7); the reactions in NOTES §5 and §10 are single observations from observation data, diagnosis only (ADR-0016)."
+  - "Repeatability of confirmation/heal latencies and of Multigres' reactions (one run per kind)."
+  - "Faults on profiles other than baseline; composites other than F5a → F3a → F2a; n4 re-admission after F5b (LIM-29)."
+  - "The CI workflow (new ci-nemesis-smoke job) on GitHub-hosted runners, including whether they expose /dev/fuse (requires a push by the owner; LIM-16, LIM-05)."
+findings: []   # no FAIL verdict on the real build in K3; nothing to triage
+adrs_added:
+  - "ADR-0022: The slowfs node layer: built FROM the local upstream-derived tag, launched as PID 1"
+  - "ADR-0023: Nemesis lifecycle commands from the runner: n4 created at run start, started with docker start; nem-runner started by the runner"
+deviations_from_prompt:
+  - "F5a starts n4's containers with `docker start` (created at run start with `docker compose --profile n4 create`), not `docker compose up -d`: the runner cannot run Compose without host paths in recorded argv (ADR-0023, contract 1.0.4)."
+  - "The slowfs stage is `FROM commitproof/pgctld-upstream:real` with a layer-prefix check recorded in the lock, because BuildKit cannot resolve `FROM <local image ID>` (ADR-0022, contract 1.0.4)."
+  - "K3.1's evidence includes one composite run (§8's F5a → F3a → F2a shape) and cpgate K3.1 checks its order (prompt objective: 'and composites'); the contract's K3.1 list names single faults only."
+  - "Two predicates check more than §8 states, both deterministic consequences of the fault: F1d also requires follower→leader connects to time out (the SYN-ACK is dropped); F7's heal also requires that no netem qdisc remains. F2a's hold is 0 (the death of the postmaster is the fault; its self-restart is the heal window)."
+  - "Sealed runs are committed as zstd tar archives (CONTRACT §13) and cpgate reads them natively, which adds github.com/klauspost/compress v1.20.1 to go.mod (not in the §14 table)."
+  - "ci-nemesis-smoke's pass condition (not stated by the contract): every fault confirmed and healed and no run INVALID; cpcheck's verdict is printed verbatim and a FAIL/UNKNOWN is a FINDING line, not a harness failure."
+  - "Hidden subcommands added beside §5.6's: `commitproof __probe status` (the recorded status probe) and `commitproof images sabotage-runner` (K3.2/K3.3 fixtures)."
+  - "The K2 synthetic generator now records the contract version it was generated under (1.0.3) instead of the current one, so the contract bump does not regenerate the K2 corpus referenced by seal root (commit 357ddbc); K1 and K2 gates re-pass (record k3-precondition)."
+  - "The evidence pass ran twice: attempt 1 stopped at an INVALID F2a run caused by a harness defect (leader resolution); after the fix (090a366) everything was re-run from scratch. Attempt 1's INVALID run is kept sealed in evidence/K3/attempt-1/ with its record; its other runs were discarded (NOTES §9)."
+  - "Host recovery during development: two FUSE connections of our own dead pg containers (created by a go-fuse defect, NOTES §9.3) were aborted through /sys/fs/fuse/connections/<n>/abort from a project-labelled container with every capability dropped and the fusectl directory bind-mounted — a root-equivalent action through the Docker socket (no sudo), limited to those two connections; the desktop's own FUSE connection was not touched."
+blocked: null
+pending_user_actions:
+  - "Optional: push to GitHub to run .github/workflows/ci.yml (now with a ci-nemesis-smoke job) remotely (never done by K1–K7; LIM-16)."
+  - "Optional: report go-fuse v2.12.0's direct-mount close-on-exec defect upstream (fuse/mount_linux.go returns before syscall.CloseOnExec in the DirectMount path); publication is the owner's decision (AGENTS.md §6)."
+next_sprint_ready: true
