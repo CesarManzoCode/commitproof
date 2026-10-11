@@ -2,12 +2,53 @@
 SHELL := /bin/bash
 .SHELLFLAGS := -eu -o pipefail -c
 
-# ADR-0014: any host Go >= 1.21 downloads and uses exactly go1.26.9.
+# ADR-0014 / ADR-0019: any host Go >= 1.21 downloads and uses exactly go1.26.9.
 export GOTOOLCHAIN := go1.26.9
+export CGO_ENABLED := 0
 
 EVIDENCE_K1 := evidence/K1
+BIN := bin
+PKG := github.com/CesarManzoCode/commitproof
 
-.PHONY: prereq-check
+# Source identity linked into the binaries (internal/buildinfo). Dirty means
+# uncommitted changes outside evidence/ and images.lock.json.
+CP_COMMIT := $(shell git rev-parse HEAD 2>/dev/null || echo unknown)
+CP_DIRTY := $(shell test -z "$$(git status --porcelain -- . ':(exclude)evidence' ':(exclude)images.lock.json' 2>/dev/null)" && echo false || echo true)
+LDFLAGS := -X $(PKG)/internal/buildinfo.Commit=$(CP_COMMIT) -X $(PKG)/internal/buildinfo.Dirty=$(CP_DIRTY)
+
+.PHONY: prereq-check build ci-unit ci-cluster-smoke check-dockerfile-derivation lint-workflow tidy
+
 ## prereq-check: verify docs/PREREQUISITES.md; writes evidence/K1/prereq.json; exit 3 on any FAIL
 prereq-check:
 	@scripts/prereq-check.sh $(EVIDENCE_K1)/prereq.json
+
+## build: commitproof, cpcheck, cpgate into bin/
+build:
+	go build -trimpath -ldflags "$(LDFLAGS)" -o $(BIN)/ ./cmd/commitproof ./cmd/cpcheck ./cmd/cpgate
+
+## ci-unit: gofmt, go vet, staticcheck (tools/go.mod), unit tests incl. the
+## independence (§5.3) and parameters-table (§5.7) tests
+ci-unit:
+	@test -z "$$(gofmt -l cmd internal)" || { echo "gofmt needed:"; gofmt -l cmd internal; exit 1; }
+	go vet ./...
+	go tool -modfile=tools/go.mod staticcheck ./...
+	go test -count=1 ./...
+
+## ci-cluster-smoke: build pinned images, cluster up/verify/down, 45 s smoke run, cpcheck verify-seal
+ci-cluster-smoke: build
+	scripts/ci-cluster-smoke.sh
+
+## check-dockerfile-derivation: build/Dockerfile* differ from upstream only in FROM lines (K1.3)
+## (DERIVATION_OUT=<dir> also writes the evidence copies)
+check-dockerfile-derivation:
+	go run ./internal/tools/derivcheck $(if $(DERIVATION_OUT),--out $(DERIVATION_OUT))
+
+## lint-workflow: actionlint (pinned image, CONTRACT §14) on .github/workflows
+ACTIONLINT := rhysd/actionlint:1.7.12@sha256:b1934ee5f1c509618f2508e6eb47ee0d3520686341fec936f3b79331f9315667
+lint-workflow:
+	timeout 300 docker run --rm --network none -v "$(CURDIR):/repo:ro" -w /repo $(ACTIONLINT) -verbose
+
+## tidy: go mod tidy for both modules
+tidy:
+	go mod tidy
+	cd tools && go mod tidy
