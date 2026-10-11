@@ -22,5 +22,6 @@
 | [0018](0018-runner-in-container.md) | A single runner process inside the cluster network writes the history | Accepted (K0) |
 | [0019](0019-gomod-no-redundant-toolchain-line.md) | go.mod has no `toolchain` line equal to its `go` line | Accepted (K1, contract 1.0.1) |
 | [0020](0020-base-image-digests-k1.md) | Base image digests re-resolved in K1; etcd digest locked | Accepted (K1, contract 1.0.2) |
+| [0021](0021-node-processes-share-one-uid.md) | The two processes of a node run as one user (uid 999) | Accepted (K1, contract 1.0.3) |
 
 New ADRs continue the numbering. Each ADR: Context, Decision, Alternatives rejected, Consequences, Sources.

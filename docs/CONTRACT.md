@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Contract version | **1.0.2** (K0; K1 corrections: ADR-0019, ADR-0020) |
+| Contract version | **1.0.3** (K0; K1 corrections: ADR-0019, ADR-0020, ADR-0021) |
 | Date | 2026-10-09 |
 | Owner | César Manzo (GitHub `CesarManzoCode`) |
 | System under test | Multigres, `github.com/multigres/multigres` @ `e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73` |
@@ -158,7 +158,7 @@ Common flags for all Multigres components: `--topo-global-server-addresses=etcd:
 
 Bootstrap HEALTHY predicate (used by K1.4 and by every run): (a) exactly one pooler reports itself leader of a decided rule and all of n1–n3 report that rule; (b) the rule's cohort is exactly {n1, n2, n3}; (c) a write and a read-back succeed through each of gw-z1, gw-z2, gw-z3; (d) `SELECT multigres.version()` through gw-z1 reports the pinned commit. Observation of (a)/(b) uses pooler status RPCs (§5.6, observations only).
 
-The derivation of every flag from S03 is recorded in `deploy/DERIVATION.md` (created in K1): one line per flag with its S03 file:line, or the reason for divergence. Divergences allowed: service IDs, cells, addresses, volume layout, OpenTelemetry/pprof flags removed, `--hostname` set to the service name.
+The derivation of every flag from S03 is recorded in `deploy/DERIVATION.md` (created in K1): one line per flag with its S03 file:line, or the reason for divergence. Divergences allowed: service IDs, cells, addresses, volume layout, OpenTelemetry/pprof flags removed, `--hostname` set to the service name, and the process user of multipooler (it runs as the pgctld image's postgres user, uid 999, so both processes of a node share `/data`, `/certs` and `/backups`; ADR-0021).
 
 ### 5.2 Images
 
