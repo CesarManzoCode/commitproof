@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"net"
 	"os"
 	"path/filepath"
 	"sync"
@@ -14,6 +15,7 @@ import (
 	"github.com/CesarManzoCode/commitproof/internal/canonjson"
 	"github.com/CesarManzoCode/commitproof/internal/cmdlog"
 	"github.com/CesarManzoCode/commitproof/internal/history"
+	"github.com/CesarManzoCode/commitproof/internal/nemesis"
 	"github.com/CesarManzoCode/commitproof/internal/observe"
 	"github.com/CesarManzoCode/commitproof/internal/params"
 	"github.com/CesarManzoCode/commitproof/internal/plan"
@@ -140,10 +142,19 @@ func truncate(s string, n int) string {
 	return s[:n]
 }
 
-// Run executes the plan in runDir inside the runner container and writes
-// history.jsonl, observations.jsonl and the runner's commands.jsonl records.
-// It returns the run status and, for invalid runs, the reason.
-func Run(ctx context.Context, runDir string) (string, string, error) {
+// Config is one runner execution.
+type Config struct {
+	RunDir       string
+	NemesisImage string // locked image ID of the nemesis helper (plans with faults)
+	NetPrefix    string // cpnet /24 prefix, "10.77.0"
+}
+
+// Run executes the plan in the run directory inside the runner container
+// and writes history.jsonl, observations.jsonl and the runner's
+// commands.jsonl records (nemesis commands). It returns the run status and,
+// for invalid runs, the reason.
+func Run(ctx context.Context, cfg Config) (string, string, error) {
+	runDir := cfg.RunDir
 	raw, err := os.ReadFile(filepath.Join(runDir, history.FilePlan))
 	if err != nil {
 		return StatusInvalid, "", fmt.Errorf("read plan: %w", err)
@@ -163,6 +174,12 @@ func Run(ctx context.Context, runDir string) (string, string, error) {
 		return StatusInvalid, "", fmt.Errorf("plan: %w", err)
 	}
 	clients, _ := p["clients"].([]any)
+	var steps []plan.Step
+	if nv, ok := p["nemesis"].([]any); ok && len(nv) > 0 {
+		if steps, err = plan.ParseSteps(nv); err != nil {
+			return StatusInvalid, "", fmt.Errorf("plan: %w", err)
+		}
+	}
 
 	origin := time.Now()
 	monoOrigin := cmdlog.MonoNS()
@@ -186,9 +203,13 @@ func Run(ctx context.Context, runDir string) (string, string, error) {
 		}
 		return status, reason, nil
 	}
+	sab := []any{}
+	for _, s := range nemesis.ActiveSabotage() {
+		sab = append(sab, "cp_sabotage_"+s)
+	}
 	rec.marker("run-start", map[string]any{
 		"mono_origin_ns": monoOrigin, "commitproof_commit": buildinfo.Commit, "commitproof_dirty": buildinfo.Dirty,
-		"contract_version": params.ContractVersion,
+		"contract_version": params.ContractVersion, "sabotage": sab,
 	})
 
 	// The cluster must be HEALTHY at start (CONTRACT §12.1).
@@ -223,12 +244,21 @@ func Run(ctx context.Context, runDir string) (string, string, error) {
 		return finish(StatusInvalid, "setup transaction did not commit")
 	}
 
-	// Observation pollers (P24), one per node.
+	// Observation pollers (P24), one per node; n4's starts when F5a starts
+	// the node.
 	obsCtx, stopObs := context.WithCancel(ctx)
 	var obsWG sync.WaitGroup
-	for _, n := range Nodes {
+	var pollMu sync.Mutex
+	polled := map[string]bool{}
+	startPoller := func(node string) {
+		pollMu.Lock()
+		defer pollMu.Unlock()
+		if polled[node] {
+			return
+		}
+		polled[node] = true
 		obsWG.Add(1)
-		go func(node string) {
+		go func() {
 			defer obsWG.Done()
 			poc := observe.NewClient()
 			defer poc.Close()
@@ -243,7 +273,64 @@ func Run(ctx context.Context, runDir string) (string, string, error) {
 				case <-t.C:
 				}
 			}
-		}(n)
+		}()
+	}
+	for _, n := range Nodes {
+		startPoller(n)
+	}
+	stopAll := func() {
+		stopObs()
+		obsWG.Wait()
+	}
+
+	// Nemesis (CONTRACT §8): commands recorded in the run's commands.jsonl
+	// with the runner- prefix, events in history.jsonl.
+	var nem *nemesis.Env
+	if len(steps) > 0 {
+		if cfg.NemesisImage == "" || cfg.NetPrefix == "" {
+			stopAll()
+			return finish(StatusInvalid, "runner: a plan with faults needs --nemesis-image and --net-prefix")
+		}
+		cr, err := cmdlog.New(filepath.Join(runDir, history.FileCommands), runDir, filepath.Join(runDir, history.DirLogs, "cmd"), "runner-")
+		if err != nil {
+			stopAll()
+			return finish(StatusInvalid, "runner: "+err.Error())
+		}
+		exe, err := os.Executable()
+		if err != nil {
+			stopAll()
+			return finish(StatusInvalid, "runner: "+err.Error())
+		}
+		nem = &nemesis.Env{Rec: cr, Prefix: cfg.NetPrefix, Exe: exe, NemImage: cfg.NemesisImage,
+			Emit: func(f map[string]any) error {
+				_, _, err := hw.Append(map[string]any{"type": history.TypeNemesis, "fault": f})
+				return err
+			},
+			Marker:      rec.marker,
+			NodeStarted: startPoller,
+		}
+		// Peers probe the runner's namespace on this port (F1).
+		ln, err := net.Listen("tcp", fmt.Sprintf(":%d", nemesis.RunnerProbePort))
+		if err != nil {
+			stopAll()
+			return finish(StatusInvalid, "runner probe listener: "+err.Error())
+		}
+		defer ln.Close()
+		go func() {
+			for {
+				c, err := ln.Accept()
+				if err != nil {
+					return
+				}
+				c.Close()
+			}
+		}()
+		if err := nem.StartHelper(ctx); err != nil {
+			nem.StopHelper(context.Background())
+			stopAll()
+			return finish(StatusInvalid, "nemesis helper: "+err.Error())
+		}
+		defer nem.StopHelper(context.Background())
 	}
 
 	// Workload (CONTRACT §7, P02–P04).
@@ -251,7 +338,22 @@ func Run(ctx context.Context, runDir string) (string, string, error) {
 	opTimeout := time.Duration(timeoutMS) * time.Millisecond
 	start := time.Now()
 	deadline := start.Add(time.Duration(durMS) * time.Millisecond)
-	rec.marker("workload-start", map[string]any{"duration_ms": durMS, "pacing_ms": paceMS})
+	rec.marker("workload-start", map[string]any{"duration_ms": durMS, "pacing_ms": paceMS, "nemesis_steps": int64(len(steps))})
+	// A fault not-applied or not-healed aborts the workload (CONTRACT §8).
+	wctx, abort := context.WithCancel(ctx)
+	defer abort()
+	nemDone := make(chan nemesis.Outcome, 1)
+	if nem != nil {
+		go func() {
+			out := nem.Run(ctx, steps, start)
+			if !out.OK {
+				abort()
+			}
+			nemDone <- out
+		}()
+	} else {
+		nemDone <- nemesis.Outcome{OK: true}
+	}
 	var wg sync.WaitGroup
 	var internalErr atomic.Value
 	for _, cv := range clients {
@@ -259,7 +361,7 @@ func Run(ctx context.Context, runDir string) (string, string, error) {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			if err := runClient(c, rec, start, deadline, pacing, opTimeout); err != nil {
+			if err := runClient(wctx, c, rec, start, deadline, pacing, opTimeout); err != nil {
 				internalErr.Store(err.Error())
 			}
 		}()
@@ -271,10 +373,19 @@ func Run(ctx context.Context, runDir string) (string, string, error) {
 	case <-time.After(time.Until(deadline) + opTimeout + 5*time.Second):
 		rec.obs(map[string]any{"src": "runner", "event": "clients-overran", "note": "open ops closed as info"})
 	}
-	rec.marker("workload-end", map[string]any{"open_ops_closed": rec.closeOpen()})
+	rec.marker("workload-end", map[string]any{"open_ops_closed": rec.closeOpen(), "aborted": wctx.Err() != nil})
+	// The nemesis may still be healing after the workload deadline;
+	// recovery (P06) starts from the final heal.
+	nout := <-nemDone
+	if nem != nil {
+		rec.marker("nemesis-end", map[string]any{"ok": nout.OK, "reason": nout.Reason, "faults_confirmed": int64(nout.Faults)})
+	}
+	if !nout.OK {
+		stopAll()
+		return finish(StatusInvalid, nout.Reason)
+	}
 	if e, ok := internalErr.Load().(string); ok {
-		stopObs()
-		obsWG.Wait()
+		stopAll()
 		return finish(StatusInvalid, "runner internal error: "+e)
 	}
 
@@ -286,8 +397,7 @@ func Run(ctx context.Context, runDir string) (string, string, error) {
 	rec.marker("recovery-end", map[string]any{"recovered": boolsAny(recovered)})
 	for _, ok := range recovered {
 		if !ok {
-			stopObs()
-			obsWG.Wait()
+			stopAll()
 			return finish(StatusInvalid, "recovery deadline P06 exceeded")
 		}
 	}
@@ -300,8 +410,7 @@ func Run(ctx context.Context, runDir string) (string, string, error) {
 		return finalReads(rec, g, opTimeout)
 	})
 	rec.marker("final-reads-end", map[string]any{"stable": boolsAny(stable)})
-	stopObs()
-	obsWG.Wait()
+	stopAll()
 	for _, ok := range stable {
 		if !ok {
 			return finish(StatusInvalid, "final reads not stable within P08")
@@ -341,7 +450,7 @@ func parallel(n int, f func(i int) bool) []bool {
 // runClient issues one client's planned operations, closed loop (P03), until
 // the workload deadline. Operations started before the deadline run to
 // completion (bounded by P01).
-func runClient(c map[string]any, rec *recorder, start, deadline time.Time, pacing, opTimeout time.Duration) error {
+func runClient(wctx context.Context, c map[string]any, rec *recorder, start, deadline time.Time, pacing, opTimeout time.Duration) error {
 	ci, err := workload.Int(c["client"])
 	if err != nil {
 		return fmt.Errorf("plan client: %w", err)
@@ -362,7 +471,7 @@ func runClient(c map[string]any, rec *recorder, start, deadline time.Time, pacin
 			time.Sleep(d)
 		}
 		begun := time.Now()
-		if !begun.Before(deadline) {
+		if !begun.Before(deadline) || wctx.Err() != nil {
 			return nil
 		}
 		next = begun.Add(pacing)

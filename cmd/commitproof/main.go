@@ -14,6 +14,8 @@ import (
 	"os"
 	"os/signal"
 	"strconv"
+	"strings"
+	"sync"
 	"syscall"
 
 	"github.com/CesarManzoCode/commitproof/internal/buildinfo"
@@ -22,6 +24,8 @@ import (
 	"github.com/CesarManzoCode/commitproof/internal/cmdlog"
 	"github.com/CesarManzoCode/commitproof/internal/host"
 	"github.com/CesarManzoCode/commitproof/internal/images"
+	"github.com/CesarManzoCode/commitproof/internal/nemesis"
+	"github.com/CesarManzoCode/commitproof/internal/observe"
 	"github.com/CesarManzoCode/commitproof/internal/plan"
 	"github.com/CesarManzoCode/commitproof/internal/runner"
 )
@@ -79,8 +83,11 @@ func dispatch(ctx context.Context, args []string) int {
 		return initCmd(args[1:])
 	case "__memsample":
 		return memSampleCmd(ctx, args[1:])
+	case "__probe":
+		return probeCmd(ctx, args[1:])
 	case "version", "--version":
-		return summary(map[string]any{"command": "version", "commit": buildinfo.Commit, "dirty": buildinfo.Dirty}, 0)
+		return summary(map[string]any{"command": "version", "commit": buildinfo.Commit, "dirty": buildinfo.Dirty,
+			"sabotage": strsAny(nemesis.ActiveSabotage())}, 0)
 	}
 	return usageErr("commitproof", "unknown command "+args[0])
 }
@@ -144,6 +151,19 @@ func imagesCmd(ctx context.Context, args []string) int {
 		}
 		return summary(map[string]any{"command": cmd, "no_cache": *noCache, "lock": images.LockFile,
 			"lock_sha256": hex.EncodeToString(sum[:]), "images": ids}, 0)
+	case "sabotage-runner":
+		// Hidden (K3.2, K3.3): a binary built with nemesis sabotage tags
+		// builds the runner image carrying the same tags.
+		tags := nemesis.ActiveSabotage()
+		if len(tags) == 0 {
+			return summary(map[string]any{"command": cmd, "error": "this binary has no cp_sabotage_* tag"}, 3)
+		}
+		id, err := b.BuildSabotageRunner(ctx, tags)
+		if err != nil {
+			return summary(map[string]any{"command": cmd, "error": err.Error()}, 2)
+		}
+		return summary(map[string]any{"command": cmd, "image": "commitproof/runner:" + images.RunnerTag(tags), "id": id,
+			"sabotage": strsAny(tags)}, 0)
 	case "verify":
 		mm, _, err := b.Verify(ctx)
 		if err != nil {
@@ -277,6 +297,8 @@ func runnerCmd(ctx context.Context, args []string) int {
 	fs := flag.NewFlagSet("__runner "+args[0], flag.ContinueOnError)
 	deadlineMS := fs.Int64("deadline-ms", 0, "HEALTHY deadline")
 	runDir := fs.String("run-dir", "", "run directory")
+	nemImage := fs.String("nemesis-image", "", "image ID of the nemesis helper (nem-runner)")
+	netPrefix := fs.String("net-prefix", "", "cpnet /24 prefix (a.b.c)")
 	if err := fs.Parse(args[1:]); err != nil {
 		return usageErr("__runner", err.Error())
 	}
@@ -297,7 +319,7 @@ func runnerCmd(ctx context.Context, args []string) int {
 		if *runDir == "" {
 			return usageErr("__runner run", "--run-dir is required")
 		}
-		status, reason, err := runner.Run(ctx, *runDir)
+		status, reason, err := runner.Run(ctx, runner.Config{RunDir: *runDir, NemesisImage: *nemImage, NetPrefix: *netPrefix})
 		m := map[string]any{"command": "runner run", "status": status, "reason": reason}
 		if err != nil {
 			m["error"] = err.Error()
@@ -309,6 +331,41 @@ func runnerCmd(ctx context.Context, args []string) int {
 		return summary(m, 0)
 	}
 	return usageErr("__runner", "unknown runner subcommand "+args[0])
+}
+
+func strsAny(ss []string) []any {
+	out := make([]any, len(ss))
+	for i, s := range ss {
+		out[i] = s
+	}
+	return out
+}
+
+// probeCmd is the runner's status probe (inside the runner container): the
+// Status RPC of each listed pooler, printed as the raw probe output the
+// nemesis records (CONTRACT §8 role resolution and F6/F5 predicates).
+func probeCmd(ctx context.Context, args []string) int {
+	if len(args) == 0 || args[0] != "status" {
+		return usageErr("__probe", "usage: __probe status --nodes n1,n2 [--timeout-ms N]")
+	}
+	fs := flag.NewFlagSet("__probe status", flag.ContinueOnError)
+	nodes := fs.String("nodes", "", "comma-separated nodes")
+	timeoutMS := fs.Int64("timeout-ms", 3000, "per-RPC timeout")
+	if err := fs.Parse(args[1:]); err != nil || *nodes == "" {
+		return usageErr("__probe", "--nodes is required")
+	}
+	list := strings.Split(*nodes, ",")
+	sts := make([]any, len(list))
+	var wg sync.WaitGroup
+	for i, n := range list {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			sts[i] = observe.StatusOnce(ctx, n, msDuration(*timeoutMS)).Map()
+		}()
+	}
+	wg.Wait()
+	return summary(map[string]any{"command": "probe status", "statuses": sts}, 0)
 }
 
 type multiFlag []string

@@ -198,3 +198,11 @@ func Consensus(statuses []PoolerStatus, cohort []string) (*Rule, string, string)
 	}
 	return r, "", ""
 }
+
+// StatusOnce calls Status on node over a fresh connection and closes it;
+// safe for concurrent use (the runner's status probe, CONTRACT §8).
+func StatusOnce(ctx context.Context, node string, timeout time.Duration) PoolerStatus {
+	c := NewClient()
+	defer c.Close()
+	return c.Status(ctx, node, timeout)
+}
