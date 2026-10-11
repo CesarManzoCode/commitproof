@@ -6,4 +6,6 @@ package checker
 const sabotagePorcupineCAS = true
 
 // cpSabotageActive_porcupine_cas marks the binary as sabotaged (see sabotage.go).
+//
+//lint:ignore U1000 marker symbol, looked for by the independence test
 var cpSabotageActive_porcupine_cas = registerSabotage("porcupine_cas")

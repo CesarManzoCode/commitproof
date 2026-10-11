@@ -6,4 +6,6 @@ package checker
 const sabotageLostWriteDiff = true
 
 // cpSabotageActive_lost_write_diff marks the binary as sabotaged (see sabotage.go).
+//
+//lint:ignore U1000 marker symbol, looked for by the independence test
 var cpSabotageActive_lost_write_diff = registerSabotage("lost_write_diff")

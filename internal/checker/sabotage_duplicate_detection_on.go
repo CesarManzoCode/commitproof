@@ -6,4 +6,6 @@ package checker
 const sabotageDuplicateDetection = true
 
 // cpSabotageActive_duplicate_detection marks the binary as sabotaged (see sabotage.go).
+//
+//lint:ignore U1000 marker symbol, looked for by the independence test
 var cpSabotageActive_duplicate_detection = registerSabotage("duplicate_detection")

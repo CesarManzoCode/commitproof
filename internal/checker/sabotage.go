@@ -17,6 +17,8 @@ import "sort"
 var sabotageRules = []string{}
 
 // registerSabotage records an active sabotage; called only from _on files.
+//
+//lint:ignore U1000 called only by the sabotage builds (cp_sabotage_* tags)
 func registerSabotage(rule string) string {
 	sabotageRules = append(sabotageRules, rule)
 	sort.Strings(sabotageRules)

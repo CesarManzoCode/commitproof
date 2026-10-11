@@ -6,4 +6,6 @@ package checker
 const sabotageCDCPhantom = true
 
 // cpSabotageActive_cdc_phantom marks the binary as sabotaged (see sabotage.go).
+//
+//lint:ignore U1000 marker symbol, looked for by the independence test
 var cpSabotageActive_cdc_phantom = registerSabotage("cdc_phantom")

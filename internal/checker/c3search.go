@@ -42,11 +42,6 @@ const (
 	stRW2    uint8 = 16 // at least two rw
 )
 
-type step struct {
-	to    int
-	label uint8
-}
-
 // c3Cycles searches every variant and shape, recording one witness per shape
 // per SCC. It returns a non-empty reason if some SCC exhausted its budget.
 func c3Cycles(g *c3graph, note func(string, []int64, string, ...any), stats map[string]any) string {

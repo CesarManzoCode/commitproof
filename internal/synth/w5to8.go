@@ -189,12 +189,6 @@ func w5Run(id, label string, failover bool, plant string) *Run {
 
 // --- W6 notify ---------------------------------------------------------
 
-type session struct {
-	client, conn int64
-	listenCmp    int64
-	end          int64 // Never if alive at the end
-}
-
 func w6Run(id, label, plant string) *Run {
 	r := NewRun(id, "w6", label)
 	r.Workloads = []string{"W6"}
