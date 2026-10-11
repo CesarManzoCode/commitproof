@@ -11,7 +11,7 @@
     "tool": "docker buildx build"
   },
   "commitproof": {
-    "commit": "a701897049cb9729cf1e1a5883a76c8104487984",
+    "commit": "5af2749449bbddca85c560f93d8d654b8289c743",
     "dirty": false
   },
   "contract_version": "1.0.3",
@@ -45,7 +45,7 @@
         "GIT_COMMIT": "e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73"
       },
       "dockerfile": "build/Dockerfile",
-      "id": "sha256:2c15309598402e779bd2f20158b236c48b2604958c8f25c13d5b925ca2dadaf3",
+      "id": "sha256:6b2a6b1c547be5a1139a0bacb817dfc84f8cd49aba4bf584d5585ed25c6841cb",
       "pgbackrest_version": "pgBackRest 2.59.3"
     },
     "commitproof/pgctld:real": {
@@ -58,19 +58,19 @@
         "GIT_COMMIT": "e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73"
       },
       "dockerfile": "build/Dockerfile.pgctld",
-      "id": "sha256:fd66cb52e418aeac73a362a53f111a3ca22ec33d24153a45c250439b0e19a2db",
+      "id": "sha256:c5c53fbe093cb448373460fbe1f7439660c3238408a644f6c7d91c990d35d88f",
       "pgbackrest_version": "pgBackRest 2.59.3"
     },
     "commitproof/runner:real": {
       "binaries": {
-        "/usr/local/bin/commitproof": "210817136a5e7079333e1a125fb11d89ac9773e3451b1670ef418da11a6ef174"
+        "/usr/local/bin/commitproof": "3387261412cfa61de874bb648a6f14eb83d4fee91dcad215e339906889600993"
       },
       "build_args": {
-        "CP_COMMIT": "a701897049cb9729cf1e1a5883a76c8104487984",
+        "CP_COMMIT": "5af2749449bbddca85c560f93d8d654b8289c743",
         "CP_DIRTY": "false"
       },
       "dockerfile": "build/Dockerfile.runner",
-      "id": "sha256:17f4e36204cb4c6f684f0444f9b08a581232ea08834d0074d35edf0af9203ae2"
+      "id": "sha256:ef1cb544c0658b65216dc4941f6c53d4b1d51012813e9df96348d2fcbd4a0f77"
     }
   },
   "lock_version": 1,
