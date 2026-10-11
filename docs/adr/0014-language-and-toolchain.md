@@ -1,6 +1,6 @@
 # ADR-0014 — English documentation; Go 1.26.9 via GOTOOLCHAIN
 
-Status: Accepted (K0, contract 1.0.0)
+Status: Accepted (K0, contract 1.0.0); amended by ADR-0019 (`go.mod` carries no `toolchain` line)
 
 ## Context
 

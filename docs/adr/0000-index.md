@@ -15,10 +15,11 @@
 | [0011](0011-bullet-coverage.md) | Honest coverage of job bullets 1, 3, 6 and 8 | Accepted (K0) |
 | [0012](0012-license.md) | License: Apache-2.0 | Accepted (K0) |
 | [0013](0013-name.md) | Final name: CommitProof | Accepted (K0) |
-| [0014](0014-language-and-toolchain.md) | English documentation; Go 1.26.9 via GOTOOLCHAIN | Accepted (K0) |
+| [0014](0014-language-and-toolchain.md) | English documentation; Go 1.26.9 via GOTOOLCHAIN | Accepted (K0); amended by ADR-0019 |
 | [0015](0015-historical-control.md) | Historical control H1 (issue #778) in addition to mutants | Accepted (K0) |
 | [0016](0016-black-box-verdicts.md) | Verdicts are black-box; system internals only confirm faults and explain | Accepted (K0) |
 | [0017](0017-independent-gate.md) | Independent gate binary with evidence-level negative controls | Accepted (K0) |
 | [0018](0018-runner-in-container.md) | A single runner process inside the cluster network writes the history | Accepted (K0) |
+| [0019](0019-gomod-no-redundant-toolchain-line.md) | go.mod has no `toolchain` line equal to its `go` line | Accepted (K1, contract 1.0.1) |
 
 New ADRs continue the numbering. Each ADR: Context, Decision, Alternatives rejected, Consequences, Sources.

@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Contract version | **1.0.0** (K0) |
+| Contract version | **1.0.1** (K0; K1 corrections: ADR-0019) |
 | Date | 2026-10-09 |
 | Owner | César Manzo (GitHub `CesarManzoCode`) |
 | System under test | Multigres, `github.com/multigres/multigres` @ `e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73` |
@@ -549,7 +549,7 @@ Versions observed 2026-10-09 (RESEARCH §5). K1 re-resolves every image digest w
 |---|---|---|
 | Multigres source | `e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73` | S01 |
 | Historical control source | `4bca1d5770a6bd425bde5a61eaad240431242cd5` | S33, S51 |
-| Go (CommitProof and Multigres builds) | `go1.26.9` via `GOTOOLCHAIN=go1.26.9` (host `go` ≥ 1.21 downloads it); `go.mod`: `go 1.26.9`, `toolchain go1.26.9` | S80, S02 |
+| Go (CommitProof and Multigres builds) | `go1.26.9` via `GOTOOLCHAIN=go1.26.9` (host `go` ≥ 1.21 downloads it); `go.mod`: `go 1.26.9` with no `toolchain` line (the go command rejects a `toolchain` line equal to the `go` line; ADR-0019) | S80, S02 |
 | Builder image | `golang:1.26.9-alpine@sha256:cdfd4fe2da6b225d8b40c6b7a105736e548e83ff56d5d8f9394446eeb5eb84e0` | S81 |
 | Multigres runtime base | `debian:bookworm-slim@sha256:abd67ffcfa541b485a3dff59865ab629aa048a6c613e639d36e7456b0b229241` | S83 |
 | PostgreSQL base | `postgres:17.7@sha256:2006493727bd5277eece187319af1ef82b4cf82cf4fc1ed00da0775b646ac2a4` | S82 |
