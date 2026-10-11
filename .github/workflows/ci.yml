@@ -58,3 +58,21 @@ jobs:
         run: sudo modprobe -a nf_tables nft_compat sch_netem fuse
       - name: make ci-cluster-smoke
         run: make ci-cluster-smoke
+
+  ci-nemesis-smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: "1.26.9"
+          cache: false
+      # PREREQUISITES §4: iptables (nf_tables), netem and FUSE for the
+      # nemesis helpers and slowfs (F4a runs only if /dev/fuse exists).
+      - name: Load kernel modules
+        run: sudo modprobe -a nf_tables nft_compat sch_netem fuse
+      - name: make ci-nemesis-smoke
+        run: make ci-nemesis-smoke
