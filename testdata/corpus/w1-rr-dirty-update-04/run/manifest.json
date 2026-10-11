@@ -1,0 +1,1 @@
+{"campaign":"synthetic","contract_version":"1.0.3","generator":"internal/synth (cmd: go run ./internal/tools/gencorpus)","mutant":"none","plan_sha256":"fa9adf52ba77f0706abf134f118f708c6004b7d3af8ea973327d774f1c7101ba","profile":"baseline","run_id":"w1-rr-dirty-update-04","seed":3762815921038213790,"synthetic":true}

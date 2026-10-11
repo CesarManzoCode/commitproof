@@ -1,0 +1,65 @@
+{
+  "checkers": {
+    "C1": {
+      "valid": true,
+      "anomalies": [],
+      "observations": []
+    },
+    "C2": {
+      "valid": true,
+      "anomalies": [],
+      "observations": []
+    },
+    "C3": {
+      "valid": true,
+      "anomalies": [],
+      "observations": []
+    },
+    "C4": {
+      "valid": false,
+      "anomalies": [
+        "non-linearizable"
+      ],
+      "observations": []
+    },
+    "C5": {
+      "valid": true,
+      "anomalies": [],
+      "observations": []
+    },
+    "C6": {
+      "valid": false,
+      "anomalies": [
+        "stale-read"
+      ],
+      "observations": []
+    },
+    "C7": {
+      "valid": true,
+      "anomalies": [],
+      "observations": []
+    },
+    "C8": {
+      "valid": true,
+      "anomalies": [],
+      "observations": []
+    },
+    "C9": {
+      "valid": true,
+      "anomalies": [],
+      "observations": []
+    }
+  },
+  "derivation": "expected classes are written per plant from CONTRACT §10 (internal/synth), never from running cpcheck",
+  "elle": false,
+  "family": "w2",
+  "id": "w2-stale-read-01",
+  "iso": "serializable",
+  "label": "stale-read",
+  "plant": "stale-read",
+  "profile": "baseline",
+  "verdict": "FAIL",
+  "workloads": [
+    "W2"
+  ]
+}

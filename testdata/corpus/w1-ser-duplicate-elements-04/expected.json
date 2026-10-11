@@ -1,0 +1,63 @@
+{
+  "checkers": {
+    "C1": {
+      "valid": true,
+      "anomalies": [],
+      "observations": []
+    },
+    "C2": {
+      "valid": true,
+      "anomalies": [],
+      "observations": []
+    },
+    "C3": {
+      "valid": false,
+      "anomalies": [
+        "duplicate-elements"
+      ],
+      "observations": []
+    },
+    "C4": {
+      "valid": true,
+      "anomalies": [],
+      "observations": []
+    },
+    "C5": {
+      "valid": true,
+      "anomalies": [],
+      "observations": []
+    },
+    "C6": {
+      "valid": true,
+      "anomalies": [],
+      "observations": []
+    },
+    "C7": {
+      "valid": true,
+      "anomalies": [],
+      "observations": []
+    },
+    "C8": {
+      "valid": true,
+      "anomalies": [],
+      "observations": []
+    },
+    "C9": {
+      "valid": true,
+      "anomalies": [],
+      "observations": []
+    }
+  },
+  "derivation": "expected classes are written per plant from CONTRACT §10 (internal/synth), never from running cpcheck",
+  "elle": true,
+  "family": "w1",
+  "id": "w1-ser-duplicate-elements-04",
+  "iso": "serializable",
+  "label": "duplicate-elements",
+  "plant": "duplicate-elements",
+  "profile": "baseline",
+  "verdict": "FAIL",
+  "workloads": [
+    "W1"
+  ]
+}

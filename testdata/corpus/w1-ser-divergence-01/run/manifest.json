@@ -1,0 +1,1 @@
+{"campaign":"synthetic","contract_version":"1.0.3","generator":"internal/synth (cmd: go run ./internal/tools/gencorpus)","mutant":"none","plan_sha256":"01f451553724feacccb9387d47ef631a3c726560f87a5761a55e31dae03cd06e","profile":"baseline","run_id":"w1-ser-divergence-01","seed":4082742122922026184,"synthetic":true}

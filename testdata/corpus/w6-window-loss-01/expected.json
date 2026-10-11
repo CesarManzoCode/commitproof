@@ -1,0 +1,63 @@
+{
+  "checkers": {
+    "C1": {
+      "valid": true,
+      "anomalies": [],
+      "observations": []
+    },
+    "C2": {
+      "valid": true,
+      "anomalies": [],
+      "observations": []
+    },
+    "C3": {
+      "valid": true,
+      "anomalies": [],
+      "observations": []
+    },
+    "C4": {
+      "valid": true,
+      "anomalies": [],
+      "observations": []
+    },
+    "C5": {
+      "valid": true,
+      "anomalies": [],
+      "observations": []
+    },
+    "C6": {
+      "valid": true,
+      "anomalies": [],
+      "observations": []
+    },
+    "C7": {
+      "valid": true,
+      "anomalies": [],
+      "observations": []
+    },
+    "C8": {
+      "valid": true,
+      "anomalies": [],
+      "observations": [
+        "notify-window-loss"
+      ]
+    },
+    "C9": {
+      "valid": true,
+      "anomalies": [],
+      "observations": []
+    }
+  },
+  "derivation": "expected classes are written per plant from CONTRACT §10 (internal/synth), never from running cpcheck",
+  "elle": false,
+  "family": "w6",
+  "id": "w6-window-loss-01",
+  "iso": "serializable",
+  "label": "notify-window-loss",
+  "plant": "window-loss",
+  "profile": "baseline",
+  "verdict": "PASS",
+  "workloads": [
+    "W6"
+  ]
+}

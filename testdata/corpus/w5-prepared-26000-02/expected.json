@@ -1,0 +1,63 @@
+{
+  "checkers": {
+    "C1": {
+      "valid": true,
+      "anomalies": [],
+      "observations": []
+    },
+    "C2": {
+      "valid": true,
+      "anomalies": [],
+      "observations": []
+    },
+    "C3": {
+      "valid": true,
+      "anomalies": [],
+      "observations": []
+    },
+    "C4": {
+      "valid": true,
+      "anomalies": [],
+      "observations": []
+    },
+    "C5": {
+      "valid": true,
+      "anomalies": [],
+      "observations": []
+    },
+    "C6": {
+      "valid": true,
+      "anomalies": [],
+      "observations": []
+    },
+    "C7": {
+      "valid": true,
+      "anomalies": [],
+      "observations": []
+    },
+    "C8": {
+      "valid": false,
+      "anomalies": [
+        "prepared-statement-lost"
+      ],
+      "observations": []
+    },
+    "C9": {
+      "valid": true,
+      "anomalies": [],
+      "observations": []
+    }
+  },
+  "derivation": "expected classes are written per plant from CONTRACT §10 (internal/synth), never from running cpcheck",
+  "elle": false,
+  "family": "w5",
+  "id": "w5-prepared-26000-02",
+  "iso": "serializable",
+  "label": "prepared-statement-lost",
+  "plant": "prepared-26000",
+  "profile": "baseline",
+  "verdict": "FAIL",
+  "workloads": [
+    "W5"
+  ]
+}

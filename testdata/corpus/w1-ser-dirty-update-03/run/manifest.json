@@ -1,0 +1,1 @@
+{"campaign":"synthetic","contract_version":"1.0.3","generator":"internal/synth (cmd: go run ./internal/tools/gencorpus)","mutant":"none","plan_sha256":"c1deb0326bbf4d7ead9bb6aabe5a59c9d8c555572c8b598ba98bded0d1193b01","profile":"baseline","run_id":"w1-ser-dirty-update-03","seed":375133973704789119,"synthetic":true}

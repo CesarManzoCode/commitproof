@@ -1,0 +1,1 @@
+{"campaign":"synthetic","clients":[],"contract_version":"1.0.3","directed":"","nemesis":[],"profile":"baseline","seed":6485581940975798070,"setup":{"append_active_keys":8,"append_retire_at":64,"bank_accounts":5,"bank_initial":100,"register_keys":5},"synthetic":{"family":"w7","generator":"internal/synth","label":"clean"}}
