@@ -1,0 +1,48 @@
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile.runner
+#1 transferring dockerfile: 966B done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/alpine:3.24.2@sha256:294b683cb724975bec92580e1e685676bd4b50bda910ddb8c51d4cabeaec77e6
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/golang:1.26.9-alpine@sha256:3082400e369fa24d5fc60bca20edab3f6d604e0c5a690ec66b295eff4dd87ade
+#3 DONE 0.0s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 146B done
+#4 DONE 0.0s
+
+#5 [builder 1/7] FROM docker.io/library/golang:1.26.9-alpine@sha256:3082400e369fa24d5fc60bca20edab3f6d604e0c5a690ec66b295eff4dd87ade
+#5 DONE 0.0s
+
+#6 [builder 2/7] WORKDIR /src
+#6 CACHED
+
+#7 [stage-1 1/2] FROM docker.io/library/alpine:3.24.2@sha256:294b683cb724975bec92580e1e685676bd4b50bda910ddb8c51d4cabeaec77e6
+#7 DONE 0.0s
+
+#8 [internal] load build context
+#8 transferring context: 226.63kB done
+#8 DONE 0.0s
+
+#9 [builder 3/7] COPY go.mod go.sum ./
+#9 DONE 0.1s
+
+#10 [builder 4/7] RUN go mod download
+#10 10.15 go: github.com/grpc-ecosystem/grpc-gateway/v2@v2.29.0: Get "https://proxy.golang.org/github.com/grpc-ecosystem/grpc-gateway/v2/@v/v2.29.0.mod": dial tcp: lookup proxy.golang.org on 10.166.176.20:53: read udp 172.17.0.2:38156->10.166.176.20:53: i/o timeout
+#10 ERROR: process "/bin/sh -c go mod download" did not complete successfully: exit code: 1
+------
+ > [builder 4/7] RUN go mod download:
+10.15 go: github.com/grpc-ecosystem/grpc-gateway/v2@v2.29.0: Get "https://proxy.golang.org/github.com/grpc-ecosystem/grpc-gateway/v2/@v/v2.29.0.mod": dial tcp: lookup proxy.golang.org on 10.166.176.20:53: read udp 172.17.0.2:38156->10.166.176.20:53: i/o timeout
+------
+Dockerfile.runner:7
+--------------------
+   5 |     WORKDIR /src
+   6 |     COPY go.mod go.sum ./
+   7 | >>> RUN go mod download
+   8 |     COPY cmd ./cmd
+   9 |     COPY internal ./internal
+--------------------
+ERROR: failed to build: failed to solve: process "/bin/sh -c go mod download" did not complete successfully: exit code: 1

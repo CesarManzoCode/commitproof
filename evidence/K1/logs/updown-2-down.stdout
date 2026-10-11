@@ -1,0 +1,1 @@
+{"command":"cluster down","compose_down_exit":0,"exit_code":0,"leftover":{"containers":[],"networks":[],"volumes":[]},"profile":"baseline"}

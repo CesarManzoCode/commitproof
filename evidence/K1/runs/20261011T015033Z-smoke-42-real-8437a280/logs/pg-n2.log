@@ -1,0 +1,58 @@
+2026-10-11T01:50:35.353973213Z {"time":"2026-10-11T01:50:35.353836947Z","level":"INFO","msg":"logging initialized","level":"info","format":"json","output":"stdout"}
+2026-10-11T01:50:35.355009284Z {"time":"2026-10-11T01:50:35.354975545Z","level":"INFO","msg":"replaced default pg_hba.conf template","path":"/etc/pgctld/pg_hba_template.conf"}
+2026-10-11T01:50:35.355138171Z {"time":"2026-10-11T01:50:35.355116692Z","level":"INFO","msg":"using fully qualified hostname for service URL","hostname":"pg-n2"}
+2026-10-11T01:50:35.357003741Z {"time":"2026-10-11T01:50:35.356963072Z","level":"INFO","msg":"generated pgbackrest-server.conf","path":"/data/pgbackrest/pgbackrest-server.conf"}
+2026-10-11T01:50:35.357037170Z {"time":"2026-10-11T01:50:35.356985441Z","level":"INFO","msg":"setting listening URL","hostname":"pg-n2","port":0,"scheme":"http"}
+2026-10-11T01:50:35.357133817Z {"time":"2026-10-11T01:50:35.357100698Z","level":"INFO","msg":"HTTP port was dynamically allocated","requested_port":0,"actual_port":35967}
+2026-10-11T01:50:35.357144127Z {"time":"2026-10-11T01:50:35.357105858Z","level":"INFO","msg":"setting listening URL","hostname":"pg-n2","port":35967,"scheme":"http"}
+2026-10-11T01:50:35.357150127Z {"time":"2026-10-11T01:50:35.357118067Z","level":"INFO","msg":"setting grpc max message size","msg_size":16777216}
+2026-10-11T01:50:35.357156366Z {"time":"2026-10-11T01:50:35.357136797Z","level":"INFO","msg":"building interceptors","unary":0,"stream":0}
+2026-10-11T01:50:35.357289083Z {"time":"2026-10-11T01:50:35.357244314Z","level":"INFO","msg":"listening for HTTP calls on port","http_port":0}
+2026-10-11T01:50:35.357334962Z {"time":"2026-10-11T01:50:35.357296383Z","level":"INFO","msg":"pgctld server starting up","grpc_port":16200,"http_port":0}
+2026-10-11T01:50:35.357343981Z {"time":"2026-10-11T01:50:35.357307332Z","level":"INFO","msg":"Registering pgctld for grpc, disable it with -grpc-pgctld service_map parameter"}
+2026-10-11T01:50:35.357352471Z {"time":"2026-10-11T01:50:35.357328752Z","level":"INFO","msg":"listening for gRPC calls on port","grpc_port":16200}
+2026-10-11T01:50:35.357413789Z {"time":"2026-10-11T01:50:35.35738358Z","level":"INFO","msg":"listening on socket file for gRPC","name":"/data/pgctld.sock"}
+2026-10-11T01:50:35.357491627Z {"time":"2026-10-11T01:50:35.357462568Z","level":"INFO","msg":"service successfully started","port":0}
+2026-10-11T01:50:35.357707042Z {"time":"2026-10-11T01:50:35.357682142Z","level":"INFO","msg":"pgBackRest TLS server started","pid":23,"config":"/data/pgbackrest/pgbackrest-server.conf","logs":"/data/pgbackrest/log"}
+2026-10-11T01:50:42.976745205Z {"time":"2026-10-11T01:50:42.976671307Z","level":"INFO","msg":"gRPC InitDataDir request","trace_id":"fe3a196a470204049f35c6bec90653ab","span_id":"0626d396c24f7227"}
+2026-10-11T01:50:42.976765415Z {"time":"2026-10-11T01:50:42.976699537Z","level":"INFO","msg":"initializing Postgres data directory","data_dir":"/data/pg_data"}
+2026-10-11T01:50:42.976772005Z {"time":"2026-10-11T01:50:42.976705527Z","level":"INFO","msg":"setting password during initdb","user":"postgres","password_source":"POSTGRES_PASSWORD_FILE"}
+2026-10-11T01:50:45.355732709Z {"time":"2026-10-11T01:50:45.355643311Z","level":"INFO","msg":"initdb completed successfully","output":"The files belonging to this database system will be owned by user \"postgres\".\nThis user must also own the server process.\n\nThe database cluster will be initialized with locale \"en_US.utf8\".\nThe default database encoding has accordingly been set to \"UTF8\".\nThe default text search configuration will be set to \"english\".\n\nData page checksums are enabled.\n\ncreating directory /data/pg_data ... ok\ncreating subdirectories ... ok\nselecting dynamic shared memory implementation ... posix\nselecting default \"max_connections\" ... 100\nselecting default \"shared_buffers\" ... 128MB\nselecting default time zone ... Etc/UTC\ncreating configuration files ... ok\nrunning bootstrap script ... ok\nperforming post-bootstrap initialization ... ok\nsyncing data to disk ... ok\n\nSuccess. You can now start the database server using:\n\n    pg_ctl -D /data/pg_data -l logfile start\n\n"}
+2026-10-11T01:50:45.355762368Z {"time":"2026-10-11T01:50:45.355659191Z","level":"INFO","msg":"user password set successfully","user":"postgres","password_source":"POSTGRES_PASSWORD_FILE"}
+2026-10-11T01:50:45.357398624Z {"time":"2026-10-11T01:50:45.357350475Z","level":"INFO","msg":"Postgres data directory initialized successfully"}
+2026-10-11T01:50:45.357940649Z {"time":"2026-10-11T01:50:45.35791014Z","level":"INFO","msg":"gRPC Start request","port":0,"as_primary":true,"trace_id":"d8693a30a10f64ba99bbd5cdae247be8","span_id":"56935094354bd879"}
+2026-10-11T01:50:45.357951789Z {"time":"2026-10-11T01:50:45.357933789Z","level":"INFO","msg":"ensured Unix socket directory exists","socket_dir":"/data/pg_sockets","trace_id":"d8693a30a10f64ba99bbd5cdae247be8","span_id":"56935094354bd879"}
+2026-10-11T01:50:45.357956849Z {"time":"2026-10-11T01:50:45.357939689Z","level":"INFO","msg":"starting Postgres server","data_dir":"/data/pg_data","trace_id":"d8693a30a10f64ba99bbd5cdae247be8","span_id":"56935094354bd879"}
+2026-10-11T01:50:45.357961419Z {"time":"2026-10-11T01:50:45.357947209Z","level":"INFO","msg":"starting Postgres with configuration","port":5432,"data_dir":"/data/pg_data","config_file":"/data/pg_data/postgresql.conf"}
+2026-10-11T01:50:45.364399325Z server starting
+2026-10-11T01:50:45.364521072Z {"time":"2026-10-11T01:50:45.364490623Z","level":"INFO","msg":"waiting for Postgres to be ready","trace_id":"d8693a30a10f64ba99bbd5cdae247be8","span_id":"56935094354bd879"}
+2026-10-11T01:50:46.390586724Z {"time":"2026-10-11T01:50:46.390480057Z","level":"INFO","msg":"Postgres is ready","attempts":1}
+2026-10-11T01:50:46.390606804Z {"time":"2026-10-11T01:50:46.390546735Z","level":"INFO","msg":"Postgres server started successfully"}
+2026-10-11T01:50:46.446028903Z {"time":"2026-10-11T01:50:46.445974124Z","level":"INFO","msg":"gRPC Stop request","mode":"immediate","trace_id":"aac1de4de8449a64132dc346e39afa57","span_id":"695a230bd941ef31"}
+2026-10-11T01:50:46.446045352Z {"time":"2026-10-11T01:50:46.445998023Z","level":"INFO","msg":"stopping Postgres server","data_dir":"/data/pg_data","mode":"immediate","trace_id":"aac1de4de8449a64132dc346e39afa57","span_id":"695a230bd941ef31"}
+2026-10-11T01:50:46.446061222Z {"time":"2026-10-11T01:50:46.446003303Z","level":"INFO","msg":"taking checkpoint before stopping Postgres","data_dir":"/data/pg_data"}
+2026-10-11T01:50:46.628266169Z {"time":"2026-10-11T01:50:46.628197831Z","level":"INFO","msg":"checkpoint completed successfully","data_dir":"/data/pg_data"}
+2026-10-11T01:50:46.729833256Z waiting for server to shut down.... done
+2026-10-11T01:50:46.729895265Z server stopped
+2026-10-11T01:50:46.729922984Z {"time":"2026-10-11T01:50:46.729739209Z","level":"INFO","msg":"Postgres server stopped successfully"}
+2026-10-11T01:50:52.981934385Z {"time":"2026-10-11T01:50:52.981883377Z","level":"INFO","msg":"gRPC Restart request","mode":"","port":0,"as_standby":true,"trace_id":"8155e307cd2db866b2bb438cb7dbfb47","span_id":"2755bec636abaf5c"}
+2026-10-11T01:50:52.981947515Z {"time":"2026-10-11T01:50:52.981904546Z","level":"INFO","msg":"restarting Postgres server as standby","data_dir":"/data/pg_data","mode":"","trace_id":"8155e307cd2db866b2bb438cb7dbfb47","span_id":"2755bec636abaf5c"}
+2026-10-11T01:50:52.981958165Z {"time":"2026-10-11T01:50:52.981919156Z","level":"INFO","msg":"stopping Postgres server","data_dir":"/data/pg_data","mode":"fast","trace_id":"8155e307cd2db866b2bb438cb7dbfb47","span_id":"2755bec636abaf5c"}
+2026-10-11T01:50:52.981967914Z {"time":"2026-10-11T01:50:52.981922976Z","level":"INFO","msg":"taking checkpoint before stopping Postgres","data_dir":"/data/pg_data"}
+2026-10-11T01:50:53.002955362Z {"time":"2026-10-11T01:50:53.002899633Z","level":"WARN","msg":"failed to take checkpoint before stop","error":"checkpoint command failed: exit status 2, output: psql: error: connection to server on socket \"/data/pg_sockets/.s.PGSQL.5432\" failed: No such file or directory\n\tIs the server running locally and accepting connections on that socket?\n","data_dir":"/data/pg_data"}
+2026-10-11T01:50:53.003560616Z pg_ctl: PID file "/data/pg_data/postmaster.pid" does not exist
+2026-10-11T01:50:53.003569036Z Is server running?
+2026-10-11T01:50:53.003638044Z {"time":"2026-10-11T01:50:53.003615244Z","level":"ERROR","msg":"pg_ctl stop failed,","error":"exit status 1"}
+2026-10-11T01:50:53.003644774Z {"time":"2026-10-11T01:50:53.003626634Z","level":"INFO","msg":"Postgres is not running"}
+2026-10-11T01:50:53.003682683Z {"time":"2026-10-11T01:50:53.003656143Z","level":"INFO","msg":"standby.signal created successfully","path":"/data/pg_data/standby.signal"}
+2026-10-11T01:50:53.003695562Z {"time":"2026-10-11T01:50:53.003660673Z","level":"INFO","msg":"starting Postgres server as standby","data_dir":"/data/pg_data","port":5432,"timeout":30,"trace_id":"8155e307cd2db866b2bb438cb7dbfb47","span_id":"2755bec636abaf5c"}
+2026-10-11T01:50:53.003703232Z {"time":"2026-10-11T01:50:53.003683223Z","level":"INFO","msg":"ensured Unix socket directory exists","socket_dir":"/data/pg_sockets","trace_id":"8155e307cd2db866b2bb438cb7dbfb47","span_id":"2755bec636abaf5c"}
+2026-10-11T01:50:53.003726171Z {"time":"2026-10-11T01:50:53.003690082Z","level":"INFO","msg":"starting Postgres server","data_dir":"/data/pg_data","trace_id":"8155e307cd2db866b2bb438cb7dbfb47","span_id":"2755bec636abaf5c"}
+2026-10-11T01:50:53.003747011Z {"time":"2026-10-11T01:50:53.003695342Z","level":"INFO","msg":"starting Postgres with configuration","port":5432,"data_dir":"/data/pg_data","config_file":"/data/pg_data/postgresql.conf"}
+2026-10-11T01:50:53.009789629Z server starting
+2026-10-11T01:50:53.009909145Z {"time":"2026-10-11T01:50:53.009875566Z","level":"INFO","msg":"waiting for Postgres to be ready","trace_id":"8155e307cd2db866b2bb438cb7dbfb47","span_id":"2755bec636abaf5c"}
+2026-10-11T01:50:57.032573420Z {"time":"2026-10-11T01:50:57.032471243Z","level":"INFO","msg":"Postgres is ready","attempts":4}
+2026-10-11T01:50:57.032599310Z {"time":"2026-10-11T01:50:57.032527162Z","level":"INFO","msg":"Postgres server started successfully"}
+2026-10-11T01:50:57.032605710Z {"time":"2026-10-11T01:50:57.032537511Z","level":"INFO","msg":"Postgres server restarted as standby successfully","pid":86}
+2026-10-11T01:50:57.249925770Z {"time":"2026-10-11T01:50:57.249859871Z","level":"INFO","msg":"gRPC StopRestoreCommand request","pidfile":"/data/restore_command.pid","trace_id":"e09728f084ba9783283d774060a4b808","span_id":"2b9fb27ca3db7d33"}
+2026-10-11T01:50:57.249954629Z {"time":"2026-10-11T01:50:57.2499171Z","level":"INFO","msg":"restore_command wrapper still running, stopping it","pid":303,"trace_id":"e09728f084ba9783283d774060a4b808","span_id":"2b9fb27ca3db7d33"}

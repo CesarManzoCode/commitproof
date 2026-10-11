@@ -1,0 +1,2 @@
+scripts/resolve-digests.sh: line 24: inspect: command not found
+resolve-digests: inspect golang:1.26.9-alpine failed

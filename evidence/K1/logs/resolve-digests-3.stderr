@@ -1,0 +1,8 @@
+ERROR: failed to copy: httpReadSeeker: failed open: unexpected status from GET request to https://registry-1.docker.io/v2/library/alpine/manifests/sha256:ce2789264b55ef57693ad3aebc95d4ee9e46288f769f43ab5f37554853502289: 429 Too Many Requests
+toomanyrequests: You have reached your unauthenticated pull rate limit. https://www.docker.com/increase-rate-limit
+resolve-digests: attempt 1 of inspect alpine:3.24.2 --format {{json .Manifest}} failed
+ERROR: unexpected status from HEAD request to https://registry-1.docker.io/v2/library/alpine/manifests/3.24.2: 429 Too Many Requests
+resolve-digests: attempt 2 of inspect alpine:3.24.2 --format {{json .Manifest}} failed
+ERROR: unexpected status from HEAD request to https://registry-1.docker.io/v2/library/alpine/manifests/3.24.2: 429 Too Many Requests
+resolve-digests: attempt 3 of inspect alpine:3.24.2 --format {{json .Manifest}} failed
+resolve-digests: inspect alpine:3.24.2 failed

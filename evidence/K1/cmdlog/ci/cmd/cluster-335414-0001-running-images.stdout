@@ -1,0 +1,13 @@
+commitproof-pooler-n2-1 commitproof/multigres:real
+commitproof-pooler-n1-1 commitproof/multigres:real
+commitproof-orch-z3-1 commitproof/multigres:real
+commitproof-orch-z2-1 commitproof/multigres:real
+commitproof-gw-z3-1 commitproof/multigres:real
+commitproof-orch-z1-1 commitproof/multigres:real
+commitproof-gw-z2-1 commitproof/multigres:real
+commitproof-gw-z1-1 commitproof/multigres:real
+commitproof-pooler-n3-1 commitproof/multigres:real
+commitproof-pg-n2-1 commitproof/pgctld:real
+commitproof-pg-n3-1 commitproof/pgctld:real
+commitproof-pg-n1-1 commitproof/pgctld:real
+commitproof-etcd-1 quay.io/coreos/etcd:v3.6.4

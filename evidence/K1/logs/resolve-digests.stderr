@@ -1,0 +1,2 @@
+ERROR: httpReadSeeker: failed open: unexpected status from GET request to https://quay.io/v2/coreos/etcd/manifests/sha256:885a73b09cde0293c84adad3d589cc5d091f03e61d390b94413c0a866ccfe232: 502 Bad Gateway
+resolve-digests: inspect quay.io/coreos/etcd:v3.6.4 failed

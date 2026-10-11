@@ -1,0 +1,58 @@
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile.pgctld
+#1 transferring dockerfile: 2.98kB done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/golang:1.26.9-alpine@sha256:3082400e369fa24d5fc60bca20edab3f6d604e0c5a690ec66b295eff4dd87ade
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/postgres:17.7@sha256:2006493727bd5277eece187319af1ef82b4cf82cf4fc1ed00da0775b646ac2a4
+#3 DONE 1.7s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 235B done
+#4 DONE 0.0s
+
+#5 [stage-1 1/4] FROM docker.io/library/postgres:17.7@sha256:2006493727bd5277eece187319af1ef82b4cf82cf4fc1ed00da0775b646ac2a4
+#5 DONE 0.0s
+
+#6 [builder 1/7] FROM docker.io/library/golang:1.26.9-alpine@sha256:3082400e369fa24d5fc60bca20edab3f6d604e0c5a690ec66b295eff4dd87ade
+#6 DONE 0.0s
+
+#7 [internal] load build context
+#7 transferring context: 176.09kB 0.1s done
+#7 DONE 0.1s
+
+#8 [builder 6/7] COPY . .
+#8 CACHED
+
+#9 [builder 3/7] RUN apk add --no-cache git make bash
+#9 CACHED
+
+#10 [stage-1 3/4] COPY --from=builder /src/bin/pgctld /usr/local/bin/
+#10 CACHED
+
+#11 [stage-1 2/4] RUN apt-get update &&     apt-get install -y --no-install-recommends     ca-certificates     curl     gnupg     lsb-release &&     curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor -o /usr/share/keyrings/postgresql-archive-keyring.gpg &&     echo "deb [signed-by=/usr/share/keyrings/postgresql-archive-keyring.gpg] http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list &&     apt-get update &&     apt-cache policy pgbackrest &&     apt-get install -y --no-install-recommends     pgbackrest     procps &&     pgbackrest version &&     apt-get remove -y ca-certificates curl gnupg lsb-release &&     apt-get autoremove -y &&     rm -rf /var/lib/apt/lists/*
+#11 CACHED
+
+#12 [builder 7/7] RUN GIT_COMMIT="e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73" COMMIT_DATE="2026-10-09T14:17:55+02:00" make build-release
+#12 CACHED
+
+#13 [builder 5/7] RUN go mod download
+#13 CACHED
+
+#14 [builder 4/7] COPY go.mod go.sum ./
+#14 CACHED
+
+#15 [builder 2/7] WORKDIR /src
+#15 CACHED
+
+#16 [stage-1 4/4] RUN chmod +x /usr/local/bin/pgctld
+#16 CACHED
+
+#17 exporting to image
+#17 exporting layers done
+#17 writing image sha256:fd66cb52e418aeac73a362a53f111a3ca22ec33d24153a45c250439b0e19a2db done
+#17 naming to docker.io/commitproof/pgctld:real done
+#17 DONE 0.0s

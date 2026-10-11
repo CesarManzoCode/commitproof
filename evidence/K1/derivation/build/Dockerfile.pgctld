@@ -1,0 +1,75 @@
+# =========================================================================
+# Stage 1: Build pgctld
+# =========================================================================
+# GO_VERSION is the Go toolchain the build runs on. It defaults to the current
+# go.mod minor for local `docker build`/`make images`; CI overrides it with the
+# exact version read from go.mod, so go.mod is the single source of truth (see
+# .github/actions/go-version). Keep the default's minor in sync with go.mod.
+ARG GO_VERSION=1.26
+FROM golang:1.26.9-alpine@sha256:3082400e369fa24d5fc60bca20edab3f6d604e0c5a690ec66b295eff4dd87ade AS builder
+
+ARG GIT_COMMIT=unknown
+ARG COMMIT_DATE=unknown
+
+WORKDIR /src
+
+# Intentionally unpinned: the builder base (golang:1.25-alpine) is a rolling
+# tag, so pinning exact apk versions breaks whenever Alpine bumps these
+# packages. These are build-stage tools from the base image's own apk
+# repository, not external supply-chain downloads.
+# hadolint ignore=DL3018
+RUN apk add --no-cache git make bash
+
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY . .
+RUN GIT_COMMIT="${GIT_COMMIT}" COMMIT_DATE="${COMMIT_DATE}" make build-release
+
+# =========================================================================
+# Stage 2: Final PostgreSQL + pgctld
+# =========================================================================
+FROM postgres:17.7@sha256:2006493727bd5277eece187319af1ef82b4cf82cf4fc1ed00da0775b646ac2a4
+
+# Install pgBackRest from PostgreSQL APT repository and procps
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    ca-certificates \
+    curl \
+    gnupg \
+    lsb-release && \
+    curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor -o /usr/share/keyrings/postgresql-archive-keyring.gpg && \
+    echo "deb [signed-by=/usr/share/keyrings/postgresql-archive-keyring.gpg] http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list && \
+    apt-get update && \
+    apt-cache policy pgbackrest && \
+    apt-get install -y --no-install-recommends \
+    pgbackrest \
+    procps && \
+    pgbackrest version && \
+    apt-get remove -y ca-certificates curl gnupg lsb-release && \
+    apt-get autoremove -y && \
+    rm -rf /var/lib/apt/lists/*
+
+# Copy pgctld binary
+COPY --from=builder /src/bin/pgctld /usr/local/bin/
+
+# Ensure pgctld is executable
+RUN chmod +x /usr/local/bin/pgctld
+
+# PostgreSQL data directory (default)
+ENV PGDATA=/var/lib/postgresql/data
+
+# Expose PostgreSQL port
+EXPOSE 5432
+
+# Health check - verify pgctld is available (PostgreSQL may not always be running)
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+    CMD pgctld --version || exit 1
+
+# Use postgres user (default in postgres image)
+USER postgres
+
+# Override the default PostgreSQL entrypoint
+# Keep container running without launching anything - allows external control
+ENTRYPOINT ["tail"]
+CMD ["-f", "/dev/null"]

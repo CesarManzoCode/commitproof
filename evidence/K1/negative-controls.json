@@ -1,0 +1,187 @@
+[
+  {
+    "criterion": "K1.1",
+    "sabotage": "remove the base_images field from images.lock.build1.json",
+    "failed": [
+      "K1.1"
+    ],
+    "failed_only_target": true,
+    "target_problems": [
+      "lock lacks field base_images",
+      "base image golang:1.26.9-alpine digest \"\" not resolved",
+      "base image debian:bookworm-slim digest \"\" not resolved",
+      "base image postgres:17.7 digest \"\" not resolved",
+      "base image alpine:3.24.2 digest \"\" not resolved",
+      "base image quay.io/coreos/etcd:v3.6.4 digest \"\" not resolved"
+    ]
+  },
+  {
+    "criterion": "K1.2",
+    "sabotage": "alter the multigateway sha256 in images.lock.build2.json (second-build record)",
+    "failed": [
+      "K1.2"
+    ],
+    "failed_only_target": true,
+    "target_problems": [
+      "/multigres/bin/multigateway differs: build1 bb6da287f59a2f00b8c8e6e0bdbee048b98fa788955fb02298b7aaf02e1a6fef build2 0000000000000000000000000000000000000000000000000000000000000000"
+    ]
+  },
+  {
+    "criterion": "K1.3",
+    "sabotage": "add a RUN line to the derived build/Dockerfile copy",
+    "failed": [
+      "K1.3"
+    ],
+    "failed_only_target": true,
+    "target_problems": [
+      "Dockerfile: line count differs: upstream 81, derived 82",
+      "Dockerfile: line 2: non-FROM line differs: upstream \"# Stage 1: The Builder Stage\", derived \"RUN echo sabotage\"",
+      "Dockerfile: line 3: non-FROM line differs: upstream \"# =========================================================================\", derived \"# Stage 1: The Builder Stage\"",
+      "Dockerfile: line 4: non-FROM line differs: upstream \"# GO_VERSION is the Go toolchain the build runs on. It defaults to the current\", derived \"# =========================================================================\"",
+      "Dockerfile: line 5: non-FROM line differs: upstream \"# go.mod minor for local `docker build`/`make images`; CI overrides it with the\", derived \"# GO_VERSION is the Go toolchain the build runs on. It defaults to the current\"",
+      "Dockerfile: line 6: non-FROM line differs: upstream \"# exact version read from go.mod, so go.mod is the single source of truth (see\", derived \"# go.mod minor for local `docker build`/`make images`; CI overrides it with the\"",
+      "Dockerfile: line 7: non-FROM line differs: upstream \"# .github/actions/go-version). Keep the default's minor in sync with go.mod.\", derived \"# exact version read from go.mod, so go.mod is the single source of truth (see\"",
+      "Dockerfile: line 8: non-FROM line differs: upstream \"ARG GO_VERSION=1.26\", derived \"# .github/actions/go-version). Keep the default's minor in sync with go.mod.\"",
+      "Dockerfile: line 9: non-FROM line differs: upstream \"FROM golang:${GO_VERSION}-alpine AS builder\", derived \"ARG GO_VERSION=1.26\"",
+      "Dockerfile: line 10: non-FROM line differs: upstream \"\", derived \"FROM golang:1.26.9-alpine@sha256:3082400e369fa24d5fc60bca20edab3f6d604e0c5a690ec66b295eff4dd87ade AS builder\"",
+      "Dockerfile: line 11: non-FROM line differs: upstream \"ARG GIT_COMMIT=unknown\", derived \"\"",
+      "Dockerfile: line 12: non-FROM line differs: upstream \"ARG COMMIT_DATE=unknown\", derived \"ARG GIT_COMMIT=unknown\"",
+      "Dockerfile: line 13: non-FROM line differs: upstream \"\", derived \"ARG COMMIT_DATE=unknown\"",
+      "Dockerfile: line 14: non-FROM line differs: upstream \"WORKDIR /src\", derived \"\"",
+      "Dockerfile: line 15: non-FROM line differs: upstream \"\", derived \"WORKDIR /src\"",
+      "Dockerfile: line 16: non-FROM line differs: upstream \"# Install build dependencies like git and make.\", derived \"\"",
+      "Dockerfile: line 17: non-FROM line differs: upstream \"# Intentionally unpinned: the builder base (golang:1.25-alpine) is a rolling\", derived \"# Install build dependencies like git and make.\"",
+      "Dockerfile: line 18: non-FROM line differs: upstream \"# tag, so pinning exact apk versions breaks whenever Alpine bumps these\", derived \"# Intentionally unpinned: the builder base (golang:1.25-alpine) is a rolling\"",
+      "Dockerfile: line 19: non-FROM line differs: upstream \"# packages. These are build-stage tools from the base image's own apk\", derived \"# tag, so pinning exact apk versions breaks whenever Alpine bumps these\"",
+      "Dockerfile: line 20: non-FROM line differs: upstream \"# repository, not external supply-chain downloads.\", derived \"# packages. These are build-stage tools from the base image's own apk\"",
+      "Dockerfile: line 21: non-FROM line differs: upstream \"# hadolint ignore=DL3018\", derived \"# repository, not external supply-chain downloads.\"",
+      "Dockerfile: line 22: non-FROM line differs: upstream \"RUN apk add --no-cache git make bash\", derived \"# hadolint ignore=DL3018\"",
+      "Dockerfile: line 23: non-FROM line differs: upstream \"\", derived \"RUN apk add --no-cache git make bash\"",
+      "Dockerfile: line 24: non-FROM line differs: upstream \"# Cache dependencies\", derived \"\"",
+      "Dockerfile: line 25: non-FROM line differs: upstream \"COPY go.mod go.sum ./\", derived \"# Cache dependencies\"",
+      "Dockerfile: line 26: non-FROM line differs: upstream \"RUN go mod download\", derived \"COPY go.mod go.sum ./\"",
+      "Dockerfile: line 27: non-FROM line differs: upstream \"\", derived \"RUN go mod download\"",
+      "Dockerfile: line 28: non-FROM line differs: upstream \"# Copy source and build static binaries using Makefile\", derived \"\"",
+      "Dockerfile: line 29: non-FROM line differs: upstream \"COPY . .\", derived \"# Copy source and build static binaries using Makefile\"",
+      "Dockerfile: line 30: non-FROM line differs: upstream \"RUN GIT_COMMIT=\\\"${GIT_COMMIT}\\\" COMMIT_DATE=\\\"${COMMIT_DATE}\\\" make build-release\", derived \"COPY . .\"",
+      "Dockerfile: line 31: non-FROM line differs: upstream \"\", derived \"RUN GIT_COMMIT=\\\"${GIT_COMMIT}\\\" COMMIT_DATE=\\\"${COMMIT_DATE}\\\" make build-release\"",
+      "Dockerfile: line 32: non-FROM line differs: upstream \"# =========================================================================\", derived \"\"",
+      "Dockerfile: line 33: non-FROM line differs: upstream \"# Stage 2: The Final Production Stage\", derived \"# =========================================================================\"",
+      "Dockerfile: line 34: non-FROM line differs: upstream \"# =========================================================================\", derived \"# Stage 2: The Final Production Stage\"",
+      "Dockerfile: line 35: non-FROM line differs: upstream \"FROM debian:bookworm-slim\", derived \"# =========================================================================\"",
+      "Dockerfile: line 36: non-FROM line differs: upstream \"\", derived \"FROM debian:bookworm-slim@sha256:7c7b2c966bc9ee8cedfeef67e0e279108992c77681fa595db4a9d65c06ccc587\"",
+      "Dockerfile: line 37: non-FROM line differs: upstream \"LABEL org.opencontainers.image.source=\\\"https://github.com/multigres/multigres\\\"\", derived \"\"",
+      "Dockerfile: line 38: non-FROM line differs: upstream \"LABEL org.opencontainers.image.description=\\\"A single container image containing all Multigres components.\\\"\", derived \"LABEL org.opencontainers.image.source=\\\"https://github.com/multigres/multigres\\\"\"",
+      "Dockerfile: line 39: non-FROM line differs: upstream \"LABEL org.opencontainers.image.licenses=\\\"Apache-2.0\\\"\", derived \"LABEL org.opencontainers.image.description=\\\"A single container image containing all Multigres components.\\\"\"",
+      "Dockerfile: line 40: non-FROM line differs: upstream \"\", derived \"LABEL org.opencontainers.image.licenses=\\\"Apache-2.0\\\"\"",
+      "Dockerfile: line 41: non-FROM line differs: upstream \"# Set pipefail to catch errors in piped commands\", derived \"\"",
+      "Dockerfile: line 42: non-FROM line differs: upstream \"SHELL [\\\"/bin/bash\\\", \\\"-o\\\", \\\"pipefail\\\", \\\"-c\\\"]\", derived \"# Set pipefail to catch errors in piped commands\"",
+      "Dockerfile: line 43: non-FROM line differs: upstream \"\", derived \"SHELL [\\\"/bin/bash\\\", \\\"-o\\\", \\\"pipefail\\\", \\\"-c\\\"]\"",
+      "Dockerfile: line 44: non-FROM line differs: upstream \"# Install pgBackRest from PostgreSQL APT repository and procps\", derived \"\"",
+      "Dockerfile: line 45: non-FROM line differs: upstream \"# hadolint ignore=DL3008\", derived \"# Install pgBackRest from PostgreSQL APT repository and procps\"",
+      "Dockerfile: line 46: non-FROM line differs: upstream \"RUN apt-get update \u0026\u0026 \\\\\", derived \"# hadolint ignore=DL3008\"",
+      "Dockerfile: line 47: non-FROM line differs: upstream \"    apt-get install -y --no-install-recommends \\\\\", derived \"RUN apt-get update \u0026\u0026 \\\\\"",
+      "Dockerfile: line 48: non-FROM line differs: upstream \"    ca-certificates \\\\\", derived \"    apt-get install -y --no-install-recommends \\\\\"",
+      "Dockerfile: line 49: non-FROM line differs: upstream \"    curl \\\\\", derived \"    ca-certificates \\\\\"",
+      "Dockerfile: line 50: non-FROM line differs: upstream \"    gnupg \\\\\", derived \"    curl \\\\\"",
+      "Dockerfile: line 51: non-FROM line differs: upstream \"    lsb-release \u0026\u0026 \\\\\", derived \"    gnupg \\\\\"",
+      "Dockerfile: line 52: non-FROM line differs: upstream \"    curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor -o /usr/share/keyrings/postgresql-archive-keyring.gpg \u0026\u0026 \\\\\", derived \"    lsb-release \u0026\u0026 \\\\\"",
+      "Dockerfile: line 53: non-FROM line differs: upstream \"    echo \\\"deb [signed-by=/usr/share/keyrings/postgresql-archive-keyring.gpg] http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main\\\" \u003e /etc/apt/sources.list.d/pgdg.list \u0026\u0026 \\\\\", derived \"    curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor -o /usr/share/keyrings/postgresql-archive-keyring.gpg \u0026\u0026 \\\\\"",
+      "Dockerfile: line 54: non-FROM line differs: upstream \"    apt-get update \u0026\u0026 \\\\\", derived \"    echo \\\"deb [signed-by=/usr/share/keyrings/postgresql-archive-keyring.gpg] http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main\\\" \u003e /etc/apt/sources.list.d/pgdg.list \u0026\u0026 \\\\\"",
+      "Dockerfile: line 55: non-FROM line differs: upstream \"    apt-cache policy pgbackrest \u0026\u0026 \\\\\", derived \"    apt-get update \u0026\u0026 \\\\\"",
+      "Dockerfile: line 56: non-FROM line differs: upstream \"    apt-get install -y --no-install-recommends \\\\\", derived \"    apt-cache policy pgbackrest \u0026\u0026 \\\\\"",
+      "Dockerfile: line 57: non-FROM line differs: upstream \"    pgbackrest \\\\\", derived \"    apt-get install -y --no-install-recommends \\\\\"",
+      "Dockerfile: line 58: non-FROM line differs: upstream \"    procps \u0026\u0026 \\\\\", derived \"    pgbackrest \\\\\"",
+      "Dockerfile: line 59: non-FROM line differs: upstream \"    pgbackrest version \u0026\u0026 \\\\\", derived \"    procps \u0026\u0026 \\\\\"",
+      "Dockerfile: line 60: non-FROM line differs: upstream \"    apt-get remove -y ca-certificates curl gnupg lsb-release \u0026\u0026 \\\\\", derived \"    pgbackrest version \u0026\u0026 \\\\\"",
+      "Dockerfile: line 61: non-FROM line differs: upstream \"    apt-get autoremove -y \u0026\u0026 \\\\\", derived \"    apt-get remove -y ca-certificates curl gnupg lsb-release \u0026\u0026 \\\\\"",
+      "Dockerfile: line 62: non-FROM line differs: upstream \"    rm -rf /var/lib/apt/lists/*\", derived \"    apt-get autoremove -y \u0026\u0026 \\\\\"",
+      "Dockerfile: line 63: non-FROM line differs: upstream \"\", derived \"    rm -rf /var/lib/apt/lists/*\"",
+      "Dockerfile: line 64: non-FROM line differs: upstream \"ENV PATH=\\\"/multigres/bin:$PATH\\\"\", derived \"\"",
+      "Dockerfile: line 65: non-FROM line differs: upstream \"WORKDIR /multigres\", derived \"ENV PATH=\\\"/multigres/bin:$PATH\\\"\"",
+      "Dockerfile: line 66: non-FROM line differs: upstream \"\", derived \"WORKDIR /multigres\"",
+      "Dockerfile: line 67: non-FROM line differs: upstream \"# Switch to the default non-root user for enhanced security.\", derived \"\"",
+      "Dockerfile: line 68: non-FROM line differs: upstream \"USER 65532:65532\", derived \"# Switch to the default non-root user for enhanced security.\"",
+      "Dockerfile: line 69: non-FROM line differs: upstream \"\", derived \"USER 65532:65532\"",
+      "Dockerfile: line 70: non-FROM line differs: upstream \"# Copy all the compiled binaries from the builder stage into our namespaced directory.\", derived \"\"",
+      "Dockerfile: line 71: non-FROM line differs: upstream \"COPY --from=builder /src/bin/multigres /multigres/bin/\", derived \"# Copy all the compiled binaries from the builder stage into our namespaced directory.\"",
+      "Dockerfile: line 72: non-FROM line differs: upstream \"COPY --from=builder /src/bin/multiadmin /multigres/bin/\", derived \"COPY --from=builder /src/bin/multigres /multigres/bin/\"",
+      "Dockerfile: line 73: non-FROM line differs: upstream \"COPY --from=builder /src/bin/multigateway /multigres/bin/\", derived \"COPY --from=builder /src/bin/multiadmin /multigres/bin/\"",
+      "Dockerfile: line 74: non-FROM line differs: upstream \"COPY --from=builder /src/bin/multiorch /multigres/bin/\", derived \"COPY --from=builder /src/bin/multigateway /multigres/bin/\"",
+      "Dockerfile: line 75: non-FROM line differs: upstream \"COPY --from=builder /src/bin/multipooler /multigres/bin/\", derived \"COPY --from=builder /src/bin/multiorch /multigres/bin/\"",
+      "Dockerfile: line 76: non-FROM line differs: upstream \"\", derived \"COPY --from=builder /src/bin/multipooler /multigres/bin/\"",
+      "Dockerfile: line 77: non-FROM line differs: upstream \"# Since this container serves multiple binaries depending on the execution it's impossible to have a healthcheck that applies to all at this point.\", derived \"\"",
+      "Dockerfile: line 78: non-FROM line differs: upstream \"# The healthcheck below exists only to satisfy Super-linter CHECKOV and it's not a reliable healthcheck for production.\", derived \"# Since this container serves multiple binaries depending on the execution it's impossible to have a healthcheck that applies to all at this point.\"",
+      "Dockerfile: line 79: non-FROM line differs: upstream \"HEALTHCHECK --interval=10s --timeout=3s \\\\\", derived \"# The healthcheck below exists only to satisfy Super-linter CHECKOV and it's not a reliable healthcheck for production.\"",
+      "Dockerfile: line 80: non-FROM line differs: upstream \"    CMD [\\\"/multigres/bin/multigres\\\"]\", derived \"HEALTHCHECK --interval=10s --timeout=3s \\\\\"",
+      "Dockerfile: line 81: non-FROM line differs: upstream \"\", derived \"    CMD [\\\"/multigres/bin/multigres\\\"]\""
+    ]
+  },
+  {
+    "criterion": "K1.4",
+    "sabotage": "add a leftover volume to the second teardown record (hashes kept consistent)",
+    "failed": [
+      "K1.4"
+    ],
+    "failed_only_target": true,
+    "target_problems": [
+      "attempt 2: volumes left after down: [commitproof_sabotage]"
+    ]
+  },
+  {
+    "criterion": "K1.5",
+    "sabotage": "set one recorded sample's first container to 7GiB (above P10)",
+    "failed": [
+      "K1.5"
+    ],
+    "failed_only_target": true,
+    "target_problems": [
+      "peak sum 7969523625 bytes \u003e P10 6442450944 bytes"
+    ]
+  },
+  {
+    "criterion": "K1.6",
+    "sabotage": "alter the plan_sha256 recorded by plan-42-b (hashes kept consistent)",
+    "failed": [
+      "K1.6"
+    ],
+    "failed_only_target": true,
+    "target_problems": [
+      "plan-42-b: recorded plan_sha256 ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff != sha256 of the printed plan 8437a28083c66135c86fda9721fe59584cbe0ceaee424ac1f05308f4eb3558b5"
+    ]
+  },
+  {
+    "criterion": "K1.7",
+    "sabotage": "flip one byte in the copied history.jsonl of the smoke run",
+    "failed": [
+      "K1.7"
+    ],
+    "failed_only_target": true,
+    "target_problems": [
+      "file history.jsonl: sha256 db542db0c0650038d964793a9e350f669b5591019800a9073cad62b93fdd7bec size 4110156, sealed 1e0d06224be9ac42666c3445e382ba8df77115493aa61b88dce5bbe3bf95df9b size 4110156",
+      "history.jsonl: line 8402: prev missing or not 64 hex chars",
+      "history.jsonl: invoke i=8392 has no completion",
+      "history.jsonl: invoke i=8393 has no completion",
+      "history.jsonl: invoke i=8394 has no completion",
+      "history.jsonl: invoke i=8395 has no completion",
+      "history.jsonl: invoke i=8396 has no completion",
+      "history.jsonl: invoke i=8397 has no completion",
+      "history.jsonl: invoke i=8398 has no completion",
+      "history.jsonl: invoke i=8399 has no completion",
+      "history.jsonl: invoke i=8400 has no completion",
+      "history.jsonl: invoke i=8401 has no completion",
+      "run-end marker status \"\""
+    ]
+  },
+  {
+    "criterion": "K1.8",
+    "sabotage": "replace the recorded exit code of `make ci-unit ci-cluster-smoke` with 1",
+    "failed": [
+      "K1.8"
+    ],
+    "failed_only_target": true,
+    "target_problems": [
+      "ci exited 1"
+    ]
+  }
+]

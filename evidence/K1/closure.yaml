@@ -1,74 +1,86 @@
 sprint: K1
-status: BLOCKED
-contract_version: "1.0.0"
+status: DONE
+contract_version: "1.0.3"
 commits:
-  - {sha: "a22c0814bab28250b1a3719cc22f5291ba7ea89a", message: "docs: K0 foundation — contract v1.0.0, ADRs, research, prompts"}  # present at session start
-  - {sha: "b0b4bfa", message: "build(prereq): add make prereq-check per PREREQUISITES.md"}
-  - {sha: "(the commit that adds this file)", message: "test(prereq): record K1 prerequisite check — BLOCKED"}
+  - {sha: "a22c081", message: "docs: K0 foundation — contract v1.0.0, ADRs, research, prompts"}  # present before this session
+  - {sha: "b0b4bfa", message: "build(prereq): add make prereq-check per PREREQUISITES.md"}  # earlier K1 attempt (BLOCKED)
+  - {sha: "eca75cd", message: "test(prereq): record K1 prerequisite check — BLOCKED"}  # earlier K1 attempt
+  - {sha: "c7908cc", message: "fix(prereq): accept buildx version with or without v prefix"}  # earlier K1 attempt
+  - {sha: "ee25ebd", message: "fix(evidence): refuse to overwrite existing command logs"}
+  - {sha: "4265571", message: "test(prereq): record K1 prerequisite check — PASS (26/26)"}
+  - {sha: "2269e69", message: "docs(contract): go.mod without redundant toolchain line (ADR-0019)"}
+  - {sha: "2e6602a", message: "build: Go module, Apache-2.0 license, fixed parameters"}
+  - {sha: "1304fb1", message: "feat(history): canonical hash-chained streams and sealed run directories"}
+  - {sha: "659e1f3", message: "feat(plan): seed-deterministic plan generator (§6.3)"}
+  - {sha: "d97e37c", message: "feat(workload): W1-W4 clients and the §6.2 completion classification"}
+  - {sha: "d88bc66", message: "docs(contract): re-resolved base image digests, etcd digest locked (ADR-0020)"}
+  - {sha: "5026577", message: "docs(contract): pooler runs as the node's postgres user (ADR-0021)"}
+  - {sha: "ce16011", message: "fix(history): canonical JSON accepts string-keyed maps and slices of any element type"}
+  - {sha: "62223c7", message: "feat(runner): HEALTHY predicate, workload execution and cluster init job"}
+  - {sha: "a081ad5", message: "feat(images): build from the pinned commit and write images.lock.json"}
+  - {sha: "f680e01", message: "feat(cluster): baseline Compose topology, lifecycle and runs"}
+  - {sha: "1d122f3", message: "feat(cli): commitproof, cpcheck verify-seal and cpgate K1"}
+  - {sha: "2c9ccaf", message: "ci: make targets, CI workflow and K1 evidence scripts"}
+  - {sha: "4a83b3c", message: "fix(params): implement contract 1.0.3"}
+  - {sha: "a701897", message: "fix(images): record up to three build attempts on transient fetch failures"}
+  - {sha: "ad0eb54", message: "docs(limitations): LIM-21 one process user per node (ADR-0021)"}
+  - {sha: "e98136c", message: "build(images): lock the K1 images"}  # lock of the discarded first evidence run
+  - {sha: "5af2749", message: "fix(evidence): record repository-relative paths only"}
+  - {sha: "7b76edd", message: "build(images): lock the K1 images of the final evidence run"}
+  - {sha: "(the commit that adds this file)", message: "test(gate): K1 evidence — gate PASS with negative controls"}
 gate:
   command: "cpgate K1 --evidence evidence/K1 --negative-controls"
-  exit_code: null            # not run: sprint stopped at prompt §2 (prerequisites)
+  exit_code: 0   # record cpgate-k1 in evidence/K1/commands.jsonl, stdout sha256 16f1c0d163a4e5484aabbd413d05a985b362d529facf04033e63859459df3798; gate.json sha256 b2bb191649dd65560d307061b91f5fed7182866a5a410850e6f64ffb399a2d25
   criteria:
-    - {id: "K1.1", result: NOT_RUN, evidence: null, sha256: null}
-    - {id: "K1.2", result: NOT_RUN, evidence: null, sha256: null}
-    - {id: "K1.3", result: NOT_RUN, evidence: null, sha256: null}
-    - {id: "K1.4", result: NOT_RUN, evidence: null, sha256: null}
-    - {id: "K1.5", result: NOT_RUN, evidence: null, sha256: null}
-    - {id: "K1.6", result: NOT_RUN, evidence: null, sha256: null}
-    - {id: "K1.7", result: NOT_RUN, evidence: null, sha256: null}
-    - {id: "K1.8", result: NOT_RUN, evidence: null, sha256: null}
-  negative_controls: []
+    - {id: "K1.1", result: PASS, evidence: "evidence/K1/images.lock.build1.json", sha256: "329e5a01274049edb518ff46178235fc69ca9e0fd21f76e333783e9ba573d707"}
+    - {id: "K1.2", result: PASS, evidence: "evidence/K1/images.lock.build2.json", sha256: "de30b2bfe3ea1abd18c28c983c13f825e65f7db54823f67d579952511ca25959"}
+    - {id: "K1.3", result: PASS, evidence: "evidence/K1/derivation/derivation.json", sha256: "0accd93dab82f87eec84418730ff9521c1e6c149637b1f4eaca19803f24fc07d"}
+    - {id: "K1.4", result: PASS, evidence: "evidence/K1/commands.jsonl (updown-1..3-up/verify/down)", sha256: "66e7ed2aeb63f83532ecb59b5c82a95334f920d550cebf5b64aa8524c00ea568"}  # commands.jsonl as cpgate read it, before the cpgate-k1 record was appended
+    - {id: "K1.5", result: PASS, evidence: "evidence/K1/memory-samples.jsonl", sha256: "26f1afba1fe39e91b25f9d741ccd24d6bfe2c9a594a504b741520754afcdc764"}
+    - {id: "K1.6", result: PASS, evidence: "evidence/K1/commands.jsonl (plan-42-a..d, plan-43)", sha256: "66e7ed2aeb63f83532ecb59b5c82a95334f920d550cebf5b64aa8524c00ea568"}
+    - {id: "K1.7", result: PASS, evidence: "evidence/K1/runs/20261011T015033Z-smoke-42-real-8437a280/seal.json", sha256: "e4c744894c69b7b526aeec4258834deff749a8f4c7a9ec317cbdc6c37034375a"}  # Merkle root 77cc860c96ef88c85d26623f86a34d4fd02371591cb5f811dbaaa1e5dd92b690
+    - {id: "K1.8", result: PASS, evidence: "evidence/K1/commands.jsonl (ci)", sha256: "66e7ed2aeb63f83532ecb59b5c82a95334f920d550cebf5b64aa8524c00ea568"}
+  negative_controls:   # evidence/K1/negative-controls.json, sha256 53d8f75efa993bc160c063cf1dffea98ce4eab5dd17cfd73f2bcb72e1a1339e4
+    - {criterion: "K1.1", sabotage: "remove the base_images field from images.lock.build1.json", failed_only_target: true}
+    - {criterion: "K1.2", sabotage: "alter the multigateway sha256 in images.lock.build2.json (second-build record)", failed_only_target: true}
+    - {criterion: "K1.3", sabotage: "add a RUN line to the derived build/Dockerfile copy", failed_only_target: true}
+    - {criterion: "K1.4", sabotage: "add a leftover volume to the second teardown record (hashes kept consistent)", failed_only_target: true}
+    - {criterion: "K1.5", sabotage: "set one recorded sample's first container to 7GiB (above P10)", failed_only_target: true}
+    - {criterion: "K1.6", sabotage: "alter the plan_sha256 recorded by plan-42-b (hashes kept consistent)", failed_only_target: true}
+    - {criterion: "K1.7", sabotage: "flip one byte in the copied history.jsonl of the smoke run", failed_only_target: true}
+    - {criterion: "K1.8", sabotage: "replace the recorded exit code of `make ci-unit ci-cluster-smoke` with 1", failed_only_target: true}
 demonstrated:
-  # No claims.yaml exists yet (K7 deliverable); each line cites its artifact and sha256 instead.
-  - "make prereq-check checks all 26 rows of docs/PREREQUISITES.md §1–§4, §6 and records PASS/FAIL with observed values: 12 PASS, 14 FAIL (evidence/K1/prereq.json sha256 4c3021756c476061349e5ddb63915153f9b2add6f9cc6ea359ea2ee96f9d0730; command record evidence/K1/commands.jsonl, stdout sha256 bb0a585ce501f134d69d94ddc63755c2e08199ed25150b57700e657c17bda97f)"
+  # No claims.yaml exists yet (K7 deliverable, §17); each line cites its artifact and sha256 instead (details in evidence/K1/NOTES.md).
+  - "Multigres e3cbdbb builds from source with upstream Dockerfiles changed only in FROM lines (derivation.json 0accd93d…c07d); the six binaries are byte-identical after docker builder prune -af and a --no-cache rebuild (images.lock.build1.json 329e5a01…d707 vs images.lock.build2.json de30b2bf…5959)."
+  - "The baseline topology of §5.1 came up from zero three times and reached HEALTHY in 23.7 s, 24.3 s and 25.4 s (P09 300 s); multigres.version() reported e3cbdbbb0b94; every down left 0 containers, volumes and networks (commands.jsonl records updown-*, gate K1.4)."
+  - "Peak sum of container memory during the 45 s smoke run was 482.9 MiB (P10 6 GiB) over 83 one-second samples (memory-samples.jsonl 26f1afba…c764)."
+  - "commitproof plan is byte-deterministic across invocations and a go clean -cache rebuild (seed 42: 8437a280…58b5 four times; seed 43 differs)."
+  - "The seed-42 smoke run produced a sealed, hash-chained, well-formed history with ok operations of W1–W4 and 0 info completions (seal root 77cc860c…b690; cpcheck verify-seal exit 0)."
+  - "make ci-unit ci-cluster-smoke exits 0 locally; the workflow passes actionlint 1.7.12 (records ci, lint-workflow)."
 not_demonstrated:
-  - "K1.1–K1.8: nothing beyond the prerequisite check was built or run (Go module, images, lock, Compose topology, HEALTHY predicate, runner, plan, workloads W1–W4, history/observation writers, seal, cpcheck verify-seal, cpgate K1, CI workflow)"
+  - "Any checker verdict (C1–C9) on a history — K2."
+  - "Nemesis helpers nem-*, any fault, the slowfs layer of the pgctld image — K3 deliverables; the K1 topology has no helper containers."
+  - "/metrics scraping (P23) in observations.jsonl — K1 observes pooler Status RPCs (P24) only; metric timelines are K6."
+  - "Memory and HEALTHY behaviour under 90 s campaigns, faults or with n4 started."
+  - "The CI workflow on GitHub-hosted runners (requires a push by the owner; LIM-16)."
+  - "Profiles other than baseline (cluster up --profile <other> exits 3 in K1)."
 findings: []
-adrs_added: []
+adrs_added:
+  - "ADR-0019: go.mod has no toolchain line equal to its go line (go1.26.9 rejects it: 'updates to go.mod needed')"
+  - "ADR-0020: base image digests re-resolved in K1 (golang and debian moved); etcd and actionlint digests locked"
+  - "ADR-0021: the two processes of a node run as one user (uid 999); with the images' own users multipooler could not start"
 deviations_from_prompt:
-  - "Prompt §1 (foundation commit) was already done before this session: commit a22c081 has the exact message and DCO sign-off; K0 documents were not re-committed or edited."
-  - "PREREQUISITES §1 'Sleep' row has no check command ('owner's choice of power settings'). prereq-check verifies it fail-closed as `systemctl is-enabled sleep.target` == masked (sleep.target is required by every suspend/hibernate target); any other state is FAIL."
-  - "Disk rows ('≥ 40 GB', '≥ 5 GB') are evaluated in GiB, which is stricter than GB."
-  - "Kernel-module rows accept a module loaded (lsmod, as documented) or built into the running kernel (modules.builtin); both mean the facility is available."
-  - "commands.jsonl records exit_code 2 for `make prereq-check`: make maps the recipe's exit 3 (CONTRACT §5.6 prerequisite error, visible in the recorded stderr 'Error 3') to its own exit 2."
-blocked:
-  condition: >-
-    make prereq-check: 14 of 26 PREREQUISITES items FAIL. R1 RAM available 11.27 GiB < 12 GiB;
-    R3 /var/lib/docker absent; R5 sleep.target not masked (static); P1–P3 docker, docker-buildx,
-    docker-compose not installed; P8 jq not installed; D1 docker.service not found/inactive;
-    D2 user not in docker group; D3–D5 unverifiable without Docker (fail-closed);
-    K2 nft_compat and K3 sch_netem not loaded, and cannot be loaded without a reboot because the
-    running kernel 7.2.6-arch2-1 has no /lib/modules directory (installed kernel package is linux 7.2.9.arch1-1).
-  evidence:
-    command: "scripts/record-command.sh evidence/K1/commands.jsonl evidence/K1/logs prereq-check -- make prereq-check"
-    output_excerpt: |
-      FAIL  R1    RAM available                 observed=MemAvailable=11.27 GiB (MemTotal=14.91 GiB)
-      FAIL  R3    Disk (Docker root)            observed=/var/lib/docker: No such file or directory
-      FAIL  R5    No suspend during campaigns   observed=sleep.target=static
-      FAIL  P1    docker                        observed=docker: command not found; error: package 'docker' was not found
-      FAIL  P2    docker-buildx                 observed=docker: command not found; error: package 'docker-buildx' was not found
-      FAIL  P3    docker-compose                observed=docker: command not found; error: package 'docker-compose' was not found
-      FAIL  P8    jq                            observed=jq: command not found; error: package 'jq' was not found
-      FAIL  D1    Docker daemon running         observed=is-active=inactive; is-enabled=not-found
-      FAIL  D2    User in docker group          observed=groups: cesarmanzocode wheel; docker info without sudo: docker: command not found
-      FAIL  D3    cgroup v2                     observed=docker: command not found
-      FAIL  D4    Storage driver                observed=docker: command not found
-      FAIL  D5    Bridge subnet free            observed=ip routes in 10.77.0.0/24: 0; docker networks: unverifiable (docker: command not found)
-      FAIL  K2    kernel module nft_compat      observed=not loaded; kernel 7.2.6-arch2-1; /lib/modules/7.2.6-arch2-1 missing (installed: 7.2.9-arch1-1) — modprobe cannot load modules until reboot
-      FAIL  K3    kernel module sch_netem       observed=not loaded; kernel 7.2.6-arch2-1; /lib/modules/7.2.6-arch2-1 missing (installed: 7.2.9-arch1-1) — modprobe cannot load modules until reboot
-      {"command":"prereq-check","fail":14,"output":"evidence/K1/prereq.json","pass":12,"result":"FAIL","total":26}
-  owner_action: >-
-    Install and configure the host prerequisites, then reboot:
-    `sudo pacman -S --needed docker docker-buildx docker-compose jq &&
-    sudo systemctl enable docker.service &&
-    sudo usermod -aG docker cesarmanzocode &&
-    printf 'nf_tables\nnft_compat\nsch_netem\nfuse\n' | sudo tee /etc/modules-load.d/commitproof.conf &&
-    sudo systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target &&
-    sudo reboot`
-    — the reboot boots the installed 7.2.9 kernel (whose modules exist), loads the modules,
-    starts Docker and applies the docker group. Then, with memory-heavy applications closed so
-    MemAvailable ≥ 12 GiB, run `make prereq-check` (expect 26/26 PASS) and restart sprint K1.
-    (Masking sleep targets is reversible with `sudo systemctl unmask …`.)
+  - "Prompt §1 (foundation commit) was already done before this session (a22c081)."
+  - "Prompt §3 asks for go.mod `toolchain go1.26.9`; the go command rejects it next to `go 1.26.9` (ADR-0019; the contract wins)."
+  - "The pgctld image has no slowfs layer yet (§5.2 slowfs is a K3 deliverable); it is built directly from the derived Dockerfile as commitproof/pgctld:real."
+  - "The §5.1 table lists nem-* helper containers; they are a K3 deliverable (§15 K3 'Nemesis helper image') and are not in the K1 Compose file."
+  - "§5.4 observations include metric scrapes (P23); K1 records pooler Status observations (P24) only. Metric scraping lands with K6's timelines."
+  - "The runner image is part of images.lock.json; `commitproof run` refuses a runner image built from a different commitproof commit."
+  - "The HEALTHY check and the run execute inside the runner container through hidden subcommands (`commitproof __runner healthy|run`, `__init`, `__memsample`); the §5.6 commands are unchanged."
+  - "The K1.5 sampler is `commitproof __memsample` (docker stats --no-stream every 1 s, raw MemUsage strings recorded; cpgate parses them itself)."
+  - "Clients 10–12 in the history are the runner's recovery/final-read clients (one per gateway); §6.1 describes clients 0–9 for the workload."
+  - "A first complete evidence run (gate PASS) was discarded because its records contained absolute host paths (AGENTS.md §4); evidence regenerated after 5af2749 (NOTES §5)."
+blocked: null
 pending_user_actions:
-  - "Run the owner_action above, confirm `make prereq-check` passes, then re-run prompts/K1.md."
-next_sprint_ready: false
+  - "Optional: push to GitHub to run .github/workflows/ci.yml remotely (never done by K1–K7; LIM-16)."
+next_sprint_ready: true

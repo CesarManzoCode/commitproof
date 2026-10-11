@@ -1,0 +1,15 @@
+cluster-init
+cluster-metadata
+etcd
+gw-z1
+gw-z2
+gw-z3
+orch-z1
+orch-z2
+orch-z3
+pg-n1
+pg-n2
+pg-n3
+pooler-n1
+pooler-n2
+pooler-n3
