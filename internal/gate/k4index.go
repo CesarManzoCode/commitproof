@@ -1,6 +1,7 @@
 package gate
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -163,8 +164,10 @@ func (e *Evidence) loadK4Run(r *k4Run) {
 		bad("plan: %v", err)
 	}
 	r.PlanSHA = str(r.Manifest, "plan_sha256")
-	if got := FileSHA256(filepath.Join(r.Dir, history.FilePlan)); got != r.PlanSHA {
-		bad("plan.json sha256 %s, manifest says %s", got, r.PlanSHA)
+	// plan_sha256 is the sha256 of the canonical plan bytes; plan.json holds
+	// them plus a newline (CONTRACT §5.4, §6.3).
+	if pb, err := os.ReadFile(filepath.Join(r.Dir, history.FilePlan)); err != nil || sha(bytes.TrimSuffix(pb, []byte("\n"))) != r.PlanSHA {
+		bad("plan.json does not hash to the manifest's plan_sha256 %s", r.PlanSHA)
 	}
 	if str(r.Manifest, "run_id") != r.ID {
 		bad("manifest run_id %q", str(r.Manifest, "run_id"))
