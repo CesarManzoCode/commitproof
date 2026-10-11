@@ -56,6 +56,8 @@ func run(args []string) int {
 	switch sprint {
 	case "K1":
 		crits = gate.K1()
+	case "K2":
+		crits = gate.K2()
 	default:
 		return summary(map[string]any{"command": "cpgate", "sprint": sprint, "error": "gate not implemented yet"}, 3)
 	}
