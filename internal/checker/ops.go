@@ -33,12 +33,12 @@ type Op struct {
 	Type     string
 	// Value is the completion's value for ok ops (the observed result) and
 	// the invoke's value otherwise.
-	Value    any
-	InValue  any
-	Err      map[string]any
-	CompI    int64
-	Notices  []any
-	Done     bool
+	Value   any
+	InValue any
+	Err     map[string]any
+	CompI   int64
+	Notices []any
+	Done    bool
 }
 
 // End is the latest time the op's effect may have happened: its completion

@@ -132,9 +132,9 @@ func CheckCDC(h *History) Result {
 		return fa[ch.k][ch.v]
 	}
 	type delivery struct {
-		op            *Op
-		conn          int64
-		lsn, flushed  int64
+		op           *Op
+		conn         int64
+		lsn, flushed int64
 	}
 	first := map[cdcChange][]delivery{}
 	lastLSN := map[[2]int64]map[string]delivery{} // (conn) → key → last delivery

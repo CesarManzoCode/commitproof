@@ -181,9 +181,9 @@ func prefix(ops []regOp, t int64) []regOp {
 
 // keyResult is C4's verdict on one key, kept for C6.
 type keyResult struct {
-	res      porcupine.CheckResult
-	ops      []regOp
-	earliest *regOp // the earliest offending op, if found
+	res           porcupine.CheckResult
+	ops           []regOp
+	earliest      *regOp // the earliest offending op, if found
 	searchUnknown bool
 }
 

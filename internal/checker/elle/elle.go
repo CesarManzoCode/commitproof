@@ -42,12 +42,12 @@ const (
 
 // Requested anomalies of the two class runs.
 var (
-	base           = []string{"G0", "G1a", "G1b", "G1c", "G-single", "G-nonadjacent", "G2-item", "incompatible-order", "dirty-update"}
-	ordered        = []string{"G0", "G1c", "G-single", "G-nonadjacent", "G2-item"}
-	ProcessAnoms   = withSuffix("-process")
-	RealtimeAnoms  = withSuffix("-realtime")
-	ElleModelOf    = map[string]string{"serializable": "serializable", "repeatable-read": "snapshot-isolation"}
-	informational  = map[string]bool{"empty-transaction-graph": true}
+	base          = []string{"G0", "G1a", "G1b", "G1c", "G-single", "G-nonadjacent", "G2-item", "incompatible-order", "dirty-update"}
+	ordered       = []string{"G0", "G1c", "G-single", "G-nonadjacent", "G2-item"}
+	ProcessAnoms  = withSuffix("-process")
+	RealtimeAnoms = withSuffix("-realtime")
+	ElleModelOf   = map[string]string{"serializable": "serializable", "repeatable-read": "snapshot-isolation"}
+	informational = map[string]bool{"empty-transaction-graph": true}
 )
 
 func withSuffix(s string) []string {
