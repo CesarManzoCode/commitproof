@@ -1,0 +1,469 @@
+# CommitProof topology, profile `h1` (CONTRACT §5.5, §9.4; ADR-0015).
+#
+# The historical control: Multigres at 4bca1d5770a6bd425bde5a61eaad240431242cd5
+# (issue #778, S51) with flags copied from that commit's demo/k8s/*.yaml;
+# deploy/DERIVATION-h1.md records the source line of every flag and every
+# divergence. Structure (helpers, runner, volumes, slowfs node layer,
+# restart: "no") is the baseline's (deploy/compose.yaml). There is no n4.
+
+name: commitproof
+
+networks:
+  cpnet:
+    ipam:
+      config:
+        - subnet: ${CP_SUBNET:-10.77.0.0/24}
+          ip_range: ${CP_NET_PREFIX:-10.77.0}.128/25
+
+volumes:
+  certs: {}
+  backups: {}
+  etcd-data: {}
+  data-n1: {}
+  data-n2: {}
+  data-n3: {}
+
+services:
+  cluster-init:
+    image: commitproof/runner:${CP_RUNNER_TAG:-real}
+    pull_policy: never
+    restart: "no"
+    network_mode: none
+    user: "0:0"
+    entrypoint: ["/usr/local/bin/commitproof", "__init"]
+    command: ["--certs=/certs", "--volume=/backups", "--volume=/data-n1", "--volume=/data-n2", "--volume=/data-n3"]
+    volumes:
+      - certs:/certs
+      - backups:/backups
+      - data-n1:/data-n1
+      - data-n2:/data-n2
+      - data-n3:/data-n3
+
+  etcd:
+    image: quay.io/coreos/etcd:v3.6.4@sha256:885a73b09cde0293c84adad3d589cc5d091f03e61d390b94413c0a866ccfe232
+    restart: "no"
+    hostname: etcd
+    command:
+      - /usr/local/bin/etcd
+      - --name=etcd-0
+      - --data-dir=/var/lib/etcd
+      - --listen-client-urls=http://0.0.0.0:2379
+      - --advertise-client-urls=http://etcd:2379
+      - --listen-peer-urls=http://0.0.0.0:2380
+      - --initial-advertise-peer-urls=http://etcd:2380
+      - --initial-cluster=etcd-0=http://etcd:2380
+      - --initial-cluster-state=new
+      - --listen-metrics-urls=http://0.0.0.0:2381
+    volumes:
+      - etcd-data:/var/lib/etcd
+    networks:
+      cpnet:
+        ipv4_address: ${CP_NET_PREFIX:-10.77.0}.10
+    healthcheck:
+      test: ["CMD", "/usr/local/bin/etcdctl", "--endpoints=http://127.0.0.1:2379", "endpoint", "health"]
+      interval: 1s
+      timeout: 5s
+      retries: 60
+
+  cluster-metadata:
+    image: commitproof/multigres:h1
+    pull_policy: never
+    restart: "no"
+    healthcheck: {disable: true}
+    command:
+      - /multigres/bin/multigres
+      - createclustermetadata
+      - --global-topo-address=etcd:2379
+      - --global-topo-root=/multigres/test/global
+      - --cells=zone1
+      - --durability-policy=ANY_2
+      - --backup-location=/backups
+    networks: [cpnet]
+    depends_on:
+      etcd: {condition: service_healthy}
+
+  pg-n1:
+    image: commitproof/pgctld:h1
+    pull_policy: never
+    restart: "no"
+    healthcheck: {disable: true}
+    hostname: pg-n1
+    user: "0:0"
+    devices: ["/dev/fuse:/dev/fuse"]
+    cap_add: [SYS_ADMIN]
+    security_opt: ["apparmor:unconfined"]
+    entrypoint: ["/usr/local/bin/slowfs", "run", "--backing=/data-backing", "--mount=/data", "--control=/run/slowfs/control",
+                 "--bypass=pg_sockets", "--uid=999", "--gid=999", "--", "/usr/local/bin/pgctld"]
+    command:
+      - server
+      - --pooler-dir=/data
+      - --grpc-port=16200
+      - --pg-port=5432
+      - --grpc-socket-file=/data/pgctld.sock
+      - --pg-hba-template=/etc/pgctld/pg_hba_template.conf
+      - --pgbackrest-port=8432
+      - --pgbackrest-cert-dir=/certs
+    environment:
+      PGDATA: /data/pg_data
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - data-n1:/data-backing
+      - certs:/certs
+      - backups:/backups
+      - ./pg_hba_template.conf:/etc/pgctld/pg_hba_template.conf:ro
+    networks:
+      cpnet:
+        ipv4_address: ${CP_NET_PREFIX:-10.77.0}.11
+        aliases: [pooler-n1]
+    depends_on:
+      cluster-init: {condition: service_completed_successfully}
+
+  pooler-n1:
+    image: commitproof/multigres:h1
+    pull_policy: never
+    restart: "no"
+    healthcheck: {disable: true}
+    user: "999:999"
+    network_mode: service:pg-n1
+    command:
+      - /multigres/bin/multipooler
+      - --http-port=16000
+      - --grpc-port=16100
+      - --topo-global-server-addresses=etcd:2379
+      - --topo-global-root=/multigres/test/global
+      - --cell=zone1
+      - --database=postgres
+      - --table-group=default
+      - --shard=0-inf
+      - --service-id=n1
+      - --pooler-dir=/data
+      - --pgctld-addr=localhost:16200
+      - --pg-port=5432
+      - --socket-file=/data/pg_sockets/.s.PGSQL.5432
+      - --grpc-socket-file=/data/multipooler.sock
+      - --connpool-global-capacity=50
+      - --service-map=grpc-pooler
+      - --pgbackrest-cert-file=/certs/pgbackrest.crt
+      - --pgbackrest-key-file=/certs/pgbackrest.key
+      - --pgbackrest-ca-file=/certs/ca.crt
+      - --pgbackrest-port=8432
+      - --hostname=pooler-n1
+    environment:
+      PGDATA: /data/pg_data
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - data-n1:/data
+      - certs:/certs
+      - backups:/backups
+    depends_on:
+      pg-n1: {condition: service_started}
+      cluster-metadata: {condition: service_completed_successfully}
+
+  pg-n2:
+    image: commitproof/pgctld:h1
+    pull_policy: never
+    restart: "no"
+    healthcheck: {disable: true}
+    hostname: pg-n2
+    user: "0:0"
+    devices: ["/dev/fuse:/dev/fuse"]
+    cap_add: [SYS_ADMIN]
+    security_opt: ["apparmor:unconfined"]
+    entrypoint: ["/usr/local/bin/slowfs", "run", "--backing=/data-backing", "--mount=/data", "--control=/run/slowfs/control",
+                 "--bypass=pg_sockets", "--uid=999", "--gid=999", "--", "/usr/local/bin/pgctld"]
+    command:
+      - server
+      - --pooler-dir=/data
+      - --grpc-port=16200
+      - --pg-port=5432
+      - --grpc-socket-file=/data/pgctld.sock
+      - --pg-hba-template=/etc/pgctld/pg_hba_template.conf
+      - --pgbackrest-port=8432
+      - --pgbackrest-cert-dir=/certs
+    environment:
+      PGDATA: /data/pg_data
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - data-n2:/data-backing
+      - certs:/certs
+      - backups:/backups
+      - ./pg_hba_template.conf:/etc/pgctld/pg_hba_template.conf:ro
+    networks:
+      cpnet:
+        ipv4_address: ${CP_NET_PREFIX:-10.77.0}.12
+        aliases: [pooler-n2]
+    depends_on:
+      cluster-init: {condition: service_completed_successfully}
+
+  pooler-n2:
+    image: commitproof/multigres:h1
+    pull_policy: never
+    restart: "no"
+    healthcheck: {disable: true}
+    user: "999:999"
+    network_mode: service:pg-n2
+    command:
+      - /multigres/bin/multipooler
+      - --http-port=16000
+      - --grpc-port=16100
+      - --topo-global-server-addresses=etcd:2379
+      - --topo-global-root=/multigres/test/global
+      - --cell=zone1
+      - --database=postgres
+      - --table-group=default
+      - --shard=0-inf
+      - --service-id=n2
+      - --pooler-dir=/data
+      - --pgctld-addr=localhost:16200
+      - --pg-port=5432
+      - --socket-file=/data/pg_sockets/.s.PGSQL.5432
+      - --grpc-socket-file=/data/multipooler.sock
+      - --connpool-global-capacity=50
+      - --service-map=grpc-pooler
+      - --pgbackrest-cert-file=/certs/pgbackrest.crt
+      - --pgbackrest-key-file=/certs/pgbackrest.key
+      - --pgbackrest-ca-file=/certs/ca.crt
+      - --pgbackrest-port=8432
+      - --hostname=pooler-n2
+    environment:
+      PGDATA: /data/pg_data
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - data-n2:/data
+      - certs:/certs
+      - backups:/backups
+    depends_on:
+      pg-n2: {condition: service_started}
+      cluster-metadata: {condition: service_completed_successfully}
+
+  pg-n3:
+    image: commitproof/pgctld:h1
+    pull_policy: never
+    restart: "no"
+    healthcheck: {disable: true}
+    hostname: pg-n3
+    user: "0:0"
+    devices: ["/dev/fuse:/dev/fuse"]
+    cap_add: [SYS_ADMIN]
+    security_opt: ["apparmor:unconfined"]
+    entrypoint: ["/usr/local/bin/slowfs", "run", "--backing=/data-backing", "--mount=/data", "--control=/run/slowfs/control",
+                 "--bypass=pg_sockets", "--uid=999", "--gid=999", "--", "/usr/local/bin/pgctld"]
+    command:
+      - server
+      - --pooler-dir=/data
+      - --grpc-port=16200
+      - --pg-port=5432
+      - --grpc-socket-file=/data/pgctld.sock
+      - --pg-hba-template=/etc/pgctld/pg_hba_template.conf
+      - --pgbackrest-port=8432
+      - --pgbackrest-cert-dir=/certs
+    environment:
+      PGDATA: /data/pg_data
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - data-n3:/data-backing
+      - certs:/certs
+      - backups:/backups
+      - ./pg_hba_template.conf:/etc/pgctld/pg_hba_template.conf:ro
+    networks:
+      cpnet:
+        ipv4_address: ${CP_NET_PREFIX:-10.77.0}.13
+        aliases: [pooler-n3]
+    depends_on:
+      cluster-init: {condition: service_completed_successfully}
+
+  pooler-n3:
+    image: commitproof/multigres:h1
+    pull_policy: never
+    restart: "no"
+    healthcheck: {disable: true}
+    user: "999:999"
+    network_mode: service:pg-n3
+    command:
+      - /multigres/bin/multipooler
+      - --http-port=16000
+      - --grpc-port=16100
+      - --topo-global-server-addresses=etcd:2379
+      - --topo-global-root=/multigres/test/global
+      - --cell=zone1
+      - --database=postgres
+      - --table-group=default
+      - --shard=0-inf
+      - --service-id=n3
+      - --pooler-dir=/data
+      - --pgctld-addr=localhost:16200
+      - --pg-port=5432
+      - --socket-file=/data/pg_sockets/.s.PGSQL.5432
+      - --grpc-socket-file=/data/multipooler.sock
+      - --connpool-global-capacity=50
+      - --service-map=grpc-pooler
+      - --pgbackrest-cert-file=/certs/pgbackrest.crt
+      - --pgbackrest-key-file=/certs/pgbackrest.key
+      - --pgbackrest-ca-file=/certs/ca.crt
+      - --pgbackrest-port=8432
+      - --hostname=pooler-n3
+    environment:
+      PGDATA: /data/pg_data
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - data-n3:/data
+      - certs:/certs
+      - backups:/backups
+    depends_on:
+      pg-n3: {condition: service_started}
+      cluster-metadata: {condition: service_completed_successfully}
+
+  orch-z1:
+    image: commitproof/multigres:h1
+    pull_policy: never
+    restart: "no"
+    healthcheck: {disable: true}
+    hostname: orch-z1
+    command:
+      - /multigres/bin/multiorch
+      - --http-port=17000
+      - --grpc-port=17100
+      - --hostname=orch-z1
+      - --topo-global-server-addresses=etcd:2379
+      - --topo-global-root=/multigres/test/global
+      - --cell=zone1
+      - --watch-targets=postgres
+      - --pooler-health-check-interval=500ms
+      - --recovery-cycle-interval=500ms
+    networks:
+      cpnet:
+        ipv4_address: ${CP_NET_PREFIX:-10.77.0}.21
+    depends_on:
+      cluster-metadata: {condition: service_completed_successfully}
+
+  gw-z1:
+    image: commitproof/multigres:h1
+    pull_policy: never
+    restart: "no"
+    healthcheck: {disable: true}
+    hostname: gw-z1
+    command:
+      - /multigres/bin/multigateway
+      - --http-port=15000
+      - --grpc-port=15100
+      - --pg-port=15432
+      - --hostname=gw-z1
+      - --topo-global-server-addresses=etcd:2379
+      - --topo-global-root=/multigres/test/global
+      - --cell=zone1
+    networks:
+      cpnet:
+        ipv4_address: ${CP_NET_PREFIX:-10.77.0}.31
+    depends_on:
+      cluster-metadata: {condition: service_completed_successfully}
+
+  gw-z2:
+    image: commitproof/multigres:h1
+    pull_policy: never
+    restart: "no"
+    healthcheck: {disable: true}
+    hostname: gw-z2
+    command:
+      - /multigres/bin/multigateway
+      - --http-port=15000
+      - --grpc-port=15100
+      - --pg-port=15432
+      - --hostname=gw-z2
+      - --topo-global-server-addresses=etcd:2379
+      - --topo-global-root=/multigres/test/global
+      - --cell=zone1
+    networks:
+      cpnet:
+        ipv4_address: ${CP_NET_PREFIX:-10.77.0}.32
+    depends_on:
+      cluster-metadata: {condition: service_completed_successfully}
+
+  gw-z3:
+    image: commitproof/multigres:h1
+    pull_policy: never
+    restart: "no"
+    healthcheck: {disable: true}
+    hostname: gw-z3
+    command:
+      - /multigres/bin/multigateway
+      - --http-port=15000
+      - --grpc-port=15100
+      - --pg-port=15432
+      - --hostname=gw-z3
+      - --topo-global-server-addresses=etcd:2379
+      - --topo-global-root=/multigres/test/global
+      - --cell=zone1
+    networks:
+      cpnet:
+        ipv4_address: ${CP_NET_PREFIX:-10.77.0}.33
+    depends_on:
+      cluster-metadata: {condition: service_completed_successfully}
+
+  # Nemesis helpers and runner: as deploy/compose.yaml (CONTRACT §5.1, §8).
+  nem-etcd: &nem
+    image: commitproof/nemesis:${CP_IMAGE_TAG:-real}
+    pull_policy: never
+    restart: "no"
+    network_mode: service:etcd
+    cap_drop: [ALL]
+    cap_add: [NET_ADMIN]
+    depends_on:
+      etcd: {condition: service_started}
+
+  nem-pg-n1:
+    <<: *nem
+    network_mode: service:pg-n1
+    depends_on:
+      pg-n1: {condition: service_started}
+
+  nem-pg-n2:
+    <<: *nem
+    network_mode: service:pg-n2
+    depends_on:
+      pg-n2: {condition: service_started}
+
+  nem-pg-n3:
+    <<: *nem
+    network_mode: service:pg-n3
+    depends_on:
+      pg-n3: {condition: service_started}
+
+  nem-orch-z1:
+    <<: *nem
+    network_mode: service:orch-z1
+    depends_on:
+      orch-z1: {condition: service_started}
+
+  nem-gw-z1:
+    <<: *nem
+    network_mode: service:gw-z1
+    depends_on:
+      gw-z1: {condition: service_started}
+
+  nem-gw-z2:
+    <<: *nem
+    network_mode: service:gw-z2
+    depends_on:
+      gw-z2: {condition: service_started}
+
+  nem-gw-z3:
+    <<: *nem
+    network_mode: service:gw-z3
+    depends_on:
+      gw-z3: {condition: service_started}
+
+  runner:
+    image: commitproof/runner:${CP_RUNNER_TAG:-real}
+    pull_policy: never
+    restart: "no"
+    profiles: [runner]
+    hostname: runner
+    entrypoint: ["/usr/local/bin/commitproof"]
+    group_add: ["${CP_DOCKER_GID:-0}"]
+    environment:
+      DOCKER_CONFIG: /tmp/.docker
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      cpnet:
+        ipv4_address: ${CP_NET_PREFIX:-10.77.0}.40

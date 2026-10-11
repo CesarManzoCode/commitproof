@@ -32,8 +32,9 @@ const Project = "commitproof"
 // ProjectLabel selects every Docker resource of the project.
 const ProjectLabel = "com.docker.compose.project=" + Project
 
-// Profiles implemented by deploy/ (K1: baseline only).
-var implemented = map[string]bool{"baseline": true}
+// Profiles implemented by deploy/ and their Compose files (K1: baseline;
+// K4: h1, the historical control, CONTRACT §5.5, ADR-0025).
+var composeFiles = map[string]string{"baseline": "deploy/compose.yaml", "h1": "deploy/compose-h1.yaml"}
 
 // Cluster is the host-side handle.
 type Cluster struct {
@@ -44,14 +45,49 @@ type Cluster struct {
 	// RunnerTag selects the runner image of `run` (images.RunnerTag);
 	// HEALTHY checks always use the real runner.
 	RunnerTag string
+	// Mutant is "" (real build) or M<n>: the Multigres services run
+	// commitproof/multigres:M<n> (CONTRACT §5.2, §9.1).
+	Mutant string
 }
 
 // New validates the profile.
 func New(root, profile string, rec *cmdlog.Recorder) (*Cluster, error) {
-	if !implemented[profile] {
-		return nil, fmt.Errorf("profile %q is not implemented yet (implemented: baseline)", profile)
+	if _, ok := composeFiles[profile]; !ok {
+		var names []string
+		for p := range composeFiles {
+			names = append(names, p)
+		}
+		sort.Strings(names)
+		return nil, fmt.Errorf("profile %q is not implemented yet (implemented: %v)", profile, names)
 	}
 	return &Cluster{Root: root, Profile: profile, Rec: rec, RunnerTag: "real"}, nil
+}
+
+// SetMutant selects a mutant build (baseline profile only).
+func (c *Cluster) SetMutant(m string) error {
+	if m == "" {
+		c.Mutant = ""
+		return nil
+	}
+	if !images.IsMutant(m) {
+		return fmt.Errorf("mutant %q: want M<n>", m)
+	}
+	if c.Profile != "baseline" {
+		return fmt.Errorf("mutant %s runs on profile baseline, not %s", m, c.Profile)
+	}
+	c.Mutant = m
+	return nil
+}
+
+// Variant is the image variant the cluster runs (images.RequiredTags).
+func (c *Cluster) Variant() string {
+	switch {
+	case c.Mutant != "":
+		return c.Mutant
+	case c.Profile == "h1":
+		return images.VariantH1
+	}
+	return images.VariantReal
 }
 
 // DockerSocket is mounted into the runner (ADR-0018).
@@ -103,15 +139,19 @@ func (c *Cluster) env() ([]string, error) {
 	if tag == "" {
 		tag = "real"
 	}
+	mg := "real"
+	if c.Mutant != "" {
+		mg = c.Mutant
+	}
 	return []string{"CP_SUBNET=" + prefix + ".0/24", "CP_NET_PREFIX=" + prefix, "CP_IMAGE_TAG=real", "CP_RUNNER_TAG=" + tag,
-		"CP_DOCKER_GID=" + gid}, nil
+		"CP_MULTIGRES_TAG=" + mg, "CP_DOCKER_GID=" + gid}, nil
 }
 
 func (c *Cluster) compose(args ...string) []string {
 	// Relative to the repository root, the working directory of every
 	// compose command: recorded argv carry no host-specific paths.
 	return append([]string{"docker", "compose", "--project-name", Project,
-		"--file", "deploy/compose.yaml", "--project-directory", "deploy"}, args...)
+		"--file", composeFiles[c.Profile], "--project-directory", "deploy"}, args...)
 }
 
 func (c *Cluster) run(ctx context.Context, timeout time.Duration, name string, argv []string, o cmdlog.Opts) cmdlog.Result {
@@ -233,10 +273,11 @@ func (c *Cluster) Up(ctx context.Context) UpResult {
 		return fail(3, "prerequisite missing: "+strings.Join(missing, "; "))
 	}
 	b := &images.Builder{Root: c.Root, Rec: c.Rec}
-	mm, _, err := b.Verify(ctx)
+	mm, _, err := b.Verify(ctx, c.Variant())
 	if err != nil {
 		return fail(3, "image lock: "+err.Error())
 	}
+	sum["variant"] = c.Variant()
 	if len(mm) > 0 {
 		var s []string
 		for _, m := range mm {
@@ -305,7 +346,7 @@ func (c *Cluster) Healthy(ctx context.Context, deadline time.Duration) (map[stri
 	if deadline < 0 {
 		deadline = 0
 	}
-	argv := c.RunnerArgs(nil, "__runner", "healthy", fmt.Sprintf("--deadline-ms=%d", deadline.Milliseconds()))
+	argv := c.RunnerArgs(nil, "__runner", "healthy", fmt.Sprintf("--deadline-ms=%d", deadline.Milliseconds()), "--profile="+c.Profile)
 	saved := c.RunnerTag
 	c.RunnerTag = "real"
 	r := c.run(ctx, deadline+host.ComposeTimeout, "runner-healthy", argv, cmdlog.Opts{})

@@ -1,0 +1,35 @@
+CommitProof mutant M1 — sync-standby-cleared (CONTRACT §9.2, ADR-0007)
+
+Intent: postgresqlSyncStandbyManager.setStandbyNames
+(go/services/multipooler/internal/manager/consensus/sync_standby_manager.go:101)
+always writes synchronous_standby_names = '': the primary acknowledges
+commits after its local flush only ("ack before quorum").
+Failure mode modelled: durability not tied to the quorum — an acknowledged
+commit exists only on the leader; a failover to a follower loses it
+(the HA design requires synchronous_commit = on with standbys, S09; the
+rule write path depends on the standby GUCs, S25).
+Sources: S09, S25.
+Detection (§9.2): directed schedule D1 (F1c on the leader for 30 s);
+expected C1 lost-write.
+Function touched: setStandbyNames (one function).
+
+diff --git a/go/services/multipooler/internal/manager/consensus/sync_standby_manager.go b/go/services/multipooler/internal/manager/consensus/sync_standby_manager.go
+index 6c0bd04..9193db8 100644
+--- a/go/services/multipooler/internal/manager/consensus/sync_standby_manager.go
++++ b/go/services/multipooler/internal/manager/consensus/sync_standby_manager.go
+@@ -99,10 +99,11 @@ func (s *postgresqlSyncStandbyManager) setSynchronousCommit(ctx context.Context,
+ }
+ 
+ func (s *postgresqlSyncStandbyManager) setStandbyNames(ctx context.Context, method multipoolermanagerdatapb.SynchronousMethod, numSync int32, names []ReplicaID) error {
+-	value, err := BuildSynchronousStandbyNamesValue(method, numSync, names)
+-	if err != nil {
+-		return err
+-	}
++	// CommitProof mutant M1 (sync-standby-cleared): the standby list the
++	// policy asked for is discarded and synchronous_standby_names is always
++	// written empty, so commits are acknowledged after the local flush only.
++	_, _, _ = method, numSync, names
++	value := ""
+ 	s.logger.InfoContext(ctx, "setting synchronous_standby_names", "value", value)
+ 	execCtx, cancel := context.WithTimeout(ctx, timeouts.PostgresConfigTimeout)
+ 	defer cancel()

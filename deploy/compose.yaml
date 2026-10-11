@@ -84,7 +84,7 @@ services:
 
   # Translation of demo/k8s/k8s-createclustermetadata-job.yaml.
   cluster-metadata:
-    image: commitproof/multigres:${CP_IMAGE_TAG:-real}
+    image: commitproof/multigres:${CP_MULTIGRES_TAG:-real}
     pull_policy: never
     restart: "no"
     healthcheck: {disable: true}
@@ -145,7 +145,7 @@ services:
       cluster-init: {condition: service_completed_successfully}
 
   pooler-n1: &pooler
-    image: commitproof/multigres:${CP_IMAGE_TAG:-real}
+    image: commitproof/multigres:${CP_MULTIGRES_TAG:-real}
     pull_policy: never
     restart: "no"
     healthcheck: {disable: true}
@@ -313,7 +313,7 @@ services:
       cluster-metadata: {condition: service_completed_successfully}
 
   orch-z1: &orch
-    image: commitproof/multigres:${CP_IMAGE_TAG:-real}
+    image: commitproof/multigres:${CP_MULTIGRES_TAG:-real}
     pull_policy: never
     restart: "no"
     healthcheck: {disable: true}
@@ -372,7 +372,7 @@ services:
         ipv4_address: ${CP_NET_PREFIX:-10.77.0}.23
 
   gw-z1: &gw
-    image: commitproof/multigres:${CP_IMAGE_TAG:-real}
+    image: commitproof/multigres:${CP_MULTIGRES_TAG:-real}
     pull_policy: never
     restart: "no"
     healthcheck: {disable: true}

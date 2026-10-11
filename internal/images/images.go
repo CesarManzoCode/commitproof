@@ -135,189 +135,38 @@ func tail(b []byte) string {
 // EnsureSource clones the pinned commit into the build cache if absent and
 // verifies that the checkout is exactly the pinned tree (fail closed).
 func (b *Builder) EnsureSource(ctx context.Context) error {
-	// Commands run in the repository root with relative paths, so recorded
-	// argv carry no host-specific absolute paths (AGENTS.md §4).
-	dir := SourceDir
-	if _, err := os.Stat(filepath.Join(b.Root, dir, ".git")); errors.Is(err, os.ErrNotExist) {
-		if err := os.MkdirAll(filepath.Join(b.Root, dir), 0o755); err != nil {
-			return err
-		}
-		steps := [][]string{
-			{"git", "-C", dir, "init", "-q"},
-			{"git", "-C", dir, "remote", "add", "origin", params.MultigresRepository},
-			{"git", "-C", dir, "fetch", "-q", "--depth", "1", "origin", params.MultigresCommit},
-			{"git", "-C", dir, "checkout", "-q", "FETCH_HEAD"},
-		}
-		for _, s := range steps {
-			if _, err := b.cmd(ctx, "git", s, cmdlog.Opts{}, "git"); err != nil {
-				return err
-			}
-		}
-	}
-	r, err := b.cmd(ctx, "git-head", []string{"git", "-C", dir, "rev-parse", "HEAD"}, cmdlog.Opts{}, "")
-	if err != nil {
-		return err
-	}
-	if got := strings.TrimSpace(string(r.Stdout)); got != params.MultigresCommit {
-		return fmt.Errorf("%s is at %s, not the pinned %s", SourceDir, got, params.MultigresCommit)
-	}
-	r, err = b.cmd(ctx, "git-status", []string{"git", "-C", dir, "status", "--porcelain", "--ignored"}, cmdlog.Opts{}, "")
-	if err != nil {
-		return err
-	}
-	if s := strings.TrimSpace(string(r.Stdout)); s != "" {
-		return fmt.Errorf("%s has local changes or untracked files; the build context must be the pinned tree:\n%s", SourceDir, s)
-	}
-	return nil
+	return b.ensureTree(ctx, treeOf(VariantReal))
 }
 
-// upstreamFile returns a file of the pinned tree.
-func (b *Builder) upstreamFile(ctx context.Context, name string) ([]byte, error) {
-	r, err := b.cmd(ctx, "git-show-"+name, []string{"git", "-C", SourceDir, "show", params.MultigresCommit + ":" + name}, cmdlog.Opts{}, "")
+// upstreamFile returns a file of tree t at its commit.
+func (b *Builder) upstreamFile(ctx context.Context, t tree, name string) ([]byte, error) {
+	r, err := b.cmd(ctx, "git-show-"+name, []string{"git", "-C", t.Dir, "show", t.Commit + ":" + name}, cmdlog.Opts{}, "")
 	return r.Stdout, err
 }
 
-// Build builds every image, hashes their binaries and writes the lock.
-// It returns the lock and the six Multigres binary hashes.
+// Build builds every image of the real build, hashes their binaries and
+// writes the lock. Entries of other variants (mutants, h1) already in the
+// lock are kept when their local images are still there with the locked
+// IDs (otherwise they must be rebuilt with --mutant / --profile).
 func (b *Builder) Build(ctx context.Context, noCache bool) (map[string]any, error) {
 	src, err := host.SourceIdentity(b.Root)
 	if err != nil {
 		return nil, err
 	}
-	if err := b.EnsureSource(ctx); err != nil {
+	t := treeOf(VariantReal)
+	if err := b.ensureTree(ctx, t); err != nil {
 		return nil, err
 	}
-	specs := Specs(src)
-	dockerfiles := map[string]any{}
-	bases := map[string]string{}
-	for _, s := range specs {
-		content, err := os.ReadFile(filepath.Join(b.Root, s.Dockerfile))
-		if err != nil {
-			return nil, err
-		}
-		sum := sha256.Sum256(content)
-		entry := map[string]any{"sha256": hex.EncodeToString(sum[:])}
-		if s.Upstream != "" {
-			up, err := b.upstreamFile(ctx, s.Upstream)
-			if err != nil {
-				return nil, err
-			}
-			rep := gate.CheckDerivation(up, content)
-			if !rep.OK {
-				return nil, fmt.Errorf("%s is not a FROM-only derivation of upstream %s: %v", s.Dockerfile, s.Upstream, rep.Violations)
-			}
-			entry["upstream"] = s.Upstream + "@" + params.MultigresCommit
-			entry["upstream_blob"] = gate.GitBlobID(up)
-		}
-		dockerfiles[s.Dockerfile] = entry
-		for _, ref := range gate.FromRefs(content) {
-			if s.Extends != "" && ref == s.Extends {
-				// A local image built by this run, checked by layers
-				// after the build (ADR-0022).
-				continue
-			}
-			name, digest, ok := strings.Cut(ref, "@")
-			if !ok {
-				return nil, fmt.Errorf("%s: FROM %s is not digest-pinned", s.Dockerfile, ref)
-			}
-			if prev, dup := bases[name]; dup && prev != digest {
-				return nil, fmt.Errorf("base %s pinned to two digests", name)
-			}
-			bases[name] = digest
-		}
-	}
-	compose, err := os.ReadFile(filepath.Join(b.Root, "deploy", "compose.yaml"))
+	imgs, dockerfiles, bases, err := b.buildSpecs(ctx, t, Specs(src), noCache, nil)
 	if err != nil {
 		return nil, err
 	}
-	for _, l := range strings.Split(string(compose), "\n") {
-		l = strings.TrimSpace(l)
-		if ref, ok := strings.CutPrefix(l, "image: "); ok && !strings.HasPrefix(ref, "commitproof/") {
-			name, digest, ok := strings.Cut(ref, "@")
-			if !ok {
-				return nil, fmt.Errorf("deploy/compose.yaml: image %s is not digest-pinned", ref)
-			}
-			bases[name] = digest
-		}
+	if err := composeBases(b.Root, bases); err != nil {
+		return nil, err
 	}
-	imgs := map[string]any{}
-	for _, s := range specs {
-		argv := []string{"docker", "buildx", "build", "--progress=plain", "--provenance=false", "--sbom=false",
-			"--file", s.Dockerfile, "--tag", s.Tag}
-		for _, a := range s.BuildArgs {
-			argv = append(argv, "--build-arg", a[0]+"="+a[1])
-		}
-		if noCache {
-			argv = append(argv, "--no-cache")
-		}
-		argv = append(argv, s.Context)
-		// Up to three attempts: the builds download Go modules and apt
-		// packages, and a transient network failure (seen in K1: an IPv6
-		// "network is unreachable" from proxy.golang.org) is not a property
-		// of the build. Every attempt is recorded; nothing else is retried.
-		name := "build-" + path.Base(strings.Split(s.Tag, ":")[0])
-		var berr error
-		for attempt := 1; attempt <= 3; attempt++ {
-			if _, berr = b.cmd(ctx, fmt.Sprintf("%s-attempt-%d", name, attempt), argv, cmdlog.Opts{}, "build"); berr == nil {
-				break
-			}
-			if attempt < 3 {
-				time.Sleep(10 * time.Second)
-			}
-		}
-		if berr != nil {
-			return nil, berr
-		}
-		id, err := b.ImageID(ctx, s.Tag)
-		if err != nil {
-			return nil, err
-		}
-		bins, err := b.hashBinaries(ctx, s)
-		if err != nil {
-			return nil, err
-		}
-		entry := map[string]any{"id": id, "dockerfile": s.Dockerfile, "binaries": bins}
-		args := map[string]any{}
-		for _, a := range s.BuildArgs {
-			args[a[0]] = a[1]
-		}
-		entry["build_args"] = args
-		if s.Pgbackrest {
-			r, err := b.cmd(ctx, "pgbackrest-version", []string{"docker", "run", "--rm", "--label", projectLabel, "--network", "none",
-				"--entrypoint", "pgbackrest", s.Tag, "version"}, cmdlog.Opts{}, "")
-			if err != nil {
-				return nil, err
-			}
-			entry["pgbackrest_version"] = strings.TrimSpace(string(r.Stdout))
-		}
-		if len(s.Versions) > 0 {
-			vs := map[string]any{}
-			for _, v := range s.Versions {
-				argv := append([]string{"docker", "run", "--rm", "--label", projectLabel, "--network", "none", "--user", "0:0",
-					"--entrypoint", v[0], s.Tag}, v[1:]...)
-				r, err := b.cmd(ctx, "version-"+v[0], argv, cmdlog.Opts{}, "")
-				if err != nil {
-					return nil, err
-				}
-				vs[strings.Join(v, " ")] = strings.TrimSpace(string(r.Stdout) + string(r.Stderr))
-			}
-			entry["versions"] = vs
-		}
-		if s.Extends != "" {
-			base, err := b.ImageID(ctx, s.Extends)
-			if err != nil {
-				return nil, err
-			}
-			prev, _ := imgs[s.Extends].(map[string]any)
-			if want, _ := prev["id"].(string); want != base {
-				return nil, fmt.Errorf("%s: base %s is %s, not the image built above (%s)", s.Tag, s.Extends, base, want)
-			}
-			if err := b.checkLayers(ctx, s.Extends, s.Tag); err != nil {
-				return nil, err
-			}
-			entry["extends"] = map[string]any{"tag": s.Extends, "id": base, "layers_prefix": true}
-		}
-		imgs[s.Tag] = entry
+	for tag, e := range imgs {
+		e.(map[string]any)["variant"] = VariantReal
+		imgs[tag] = e
 	}
 	baseMap := map[string]any{}
 	for k, v := range bases {
@@ -337,14 +186,168 @@ func (b *Builder) Build(ctx context.Context, noCache bool) (map[string]any, erro
 		"mutant":       nil,
 		"patch_sha256": nil,
 	}
+	if prev, err := ReadLock(b.Root); err == nil {
+		b.keepVariants(ctx, prev, lock)
+	}
+	return lock, writeLock(b.Root, lock)
+}
+
+func writeLock(root string, lock map[string]any) error {
 	out, err := json.MarshalIndent(lock, "", "  ")
 	if err != nil {
-		return nil, err
+		return err
 	}
-	if err := os.WriteFile(filepath.Join(b.Root, LockFile), append(out, '\n'), 0o644); err != nil {
-		return nil, err
+	return os.WriteFile(filepath.Join(root, LockFile), append(out, '\n'), 0o644)
+}
+
+// composeBases adds the digest-pinned images deploy/compose.yaml pulls.
+func composeBases(root string, bases map[string]string) error {
+	compose, err := os.ReadFile(filepath.Join(root, "deploy", "compose.yaml"))
+	if err != nil {
+		return err
 	}
-	return lock, nil
+	for _, l := range strings.Split(string(compose), "\n") {
+		l = strings.TrimSpace(l)
+		if ref, ok := strings.CutPrefix(l, "image: "); ok && !strings.HasPrefix(ref, "commitproof/") {
+			name, digest, ok := strings.Cut(ref, "@")
+			if !ok {
+				return fmt.Errorf("deploy/compose.yaml: image %s is not digest-pinned", ref)
+			}
+			bases[name] = digest
+		}
+	}
+	return nil
+}
+
+// buildSpecs builds specs from source tree t: each Dockerfile is checked
+// (FROM-only derivation of the tree's upstream file, digest-pinned bases),
+// built, its binaries hashed and versions recorded. prev holds entries of
+// images built earlier in the same variant (for Extends).
+func (b *Builder) buildSpecs(ctx context.Context, t tree, specs []Spec, noCache bool, prev map[string]any) (map[string]any, map[string]any, map[string]string, error) {
+	dockerfiles := map[string]any{}
+	bases := map[string]string{}
+	for _, s := range specs {
+		content, err := os.ReadFile(filepath.Join(b.Root, s.Dockerfile))
+		if err != nil {
+			return nil, nil, nil, err
+		}
+		sum := sha256.Sum256(content)
+		entry := map[string]any{"sha256": hex.EncodeToString(sum[:])}
+		if s.Upstream != "" {
+			up, err := b.upstreamFile(ctx, t, s.Upstream)
+			if err != nil {
+				return nil, nil, nil, err
+			}
+			rep := gate.CheckDerivation(up, content)
+			if !rep.OK {
+				return nil, nil, nil, fmt.Errorf("%s is not a FROM-only derivation of upstream %s: %v", s.Dockerfile, s.Upstream, rep.Violations)
+			}
+			entry["upstream"] = s.Upstream + "@" + t.Commit
+			entry["upstream_blob"] = gate.GitBlobID(up)
+		}
+		dockerfiles[s.Dockerfile] = entry
+		for _, ref := range gate.FromRefs(content) {
+			if s.Extends != "" && ref == s.Extends {
+				// A local image built by this run, checked by layers
+				// after the build (ADR-0022).
+				continue
+			}
+			name, digest, ok := strings.Cut(ref, "@")
+			if !ok {
+				return nil, nil, nil, fmt.Errorf("%s: FROM %s is not digest-pinned", s.Dockerfile, ref)
+			}
+			if p, dup := bases[name]; dup && p != digest {
+				return nil, nil, nil, fmt.Errorf("base %s pinned to two digests", name)
+			}
+			bases[name] = digest
+		}
+	}
+	imgs := map[string]any{}
+	for k, v := range prev {
+		imgs[k] = v
+	}
+	for _, s := range specs {
+		argv := []string{"docker", "buildx", "build", "--progress=plain", "--provenance=false", "--sbom=false",
+			"--file", s.Dockerfile, "--tag", s.Tag}
+		for _, a := range s.BuildArgs {
+			argv = append(argv, "--build-arg", a[0]+"="+a[1])
+		}
+		if noCache {
+			argv = append(argv, "--no-cache")
+		}
+		argv = append(argv, s.Context)
+		// Up to three attempts: the builds download Go modules and apt
+		// packages, and a transient network failure (seen in K1: an IPv6
+		// "network is unreachable" from proxy.golang.org) is not a property
+		// of the build. Every attempt is recorded; nothing else is retried.
+		name := "build-" + strings.ReplaceAll(path.Base(s.Tag), ":", "-")
+		var berr error
+		for attempt := 1; attempt <= 3; attempt++ {
+			if _, berr = b.cmd(ctx, fmt.Sprintf("%s-attempt-%d", name, attempt), argv, cmdlog.Opts{}, "build"); berr == nil {
+				break
+			}
+			if attempt < 3 {
+				time.Sleep(10 * time.Second)
+			}
+		}
+		if berr != nil {
+			return nil, nil, nil, berr
+		}
+		id, err := b.ImageID(ctx, s.Tag)
+		if err != nil {
+			return nil, nil, nil, err
+		}
+		bins, err := b.hashBinaries(ctx, s)
+		if err != nil {
+			return nil, nil, nil, err
+		}
+		entry := map[string]any{"id": id, "dockerfile": s.Dockerfile, "binaries": bins}
+		args := map[string]any{}
+		for _, a := range s.BuildArgs {
+			args[a[0]] = a[1]
+		}
+		entry["build_args"] = args
+		if s.Pgbackrest {
+			r, err := b.cmd(ctx, "pgbackrest-version", []string{"docker", "run", "--rm", "--label", projectLabel, "--network", "none",
+				"--entrypoint", "pgbackrest", s.Tag, "version"}, cmdlog.Opts{}, "")
+			if err != nil {
+				return nil, nil, nil, err
+			}
+			entry["pgbackrest_version"] = strings.TrimSpace(string(r.Stdout))
+		}
+		if len(s.Versions) > 0 {
+			vs := map[string]any{}
+			for _, v := range s.Versions {
+				argv := append([]string{"docker", "run", "--rm", "--label", projectLabel, "--network", "none", "--user", "0:0",
+					"--entrypoint", v[0], s.Tag}, v[1:]...)
+				r, err := b.cmd(ctx, "version-"+v[0], argv, cmdlog.Opts{}, "")
+				if err != nil {
+					return nil, nil, nil, err
+				}
+				vs[strings.Join(v, " ")] = strings.TrimSpace(string(r.Stdout) + string(r.Stderr))
+			}
+			entry["versions"] = vs
+		}
+		if s.Extends != "" {
+			base, err := b.ImageID(ctx, s.Extends)
+			if err != nil {
+				return nil, nil, nil, err
+			}
+			pe, _ := imgs[s.Extends].(map[string]any)
+			if want, _ := pe["id"].(string); want != base {
+				return nil, nil, nil, fmt.Errorf("%s: base %s is %s, not the image built above (%s)", s.Tag, s.Extends, base, want)
+			}
+			if err := b.checkLayers(ctx, s.Extends, s.Tag); err != nil {
+				return nil, nil, nil, err
+			}
+			entry["extends"] = map[string]any{"tag": s.Extends, "id": base, "layers_prefix": true}
+		}
+		imgs[s.Tag] = entry
+	}
+	for k := range prev {
+		delete(imgs, k)
+	}
+	return imgs, dockerfiles, bases, nil
 }
 
 // checkLayers requires the layers of base to be a prefix of derived's: the
@@ -492,9 +495,10 @@ type Mismatch struct {
 	Tag, Lock, Local string
 }
 
-// Verify compares local image IDs with the lock. A missing lock or image is
-// a mismatch (fail closed).
-func (b *Builder) Verify(ctx context.Context) ([]Mismatch, map[string]any, error) {
+// Verify compares local image IDs with the lock: the entries of variant
+// (RequiredTags; "" = every entry of the lock). A missing lock, entry or
+// image is a mismatch (fail closed).
+func (b *Builder) Verify(ctx context.Context, variant string) ([]Mismatch, map[string]any, error) {
 	lock, err := ReadLock(b.Root)
 	if err != nil {
 		return nil, nil, err
@@ -503,11 +507,15 @@ func (b *Builder) Verify(ctx context.Context) ([]Mismatch, map[string]any, error
 	if len(imgs) == 0 {
 		return nil, lock, fmt.Errorf("%s lists no images", LockFile)
 	}
-	tags := make([]string, 0, len(imgs))
-	for t := range imgs {
-		tags = append(tags, t)
+	var tags []string
+	if variant == "" {
+		for t := range imgs {
+			tags = append(tags, t)
+		}
+		sort.Strings(tags)
+	} else {
+		tags = RequiredTags(lock, variant)
 	}
-	sort.Strings(tags)
 	var mm []Mismatch
 	for _, t := range tags {
 		e, _ := imgs[t].(map[string]any)

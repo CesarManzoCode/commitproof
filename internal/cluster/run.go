@@ -50,11 +50,32 @@ func writeJSON(path string, v any) error {
 	return os.WriteFile(path, append(b, '\n'), 0o644)
 }
 
+// RunOpts are the optional parts of a run: the mutant, and provenance
+// recorded in the manifest (a replay's original run, a minimization
+// candidate's parent run).
+type RunOpts struct {
+	Mutant     string
+	Provenance map[string]any
+	Command    string // summary "command" field ("run" if empty)
+}
+
 // RunPlan executes one run (CONTRACT §5.4): cluster up from zero, the runner
 // writes the history, logs are captured, the cluster is torn down and the
 // run directory sealed. Exit code: 0 complete, 2 INVALID, 3 prerequisite.
-func RunPlan(ctx context.Context, root, profile, mutant string, p *plan.Plan, outDir string) (map[string]any, int) {
-	sum := map[string]any{"command": "run", "campaign": p.Campaign, "seed": p.Seed, "profile": profile}
+func RunPlan(ctx context.Context, root, profile string, o RunOpts, p *plan.Plan, outDir string) (map[string]any, int) {
+	mutant := o.Mutant
+	command := o.Command
+	if command == "" {
+		command = "run"
+	}
+	sum := map[string]any{"command": command, "campaign": p.Campaign, "seed": p.Seed, "profile": profile, "mutant": "real"}
+	if mutant != "" {
+		sum["mutant"] = mutant
+	}
+	if p.Profile != profile {
+		sum["error"] = fmt.Sprintf("plan is for profile %q, run requested on %q", p.Profile, profile)
+		return sum, 3
+	}
 	fail := func(code int, msg string) (map[string]any, int) {
 		sum["error"] = msg
 		return sum, code
@@ -79,9 +100,20 @@ func RunPlan(ctx context.Context, root, profile, mutant string, p *plan.Plan, ou
 	if err != nil {
 		return fail(3, err.Error())
 	}
+	if err := pc.SetMutant(mutant); err != nil {
+		return fail(3, err.Error())
+	}
 	if missing := pc.Preflight(ctx); len(missing) > 0 {
 		sum["missing"] = missing
 		return fail(3, "prerequisite missing: "+strings.Join(missing, "; "))
+	}
+	// What cluster up would refuse (exit 3) is refused here, before a run
+	// directory exists: a refused start is not a run.
+	if mm, _, err := (&images.Builder{Root: root, Rec: pre}).Verify(ctx, pc.Variant()); err != nil || len(mm) > 0 {
+		return fail(3, fmt.Sprintf("image lock: %v %v (run `commitproof images build`)", err, mm))
+	}
+	if res, err := pc.Resources(ctx); err != nil || !empty(res) {
+		return fail(3, fmt.Sprintf("project resources already exist (another cluster?): %v %v", res, err))
 	}
 	lock, err := images.ReadLock(root)
 	if err != nil {
@@ -92,6 +124,14 @@ func RunPlan(ctx context.Context, root, profile, mutant string, p *plan.Plan, ou
 		return fail(3, fmt.Sprintf("runner image built from commitproof %s, this binary is %s: run `commitproof images build`", lc, buildinfo.Commit))
 	}
 	imgs, _ := lock["images"].(map[string]any)
+	variants, _ := lock["variants"].(map[string]any)
+	var variantRec map[string]any
+	if v := pc.Variant(); v != images.VariantReal {
+		variantRec, _ = variants[v].(map[string]any)
+		if variantRec == nil {
+			return fail(3, fmt.Sprintf("images.lock.json has no %s build: run `commitproof images build %s`", v, map[bool]string{true: "--mutant " + v, false: "--profile " + v}[images.IsMutant(v)]))
+		}
+	}
 	nemEntry, _ := imgs["commitproof/nemesis:real"].(map[string]any)
 	nemImage, _ := nemEntry["id"].(string)
 	if len(p.Steps) > 0 && nemImage == "" {
@@ -149,6 +189,7 @@ func RunPlan(ctx context.Context, root, profile, mutant string, p *plan.Plan, ou
 	}
 	c, _ := New(root, profile, rec)
 	c.RunnerTag = runnerTag
+	c.SetMutant(mutant)
 	if err := os.WriteFile(filepath.Join(dir, history.FilePlan), append(planBytes, '\n'), 0o644); err != nil {
 		return fail(2, err.Error())
 	}
@@ -174,11 +215,23 @@ func RunPlan(ctx context.Context, root, profile, mutant string, p *plan.Plan, ou
 		"runner_image_commit": cp["commit"],
 		"runner_image_dirty":  cp["dirty"],
 		"multigres_commit":    params.MultigresCommit,
+		"variant":             pc.Variant(),
 		"sabotage":            sum["sabotage"],
 		"sabotage_runner_id":  runnerImage,
 		"host_kernel":         strings.TrimSpace(string(kernel)),
 		"docker_version":      strings.TrimSpace(string(dv.Stdout)),
 		"start_wall_time":     start.UTC().Format(time.RFC3339),
+	}
+	if profile == "h1" {
+		manifest["multigres_commit"] = params.H1Commit
+	}
+	if variantRec != nil {
+		if ps, ok := variantRec["patch_sha256"]; ok {
+			manifest["patch_sha256"] = ps
+		}
+	}
+	for k, v := range o.Provenance {
+		manifest[k] = v
 	}
 	mb, err := canonjson.Marshal(manifest)
 	if err != nil {
@@ -232,14 +285,21 @@ func RunPlan(ctx context.Context, root, profile, mutant string, p *plan.Plan, ou
 		}
 	}
 	bg := context.Background() // teardown even if ctx was cancelled
-	if err := c.CaptureLogs(bg, filepath.Join(dir, history.DirLogs)); err != nil {
-		status, reason = "invalid", join(reason, "log capture: "+err.Error())
-	}
-	down, code := c.Down(bg)
-	writeJSON(filepath.Join(dir, history.DirLogs, "cluster-down.json"), down)
-	sum["cluster_down"] = map[string]any{"exit": code, "leftover": down["leftover"]}
-	if code != 0 {
-		status, reason = "invalid", join(reason, fmt.Sprintf("cluster down exit %d", code))
+	if up.ExitCode == 3 {
+		// cluster up refused before creating anything (a prerequisite,
+		// the image lock, or project resources that already exist — another
+		// cluster's): there is nothing of this run to capture or remove.
+		sum["cluster_down"] = map[string]any{"exit": 0, "skipped": "cluster up created nothing"}
+	} else {
+		if err := c.CaptureLogs(bg, filepath.Join(dir, history.DirLogs)); err != nil {
+			status, reason = "invalid", join(reason, "log capture: "+err.Error())
+		}
+		down, code := c.Down(bg)
+		writeJSON(filepath.Join(dir, history.DirLogs, "cluster-down.json"), down)
+		sum["cluster_down"] = map[string]any{"exit": code, "leftover": down["leftover"]}
+		if code != 0 {
+			status, reason = "invalid", join(reason, fmt.Sprintf("cluster down exit %d", code))
+		}
 	}
 	seal, err := history.SealDir(dir)
 	if err != nil {

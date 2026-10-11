@@ -1,0 +1,26 @@
+CommitProof mutant M4 — guard-removed (CONTRACT §9.2, ADR-0007)
+
+Intent: delete the synchronous_commit entry from the restricted-GUC map
+(go/common/pgsettings/restricted.go:46), so the gateway no longer rejects a
+user assignment to synchronous_commit.
+Failure mode modelled: bypass of the durability guard — a session lowers
+synchronous_commit for its own writes (S11).
+Sources: S11.
+Detection (§9.2): probe P1 (`SET synchronous_commit = off`, expected SQLSTATE
+0A000); on M4 the assignment succeeds.
+Declaration touched: restrictedGUCs (one declaration, no other code).
+
+diff --git a/go/common/pgsettings/restricted.go b/go/common/pgsettings/restricted.go
+index 238a06b..8631afc 100644
+--- a/go/common/pgsettings/restricted.go
++++ b/go/common/pgsettings/restricted.go
+@@ -43,7 +43,8 @@ import (
+ //     footgun rather than a load-bearing API contract
+ //     (docs/ha/decision-log/2026-05-29-block-synchronous-commit-changes.md).
+ var restrictedGUCs = map[string]string{
+-	"synchronous_commit": "replication durability is managed by the cluster",
++	// CommitProof mutant M4 (guard-removed): the synchronous_commit entry
++	// is deleted, so user assignments to it are no longer rejected.
+ }
+ 
+ // RestrictedGUCError returns a feature_not_supported rejection if name is a

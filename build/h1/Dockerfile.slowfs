@@ -1,0 +1,29 @@
+# CommitProof slowfs layer of the h1 node image (CONTRACT §5.5 profile h1,
+# §9.4; same layer as build/Dockerfile.slowfs, on the historical base):
+# commitproof/pgctld = the upstream-derived commitproof/pgctld-upstream
+# (build/Dockerfile.pgctld, FROM-only derivation) + fuse3 + the slowfs
+# binary, in a separate CommitProof-owned final stage. `commitproof images
+# build` builds pgctld-upstream first, then this file, and checks that the
+# result's layers extend the locked pgctld-upstream image (ADR-0022).
+FROM golang:1.26.9-alpine@sha256:3082400e369fa24d5fc60bca20edab3f6d604e0c5a690ec66b295eff4dd87ade AS builder
+WORKDIR /src
+COPY go.mod go.sum ./
+RUN go mod download
+COPY cmd ./cmd
+COPY internal ./internal
+RUN CGO_ENABLED=0 go build -trimpath -ldflags "-s -w" -o /out/slowfs ./cmd/slowfs
+
+FROM commitproof/pgctld-upstream:h1
+USER root
+# fuse3 from the base's Debian repository (unpinned like pgBackRest in the
+# upstream stage; its version is recorded in images.lock.json). /data is the
+# pass-through mount point; the volume itself is mounted at /data-backing.
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends fuse3 \
+ && rm -rf /var/lib/apt/lists/* \
+ && mkdir -p /data /data-backing /run/slowfs \
+ && chown postgres:postgres /data /data-backing \
+ && dpkg-query -W fuse3
+COPY --from=builder /out/slowfs /usr/local/bin/slowfs
+# The launcher mounts slowfs as root, then runs pgctld as postgres (999).
+ENTRYPOINT ["/usr/local/bin/slowfs"]
