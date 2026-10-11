@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Contract version | **1.0.3** (K0; K1 corrections: ADR-0019, ADR-0020, ADR-0021) |
+| Contract version | **1.0.4** (K0; K1 corrections: ADR-0019, ADR-0020, ADR-0021; K3 corrections: ADR-0022, ADR-0023) |
 | Date | 2026-10-09 |
 | Owner | César Manzo (GitHub `CesarManzoCode`) |
 | System under test | Multigres, `github.com/multigres/multigres` @ `e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73` |
@@ -151,7 +151,7 @@ Compose project name **`commitproof`**. One user-defined bridge network `cpnet`,
 | `pooler-n1` … `pooler-n4` | `commitproof/multigres` | shares `pg-nX` netns (`network_mode: service:pg-nX`) | as node | `multipooler` with S03 flags (`--http-port=16000 --grpc-port=16100 --pgctld-addr=localhost:16200 --connpool-global-capacity=50 --enable-slot-based-replication=true`), `--service-id=nX`, `--cell=<zone>` |
 | `orch-z1` … `orch-z3` | `commitproof/multigres` | .21 … .23 | zone1…zone3 | `multiorch --http-port=17000 --grpc-port=17100 --watch-targets=postgres --pooler-health-check-interval=500ms --recovery-cycle-interval=500ms` (S03 values) |
 | `gw-z1` … `gw-z3` | `commitproof/multigres` | .31 … .33 | zone1…zone3 | `multigateway --http-port=15000 --grpc-port=15100 --pg-port=15432 --enable-slot-based-replication=true` |
-| `nem-<svc>` (one per network namespace: etcd, pg-n1..n4, orch-z1..z3, gw-z1..z3, runner) | `commitproof/nemesis` (alpine 3.24.2 + iptables + iproute2) | shares target netns | — | idle; executes nemesis commands; capability `NET_ADMIN` only |
+| `nem-<svc>` (one per network namespace: etcd, pg-n1..n4, orch-z1..z3, gw-z1..z3, runner) | `commitproof/nemesis` (alpine 3.24.2 + iptables + iproute2 + CommitProof's `cpnet` probe tool) | shares target netns | — | idle; executes nemesis commands; capability `NET_ADMIN` only. `nem-runner` is started by the runner in its own namespace at run time (ADR-0023) |
 | `runner` | `commitproof/runner` | .40 | — | the `commitproof` binary; Docker socket mounted |
 
 Common flags for all Multigres components: `--topo-global-server-addresses=etcd:2379 --topo-global-root=/multigres/test/global` (S03). Cluster metadata: `multigres createclustermetadata --global-topo-address=etcd:2379 --global-topo-root=/multigres/test/global --cells=zone1,zone2,zone3 --durability-policy=AT_LEAST_2 --backup-location=/backups`. Shared volumes: `backups` (all `pg-*` and `pooler-*`), `certs` (generated once per cluster by an init service), per-node `data-nX`. `n4` is **not started** at cluster up; it exists only for fault F5.
@@ -164,7 +164,7 @@ The derivation of every flag from S03 is recorded in `deploy/DERIVATION.md` (cre
 
 - `commitproof/multigres` and `commitproof/pgctld` are built from upstream's `Dockerfile` and `Dockerfile.pgctld` at the pinned commit, copied into `build/` with **only `FROM` lines changed** to digest-pinned references (§14). A test enforces that the diff against upstream contains nothing but `FROM` lines (K1.3).
 - Build args: `GIT_COMMIT=e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73`, `COMMIT_DATE=2026-10-09T14:17:55+02:00`.
-- `commitproof/pgctld` additionally layers the `slowfs` binary and `fuse3` in a separate final stage of a CommitProof-owned Dockerfile `FROM commitproof/pgctld-upstream@<local image ID>`; the upstream-derived part stays byte-identical except `FROM`.
+- `commitproof/pgctld` additionally layers the `slowfs` binary and `fuse3` in a separate final stage of a CommitProof-owned Dockerfile `FROM commitproof/pgctld-upstream:real`; the build fails unless that tag is the upstream-derived image just built and its layers are a prefix of the result, and the lock records both image IDs (BuildKit cannot resolve `FROM <local image ID>`; ADR-0022). The upstream-derived part stays byte-identical except `FROM`.
 - Mutant images: same Dockerfiles, source tree = pinned commit + exactly one patch from `mutants/` (§9). Tag `commitproof/multigres:M<n>`.
 - `images.lock.json` records: source commit, sha256 of each Dockerfile, base image digests, local image IDs, sha256 of every binary inside every image, `pgbackrest version` output, patch sha256 for mutants. `commitproof cluster up` MUST refuse to start if a local image ID differs from the lock (fail-closed).
 
@@ -360,7 +360,7 @@ Every fault has: an injection mechanism, a **confirmation predicate** evaluated 
 | F3a | Pause PostgreSQL | `kill -STOP` all `postgres` processes of node (postmaster and children) | every targeted PID state `T` in `/proc/<pid>/stat`; `psql -c 'select 1'` on the node times out after 3 s | `kill -CONT`; states not `T`; `select 1` succeeds |
 | F3b | Pause component container | `docker pause <svc>` (cgroup freezer) | `State.Paused = true` | `docker unpause`; `Paused = false` |
 | F4a | Slow disk | write `delay_ms=200` to the slowfs control file of node X | median of 5 probe `write+fsync` of 4 KiB on the data mount ≥ 150 ms (P17) | write `delay_ms=0`; median < 50 ms |
-| F5a | Add node n4 | `docker compose up -d pg-n4 pooler-n4 nem-pg-n4` | the leader's `current_setting('synchronous_standby_names')` names n4's application name **and** n4 replicates (`pg_stat_replication` row on the leader) — deadline 120 s (not P27, membership is slower) | — (n4 stays until F5b) |
+| F5a | Add node n4 | `pg-n4`, `pooler-n4`, `nem-pg-n4` created from the Compose definitions when the run starts (`docker compose --profile n4 create`), then started by the runner with `docker start` in that order (ADR-0023) | the leader's `current_setting('synchronous_standby_names')` names n4's application name **and** n4 replicates (`pg_stat_replication` row on the leader) — deadline 120 s (not P27, membership is slower) | — (n4 stays until F5b) |
 | F5b | Remove node n4 | `docker stop -t 30 pooler-n4` (graceful SHUTDOWN → tombstone, S24), then stop `pg-n4` | the leader's `synchronous_standby_names` no longer names n4 — deadline 120 s | — |
 | F6 | Graceful switchover | `docker kill -s TERM pooler-<leader>` (graceful drain, S15) then `docker start` after the plan's duration | the decided rule's leader changes (rule number increases) within 60 s | container running, `/ready` = 200 |
 | F7 | Network delay | `tc qdisc add dev eth0 root netem delay 50ms` in the target netns | TCP connect RTT from a peer helper to the target increases by ≥ 40 ms vs. pre-fault probe (P18) | `tc qdisc del`; RTT within 10 ms of baseline |
