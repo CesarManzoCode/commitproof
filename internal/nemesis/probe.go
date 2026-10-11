@@ -45,6 +45,10 @@ type Env struct {
 	// NodeStarted is called when F5a has started a node, so the runner
 	// observes it.
 	NodeStarted func(node string)
+	// Profile is the run's profile; "h1" resolves the leader from
+	// PostgreSQL itself (the historical pooler API predates rules,
+	// ADR-0025).
+	Profile string
 }
 
 // Probe is one executed command with its raw outputs.

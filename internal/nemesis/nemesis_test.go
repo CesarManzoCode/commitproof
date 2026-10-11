@@ -172,3 +172,47 @@ func TestProductBuildHasNoSabotage(t *testing.T) {
 		t.Fatal("sabotage active in a test build")
 	}
 }
+
+// K4 roles (ADR-0024).
+func TestK4Roles(t *testing.T) {
+	v := testView()
+	v.leader, v.rule.Leader = "n2", "n2"
+	// n4 admitted and in the cohort (real build after F5a): base followers
+	// are still the two original followers.
+	v.running[Container("pg-n4")] = true
+	v.nodes = append(v.nodes, "n4")
+	v.rule.Cohort = []string{"n1", "n2", "n3", "n4"}
+	for role, want := range map[string]string{"base-follower:0": "n1", "base-follower:1": "n3"} {
+		if got, err := v.node(role, 0); err != nil || got != want {
+			t.Errorf("%s = %q %v, want %s", role, got, err, want)
+		}
+	}
+	if _, err := v.node("base-follower:2", 0); err == nil {
+		t.Error("base-follower:2 resolved")
+	}
+	v.same = map[int]string{3: "n2"}
+	if got, err := v.node("same:3", 0); err != nil || got != "n2" {
+		t.Errorf("same:3 = %q %v", got, err)
+	}
+	if _, err := v.node("same:1", 0); err == nil {
+		t.Error("same:1 resolved without an earlier element")
+	}
+	seen := map[string]bool{}
+	for p := int64(0); p < 8; p++ {
+		n, err := v.node("random-node", p)
+		if err != nil {
+			t.Fatal(err)
+		}
+		seen[n] = true
+	}
+	if len(seen) != 4 {
+		t.Errorf("random-node covers %v", seen)
+	}
+	// F2b on "pooler" of same:k resolves through node().
+	if s, err := v.service("pooler:same:3", 0); err != nil || s != "pooler-n2" {
+		t.Errorf("pooler:same:3 = %q %v", s, err)
+	}
+	if !isNodeRole("base-follower:0") || !isNodeRole("same:4") || isNodeRole("orch-z1") {
+		t.Error("isNodeRole")
+	}
+}

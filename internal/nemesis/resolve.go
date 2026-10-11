@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/CesarManzoCode/commitproof/internal/plan"
@@ -91,7 +92,8 @@ type view struct {
 	rule     *ruleObs
 	probes   []Probe
 	leaderOK bool
-	claims   []string // every self-reported leader ("node@rule")
+	claims   []string       // every self-reported leader ("node@rule")
+	same     map[int]string // nodes resolved by earlier elements of the step ("same:<k>")
 }
 
 // observeView lists running containers and, if needLeader, the leader.
@@ -110,6 +112,9 @@ func (e *Env) observeView(ctx context.Context, id string, needLeader bool) (view
 	}
 	if !needLeader {
 		return v, nil
+	}
+	if e.Profile == "h1" {
+		return e.observeViewH1(ctx, id, v)
 	}
 	sp, sts, err := e.statusProbe(ctx, id+"-status", v.nodes)
 	v.probes = append(v.probes, sp)
@@ -142,9 +147,45 @@ func pickOf(xs []string, pick int64) string {
 	return s[int(pick%int64(len(s)))]
 }
 
+// baseNodes are the nodes of the cluster as brought up (§5.1): n4 joins
+// only through F5a.
+var baseNodes = []string{"n1", "n2", "n3"}
+
 // node resolves a node role.
 func (v view) node(role string, pick int64) (string, error) {
+	if k, ok := strings.CutPrefix(role, "base-follower:"); ok {
+		if !v.leaderOK {
+			return "", fmt.Errorf("leader unresolved")
+		}
+		var fs []string
+		for _, n := range baseNodes {
+			if n != v.leader && v.running[Container("pg-"+n)] {
+				fs = append(fs, n)
+			}
+		}
+		i, err := strconv.Atoi(k)
+		if err != nil || i < 0 || i >= len(fs) {
+			return "", fmt.Errorf("%s: running base followers %v", role, fs)
+		}
+		return fs[i], nil
+	}
+	if k, ok := strings.CutPrefix(role, "same:"); ok {
+		i, err := strconv.Atoi(k)
+		n, found := v.same[i]
+		if err != nil || !found || n == "" {
+			return "", fmt.Errorf("%s: element %s of this step resolved no node", role, k)
+		}
+		if !v.running[Container("pg-"+n)] {
+			return "", fmt.Errorf("%s: node %s is not running", role, n)
+		}
+		return n, nil
+	}
 	switch {
+	case role == "random-node":
+		if len(v.nodes) == 0 {
+			return "", fmt.Errorf("no running node")
+		}
+		return pickOf(v.nodes, pick), nil
 	case role == "leader":
 		if !v.leaderOK {
 			return "", fmt.Errorf("leader unresolved")
@@ -175,7 +216,7 @@ func (v view) netns(role string, pick int64) (string, error) {
 	}
 	if n, err := v.node(role, pick); err == nil {
 		return n, nil
-	} else if role == "leader" || role == "random-follower" || IsNode(role) {
+	} else if isNodeRole(role) {
 		return "", err
 	}
 	if _, ok := LookupNS(role); !ok {
@@ -205,6 +246,13 @@ func (v view) service(role string, pick int64) (string, error) {
 	return "", fmt.Errorf("%q is not a container role", role)
 }
 
+// isNodeRole reports whether role names a node (as opposed to a service
+// namespace).
+func isNodeRole(role string) bool {
+	return role == "leader" || role == "random-follower" || role == "random-node" || IsNode(role) ||
+		strings.HasPrefix(role, "base-follower:") || strings.HasPrefix(role, "same:")
+}
+
 // needsLeader reports whether resolving e needs the leader.
 func needsLeader(e plan.Element) bool {
 	switch e.Kind {
@@ -213,7 +261,8 @@ func needsLeader(e plan.Element) bool {
 	}
 	for _, r := range append(append(append([]string{}, e.Targets...), e.A...), e.B...) {
 		_, nr, _ := strings.Cut(r, ":")
-		if r == "leader" || r == "random-follower" || nr == "leader" || nr == "random-follower" {
+		if r == "leader" || r == "random-follower" || nr == "leader" || nr == "random-follower" ||
+			r == "followers" || strings.HasPrefix(r, "base-follower:") {
 			return true
 		}
 	}
@@ -245,4 +294,29 @@ func strList(ss []string) []any {
 		out[i] = s
 	}
 	return out
+}
+
+// h1RecoveryQuery reads whether a node's PostgreSQL is in recovery.
+const h1RecoveryQuery = "select pg_is_in_recovery()"
+
+// observeViewH1 resolves the leader of an h1 cluster (ADR-0025): the one
+// running node whose PostgreSQL is out of recovery; any other count leaves
+// it unresolved. The view's "rule" is a stand-in with that leader and the
+// running nodes as cohort (the historical commit has no rule numbers).
+func (e *Env) observeViewH1(ctx context.Context, id string, v view) (view, error) {
+	var prim []string
+	for _, n := range v.nodes {
+		p := e.exec(ctx, id+"-recovery-"+n, Container("pg-"+n), psqlArgv(5, h1RecoveryQuery)...)
+		v.probes = append(v.probes, p)
+		if p.OK() && strings.TrimSpace(string(p.Res.Stdout)) == "f" {
+			prim = append(prim, n)
+		}
+	}
+	if len(prim) != 1 {
+		return v, fmt.Errorf("h1: nodes out of recovery %v (want exactly one)", prim)
+	}
+	v.leader, v.leaderOK = prim[0], true
+	v.rule = &ruleObs{Leader: prim[0], Cohort: append([]string{}, v.nodes...)}
+	v.claims = []string{prim[0] + "@primary"}
+	return v, nil
 }

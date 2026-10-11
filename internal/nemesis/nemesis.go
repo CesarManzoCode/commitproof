@@ -37,12 +37,16 @@ type manualHealer interface {
 	manualHeal(ctx context.Context) []Probe
 }
 
-// active is an injected, confirmed element awaiting its heal.
+// active is an injected, confirmed element awaiting its heal. node is the
+// node it resolved to (role "same:<k>"), rule the decided rule its view
+// resolved against (C6's new-leader anchor); either may be empty.
 type active struct {
 	id      string
 	kind    string
 	targets []string
 	f       fault
+	node    string
+	rule    *ruleObs
 }
 
 // Outcome of the schedule.
@@ -98,32 +102,61 @@ func (e *Env) StopHelper(ctx context.Context) {
 // Run executes the nemesis schedule (CONTRACT §6.3, §8, P05). start is the
 // workload start. It returns when every step is healed and heal-confirmed,
 // or at the first not-applied / not-healed (the run is then INVALID).
+//
+// Within a step, element k+1 is injected HoldMS after element k is
+// confirmed; after the last element, the step lasts DurationMS; then the
+// step's heal sequence runs (default: reverse order, no delays). A step
+// anchored on a new leader (C6) starts DelayMS after a leader of a decided
+// rule newer than the one the previous step resolved against is observed.
 func (e *Env) Run(ctx context.Context, steps []plan.Step, start time.Time) Outcome {
 	out := Outcome{OK: true}
 	lastHeal := start
+	var prevRule *ruleObs
 	for _, st := range steps {
 		anchor := start
-		if st.After == plan.AfterPreviousHeal {
+		switch st.After {
+		case plan.AfterPreviousHeal:
 			anchor = lastHeal
+		case plan.AfterNewLeader:
+			at, reason := e.awaitNewLeader(ctx, st, prevRule)
+			if reason != "" {
+				return Outcome{Reason: reason, Faults: out.Faults}
+			}
+			anchor = at
 		}
 		if !sleepCtx(ctx, time.Until(anchor.Add(time.Duration(st.DelayMS)*time.Millisecond))) {
 			return Outcome{Reason: "nemesis interrupted"}
 		}
 		e.Marker("nemesis-step", map[string]any{"step": st.Index, "elements": int64(len(st.Elements))})
-		var act []active
+		act := make([]active, len(st.Elements))
+		resolved := map[int]string{}
+		prevRule = nil
 		for k, el := range st.Elements {
-			a, reason := e.apply(ctx, plan.FaultID(st, k), el)
+			a, reason := e.apply(ctx, plan.FaultID(st, k), el, resolved)
 			if reason != "" {
 				return Outcome{Reason: reason, Faults: out.Faults}
 			}
 			out.Faults++
-			act = append(act, a)
+			act[k] = a
+			resolved[k] = a.node
+			if prevRule == nil {
+				prevRule = a.rule
+			}
+			if el.HoldMS > 0 && !sleepCtx(ctx, time.Duration(el.HoldMS)*time.Millisecond) {
+				return Outcome{Reason: "nemesis interrupted", Faults: out.Faults}
+			}
 		}
 		if !sleepCtx(ctx, time.Duration(st.DurationMS)*time.Millisecond) {
 			return Outcome{Reason: "nemesis interrupted", Faults: out.Faults}
 		}
-		for i := len(act) - 1; i >= 0; i-- {
-			if reason := e.healOne(ctx, act[i]); reason != "" {
+		for _, h := range st.HealSequence() {
+			if h.DelayMS > 0 {
+				e.Marker("nemesis-heal-delay", map[string]any{"step": st.Index, "element": int64(h.Element), "delay_ms": h.DelayMS})
+				if !sleepCtx(ctx, time.Duration(h.DelayMS)*time.Millisecond) {
+					return Outcome{Reason: "nemesis interrupted", Faults: out.Faults}
+				}
+			}
+			if reason := e.healOne(ctx, act[h.Element]); reason != "" {
 				return Outcome{Reason: reason, Faults: out.Faults}
 			}
 		}
@@ -132,11 +165,43 @@ func (e *Env) Run(ctx context.Context, steps []plan.Step, start time.Time) Outco
 	return out
 }
 
-// build resolves an element's roles and returns its fault.
-func (e *Env) build(ctx context.Context, id string, el plan.Element) (fault, []string, map[string]any, error) {
+// awaitNewLeader polls pooler status until a pooler reports itself leader of
+// a decided rule newer than prev (C6: "after the new leader is observed"),
+// within plan.NewLeaderDeadline. The observation is a marker with the raw
+// probe outputs. Not observing one in time ends the schedule like a fault
+// that could not be applied: the step's first element is not-applied.
+func (e *Env) awaitNewLeader(ctx context.Context, st plan.Step, prev *ruleObs) (time.Time, string) {
+	t0 := time.Now()
+	id := plan.FaultID(st, 0)
+	el := st.Elements[0]
+	for round := 1; ; round++ {
+		v, err := e.observeView(ctx, fmt.Sprintf("%s-await-leader-%d", id, round), true)
+		if err == nil && prev != nil && v.rule.after(prev) {
+			e.Marker("new-leader-observed", map[string]any{"step": st.Index, "previous_rule": prev.key(), "leader": v.leader,
+				"rule": v.rule.key(), "rounds": int64(round), "elapsed_ms": time.Since(t0).Milliseconds(), "probes": evidenceList(v.probes)})
+			return time.Now(), ""
+		}
+		if time.Since(t0) > plan.NewLeaderDeadline || ctx.Err() != nil || prev == nil {
+			reason := "the previous step resolved no rule"
+			if prev != nil {
+				reason = fmt.Sprintf("no leader of a rule newer than %s observed within %s", prev.key(), plan.NewLeaderDeadline)
+			}
+			ev := map[string]any{"reason": reason, "rounds": int64(round), "probes": evidenceList(v.probes)}
+			e.emit(id, el.Kind, PhaseInject, nil, map[string]any{"anchor": plan.AfterNewLeader})
+			e.emit(id, el.Kind, PhaseNotApplied, nil, ev)
+			return time.Time{}, fmt.Sprintf("fault %s (%s) not-applied: %s", id, el.Kind, ev["reason"])
+		}
+		sleepCtx(ctx, pollInterval)
+	}
+}
+
+// build resolves an element's roles and returns its fault, the node it
+// resolved to (for node faults) and the decided rule of the view.
+func (e *Env) build(ctx context.Context, id string, el plan.Element, same map[int]string) (fault, []string, string, *ruleObs, map[string]any, error) {
 	v, err := e.observeView(ctx, id+"-resolve", needsLeader(el))
+	v.same = same
 	if err != nil {
-		return nil, nil, v.evidence(el, nil), fmt.Errorf("resolve: %w", err)
+		return nil, nil, "", nil, v.evidence(el, nil), fmt.Errorf("resolve: %w", err)
 	}
 	first := func() string {
 		if len(el.Targets) != 1 {
@@ -147,8 +212,9 @@ func (e *Env) build(ctx context.Context, id string, el plan.Element) (fault, []s
 	resolved := map[string]any{}
 	var f fault
 	var targets []string
-	fail := func(err error) (fault, []string, map[string]any, error) {
-		return nil, nil, v.evidence(el, resolved), fmt.Errorf("resolve: %w", err)
+	node := ""
+	fail := func(err error) (fault, []string, string, *ruleObs, map[string]any, error) {
+		return nil, nil, "", nil, v.evidence(el, resolved), fmt.Errorf("resolve: %w", err)
 	}
 	running := RunningNamespaces(v.running)
 	switch el.Kind {
@@ -161,6 +227,14 @@ func (e *Env) build(ctx context.Context, id string, el plan.Element) (fault, []s
 	case "F1b":
 		var a, b []string
 		for _, r := range el.A {
+			if r == "followers" {
+				fs := v.followers()
+				if len(fs) == 0 {
+					return fail(fmt.Errorf("no running follower"))
+				}
+				a = append(a, fs...)
+				continue
+			}
 			n, err := v.netns(r, el.Pick)
 			if err != nil {
 				return fail(err)
@@ -170,6 +244,10 @@ func (e *Env) build(ctx context.Context, id string, el plan.Element) (fault, []s
 		for _, r := range el.B {
 			if r == "rest" {
 				b = append(b, without(running, a...)...)
+				continue
+			}
+			if r == "followers" {
+				b = append(b, v.followers()...)
 				continue
 			}
 			n, err := v.netns(r, el.Pick)
@@ -189,7 +267,7 @@ func (e *Env) build(ctx context.Context, id string, el plan.Element) (fault, []s
 		if err != nil {
 			return fail(err)
 		}
-		targets = []string{l}
+		targets, node = []string{l}, l
 		if el.Kind == "F1c" {
 			f = asymmetric(e, id, l, running)
 		} else {
@@ -213,7 +291,7 @@ func (e *Env) build(ctx context.Context, id string, el plan.Element) (fault, []s
 		if err != nil {
 			return fail(err)
 		}
-		targets = []string{n}
+		targets, node = []string{n}, n
 		switch el.Kind {
 		case "F2a":
 			f = &killPostmaster{e: e, id: id, node: n}
@@ -227,7 +305,7 @@ func (e *Env) build(ctx context.Context, id string, el plan.Element) (fault, []s
 		if err != nil {
 			return fail(err)
 		}
-		targets = []string{"pooler-" + n}
+		targets, node = []string{"pooler-" + n}, n
 		if el.Kind == "F2b" {
 			f = &killContainer{e: e, id: id, svc: "pooler-" + n, ready: readiness{helperNS: n, url: "http://127.0.0.1:16000/ready"}}
 		} else {
@@ -261,18 +339,20 @@ func (e *Env) build(ctx context.Context, id string, el plan.Element) (fault, []s
 		return fail(fmt.Errorf("unknown fault kind %q", el.Kind))
 	}
 	resolved["targets"] = strList(targets)
-	return f, targets, v.evidence(el, resolved), nil
+	return f, targets, node, v.rule, v.evidence(el, resolved), nil
 }
 
 // apply resolves, prepares, injects and confirms one element. It returns
 // the reason the run is INVALID, if it is.
-func (e *Env) apply(ctx context.Context, id string, el plan.Element) (active, string) {
+func (e *Env) apply(ctx context.Context, id string, el plan.Element, same map[int]string) (active, string) {
 	// Resolution and preparation are retried until P27: a role may be
 	// momentarily unresolvable (a failover in progress).
 	t0 := time.Now()
 	var (
 		f        fault
 		targets  []string
+		node     string
+		rule     *ruleObs
 		res      map[string]any
 		prep     []Probe
 		prepDet  map[string]any
@@ -281,7 +361,7 @@ func (e *Env) apply(ctx context.Context, id string, el plan.Element) (active, st
 	)
 	for {
 		attempts++
-		f, targets, res, err = e.build(ctx, id, el)
+		f, targets, node, rule, res, err = e.build(ctx, id, el, same)
 		if err == nil {
 			prep, prepDet, err = f.prepare(ctx)
 		}
@@ -317,7 +397,7 @@ func (e *Env) apply(ctx context.Context, id string, el plan.Element) (active, st
 			"rounds": int64(round), "elapsed_ms": elapsed.Milliseconds(), "deadline_ms": deadline.Milliseconds()}
 		if ok && elapsed <= deadline {
 			e.emit(id, el.Kind, PhaseConfirmed, targets, cev)
-			return active{id: id, kind: el.Kind, targets: targets, f: f}, ""
+			return active{id: id, kind: el.Kind, targets: targets, f: f, node: node, rule: rule}, ""
 		}
 		if elapsed > deadline || ctx.Err() != nil {
 			e.emit(id, el.Kind, PhaseNotApplied, targets, cev)
