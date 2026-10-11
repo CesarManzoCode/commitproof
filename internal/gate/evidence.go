@@ -38,6 +38,9 @@ type Evidence struct {
 	// Run archives extracted by RunDir (archive.go).
 	extracted map[string]string
 	temps     []string
+	// memo caches values derived from the evidence for the criteria of one
+	// evaluation (e.g. the K4 run index).
+	memo map[string]any
 }
 
 // LoadEvidence reads dir/commands.jsonl.

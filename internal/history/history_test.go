@@ -182,3 +182,36 @@ func TestWriterRejectsReservedFields(t *testing.T) {
 		t.Fatal("accepted float")
 	}
 }
+
+func TestVerifyStub(t *testing.T) {
+	dir := filepath.Join(t.TempDir(), "run")
+	os.MkdirAll(filepath.Join(dir, DirLogs), 0o755)
+	for _, f := range RequiredFiles {
+		os.WriteFile(filepath.Join(dir, f), []byte(f+"\n"), 0o644)
+	}
+	os.WriteFile(filepath.Join(dir, DirLogs, "x.log"), []byte("log"), 0o644)
+	if _, err := SealDir(dir); err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() {
+		filepath.WalkDir(dir, func(p string, _ os.DirEntry, _ error) error { os.Chmod(p, 0o755); return nil })
+	})
+	stub := filepath.Join(t.TempDir(), "run")
+	os.MkdirAll(stub, 0o755)
+	for _, f := range StubFiles {
+		b, _ := os.ReadFile(filepath.Join(dir, f))
+		os.WriteFile(filepath.Join(stub, f), b, 0o444)
+	}
+	if r := VerifyStub(stub); !r.Valid || r.MerkleRoot == "" {
+		t.Fatalf("stub rejected: %v", r.Problems)
+	}
+	os.Chmod(filepath.Join(stub, FilePlan), 0o644)
+	os.WriteFile(filepath.Join(stub, FilePlan), []byte("tampered\n"), 0o444)
+	if r := VerifyStub(stub); r.Valid {
+		t.Fatal("tampered plan accepted")
+	}
+	os.Remove(filepath.Join(stub, FilePlan))
+	if r := VerifyStub(stub); r.Valid {
+		t.Fatal("stub without plan accepted")
+	}
+}

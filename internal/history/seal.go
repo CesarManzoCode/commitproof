@@ -302,3 +302,72 @@ func VerifySeal(dir string) *SealReport {
 	}
 	return r
 }
+
+// StubFiles are the files a run stub keeps (CONTRACT §13: a run not
+// committed in full is summarized by its seal and identity).
+var StubFiles = []string{FileManifest, FilePlan, FileSeal}
+
+// VerifyStub checks a run stub: seal.json is canonical and its Merkle root
+// matches its file list, the stub holds exactly StubFiles, and each of them
+// (but seal.json) hashes to its sealed value. The other files are absent by
+// design, so the history cannot be re-checked from a stub.
+func VerifyStub(dir string) *SealReport {
+	r := &SealReport{}
+	bad := func(f string, a ...any) { r.Problems = append(r.Problems, fmt.Sprintf(f, a...)) }
+	raw, err := os.ReadFile(filepath.Join(dir, FileSeal))
+	if err != nil {
+		bad("read seal: %v", err)
+		return r
+	}
+	raw = []byte(strings.TrimSuffix(string(raw), "\n"))
+	if !canonjson.IsCanonical(raw) {
+		bad("seal.json is not canonical JSON")
+	}
+	var s Seal
+	if err := json.Unmarshal(raw, &s); err != nil {
+		bad("parse seal: %v", err)
+		return r
+	}
+	r.MerkleRoot = s.MerkleRoot
+	if s.Version != 1 || s.Algorithm != MerkleAlgorithm {
+		bad("unsupported seal version/algorithm")
+	}
+	if root, err := MerkleRoot(s.Files); err != nil || root != s.MerkleRoot {
+		bad("merkle root in seal.json does not match its file list")
+	}
+	sealed := map[string]SealFile{}
+	for _, f := range s.Files {
+		sealed[f.Path] = f
+	}
+	actual, err := hashTree(dir)
+	if err != nil {
+		bad("hash tree: %v", err)
+		return r
+	}
+	// hashTree leaves seal.json out (read above).
+	present := map[string]bool{FileSeal: true}
+	for _, f := range actual {
+		present[f.Path] = true
+		sf, ok := sealed[f.Path]
+		switch {
+		case !ok:
+			bad("file %s is not in the seal", f.Path)
+		case sf.SHA256 != f.SHA256 || sf.Size != f.Size:
+			bad("file %s does not match the seal", f.Path)
+		}
+	}
+	for _, f := range StubFiles {
+		if !present[f] {
+			bad("stub lacks %s", f)
+		}
+		if _, ok := sealed[f]; !ok && f != FileSeal {
+			bad("%s is not in the seal", f)
+		}
+	}
+	if len(actual) != len(StubFiles)-1 {
+		bad("stub holds %d files besides seal.json, want %d", len(actual), len(StubFiles)-1)
+	}
+	r.Files = len(actual) + 1
+	r.Valid = len(r.Problems) == 0
+	return r
+}
