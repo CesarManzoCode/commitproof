@@ -148,10 +148,12 @@ func Classes(as []Anomaly) []string {
 	return out
 }
 
-// IDs of the checkers, in checks.json order.
+// IDs of the checkers C1–C9 of CONTRACT §10 (the K2 corpus checkers), in
+// checks.json order; the probe checker (ProbeID, G7) follows them.
 var IDs = []string{"C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9"}
 
-// RunAll runs C1–C9 on a loaded history. C6 refines C4's per-key results.
+// RunAll runs C1–C9 and the probe checker on a loaded history. C6 refines
+// C4's per-key results.
 func RunAll(h *History) []Result {
 	c4, keys := checkLinearizable(h)
 	return []Result{
@@ -164,5 +166,6 @@ func RunAll(h *History) []Result {
 		CheckCDC(h),
 		CheckSession(h),
 		CheckAvailability(h),
+		CheckProbes(h),
 	}
 }
