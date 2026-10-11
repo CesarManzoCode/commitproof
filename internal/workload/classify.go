@@ -48,6 +48,10 @@ type Attempt struct {
 	WriteSent         bool
 	WriteExecuted     bool
 	StatementExecuted bool
+	// CancelRequest is what happened to a CancelRequest sent while COMMIT
+	// was outstanding (C7): "" none, "sent", or "error: …". It is recorded
+	// as an observation; it never changes the classification.
+	CancelRequest string
 }
 
 // noWritablePrimary matches Multigres' "no writable primary" condition: the

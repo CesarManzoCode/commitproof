@@ -32,6 +32,9 @@ type Health struct {
 	Version  string
 	Rule     *observe.Rule
 	Statuses []observe.PoolerStatus
+	// Profile h1 (h1.go): the node-level view and the primary.
+	SQL    []NodeSQL
+	Leader string
 }
 
 // Map renders the evaluation for JSON output and observations.
@@ -53,10 +56,18 @@ func (h Health) Map() map[string]any {
 		rule = map[string]any{"coordinator_term": h.Rule.CoordinatorTerm, "leader_subterm": h.Rule.LeaderSubterm,
 			"leader": h.Rule.Leader, "cohort": cohort, "policy": h.Rule.Policy}
 	}
-	return map[string]any{
+	m := map[string]any{
 		"healthy": h.Healthy, "a": h.A, "b": h.B, "c": c, "d": h.D,
 		"version": h.Version, "rule": rule, "statuses": sts,
 	}
+	if h.SQL != nil {
+		sq := make([]any, len(h.SQL))
+		for i, s := range h.SQL {
+			sq[i] = s.Map()
+		}
+		m["sql"], m["leader"] = sq, h.Leader
+	}
+	return m
 }
 
 func dsn(gw string) string {
@@ -82,16 +93,38 @@ func withConn(ctx context.Context, gw string, f func(ctx context.Context, c *pgx
 	return f(ctx, c)
 }
 
-// CheckHealthy evaluates the HEALTHY predicate once. token makes each
-// write distinguishable from earlier ones.
-func CheckHealthy(ctx context.Context, oc *observe.Client, token int64) Health {
+// CheckHealthy evaluates the HEALTHY predicate once (profile h1: h1.go).
+// token makes each write distinguishable from earlier ones.
+func CheckHealthy(ctx context.Context, oc *observe.Client, token int64, profile string) Health {
+	if profile == ProfileH1 {
+		return checkHealthyH1(ctx, token)
+	}
 	h := Health{C: map[string]string{}}
 	for _, n := range Nodes {
 		h.Statuses = append(h.Statuses, oc.Status(ctx, n, params.ClientOpTimeout))
 	}
 	h.Rule, h.A, h.B = observe.Consensus(h.Statuses, Nodes)
-	// (c): a write and a read-back through every gateway. The table lives
-	// outside the workload schema cp.
+	checkGateways(ctx, &h, token)
+	// (d): SELECT multigres.version() through gw-z1 reports the pinned commit.
+	err := withConn(ctx, plan.Gateways[0], func(ctx context.Context, c *pgx.Conn) error {
+		return c.QueryRow(ctx, "select multigres.version()").Scan(&h.Version)
+	})
+	switch {
+	case err != nil:
+		h.D = "select multigres.version(): " + err.Error()
+	case !strings.Contains(h.Version, PinnedCommit[:12]):
+		h.D = fmt.Sprintf("version %q does not name commit %s", h.Version, PinnedCommit[:12])
+	}
+	h.Healthy = h.A == "" && h.B == "" && h.D == ""
+	for _, r := range h.C {
+		h.Healthy = h.Healthy && r == ""
+	}
+	return h
+}
+
+// checkGateways is part (c): a write and a read-back through every gateway.
+// The table lives outside the workload schema cp.
+func checkGateways(ctx context.Context, h *Health, token int64) {
 	err := withConn(ctx, plan.Gateways[0], func(ctx context.Context, c *pgx.Conn) error {
 		_, err := c.Exec(ctx, "create table if not exists public.cp_health (gw text primary key, token bigint not null)")
 		return err
@@ -120,34 +153,19 @@ func CheckHealthy(ctx context.Context, oc *observe.Client, token int64) Health {
 			h.C[gw] = ""
 		}
 	}
-	// (d): SELECT multigres.version() through gw-z1 reports the pinned commit.
-	err = withConn(ctx, plan.Gateways[0], func(ctx context.Context, c *pgx.Conn) error {
-		return c.QueryRow(ctx, "select multigres.version()").Scan(&h.Version)
-	})
-	switch {
-	case err != nil:
-		h.D = "select multigres.version(): " + err.Error()
-	case !strings.Contains(h.Version, PinnedCommit[:12]):
-		h.D = fmt.Sprintf("version %q does not name commit %s", h.Version, PinnedCommit[:12])
-	}
-	h.Healthy = h.A == "" && h.B == "" && h.D == ""
-	for _, r := range h.C {
-		h.Healthy = h.Healthy && r == ""
-	}
-	return h
 }
 
 // WaitHealthy evaluates the predicate every second until it holds or the
 // deadline passes. It never restarts anything (CONTRACT §15 K1 rejection:
 // no retries of cluster up inside a measured attempt).
-func WaitHealthy(ctx context.Context, deadline time.Duration, onEval func(Health)) (Health, int) {
+func WaitHealthy(ctx context.Context, deadline time.Duration, profile string, onEval func(Health)) (Health, int) {
 	oc := observe.NewClient()
 	defer oc.Close()
 	end := time.Now().Add(deadline)
 	n := 0
 	for {
 		n++
-		h := CheckHealthy(ctx, oc, time.Now().UnixNano())
+		h := CheckHealthy(ctx, oc, time.Now().UnixNano(), profile)
 		if onEval != nil {
 			onEval(h)
 		}

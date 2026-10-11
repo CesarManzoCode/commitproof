@@ -23,19 +23,21 @@ import (
 type action struct {
 	code    string // SQLSTATE of an ErrorResponse ("" = success)
 	message string
-	warning string // WARNING notice sent before success
-	hang    bool   // never answer (client timeout)
-	close   bool   // close the connection (transport error)
+	warning string        // WARNING notice sent before success
+	hang    bool          // never answer (client timeout)
+	close   bool          // close the connection (transport error)
+	delay   time.Duration // answer only after this long (C7 tests)
 }
 
 // fakePG is a minimal PostgreSQL server for one test.
 type fakePG struct {
-	t      *testing.T
-	ln     net.Listener
-	script func(sql string) action
-	mu     sync.Mutex
-	seen   []string
-	wg     sync.WaitGroup
+	t       *testing.T
+	ln      net.Listener
+	script  func(sql string) action
+	mu      sync.Mutex
+	seen    []string
+	cancels int // CancelRequest messages received
+	wg      sync.WaitGroup
 }
 
 func newFakePG(t *testing.T, script func(sql string) action) *fakePG {
@@ -81,6 +83,8 @@ func rows(sql string) ([]pgproto3.FieldDescription, []byte) {
 		return []pgproto3.FieldDescription{{Name: []byte("v"), DataTypeOID: 20, DataTypeSize: 8, TypeModifier: -1}}, []byte("7")
 	case strings.HasPrefix(sql, "update cp.acct"):
 		return []pgproto3.FieldDescription{{Name: []byte("bal"), DataTypeOID: 20, DataTypeSize: 8, TypeModifier: -1}}, []byte("95")
+	case strings.HasPrefix(sql, "show "):
+		return []pgproto3.FieldDescription{{Name: []byte("setting"), DataTypeOID: 25, DataTypeSize: -1, TypeModifier: -1}}, []byte("on")
 	}
 	return nil, nil
 }
@@ -106,7 +110,12 @@ func (f *fakePG) conn(c net.Conn) {
 		return
 	}
 	if _, ok := msg.(*pgproto3.StartupMessage); !ok {
-		return // a CancelRequest from a timed-out client
+		if _, cancel := msg.(*pgproto3.CancelRequest); cancel {
+			f.mu.Lock()
+			f.cancels++
+			f.mu.Unlock()
+		}
+		return // a CancelRequest (from a timed-out client, or C7's)
 	}
 	be.Send(&pgproto3.AuthenticationOk{})
 	for k, v := range map[string]string{"server_version": "17.7", "client_encoding": "UTF8", "standard_conforming_strings": "on",
@@ -127,6 +136,9 @@ func (f *fakePG) conn(c net.Conn) {
 		f.seen = append(f.seen, sql)
 		f.mu.Unlock()
 		act = f.script(sql)
+		if act.delay > 0 {
+			time.Sleep(act.delay)
+		}
 		switch {
 		case act.close:
 			return false

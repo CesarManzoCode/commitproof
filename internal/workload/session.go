@@ -32,6 +32,13 @@ type Session struct {
 	Timeout time.Duration
 	// Port overrides GatewayPort (tests drive a fake server, K2.5).
 	Port int
+	// StatementTimeoutMS > 0: every new connection first runs
+	// `SET statement_timeout = <ms>` (C7, P19; gateway-managed, S16). A
+	// failure there is a connection failure (§6.2: fail, nothing sent).
+	StatementTimeoutMS int64
+	// CancelCommitAfter > 0: a transaction whose COMMIT has not returned
+	// this long after it was sent gets a CancelRequest (C7, S17).
+	CancelCommitAfter time.Duration
 
 	conn    *pgx.Conn
 	mu      sync.Mutex
@@ -135,6 +142,15 @@ func (s *Session) Do(parent context.Context, autocommit bool, exec func(ctx cont
 		if err != nil {
 			fill(&a, err, ctx)
 			return s.finish(a, nil)
+		}
+		if s.StatementTimeoutMS > 0 {
+			if _, err := conn.Exec(ctx, fmt.Sprintf("SET statement_timeout = %d", s.StatementTimeoutMS)); err != nil {
+				fill(&a, err, ctx)
+				cctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+				conn.Close(cctx)
+				cancel()
+				return s.finish(a, nil)
+			}
 		}
 		s.conn = conn
 	}

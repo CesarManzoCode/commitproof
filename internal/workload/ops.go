@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
+	"time"
 
 	"github.com/jackc/pgx/v5"
 )
@@ -120,7 +122,62 @@ func (s *Session) Txn(ctx context.Context, iso string, mops []any) Outcome {
 			}
 		}
 		a.At = PhaseCommit
-		return out, tx.Commit(ctx)
+		return out, s.commit(ctx, c, tx, a)
+	})
+}
+
+// commit sends COMMIT; with CancelCommitAfter set, a CancelRequest goes out
+// if COMMIT has not returned by then (C7: "client CancelRequest 1 s after
+// COMMIT is sent"). The request's fate is recorded in a.CancelRequest.
+func (s *Session) commit(ctx context.Context, c *pgx.Conn, tx pgx.Tx, a *Attempt) error {
+	if s.CancelCommitAfter <= 0 {
+		return tx.Commit(ctx)
+	}
+	done := make(chan struct{})
+	fired := make(chan string, 1)
+	t := time.AfterFunc(s.CancelCommitAfter, func() {
+		select {
+		case <-done:
+			fired <- ""
+			return
+		default:
+		}
+		cctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		defer cancel()
+		if err := c.PgConn().CancelRequest(cctx); err != nil {
+			fired <- "error: " + err.Error()
+			return
+		}
+		fired <- "sent"
+	})
+	err := tx.Commit(ctx)
+	close(done)
+	if t.Stop() {
+		return err // the timer never fired
+	}
+	a.CancelRequest = <-fired
+	return err
+}
+
+// Probe runs one claims probe (§3 G7) as a single autocommit statement:
+// SHOW returns the setting, anything else its command tag.
+func (s *Session) Probe(ctx context.Context, sql string) Outcome {
+	return s.Do(ctx, true, func(ctx context.Context, c *pgx.Conn, a *Attempt) (any, error) {
+		a.At = PhaseStatement
+		if strings.HasPrefix(strings.ToUpper(strings.TrimSpace(sql)), "SHOW ") {
+			var v string
+			if err := c.QueryRow(ctx, sql).Scan(&v); err != nil {
+				return nil, err
+			}
+			a.StatementExecuted = true
+			return map[string]any{"setting": v}, nil
+		}
+		tag, err := c.Exec(ctx, sql)
+		if err != nil {
+			return nil, err
+		}
+		a.StatementExecuted = true
+		return map[string]any{"command_tag": tag.String()}, nil
 	})
 }
 

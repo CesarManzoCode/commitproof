@@ -174,6 +174,7 @@ func Run(ctx context.Context, cfg Config) (string, string, error) {
 		return StatusInvalid, "", fmt.Errorf("plan: %w", err)
 	}
 	clients, _ := p["clients"].([]any)
+	profile, _ := p["profile"].(string)
 	var steps []plan.Step
 	if nv, ok := p["nemesis"].([]any); ok && len(nv) > 0 {
 		if steps, err = plan.ParseSteps(nv); err != nil {
@@ -215,7 +216,7 @@ func Run(ctx context.Context, cfg Config) (string, string, error) {
 	// The cluster must be HEALTHY at start (CONTRACT §12.1).
 	oc := observe.NewClient()
 	defer oc.Close()
-	h := CheckHealthy(ctx, oc, time.Now().UnixNano())
+	h := CheckHealthy(ctx, oc, time.Now().UnixNano(), profile)
 	hv := h.Map()
 	hv["src"] = "healthy"
 	hv["phase"] = "run-start"
@@ -258,6 +259,15 @@ func Run(ctx context.Context, cfg Config) (string, string, error) {
 		}
 		polled[node] = true
 		obsWG.Add(1)
+		if profile == ProfileH1 {
+			// The historical pooler API differs from the pinned protos:
+			// observe PostgreSQL itself (ADR-0025).
+			go func() {
+				defer obsWG.Done()
+				pollSQL(obsCtx, node, rec.obs)
+			}()
+			return
+		}
 		go func() {
 			defer obsWG.Done()
 			poc := observe.NewClient()
@@ -308,6 +318,7 @@ func Run(ctx context.Context, cfg Config) (string, string, error) {
 			},
 			Marker:      rec.marker,
 			NodeStarted: startPoller,
+			Profile:     profile,
 		}
 		// Peers probe the runner's namespace on this port (F1).
 		ln, err := net.Listen("tcp", fmt.Sprintf(":%d", nemesis.RunnerProbePort))
@@ -460,6 +471,20 @@ func runClient(wctx context.Context, c map[string]any, rec *recorder, start, dea
 	iso, _ := c["iso"].(string)
 	ops, _ := c["ops"].([]any)
 	s := &workload.Session{GW: gw, AppName: fmt.Sprintf("commitproof-c%d", ci), Timeout: opTimeout}
+	// C7 options (plan.Client): session statement_timeout (P19) and a
+	// CancelRequest after COMMIT.
+	if v, ok := c["statement_timeout_ms"]; ok {
+		if s.StatementTimeoutMS, err = workload.Int(v); err != nil {
+			return fmt.Errorf("plan client %d: %w", ci, err)
+		}
+	}
+	if v, ok := c["cancel_commit_after_ms"]; ok {
+		ms, err := workload.Int(v)
+		if err != nil {
+			return fmt.Errorf("plan client %d: %w", ci, err)
+		}
+		s.CancelCommitAfter = time.Duration(ms) * time.Millisecond
+	}
 	defer s.Close()
 	proc := ci
 	// P03, closed loop: an operation starts one pacing interval after the
@@ -501,8 +526,19 @@ func runClient(wctx context.Context, c map[string]any, rec *recorder, start, dea
 		case plan.WLLedger:
 			m, _ := val.(map[string]any)
 			out = s.Ledger(ctx, m)
+		case plan.WLProbe:
+			m, _ := val.(map[string]any)
+			sql, _ := m["sql"].(string)
+			out = s.Probe(ctx, sql)
+			if out.Type == workload.OK {
+				out.Value = map[string]any{"id": m["id"], "sql": sql, "result": out.Value}
+			}
 		default:
 			return fmt.Errorf("client %d: unknown workload %q", ci, wl)
+		}
+		if out.Attempt.CancelRequest != "" {
+			rec.obs(map[string]any{"src": "client", "event": "cancel-request", "op": i, "result": out.Attempt.CancelRequest,
+				"completion": out.Type})
 		}
 		rec.complete(i, out, txIso)
 		if out.Type == workload.Info {
