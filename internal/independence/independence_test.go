@@ -160,3 +160,34 @@ func TestProductBinariesHaveNoSabotage(t *testing.T) {
 		return nil
 	})
 }
+
+// TestMultigresImporters enforces CONTRACT §10.8 / §5.3 (ADR-0016): outside
+// the observation package, the only importer of a Multigres package is the
+// separate quorumxcheck binary. The control requires both to be found, so
+// the check can fail.
+func TestMultigresImporters(t *testing.T) {
+	cmd := exec.Command("go", "list", "-f", `{{.ImportPath}}{{range .Imports}} {{.}}{{end}}`, "./...")
+	cmd.Dir = filepath.Join("..", "..")
+	out, err := cmd.Output()
+	if err != nil {
+		t.Fatalf("go list: %v", err)
+	}
+	allowed := map[string]bool{module + "/internal/observe": true, module + "/cmd/quorumxcheck": true}
+	found := map[string]bool{}
+	for _, l := range strings.Split(strings.TrimSpace(string(out)), "\n") {
+		f := strings.Fields(l)
+		for _, imp := range f[1:] {
+			if strings.HasPrefix(imp, "github.com/multigres/") {
+				found[f[0]] = true
+				if !allowed[f[0]] {
+					t.Errorf("%s imports %s (only the observation code and quorumxcheck may)", f[0], imp)
+				}
+			}
+		}
+	}
+	for p := range allowed {
+		if !found[p] {
+			t.Errorf("control: %s imports no Multigres package; the check would not notice a leak", p)
+		}
+	}
+}
