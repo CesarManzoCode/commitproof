@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Contract version | **1.0.4** (K0; K1 corrections: ADR-0019, ADR-0020, ADR-0021; K3 corrections: ADR-0022, ADR-0023) |
+| Contract version | **1.0.5** (K0; K1 corrections: ADR-0019, ADR-0020, ADR-0021; K3 corrections: ADR-0022, ADR-0023; K4 clarifications: ADR-0024, ADR-0025) |
 | Date | 2026-10-09 |
 | Owner | César Manzo (GitHub `CesarManzoCode`) |
 | System under test | Multigres, `github.com/multigres/multigres` @ `e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73` |
@@ -106,7 +106,7 @@ Claim levels: **EXPLICIT** (public product statement), **DESIGN** (repository de
 | G4 | A write the client saw definitively fail never becomes visible (no G1a / aborted read). | INFERRED | I2, S72 | C2, C3 | all |
 | G5 | Transactions at SERIALIZABLE through the primary port are serializable; at REPEATABLE READ they satisfy snapshot isolation; across failovers. | INFERRED | I2, S63 | C3, C5 | C1–C6, C12 |
 | G6 | Single-key autocommit reads and writes through the primary port are linearizable (no stale read from a superseded primary). | DESIGN | S28 | C4, C6 | C2, C3, C12 |
-| G7 | User assignment to `synchronous_commit` is rejected with SQLSTATE `0A000`; `ALTER SYSTEM` is rejected. | DESIGN | S11 | probes P1, P2 | K4 probe suite |
+| G7 | User assignment to `synchronous_commit` is rejected with SQLSTATE `0A000`; `ALTER SYSTEM` is rejected. | DESIGN | S11 | P (probes P1, P2; §10.12) | K4 probe suite |
 | G8 | With buffering enabled, a planned failover produces zero client-visible errors for single autocommit statements; explicit transactions open across the switch receive `40001` and nothing else. | DESIGN | S14, S15 | C9 availability | C8 |
 | G9 | Gateway-tracked session settings and named prepared statements remain effective for the same client session after a failover. | DESIGN | S18 | C8 session-state | C9 |
 | G10 | LISTEN subscriptions resume after a failover: notifications sent after recovery are delivered. Loss during reconnect windows is expected and is measured, not judged. | DESIGN | S19 | C8 session-state | C9 |
@@ -205,22 +205,22 @@ After sealing, every file is chmod `0444` and the directory `0555`. `cpcheck ver
 | `buffered` | gateways add `--buffer-enabled=true` (defaults otherwise, S14) | C8, mutant M3 |
 | `slotless` | pooler and gateway `--enable-slot-based-replication=false` | K7 variant V2 |
 | `replica-port` | gateways add `--pg-replica-port=15433` | C13 |
-| `h1` | topology for historical commit `4bca1d5770a6…` with flags taken from that commit's `demo/k8s/*.yaml` (derivation file `deploy/DERIVATION-h1.md`) | H1 |
+| `h1` | topology for historical commit `4bca1d5770a6…` with flags taken from that commit's `demo/k8s/*.yaml` (derivation file `deploy/DERIVATION-h1.md`); images from that commit's Dockerfiles, FROM-only; HEALTHY evaluated as (a') one node out of recovery, (b') its `synchronous_standby_names` names exactly the other two, both streaming, (c) as §5.1, (d') the containers run the locked h1 images — the commit has no rule model and no `multigres.version()` (ADR-0025) | H1 |
 
 ### 5.6 Command-line interfaces (fixed)
 
 Exit code 0 = success, 1 = verdict FAIL, 2 = INVALID/UNKNOWN, 3 = usage or prerequisite error. All commands print one JSON summary line on stdout last.
 
 ```
-commitproof images build [--mutant M<n>] [--no-cache]        # builds, writes/updates images.lock.json
+commitproof images build [--mutant M<n> | --profile h1] [--no-cache]  # builds, writes/updates images.lock.json
 commitproof images verify                                    # local image IDs == lock
 commitproof cluster up|down|verify --profile <p> [--mutant M<n>]
 commitproof plan --campaign <C> --seed <u64> [--profile <p>] # prints plan.json to stdout
 commitproof run  --campaign <C> --seed <u64> [--profile <p>] [--mutant M<n>] [--directed D<n>] --out runs/
-commitproof probe --suite claims [--mutant M<n>] --out runs/
-commitproof minimize <run-dir> --out runs/                   # writes a new run dir for the minimal plan
-commitproof replay <run-dir> --times <k> --out runs/
-commitproof campaign --matrix <file> --out runs/             # resumable: skips sealed runs already present
+commitproof probe --suite claims [--mutant M<n>] [--seed <u64>] --out runs/
+commitproof minimize <run-dir> --out runs/ [--cpcheck <bin>]  # writes a new run dir for the minimal plan
+commitproof replay <run-dir> --times <k> --out runs/ [--cpcheck <bin>]
+commitproof campaign --matrix <file> --out runs/ [--cpcheck <bin>]  # resumable: skips sealed runs already present
 cpcheck verify-seal <run-dir>
 cpcheck check <run-dir> [--elle-oracle]                      # writes <run-dir>.checks.json next to the run (not inside the seal)
 cpcheck corpus <dir>                                         # K2 synthetic corpus
@@ -387,7 +387,7 @@ Every fault has: an injection mechanism, a **confirmation predicate** evaluated 
 | ID | Name | Patch (semantics) | Models | Source | Directed schedule | Expected detection |
 |---|---|---|---|---|---|---|
 | M1 | `sync-standby-cleared` | `postgresqlSyncStandbyManager.setStandbyNames` (sync_standby_manager.go:101) always writes `synchronous_standby_names = ''`: commits are acknowledged after local flush only ("ack before quorum") | durability not tied to quorum | S09, S25 | D1: steady W1+W4 load; at t=10 s apply F1c on the leader (gateways still reach it) for 30 s; heal; recovery; final reads | C1 lost-acked-writes (writes acked by the isolated old leader are rewound away) |
-| M2 | `cohort-add-local-view` | in `UpdateConsensusRule` (rpc_manager.go:405), for `COHORT_ADD` only: apply the incoming synchronous-standby policy (new member counted for acks) and return success **without** writing the rule (`DoUpdateRule` skipped) | membership admitted from a local view, not by consensus | S41, S24 | D2: F5a (wait for n4 admission predicate) → F3a on the other two followers → 40 s of W4/W1 load → F2a + F2b on the leader → heal F3a → recovery → final reads | C1 (writes acked only by n4 are lost when failover recruits from the old cohort) |
+| M2 | `cohort-add-local-view` | in `UpdateConsensusRule` (rpc_manager.go:405), for `COHORT_ADD` only: apply the incoming synchronous-standby policy (new member counted for acks) and return success **without** writing the rule (`DoUpdateRule` skipped) | membership admitted from a local view, not by consensus | S41, S24 | D2: F5a (wait for n4 admission predicate) → F3a on the other two followers → 40 s of W4/W1 load → F2a + F2b on the leader (F2b on the node F2a killed) → heal F3a → the old leader stays down 30 s, then F2b and F2a are healed (ADR-0024) → recovery → final reads | C1 (writes acked only by n4 are lost when failover recruits from the old cohort) |
 | M3 | `gateway-retry-any` | `classifyError` (pooler_gateway.go:96) returns buffer/retry for every error on PRIMARY targets, including errors after execution began | unsafe retry → duplicate execution | S14 | D3 (profile `buffered`): W1 autocommit-append variant and W4 at 2× pacing; F2a on the leader three times, 15 s apart | C3 `duplicate-elements` (an autocommit append executed twice); C2 `g1a` (a ledger insert reported to the client as failed with `23505` on the retry while the first execution's row is present) |
 | M4 | `guard-removed` | delete the `synchronous_commit` entry from the restricted-GUC map (`go/common/pgsettings/restricted.go:46`) | durability guard bypass | S11 | probe P1 | P1 expects `0A000`, mutant returns success |
 | M5 | `standby-slots-cleared` | `setSynchronizedStandbySlots` (pg_replication.go:600) always sets `synchronized_standby_slots = ''` | logical decoding runs ahead of the cohort | S13, S12 | D5: W7 consumer streaming; W4 load; F1b with A = {all followers' nodes}, B = everything else, for 20 s (commits block, become `info`); then F2a+F2b on the leader; heal; recovery | C7 phantom (consumer received changes that are absent from the final state) |
@@ -404,7 +404,7 @@ Every fault has: an injection mechanism, a **confirmation predicate** evaluated 
 
 ### 9.4 Historical control H1 (ADR-0015)
 
-Build the `h1` profile from commit `4bca1d5770a6bd425bde5a61eaad240431242cd5` (issue #778, S51). Schedule DH1: W4+W1 load, F3a on the leader's PostgreSQL for 120 s (the duration used in S51; deliberately longer than P16), `kill -CONT`, recovery, final reads; 5 runs. Outcome is recorded as DETECTED (C1 violation in ≥ 1 run), NOT_DETECTED, or NOT_DEPLOYABLE (topology for that commit cannot reach HEALTHY after deriving its flags per §5.5). The gate requires the attempt and honest classification, not a particular outcome; LIMITATIONS and the README state the outcome.
+Build the `h1` profile from commit `4bca1d5770a6bd425bde5a61eaad240431242cd5` (issue #778, S51; images, topology and HEALTHY predicate per ADR-0025). Schedule DH1: W4+W1 load, F3a on the leader's PostgreSQL for 120 s (the duration used in S51; deliberately longer than P16), `kill -CONT`, recovery, final reads; 5 runs. Outcome is recorded as DETECTED (C1 violation in ≥ 1 run), NOT_DETECTED, or NOT_DEPLOYABLE (topology for that commit cannot reach HEALTHY after deriving its flags per §5.5). The gate requires the attempt and honest classification, not a particular outcome; LIMITATIONS and the README state the outcome.
 
 ---
 
@@ -462,6 +462,10 @@ Inputs: W7 stream events (each change carries table, key, commit LSN, xid, and t
 ### 10.10 C9 availability (observation + G8)
 
 Computes unavailability windows per gateway (first failed/unknown op after a fault to first `ok` after heal), latency percentiles per phase, error class counts. G8 check: in C8 (profile `buffered`, F6), any `fail`/`info` on single autocommit statements within the switchover window is `planned-failover-error`; explicit transactions may fail only with `40001`.
+
+### 10.12 P probe checker (G7)
+
+Input: the probe suite's `wl: probe` operations (§15 K4; ADR-0024). P1 (`SET synchronous_commit = off`) must be rejected with `0A000`: completed `ok` → `p1-not-rejected`; rejected with another SQLSTATE → `p1-wrong-sqlstate`. P2 (`ALTER SYSTEM SET work_mem = '8MB'`) must be rejected (any SQLSTATE): completed `ok` → `p2-not-rejected`. A probe outcome without SQLSTATE (timeout, transport) or a planned probe that did not run → `unknown`. Runs without probe operations are vacuously valid. P follows C1–C9 in `checks.json`; the K2 corpus checkers are C1–C9.
 
 ### 10.11 Elle oracle (K2 only)
 
@@ -549,6 +553,7 @@ Versions observed 2026-10-09 (RESEARCH §5). K1 re-resolves every image digest w
 |---|---|---|
 | Multigres source | `e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73` | S01 |
 | Historical control source | `4bca1d5770a6bd425bde5a61eaad240431242cd5` | S33, S51 |
+| Historical control builder image | `golang:1.25-alpine3.23@sha256:27b3069b25647beacd3745b0b2c83e2f9b8d3935455a32cd4531236ee1c960e0` (go1.25.14; the Alpine release whose packages the historical Dockerfiles pin; resolved in K4, ADR-0025) | S33 |
 | Go (CommitProof and Multigres builds) | `go1.26.9` via `GOTOOLCHAIN=go1.26.9` (host `go` ≥ 1.21 downloads it); `go.mod`: `go 1.26.9` with no `toolchain` line (the go command rejects a `toolchain` line equal to the `go` line; ADR-0019) | S80, S02 |
 | Builder image | `golang:1.26.9-alpine@sha256:3082400e369fa24d5fc60bca20edab3f6d604e0c5a690ec66b295eff4dd87ade` (re-resolved in K1; the 2026-10-09 digest `cdfd4fe2…` is superseded, ADR-0020) | S81 |
 | Multigres runtime base | `debian:bookworm-slim@sha256:7c7b2c966bc9ee8cedfeef67e0e279108992c77681fa595db4a9d65c06ccc587` (re-resolved in K1; the 2026-10-09 digest `abd67ffc…` is superseded, ADR-0020) | S83 |
@@ -670,6 +675,8 @@ Negative controls: standard evidence sabotage per criterion (K2.6 is itself a ch
 | C5 slow-disk | W1, W4 | F4a on leader or follower, combined with F2a |
 | C6 rewind | W1, W4 | F2a(leader) then, 3–8 s after the new leader is observed, F2a(new leader); repeated twice per run |
 | C7 commit-cancel | W4 with session `statement_timeout` P19, W1 | F1b with A = {all followers' nodes}, B = everything else (commits block) for 15 s, then F2a on the leader; also client `CancelRequest` 1 s after `COMMIT` is sent |
+
+Fault counts, holds, role names and the directed schedules' seeds and heal timing are fixed by ADR-0024 (before any K4 run).
 
 **Deliverables.** Campaign driver; `minimize`, `replay`; mutant patches M1, M2, M4 and directed schedules D1, D2; probe suite P1 (`SET synchronous_commit = off` → expect `0A000`) and P2 (`ALTER SYSTEM SET work_mem = '8MB'` → expect rejection); `h1` profile and DH1; `quorumxcheck`; `evidence/K4/`.
 

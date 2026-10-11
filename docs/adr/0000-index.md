@@ -25,5 +25,7 @@
 | [0021](0021-node-processes-share-one-uid.md) | The two processes of a node run as one user (uid 999) | Accepted (K1, contract 1.0.3) |
 | [0022](0022-slowfs-node-layer.md) | The slowfs node layer: built FROM the local upstream-derived tag, launched as PID 1 | Accepted (K3, contract 1.0.4) |
 | [0023](0023-nemesis-lifecycle-from-runner.md) | Nemesis lifecycle commands from the runner: n4 created at run start, nem-runner started by the runner | Accepted (K3, contract 1.0.4) |
+| [0024](0024-k4-schedules-fixed-before-runs.md) | K4 schedules, directed-schedule timing, the probe checker and minimization details, fixed before any K4 run | Accepted (K4, contract 1.0.5) |
+| [0025](0025-h1-profile-derivation.md) | Profile h1: images from the historical commit, its demo topology, and a HEALTHY predicate it can answer | Accepted (K4, contract 1.0.5) |
 
 New ADRs continue the numbering. Each ADR: Context, Decision, Alternatives rejected, Consequences, Sources.
