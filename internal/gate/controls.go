@@ -32,6 +32,7 @@ type Result struct {
 // Evaluate runs every criterion on dir.
 func Evaluate(dir string, crits []Criterion) []Result {
 	e := LoadEvidence(dir)
+	defer e.Close()
 	out := make([]Result, 0, len(crits))
 	for _, c := range crits {
 		ev, probs, details := c.Eval(e)

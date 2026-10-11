@@ -35,6 +35,9 @@ type Evidence struct {
 	Dir     string
 	Records []Record
 	LoadErr error
+	// Run archives extracted by RunDir (archive.go).
+	extracted map[string]string
+	temps     []string
 }
 
 // LoadEvidence reads dir/commands.jsonl.

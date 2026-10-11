@@ -58,6 +58,8 @@ func run(args []string) int {
 		crits = gate.K1()
 	case "K2":
 		crits = gate.K2()
+	case "K3":
+		crits = gate.K3()
 	default:
 		return summary(map[string]any{"command": "cpgate", "sprint": sprint, "error": "gate not implemented yet"}, 3)
 	}
