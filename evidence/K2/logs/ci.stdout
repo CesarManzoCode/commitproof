@@ -1,0 +1,32 @@
+go vet ./...
+go tool -modfile=tools/go.mod staticcheck ./...
+go test -count=1 ./...
+?   	github.com/CesarManzoCode/commitproof/cmd/commitproof	[no test files]
+?   	github.com/CesarManzoCode/commitproof/cmd/cpcheck	[no test files]
+?   	github.com/CesarManzoCode/commitproof/cmd/cpgate	[no test files]
+?   	github.com/CesarManzoCode/commitproof/internal/buildinfo	[no test files]
+ok  	github.com/CesarManzoCode/commitproof/internal/canonjson	0.002s
+?   	github.com/CesarManzoCode/commitproof/internal/checker	[no test files]
+?   	github.com/CesarManzoCode/commitproof/internal/checker/elle	[no test files]
+?   	github.com/CesarManzoCode/commitproof/internal/cluster	[no test files]
+?   	github.com/CesarManzoCode/commitproof/internal/cmdlog	[no test files]
+ok  	github.com/CesarManzoCode/commitproof/internal/gate	0.003s
+ok  	github.com/CesarManzoCode/commitproof/internal/history	0.010s
+?   	github.com/CesarManzoCode/commitproof/internal/host	[no test files]
+?   	github.com/CesarManzoCode/commitproof/internal/images	[no test files]
+ok  	github.com/CesarManzoCode/commitproof/internal/independence	1.557s
+ok  	github.com/CesarManzoCode/commitproof/internal/observe	0.004s
+ok  	github.com/CesarManzoCode/commitproof/internal/params	0.003s
+ok  	github.com/CesarManzoCode/commitproof/internal/plan	0.046s
+ok  	github.com/CesarManzoCode/commitproof/internal/runner	0.005s
+?   	github.com/CesarManzoCode/commitproof/internal/synth	[no test files]
+?   	github.com/CesarManzoCode/commitproof/internal/tools/derivcheck	[no test files]
+?   	github.com/CesarManzoCode/commitproof/internal/tools/gencorpus	[no test files]
+?   	github.com/CesarManzoCode/commitproof/internal/tools/k2check	[no test files]
+ok  	github.com/CesarManzoCode/commitproof/internal/workload	6.822s
+go build -trimpath -ldflags "-X github.com/CesarManzoCode/commitproof/internal/buildinfo.Commit=a6669e2939561213cbeb1e36e24bca054fbd2763 -X github.com/CesarManzoCode/commitproof/internal/buildinfo.Dirty=false" -o bin/ ./cmd/commitproof ./cmd/cpcheck ./cmd/cpgate
+scripts/elle-oracle.sh
+{"base":"clojure:temurin-21-lein-2.13.0-bookworm@sha256:724a7f5840394bf9e659730e5039bf7498f31185e747e3586dbab626b717c34f","command":"elle-oracle","elle_cli_commit":"9c2a18b3719f573dab06ae05c955c9c9d5225673","exit_code":0,"image":"commitproof/elle-oracle:9c2a18b","image_id":"sha256:2d51fa76c0cc772986cd1e55c79f2c76fd37b8c7851180e8c0e5c752fc943d6e","jar_sha256":"8916c46d799d638111314263dd8dce7e7e655114362bee454e140d8263966209","version":"elle-cli 0.1.11"}
+scripts/ci-checkers.sh
+{"command":"gencorpus-verify","identical":true}
+{"command":"k2check","entries":807,"elle_compared":350,"elle_disagreements":0,"sabotage_rules":9,"problems":0}

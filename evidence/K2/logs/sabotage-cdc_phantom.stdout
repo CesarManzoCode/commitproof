@@ -1,0 +1,1 @@
+{"command":"corpus","dir":"testdata/corpus","entries":807,"exit_code":1,"matched":804,"mismatched":["w7-phantom-01","w7-phantom-02","w7-phantom-03"],"out":"evidence/K2/sabotage/cdc_phantom","sabotage":["cdc_phantom"]}

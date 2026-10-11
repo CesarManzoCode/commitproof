@@ -1,0 +1,63 @@
+{
+  "checkers": {
+    "C1": {
+      "valid": true,
+      "anomalies": [],
+      "observations": []
+    },
+    "C2": {
+      "valid": true,
+      "anomalies": [],
+      "observations": []
+    },
+    "C3": {
+      "valid": true,
+      "anomalies": [],
+      "observations": [
+        "G0-realtime"
+      ]
+    },
+    "C4": {
+      "valid": true,
+      "anomalies": [],
+      "observations": []
+    },
+    "C5": {
+      "valid": true,
+      "anomalies": [],
+      "observations": []
+    },
+    "C6": {
+      "valid": true,
+      "anomalies": [],
+      "observations": []
+    },
+    "C7": {
+      "valid": true,
+      "anomalies": [],
+      "observations": []
+    },
+    "C8": {
+      "valid": true,
+      "anomalies": [],
+      "observations": []
+    },
+    "C9": {
+      "valid": true,
+      "anomalies": [],
+      "observations": []
+    }
+  },
+  "derivation": "expected classes are written per plant from CONTRACT §10 (internal/synth), never from running cpcheck",
+  "elle": true,
+  "family": "w1",
+  "id": "w1-ser-G0-realtime-03",
+  "iso": "serializable",
+  "label": "G0-realtime",
+  "plant": "G0-realtime",
+  "profile": "baseline",
+  "verdict": "PASS",
+  "workloads": [
+    "W1"
+  ]
+}

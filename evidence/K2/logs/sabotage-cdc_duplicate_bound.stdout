@@ -1,0 +1,1 @@
+{"command":"corpus","dir":"testdata/corpus","entries":807,"exit_code":1,"matched":805,"mismatched":["w7-duplicate-boundary-01","w7-duplicate-boundary-02"],"out":"evidence/K2/sabotage/cdc_duplicate_bound","sabotage":["cdc_duplicate_bound"]}

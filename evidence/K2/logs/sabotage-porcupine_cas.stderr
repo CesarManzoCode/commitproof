@@ -1,0 +1,3 @@
+MISMATCH w2-cas-applied-01: [C4 valid true, expected false C4 anomalies [], expected [non-linearizable] verdict PASS, expected FAIL]
+MISMATCH w2-cas-applied-02: [C4 valid true, expected false C4 anomalies [], expected [non-linearizable] verdict PASS, expected FAIL]
+MISMATCH w2-cas-not-applied-01: [C4 valid true, expected false C4 anomalies [], expected [non-linearizable] verdict PASS, expected FAIL]

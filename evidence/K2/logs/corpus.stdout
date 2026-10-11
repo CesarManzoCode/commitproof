@@ -1,0 +1,1 @@
+{"command":"corpus","dir":"testdata/corpus","elle":{"agreed":350,"compared":350,"disagreed":0,"disagreements":[],"elle_unknown":0,"image":"sha256:2d51fa76c0cc772986cd1e55c79f2c76fd37b8c7851180e8c0e5c752fc943d6e","models":{"repeatable-read":166,"serializable":184}},"entries":807,"exit_code":0,"matched":807,"mismatched":[],"out":"evidence/K2/corpus"}

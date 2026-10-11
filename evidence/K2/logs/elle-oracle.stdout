@@ -1,0 +1,2 @@
+scripts/elle-oracle.sh
+{"base":"clojure:temurin-21-lein-2.13.0-bookworm@sha256:724a7f5840394bf9e659730e5039bf7498f31185e747e3586dbab626b717c34f","command":"elle-oracle","elle_cli_commit":"9c2a18b3719f573dab06ae05c955c9c9d5225673","exit_code":0,"image":"commitproof/elle-oracle:9c2a18b","image_id":"sha256:2d51fa76c0cc772986cd1e55c79f2c76fd37b8c7851180e8c0e5c752fc943d6e","jar_sha256":"8916c46d799d638111314263dd8dce7e7e655114362bee454e140d8263966209","version":"elle-cli 0.1.11"}

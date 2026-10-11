@@ -1,0 +1,71 @@
+sprint: K2
+status: DONE
+contract_version: "1.0.3"
+commits:
+  - {sha: "843b868", message: "feat(checker): C1–C9, run verdicts and checks.json (CONTRACT §10, §12.1)"}
+  - {sha: "ef610df", message: "feat(oracle): elle-cli oracle image and exporter (CONTRACT §10.11)"}
+  - {sha: "a465049", message: "feat(cli): cpcheck check and corpus"}
+  - {sha: "0d168d1", message: "style(checker): gofmt"}
+  - {sha: "71221c2", message: "fix(checker): C3 places unobserved committed appends after the longest read"}  # defect found by the corpus
+  - {sha: "5800dde", message: "fix(checker): G8 window uses the completion event of info operations"}  # defect found by the corpus
+  - {sha: "5a96ef3", message: "feat(synth): reference store, planting layer and corpus generator"}
+  - {sha: "814d41b", message: "feat(cli): cpcheck corpus reports per-checker classes; --results-only"}
+  - {sha: "930b47d", message: "test(independence): generator never links checkers; no sabotage in product binaries"}
+  - {sha: "4085b10", message: "style(synth): gofmt"}
+  - {sha: "e5582ac", message: "feat(gate): K2.6 sabotage dependency map and K2.1 class list"}  # committed before any sabotage build ran
+  - {sha: "f8a87ca", message: "test(workload): §6.2 classification per row through a fake PostgreSQL server (K2.5)"}
+  - {sha: "c4e48d4", message: "style: staticcheck-clean product and sabotage builds"}
+  - {sha: "7f3a087", message: "feat(gate): cpgate K2 and its negative controls"}
+  - {sha: "0b22300", message: "ci: make ci-checkers, elle-oracle and corpus targets"}
+  - {sha: "607297f", message: "test(corpus): K2 synthetic corpus (807 histories) and the K2.3 pathological history"}
+  - {sha: "a6669e2", message: "ci: K2 evidence script and K1 precondition on a copy"}  # evidence produced on this commit
+  - {sha: "6505013", message: "docs(limitations): LIM-22–LIM-26 checker scope, synthetic forms and oracle (K2)"}
+  - {sha: "(the commit that adds this file)", message: "test(gate): K2 evidence — gate PASS with negative controls"}
+gate:
+  command: "cpgate K2 --evidence evidence/K2 --negative-controls"
+  exit_code: 0   # record cpgate-k2 in evidence/K2/commands.jsonl, stdout sha256 abf313d0ac007131297d2d64709911b4c9004001c1d1a6cccebd659a8dcec9cc; gate.json sha256 7011cff585f5718025c4dd0542ee6c1a86f21f2587895629c96092d4b8659abf
+  criteria:
+    - {id: "K2.1", result: PASS, evidence: "evidence/K2/corpus/results.jsonl", sha256: "225a0d1e05476633ac76b78f06049953a3ad9b50dc68a765d0a3e0f1f991f44c"}  # 282 planted histories, 38 classes, each ≥ 3, 0 mismatches
+    - {id: "K2.2", result: PASS, evidence: "evidence/K2/corpus/results.jsonl", sha256: "225a0d1e05476633ac76b78f06049953a3ad9b50dc68a765d0a3e0f1f991f44c"}  # 525 clean; W1 195, W2 65, W3 65, W4 130, W5 55, W6 55, W7 55
+    - {id: "K2.3", result: PASS, evidence: "evidence/K2/runs/porcupine-timeout.checks.json", sha256: "befb4441b10ff46ebc87749d661c573122c73433638a60992a086340d3da4aff"}  # C4/C6 unknown, verdict UNKNOWN, exit 2 after 60.08 s
+    - {id: "K2.4", result: PASS, evidence: "evidence/K2/corpus/elle/raw/ + evidence/K2/divergences.json", sha256: "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"}  # sha256 of divergences.json ([]); 350 compared (130 clean, 220 planted; 184 serializable, 166 repeatable-read), 350 agree, 0 elle unknown
+    - {id: "K2.5", result: PASS, evidence: "evidence/K2/logs/wire-tests.stdout", sha256: "c09abd6aa843ab58c6b6d9fb0c50a7d16bd0bab6dc76f55ab69a72c12563a449"}  # 13 tests: §6.2 rows 1–12 and the S61 WARNING
+    - {id: "K2.6", result: PASS, evidence: "evidence/K2/sabotage/<rule>/results.jsonl (9 rules)", sha256: "989183a3a57e0f765bc75cb3d7c561adead952339a5d30120a1834615bbbd625"}  # sha256 of sabotage/rw_edge/results.jsonl; cpgate recomputes all nine rules' failing labels
+    - {id: "K2.7", result: PASS, evidence: "evidence/K2/commands.jsonl (ci)", sha256: "594b3da560296b89b1205a041c5f480b3db66845c85e6e57b632b483c56b5560"}  # commands.jsonl as cpgate read it, before the cpgate-k2 record was appended
+  negative_controls:   # evidence/K2/negative-controls.json, sha256 44ed8253a5164648086551144e56e90e6f3094b057e02c6c0474b01d7bf634c6
+    - {criterion: "K2.1", sabotage: "drop the reported bank-sum of planted entry w3-sum-read-01 from the corpus results", failed_only_target: true}
+    - {criterion: "K2.2", sabotage: "report a bank-sum on clean entry w3-clean-001 in the corpus results", failed_only_target: true}
+    - {criterion: "K2.3", sabotage: "rewrite the pathological run's checks.json verdict to PASS", failed_only_target: true}
+    - {criterion: "K2.4", sabotage: "make elle-cli's validity run of w1-ser-clean-001 say false", failed_only_target: true}
+    - {criterion: "K2.5", sabotage: "turn the pass event of TestWireRow03SerializationFailureAtCommit into fail (hashes kept consistent)", failed_only_target: true}
+    - {criterion: "K2.6", sabotage: "report a bank-sum on clean entry w3-clean-001 in the bank_sum sabotage results", failed_only_target: true}
+    - {criterion: "K2.7", sabotage: "replace the recorded exit code of `make ci-unit ci-checkers` with 1", failed_only_target: true}
+demonstrated:
+  # No claims.yaml exists yet (K7 deliverable, §17); each line cites its record and artifact (details in evidence/K2/NOTES.md).
+  - "C1–C9 classify all 807 synthetic corpus histories exactly as planted: 282 planted histories cover the 38 classes of §10.1–§10.7 and §10.9–§10.10 (≥ 3 each), 525 clean histories are valid for every checker (record corpus; corpus/results.jsonl 225a0d1e…f44c, recomputed by cpgate against testdata expected.json)."
+  - "C3 agrees with elle-cli 0.1.11 (pinned image, elle-cli 9c2a18b) on validity and mapped class set for 350 of 350 W1 histories, both isolation models, with no unknown result and no divergence (record corpus; corpus/elle/raw; divergences.json [])."
+  - "A pathological register history (30 concurrent open-ended writes, an impossible read) is UNKNOWN with exit 2 after the 60 s P11 timeout, never PASS (record pathological; runs/porcupine-timeout.checks.json befb4441…4aff)."
+  - "Every row of the §6.2 completion table, and the S61 COMMIT WARNING case, is classified as the table says through the real pgx client code against a fake PostgreSQL server (record wire-tests; 13 tests pass)."
+  - "Each of nine sabotaged checker rules (cp_sabotage_<rule>) makes exactly the corpus labels predicted in internal/gate/k2deps.go (committed before the sabotage runs) fail; product binaries contain no sabotage symbol (records sabotage-*, no-sabotage-symbols)."
+  - "The corpus regenerates byte for byte from internal/synth (record gencorpus-verify); make ci-unit ci-checkers exits 0 locally (record ci)."
+  - "Informational: on a copy of K1's sealed 45 s fault-free smoke run of the real build, all nine checkers are valid and elle-cli agrees with C3 (record k1-smoke-check; k1-smoke.checks.json 749389fb…e3e)."
+not_demonstrated:
+  - "Any checker verdict on a faulted run of Multigres — K3/K4."
+  - "C7–C9 on histories produced by real W5–W8 clients; their encodings are defined and validated synthetically only (LIM-24, K5)."
+  - "C3 on predicate reads or rw-register histories (LIM-08)."
+  - "Reproducibility of the oracle image across clean rebuilds (LIM-26)."
+  - "The CI workflow (new ci-checkers job) on GitHub-hosted runners (requires a push by the owner; LIM-16)."
+findings: []
+adrs_added: []
+deviations_from_prompt:
+  - "cpcheck corpus accepts optional flags beyond §5.6's `cpcheck corpus <dir>`: --elle-oracle (K2.4 compares 350 histories in one oracle pass instead of 350 `check --elle-oracle` invocations), --out <dir> and --results-only (evidence output). The documented forms of §5.6 are unchanged (same treatment as K1's hidden runner subcommands)."
+  - "The K1 precondition is checked on a copy of evidence/K1 (scripts/k1-precondition.sh) because cpgate writes gate.json into the directory it evaluates; an earlier unrecorded check in this session rewrote evidence/K1/gate.json and was reverted with git checkout before any commit (NOTES §6)."
+  - "Observation classes (C3's -process/-realtime variants and G2-item under repeatable-read; C8's notify-window-loss) are reported under stats.observations, keeping the checks.json schema of §15 K2 exact; they never change validity."
+  - "C8 checks SHOW/EXECUTE and LISTEN sessions at all times, not only after a recorded leader change: leader changes are visible only in observations, which checkers must not read; §10.9's condition is a subset."
+  - "The history encodings of W5–W8 (not specified by the contract) are defined in K2 by the checkers (internal/checker/c5c7.go, c8c9.go); K5's clients must emit them (LIM-24)."
+  - "elle-cli is run three times per history (validity with only the model; process-only and realtime-only class runs) and fed histories without index fields, because of elle-cli behaviour found by black-box probes (NOTES §2 K2.4)."
+  - "The oracle is an image built FROM the pinned clojure image with elle-cli's jar (build/Dockerfile.elle); elle-cli is still built inside the pinned image and never vendored."
+blocked: null
+pending_user_actions:
+  - "Optional: push to GitHub to run .github/workflows/ci.yml (now with a ci-checkers job) remotely (never done by K1–K7; LIM-16)."
+next_sprint_ready: true

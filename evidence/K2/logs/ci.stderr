@@ -1,0 +1,10 @@
+sha256:2d51fa76c0cc772986cd1e55c79f2c76fd37b8c7851180e8c0e5c752fc943d6e
+bank_sum: failing labels {bank-sum}
+cdc_duplicate_bound: failing labels {cdc-duplicate}
+cdc_phantom: failing labels {cdc-phantom}
+duplicate_detection: failing labels {duplicate-elements}
+g1a: failing labels {dirty-update,g1a}
+lost_write_diff: failing labels {lost-write}
+porcupine_cas: failing labels {non-linearizable}
+prefix_check: failing labels {incompatible-order}
+rw_edge: failing labels {G-nonadjacent,G-nonadjacent-process,G-nonadjacent-realtime,G-single,G-single-process,G-single-realtime,G2-item,G2-item-process,G2-item-realtime,g1b}

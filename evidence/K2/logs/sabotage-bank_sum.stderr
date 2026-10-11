@@ -1,0 +1,3 @@
+MISMATCH w3-sum-final-01: [C5 valid true, expected false C5 anomalies [], expected [bank-sum] verdict PASS, expected FAIL]
+MISMATCH w3-sum-read-01: [C5 valid true, expected false C5 anomalies [], expected [bank-sum] verdict PASS, expected FAIL]
+MISMATCH w3-sum-read-02: [C5 valid true, expected false C5 anomalies [], expected [bank-sum] verdict PASS, expected FAIL]

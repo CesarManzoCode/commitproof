@@ -1,0 +1,1 @@
+{"command":"corpus","dir":"testdata/corpus","entries":807,"exit_code":1,"matched":804,"mismatched":["w3-sum-final-01","w3-sum-read-01","w3-sum-read-02"],"out":"evidence/K2/sabotage/bank_sum","sabotage":["bank_sum"]}

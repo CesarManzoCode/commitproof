@@ -1,0 +1,82 @@
+[
+  {
+    "criterion": "K2.1",
+    "sabotage": "drop the reported bank-sum of planted entry w3-sum-read-01 from the corpus results",
+    "failed": [
+      "K2.1"
+    ],
+    "failed_only_target": true,
+    "target_problems": [
+      "w3-sum-read-01: C5 valid true, expected false; C5 anomalies {}, expected {bank-sum}",
+      "class bank-sum: 2 matching planted histories, want ≥ 3"
+    ]
+  },
+  {
+    "criterion": "K2.2",
+    "sabotage": "report a bank-sum on clean entry w3-clean-001 in the corpus results",
+    "failed": [
+      "K2.2"
+    ],
+    "failed_only_target": true,
+    "target_problems": [
+      "clean w3-clean-001: C5 valid false, expected true; C5 anomalies {bank-sum}, expected {}; C5 not valid"
+    ]
+  },
+  {
+    "criterion": "K2.3",
+    "sabotage": "rewrite the pathological run's checks.json verdict to PASS",
+    "failed": [
+      "K2.3"
+    ],
+    "failed_only_target": true,
+    "target_problems": [
+      "summary verdict \"UNKNOWN\", checks_sha256 \"befb4441b10ff46ebc87749d661c573122c73433638a60992a086340d3da4aff\" (file abbbe760df7b9c7e5c37351883ae0e1b86f7194ec1b198dce49270974961ea6d)",
+      "checks.json verdict PASS"
+    ]
+  },
+  {
+    "criterion": "K2.4",
+    "sabotage": "make elle-cli's validity run of w1-ser-clean-001 say false",
+    "failed": [
+      "K2.4"
+    ],
+    "failed_only_target": true,
+    "target_problems": [
+      "w1-ser-clean-001: C3 true {} vs elle-cli false {}, not in divergences.json"
+    ]
+  },
+  {
+    "criterion": "K2.5",
+    "sabotage": "turn the pass event of TestWireRow03SerializationFailureAtCommit into fail (hashes kept consistent)",
+    "failed": [
+      "K2.5"
+    ],
+    "failed_only_target": true,
+    "target_problems": [
+      "test event fail: TestWireRow03SerializationFailureAtCommit",
+      "TestWireRow03SerializationFailureAtCommit did not pass"
+    ]
+  },
+  {
+    "criterion": "K2.6",
+    "sabotage": "report a bank-sum on clean entry w3-clean-001 in the bank_sum sabotage results",
+    "failed": [
+      "K2.6"
+    ],
+    "failed_only_target": true,
+    "target_problems": [
+      "sabotage bank_sum fails labels {bank-sum,clean}, expected exactly {bank-sum}"
+    ]
+  },
+  {
+    "criterion": "K2.7",
+    "sabotage": "replace the recorded exit code of `make ci-unit ci-checkers` with 1",
+    "failed": [
+      "K2.7"
+    ],
+    "failed_only_target": true,
+    "target_problems": [
+      "ci exited 1"
+    ]
+  }
+]

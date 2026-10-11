@@ -1,0 +1,1 @@
+{"command":"corpus","dir":"testdata/corpus","entries":807,"exit_code":1,"matched":801,"mismatched":["w1-ser-lost-write-01","w1-ser-lost-write-02","w1-ser-lost-write-03","w4-lost-write-01","w4-lost-write-02","w4-lost-write-03"],"out":"evidence/K2/sabotage/lost_write_diff","sabotage":["lost_write_diff"]}

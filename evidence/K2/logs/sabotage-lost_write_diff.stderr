@@ -1,0 +1,6 @@
+MISMATCH w1-ser-lost-write-01: [C1 valid true, expected false C1 anomalies [], expected [lost-write] verdict PASS, expected FAIL]
+MISMATCH w1-ser-lost-write-02: [C1 valid true, expected false C1 anomalies [], expected [lost-write] verdict PASS, expected FAIL]
+MISMATCH w1-ser-lost-write-03: [C1 valid true, expected false C1 anomalies [], expected [lost-write] verdict PASS, expected FAIL]
+MISMATCH w4-lost-write-01: [C1 valid true, expected false C1 anomalies [], expected [lost-write] verdict PASS, expected FAIL]
+MISMATCH w4-lost-write-02: [C1 valid true, expected false C1 anomalies [], expected [lost-write] verdict PASS, expected FAIL]
+MISMATCH w4-lost-write-03: [C1 valid true, expected false C1 anomalies [], expected [lost-write] verdict PASS, expected FAIL]

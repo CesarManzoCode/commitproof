@@ -1,0 +1,138 @@
+{
+  "sprint": "K2",
+  "contract_version": "1.0.3",
+  "evidence": "evidence/K2",
+  "result": "PASS",
+  "criteria": [
+    {
+      "id": "K2.1",
+      "name": "Planted anomalies",
+      "result": "PASS",
+      "evidence": "corpus/results.jsonl",
+      "sha256": "225a0d1e05476633ac76b78f06049953a3ad9b50dc68a765d0a3e0f1f991f44c",
+      "problems": [],
+      "details": [
+        "282 planted histories, 38 classes",
+        "lost-write: 6",
+        "final-read-divergence: 5",
+        "g1a: 33",
+        "duplicate-elements: 12",
+        "incompatible-order: 12",
+        "g1b: 12",
+        "internal: 12",
+        "dirty-update: 12",
+        "G0: 12",
+        "G1c: 12",
+        "G-single: 24",
+        "G-nonadjacent: 12",
+        "G2-item: 12",
+        "G0-process: 8",
+        "G1c-process: 8",
+        "G-single-process: 8",
+        "G-nonadjacent-process: 8",
+        "G2-item-process: 8",
+        "G0-realtime: 16",
+        "G1c-realtime: 16",
+        "G-single-realtime: 16",
+        "G-nonadjacent-realtime: 16",
+        "G2-item-realtime: 16",
+        "non-linearizable: 12",
+        "bank-sum: 3",
+        "bank-negative: 3",
+        "stale-read: 4",
+        "cdc-gap: 3",
+        "cdc-phantom: 3",
+        "cdc-duplicate: 3",
+        "cdc-order: 3",
+        "session-setting-lost: 3",
+        "prepared-statement-lost: 4",
+        "notify-not-resumed: 3",
+        "notify-window-loss: 3",
+        "fair-share-starvation: 3",
+        "overload-failover: 3",
+        "planned-failover-error: 4"
+      ]
+    },
+    {
+      "id": "K2.2",
+      "name": "Clean histories",
+      "result": "PASS",
+      "evidence": "corpus/results.jsonl",
+      "sha256": "225a0d1e05476633ac76b78f06049953a3ad9b50dc68a765d0a3e0f1f991f44c",
+      "problems": [],
+      "details": [
+        "525 clean histories",
+        "W1: 195 clean",
+        "W2: 65 clean",
+        "W3: 65 clean",
+        "W4: 130 clean",
+        "W5: 55 clean",
+        "W6: 55 clean",
+        "W7: 55 clean"
+      ]
+    },
+    {
+      "id": "K2.3",
+      "name": "Unknown is not pass",
+      "result": "PASS",
+      "evidence": "runs/porcupine-timeout.checks.json",
+      "sha256": "befb4441b10ff46ebc87749d661c573122c73433638a60992a086340d3da4aff",
+      "problems": [],
+      "details": [
+        "30 open-ended writes; check took 1m0.077s; exit 2"
+      ]
+    },
+    {
+      "id": "K2.4",
+      "name": "Elle agreement",
+      "result": "PASS",
+      "evidence": "corpus/elle/raw",
+      "sha256": "",
+      "problems": [],
+      "details": [
+        "compared 350 (clean 130, planted 220; map[repeatable-read:166 serializable:184]), elle unknown 0, disagreements 0 []"
+      ]
+    },
+    {
+      "id": "K2.5",
+      "name": "Classification table",
+      "result": "PASS",
+      "evidence": "commands.jsonl",
+      "sha256": "594b3da560296b89b1205a041c5f480b3db66845c85e6e57b632b483c56b5560",
+      "problems": [],
+      "details": [
+        "13 required tests passed"
+      ]
+    },
+    {
+      "id": "K2.6",
+      "name": "Checker sabotage",
+      "result": "PASS",
+      "evidence": "sabotage/",
+      "sha256": "",
+      "problems": [],
+      "details": [
+        "bank_sum: failing labels {bank-sum}",
+        "cdc_duplicate_bound: failing labels {cdc-duplicate}",
+        "cdc_phantom: failing labels {cdc-phantom}",
+        "duplicate_detection: failing labels {duplicate-elements}",
+        "g1a: failing labels {dirty-update,g1a}",
+        "lost_write_diff: failing labels {lost-write}",
+        "porcupine_cas: failing labels {non-linearizable}",
+        "prefix_check: failing labels {incompatible-order}",
+        "rw_edge: failing labels {G-nonadjacent,G-nonadjacent-process,G-nonadjacent-realtime,G-single,G-single-process,G-single-realtime,G2-item,G2-item-process,G2-item-realtime,g1b}"
+      ]
+    },
+    {
+      "id": "K2.7",
+      "name": "CI-equivalent",
+      "result": "PASS",
+      "evidence": "commands.jsonl",
+      "sha256": "594b3da560296b89b1205a041c5f480b3db66845c85e6e57b632b483c56b5560",
+      "problems": [],
+      "details": [
+        "argv [\"make\" \"ci-unit\" \"ci-checkers\"] exit 0"
+      ]
+    }
+  ]
+}
