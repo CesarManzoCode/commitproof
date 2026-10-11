@@ -18,6 +18,7 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/CesarManzoCode/commitproof/internal/cmdlog"
 	"github.com/CesarManzoCode/commitproof/internal/gate"
@@ -220,8 +221,22 @@ func (b *Builder) Build(ctx context.Context, noCache bool) (map[string]any, erro
 			argv = append(argv, "--no-cache")
 		}
 		argv = append(argv, filepath.Join(b.Root, s.Context))
-		if _, err := b.cmd(ctx, "build-"+path.Base(strings.Split(s.Tag, ":")[0]), argv, cmdlog.Opts{}, "build"); err != nil {
-			return nil, err
+		// Up to three attempts: the builds download Go modules and apt
+		// packages, and a transient network failure (seen in K1: an IPv6
+		// "network is unreachable" from proxy.golang.org) is not a property
+		// of the build. Every attempt is recorded; nothing else is retried.
+		name := "build-" + path.Base(strings.Split(s.Tag, ":")[0])
+		var berr error
+		for attempt := 1; attempt <= 3; attempt++ {
+			if _, berr = b.cmd(ctx, fmt.Sprintf("%s-attempt-%d", name, attempt), argv, cmdlog.Opts{}, "build"); berr == nil {
+				break
+			}
+			if attempt < 3 {
+				time.Sleep(10 * time.Second)
+			}
+		}
+		if berr != nil {
+			return nil, berr
 		}
 		id, err := b.ImageID(ctx, s.Tag)
 		if err != nil {

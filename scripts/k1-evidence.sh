@@ -18,7 +18,8 @@ step() { # name argv...
 	local name=$1
 	shift
 	echo "== $name: $*" >&2
-	"${REC[@]}" "$name" -- "$@" >/dev/null
+	# Sub-commands (docker, git, compose) of commitproof are recorded too.
+	CP_CMDLOG_DIR="$EV/cmdlog/$name" "${REC[@]}" "$name" -- "$@" >/dev/null
 	local rc=$?
 	if [ "$rc" -ne 0 ]; then
 		echo "k1-evidence: step $name exited $rc (see $EV/logs/$name.stderr)" >&2
