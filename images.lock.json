@@ -11,15 +11,18 @@
     "tool": "docker buildx build"
   },
   "commitproof": {
-    "commit": "5af2749449bbddca85c560f93d8d654b8289c743",
+    "commit": "090a36628b8ac9946c9c0a9efd763fd098746b93",
     "dirty": false
   },
-  "contract_version": "1.0.3",
+  "contract_version": "1.0.4",
   "dockerfiles": {
     "build/Dockerfile": {
       "sha256": "b816e502e999edc98e3ccf3b116f2c8ae95efcd0f9b2991084a491fa43b7a8fa",
       "upstream": "Dockerfile@e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73",
       "upstream_blob": "037648c3f661fb6badaf50d9a0da3ede95459a97"
+    },
+    "build/Dockerfile.nemesis": {
+      "sha256": "efa27c4ad75766d424cc6a6f60f94c7d63353ceff39f432b844ea59e59f02dd7"
     },
     "build/Dockerfile.pgctld": {
       "sha256": "2a2f62d5d18e40401f024e7fcee9aefddc205a43daa1cfecaaabb411bc450273",
@@ -27,7 +30,10 @@
       "upstream_blob": "83babd5d06bee6b2a79bef93cdb85932429a15d0"
     },
     "build/Dockerfile.runner": {
-      "sha256": "b2ab0166e2263a753fe2715e9aaa531fff29b99960b9e098ab984eefb15e4c9a"
+      "sha256": "0c39550c6511993456a13fcb43852b3ad8f91e760ee30bb57c915ed527ea4414"
+    },
+    "build/Dockerfile.slowfs": {
+      "sha256": "2c7f8b218301cd240955c555d4946e906f838fc0cdfb1d28e3f42a1e867157e3"
     }
   },
   "images": {
@@ -48,7 +54,19 @@
       "id": "sha256:6b2a6b1c547be5a1139a0bacb817dfc84f8cd49aba4bf584d5585ed25c6841cb",
       "pgbackrest_version": "pgBackRest 2.59.3"
     },
-    "commitproof/pgctld:real": {
+    "commitproof/nemesis:real": {
+      "binaries": {
+        "/usr/local/bin/cpnet": "0b8e02e92561a16958545aef1a6c98f8a6a4fa38c649183693003585136eedee"
+      },
+      "build_args": {},
+      "dockerfile": "build/Dockerfile.nemesis",
+      "id": "sha256:79d950c771f9248bbc03f6a9d3a264652d266744f81817ef167448b3b122573d",
+      "versions": {
+        "iptables --version": "iptables v1.8.13 (nf_tables)",
+        "tc -V": "tc utility, iproute2-v7.0.0"
+      }
+    },
+    "commitproof/pgctld-upstream:real": {
       "binaries": {
         "/usr/bin/pgbackrest": "f4e943e34e24a7ccf02b909a9ad2b00339b7fdb3ff2e88b920e2aaf2ff837c53",
         "/usr/local/bin/pgctld": "8f718fe351e80b1a9727f5e041ec3d991a16cfef16f9e3f099f1d145e60b9784"
@@ -61,16 +79,38 @@
       "id": "sha256:c5c53fbe093cb448373460fbe1f7439660c3238408a644f6c7d91c990d35d88f",
       "pgbackrest_version": "pgBackRest 2.59.3"
     },
+    "commitproof/pgctld:real": {
+      "binaries": {
+        "/usr/bin/pgbackrest": "f4e943e34e24a7ccf02b909a9ad2b00339b7fdb3ff2e88b920e2aaf2ff837c53",
+        "/usr/local/bin/pgctld": "8f718fe351e80b1a9727f5e041ec3d991a16cfef16f9e3f099f1d145e60b9784",
+        "/usr/local/bin/slowfs": "f977d3bc2272260043b798896588a3da3099836f5db1513ac62863e3ac7b1b8a"
+      },
+      "build_args": {},
+      "dockerfile": "build/Dockerfile.slowfs",
+      "extends": {
+        "id": "sha256:c5c53fbe093cb448373460fbe1f7439660c3238408a644f6c7d91c990d35d88f",
+        "layers_prefix": true,
+        "tag": "commitproof/pgctld-upstream:real"
+      },
+      "id": "sha256:7e7552b8a250944adfde63cf60074adce24f68f0a1d35aca12b48252741db229",
+      "pgbackrest_version": "pgBackRest 2.59.3",
+      "versions": {
+        "dpkg-query -W fuse3": "fuse3\t3.17.2-3"
+      }
+    },
     "commitproof/runner:real": {
       "binaries": {
-        "/usr/local/bin/commitproof": "3387261412cfa61de874bb648a6f14eb83d4fee91dcad215e339906889600993"
+        "/usr/local/bin/commitproof": "7244da886eaa2bb582882ea8ca9db66cfcff219d8c64f591b95f4af03d9c2e4d"
       },
       "build_args": {
-        "CP_COMMIT": "5af2749449bbddca85c560f93d8d654b8289c743",
+        "CP_COMMIT": "090a36628b8ac9946c9c0a9efd763fd098746b93",
         "CP_DIRTY": "false"
       },
       "dockerfile": "build/Dockerfile.runner",
-      "id": "sha256:ef1cb544c0658b65216dc4941f6c53d4b1d51012813e9df96348d2fcbd4a0f77"
+      "id": "sha256:ee5541881813f7b51124265b7b62eae6ab66d684dbaf646ddf4f65423c55941a",
+      "versions": {
+        "docker --version": "Docker version 29.8.2, build 7fc2dff9bceb96b266a3b2c3117c0955a0d9e616"
+      }
     }
   },
   "lock_version": 1,
