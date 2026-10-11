@@ -43,7 +43,7 @@ func strs(ss []string) []any {
 
 func main() { os.Exit(run(os.Args[1:])) }
 
-const usage = "usage: cpcheck verify-seal <run-dir> | check <run-dir> [--elle-oracle] | corpus <dir> [--elle-oracle] [--out <dir>]"
+const usage = "usage: cpcheck verify-seal <run-dir> | check <run-dir> [--elle-oracle] | corpus <dir> [--elle-oracle] [--out <dir> [--results-only]]"
 
 func run(args []string) int {
 	if len(args) == 0 {

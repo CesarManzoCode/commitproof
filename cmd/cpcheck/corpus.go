@@ -113,7 +113,8 @@ type entryResult struct {
 func cmdCorpus(args []string) int {
 	fs := flag.NewFlagSet("corpus", flag.ContinueOnError)
 	oracle := fs.Bool("elle-oracle", false, "cross-check C3 with elle-cli on entries marked elle")
-	out := fs.String("out", "", "write per-entry results, expectations and oracle outputs here")
+	out := fs.String("out", "", "write results.jsonl, per-entry checks.json and oracle outputs here")
+	resultsOnly := fs.Bool("results-only", false, "with --out, write results.jsonl only (no per-entry files)")
 	dir, err := parse(fs, args)
 	if err != nil {
 		return summary(map[string]any{"command": "corpus", "error": err.Error() + "; " + usage}, 3)
@@ -181,7 +182,7 @@ func cmdCorpus(args []string) int {
 		}
 	}
 	if *out != "" {
-		if err := writeCorpusOut(*out, entries, elleLines); err != nil {
+		if err := writeCorpusOut(*out, entries, elleLines, !*resultsOnly); err != nil {
 			return summary(map[string]any{"command": "corpus", "error": err.Error()}, 3)
 		}
 		m["out"] = filepath.ToSlash(*out)
@@ -197,21 +198,36 @@ func cmdCorpus(args []string) int {
 	return summary(m, 0)
 }
 
-func writeCorpusOut(out string, entries []*entryResult, elleLines map[string]map[string]any) error {
+// writeCorpusOut writes results.jsonl (one line per entry: the reported
+// validity and classes of every checker, the verdict, the seal root and the
+// comparison with expected.json) and, if entries is set, each entry's
+// checks.json and a copy of its expected.json.
+func writeCorpusOut(out string, entries []*entryResult, elleLines map[string]map[string]any, perEntry bool) error {
 	var lines bytes.Buffer
+	if err := os.MkdirAll(out, 0o755); err != nil {
+		return err
+	}
 	for _, er := range entries {
-		ed := filepath.Join(out, "entries", er.id)
-		if err := os.MkdirAll(ed, 0o755); err != nil {
-			return err
+		if perEntry {
+			ed := filepath.Join(out, "entries", er.id)
+			if err := os.MkdirAll(ed, 0o755); err != nil {
+				return err
+			}
+			if err := os.WriteFile(filepath.Join(ed, "checks.json"), append(er.checks, '\n'), 0o644); err != nil {
+				return err
+			}
+			if err := os.WriteFile(filepath.Join(ed, "expected.json"), er.expRaw, 0o644); err != nil {
+				return err
+			}
 		}
-		if err := os.WriteFile(filepath.Join(ed, "checks.json"), append(er.checks, '\n'), 0o644); err != nil {
-			return err
-		}
-		if err := os.WriteFile(filepath.Join(ed, "expected.json"), er.expRaw, 0o644); err != nil {
-			return err
+		reported := map[string]any{}
+		for _, r := range er.rs {
+			reported[r.ID] = map[string]any{"valid": string(r.Valid), "anomalies": strs(checker.Classes(r.Anomalies)),
+				"observations": strs(checker.Classes(r.Observations))}
 		}
 		l := map[string]any{"id": er.id, "label": er.exp.Label, "family": er.exp.Family, "seal_root": er.root,
-			"verdict": er.verdict, "expected_verdict": er.exp.Verdict, "match": len(er.diffs) == 0, "diffs": strs(er.diffs)}
+			"verdict": er.verdict, "expected_verdict": er.exp.Verdict, "match": len(er.diffs) == 0, "diffs": strs(er.diffs),
+			"reported": reported, "expected_sha256": sha(er.expRaw)}
 		if el, ok := elleLines[er.id]; ok {
 			l["elle"] = el
 		}
