@@ -1,0 +1,6 @@
+# Build cache: upstream Multigres clone at the pinned commit (CONTRACT §5.2).
+/.cache/
+# Local binaries.
+/bin/
+# Run directories outside evidence/ (CONTRACT §5.4); cited runs are copied under evidence/.
+/runs/

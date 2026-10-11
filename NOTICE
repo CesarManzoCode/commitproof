@@ -1,0 +1,12 @@
+CommitProof
+Copyright 2026 César Manzo
+
+This product is licensed under the Apache License, Version 2.0 (see LICENSE).
+
+CommitProof builds and tests Multigres (https://github.com/multigres/multigres,
+Copyright 2025 Supabase, Inc., Apache License 2.0). The files build/Dockerfile
+and build/Dockerfile.pgctld are copies of Multigres' Dockerfile and
+Dockerfile.pgctld at commit e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73 with only
+their FROM lines changed to digest-pinned references. deploy/pg_hba_template.conf
+is copied from Multigres' demo/k8s/k8s-multipooler-statefulset.yaml at the same
+commit. Observation code imports Multigres Go packages at that commit.
