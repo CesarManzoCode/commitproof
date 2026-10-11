@@ -17,15 +17,29 @@ import (
 	"github.com/CesarManzoCode/commitproof/internal/history"
 	"github.com/CesarManzoCode/commitproof/internal/host"
 	"github.com/CesarManzoCode/commitproof/internal/images"
+	"github.com/CesarManzoCode/commitproof/internal/nemesis"
 	"github.com/CesarManzoCode/commitproof/internal/params"
 	"github.com/CesarManzoCode/commitproof/internal/plan"
 )
 
-// runnerTimeout bounds the runner process: workload, in-flight ops,
-// recovery, quiescence and final reads, plus one P09 of slack.
+// runnerTimeout bounds the runner process: workload, in-flight ops, the
+// nemesis schedule's worst case, recovery, quiescence and final reads, plus
+// one P09 of slack.
 func runnerTimeout(p *plan.Plan) time.Duration {
-	return time.Duration(p.DurationMS)*time.Millisecond + params.ClientOpTimeout + params.RecoveryDeadline +
-		params.Quiescence + params.FinalReadDeadline + 2*params.ClientOpTimeout + params.HealthyDeadline
+	return time.Duration(p.DurationMS)*time.Millisecond + params.ClientOpTimeout + plan.NemesisBound(p.Steps) +
+		params.RecoveryDeadline + params.Quiescence + params.FinalReadDeadline + 2*params.ClientOpTimeout + params.HealthyDeadline
+}
+
+// usesKind reports whether the plan contains a fault of kind.
+func usesKind(p *plan.Plan, kind string) bool {
+	for _, s := range p.Steps {
+		for _, e := range s.Elements {
+			if e.Kind == kind {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func writeJSON(path string, v any) error {
@@ -77,6 +91,42 @@ func RunPlan(ctx context.Context, root, profile, mutant string, p *plan.Plan, ou
 	if lc, _ := cp["commit"].(string); lc != buildinfo.Commit {
 		return fail(3, fmt.Sprintf("runner image built from commitproof %s, this binary is %s: run `commitproof images build`", lc, buildinfo.Commit))
 	}
+	imgs, _ := lock["images"].(map[string]any)
+	nemEntry, _ := imgs["commitproof/nemesis:real"].(map[string]any)
+	nemImage, _ := nemEntry["id"].(string)
+	if len(p.Steps) > 0 && nemImage == "" {
+		return fail(3, "images.lock.json has no commitproof/nemesis:real: run `commitproof images build`")
+	}
+	prefix, err := NetPrefix()
+	if err != nil {
+		return fail(3, err.Error())
+	}
+	// A binary built with a nemesis sabotage tag (K3.2, K3.3) runs the
+	// runner image built with the same tags from the same commit; the image
+	// labels are checked (fail closed). Such runs are never mutant runs.
+	sab := nemesis.ActiveSabotage()
+	runnerTag := images.RunnerTag(sab)
+	runnerImage := ""
+	sum["sabotage"] = []any{}
+	if len(sab) > 0 {
+		var full []string
+		for _, t := range sab {
+			full = append(full, "cp_sabotage_"+t)
+		}
+		b := &images.Builder{Root: root, Rec: pre}
+		ref := "commitproof/runner:" + runnerTag
+		id, err := b.ImageID(ctx, ref)
+		if err != nil {
+			return fail(3, fmt.Sprintf("sabotage runner image %s missing: %v", ref, err))
+		}
+		lc, err1 := b.ImageLabel(ctx, ref, "org.commitproof.commit")
+		lt, err2 := b.ImageLabel(ctx, ref, "org.commitproof.build-tags")
+		if err1 != nil || err2 != nil || lc != buildinfo.Commit || lt != strings.Join(full, ",") {
+			return fail(3, fmt.Sprintf("sabotage runner image %s: commit %q tags %q, want %q %q", ref, lc, lt, buildinfo.Commit, strings.Join(full, ",")))
+		}
+		runnerImage = id
+		sum["sabotage"] = strsAny(full)
+	}
 
 	mut := "real"
 	if mutant != "" {
@@ -98,6 +148,7 @@ func RunPlan(ctx context.Context, root, profile, mutant string, p *plan.Plan, ou
 		return fail(2, err.Error())
 	}
 	c, _ := New(root, profile, rec)
+	c.RunnerTag = runnerTag
 	if err := os.WriteFile(filepath.Join(dir, history.FilePlan), append(planBytes, '\n'), 0o644); err != nil {
 		return fail(2, err.Error())
 	}
@@ -123,6 +174,8 @@ func RunPlan(ctx context.Context, root, profile, mutant string, p *plan.Plan, ou
 		"runner_image_commit": cp["commit"],
 		"runner_image_dirty":  cp["dirty"],
 		"multigres_commit":    params.MultigresCommit,
+		"sabotage":            sum["sabotage"],
+		"sabotage_runner_id":  runnerImage,
 		"host_kernel":         strings.TrimSpace(string(kernel)),
 		"docker_version":      strings.TrimSpace(string(dv.Stdout)),
 		"start_wall_time":     start.UTC().Format(time.RFC3339),
@@ -139,6 +192,15 @@ func RunPlan(ctx context.Context, root, profile, mutant string, p *plan.Plan, ou
 	up := c.Up(ctx)
 	writeJSON(filepath.Join(dir, history.DirLogs, "cluster-up.json"), up.Summary)
 	sum["cluster_up"] = map[string]any{"exit": up.ExitCode, "healthy": up.Summary["healthy"], "elapsed_ms": up.Summary["elapsed_ms"]}
+	if up.ExitCode == 0 && usesKind(p, "F5a") {
+		// F5a starts n4's containers from the runner (ADR-0022): they are
+		// created here, from the Compose definitions, not started.
+		r := c.run(ctx, host.ComposeTimeout, "compose-create-n4",
+			c.compose("--profile", "n4", "create", "--no-recreate", "pg-n4", "pooler-n4", "nem-pg-n4"), cmdlog.Opts{})
+		if err := ok(r); err != nil {
+			up.ExitCode, up.Summary["error"] = 2, "create n4: "+err.Error()
+		}
+	}
 	if up.ExitCode != 0 {
 		reason = fmt.Sprintf("cluster up exit %d: %v", up.ExitCode, up.Summary["error"])
 		hostOnlyHistory(dir, reason)
@@ -152,7 +214,8 @@ func RunPlan(ctx context.Context, root, profile, mutant string, p *plan.Plan, ou
 			rel = "./" + filepath.ToSlash(rel)
 		}
 		r := c.run(ctx, runnerTimeout(p), "runner-run",
-			c.RunnerArgs([]string{rel + ":/run-dir"}, "__runner", "run", "--run-dir=/run-dir"), cmdlog.Opts{})
+			c.runnerArgs(nemesis.RunnerContainer, []string{rel + ":/run-dir"}, "__runner", "run", "--run-dir=/run-dir",
+				"--nemesis-image="+nemImage, "--net-prefix="+prefix), cmdlog.Opts{})
 		rs, err := LastJSON(r.Stdout)
 		switch {
 		case r.Err != nil:
@@ -198,6 +261,14 @@ func RunPlan(ctx context.Context, root, profile, mutant string, p *plan.Plan, ou
 		return sum, 2
 	}
 	return sum, 0
+}
+
+func strsAny(ss []string) []any {
+	out := make([]any, len(ss))
+	for i, s := range ss {
+		out[i] = s
+	}
+	return out
 }
 
 func join(a, b string) string {

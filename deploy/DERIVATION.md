@@ -28,7 +28,11 @@ Abbreviations: `MP` = `k8s-multipooler-statefulset.yaml`, `MO` =
 | `--pprof-http=true` | removed | allowed divergence (pprof) |
 | env `PGDATA` | `/data/pg_data` | MP:252 |
 | env `POSTGRES_PASSWORD_FILE` | `/var/run/secrets/multigres/password` (file `deploy/postgres-password` = `postgres`, the demo secret's value) | MP:257, PW:27 |
-| mounts | `/data` (per-node volume `data-nX`), `/certs`, `/backups` (shared volumes) | MP:230–244; volume layout divergence below |
+| mounts | `/data-backing` (per-node volume `data-nX`; `/data` is the slowfs pass-through of it), `/certs`, `/backups` (shared volumes) | MP:230–244; volume layout divergence below; slow-disk layer below (K3) |
+| entrypoint | `/usr/local/bin/slowfs run --backing=/data-backing --mount=/data --control=/run/slowfs/control --bypass=pg_sockets --uid=999 --gid=999 -- /usr/local/bin/pgctld` (then the flags above) | CONTRACT §8 slowfs (ADR-0006, ADR-0022): PID 1 mounts the slow-disk pass-through on `/data` before pgctld starts, bind-mounts the volume's `pg_sockets` over it, runs pgctld as 999 (the K1 process user) and reaps orphans |
+| container user, devices, capabilities | `user: "0:0"` (the launcher; pgctld and PostgreSQL run as 999), `/dev/fuse`, `CAP_SYS_ADMIN`, `apparmor:unconfined` | CONTRACT §8 slowfs; container-scoped (no privileged mode); AppArmor's default profile forbids `mount` (no-op without AppArmor) |
+
+Image (K3): `commitproof/pgctld:real` is `commitproof/pgctld-upstream:real` (the FROM-only derivation of upstream's `Dockerfile.pgctld`, K1.3) plus `fuse3` and the `slowfs` binary in a CommitProof-owned stage (`build/Dockerfile.slowfs`, CONTRACT §5.2, ADR-0022). pgctld's binary and flags are unchanged.
 
 ## multipooler (`pooler-n1` … `pooler-n4`, image `commitproof/multigres:real`)
 
@@ -107,6 +111,10 @@ pooler and pgctld containers of one pod share localhost (MP:107–257).
 | `--initial-cluster-state` | `new` | ET:49 |
 | `--listen-metrics-urls` | `http://0.0.0.0:2381` | ET:50 |
 | healthcheck | `etcdctl endpoint health` every 1 s | translation of the readiness probe (ET:64–66, `/readyz`); gates `cluster-metadata` |
+
+## Nemesis helpers (`nem-*`, image `commitproof/nemesis:real`) and runner (K3)
+
+Not in the demo (CommitProof's own fault-injection layer, CONTRACT §5.1, §8, ADR-0005). One `nem-<svc>` per network namespace (`etcd`, `pg-n1…n4`, `orch-z1…z3`, `gw-z1…z3`) with `network_mode: service:<svc>`, `cap_drop: [ALL]`, `cap_add: [NET_ADMIN]`, command `cpnet idle`; `nem-pg-n4` is in the `n4` profile. `nem-runner` is started by the runner in its own namespace at run time (ADR-0023). The runner service adds `group_add: [<gid of /var/run/docker.sock>]` and `DOCKER_CONFIG=/tmp/.docker` so its docker CLI can drive the nemesis through the mounted socket (ADR-0018, ADR-0023).
 
 ## Init jobs
 

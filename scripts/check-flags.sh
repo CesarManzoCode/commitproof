@@ -28,6 +28,9 @@ for svc in $(jq -r '.services | keys[]' <<<"$cfg"); do
 	*/pgctld*) bin=pgctld ;;
 	*) continue ;;
 	esac
+	# pg-nX's entrypoint is the slowfs launcher (ADR-0022): only the words
+	# after the pgctld path are pgctld's flags.
+	[ "$bin" = pgctld ] && cmd=${cmd##*/usr/local/bin/pgctld}
 	for f in $(grep -o -- '--[a-z0-9-]*' <<<"$cmd" | sort -u); do
 		if grep -q -- "  $f\b" <<<"${H[$bin]}" || grep -q -- " $f[ =]" <<<"${H[$bin]}"; then
 			echo "OK       $svc $bin $f"

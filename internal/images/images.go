@@ -44,6 +44,12 @@ type Spec struct {
 	Binaries   []string
 	Pgbackrest bool
 	BuildArgs  [][2]string
+	// Versions are commands run in the image whose output is locked
+	// (packages installed from the base's repositories without a pin).
+	Versions [][]string
+	// Extends is the tag of the image this one is built FROM (a local
+	// image): its layers must be a prefix of this image's (ADR-0022).
+	Extends string
 }
 
 // Specs lists the images of the real build (tag suffix "real"; mutants use
@@ -55,12 +61,29 @@ func Specs(src host.Source) []Spec {
 			Binaries: []string{"/multigres/bin/multigres", "/multigres/bin/multiadmin", "/multigres/bin/multigateway",
 				"/multigres/bin/multiorch", "/multigres/bin/multipooler", "/usr/bin/pgbackrest"},
 			Pgbackrest: true, BuildArgs: mg},
-		{Tag: "commitproof/pgctld:real", Dockerfile: "build/Dockerfile.pgctld", Upstream: "Dockerfile.pgctld", Context: SourceDir,
+		{Tag: "commitproof/pgctld-upstream:real", Dockerfile: "build/Dockerfile.pgctld", Upstream: "Dockerfile.pgctld", Context: SourceDir,
 			Binaries: []string{"/usr/local/bin/pgctld", "/usr/bin/pgbackrest"}, Pgbackrest: true, BuildArgs: mg},
+		// §5.2: the node image = pgctld-upstream + fuse3 + slowfs (K3).
+		{Tag: "commitproof/pgctld:real", Dockerfile: "build/Dockerfile.slowfs", Context: ".",
+			Binaries: []string{"/usr/local/bin/pgctld", "/usr/bin/pgbackrest", "/usr/local/bin/slowfs"}, Pgbackrest: true,
+			Versions: [][]string{{"dpkg-query", "-W", "fuse3"}}, Extends: "commitproof/pgctld-upstream:real"},
+		{Tag: "commitproof/nemesis:real", Dockerfile: "build/Dockerfile.nemesis", Context: ".",
+			Binaries: []string{"/usr/local/bin/cpnet"},
+			Versions: [][]string{{"iptables", "--version"}, {"tc", "-V"}}},
 		{Tag: "commitproof/runner:real", Dockerfile: "build/Dockerfile.runner", Context: ".",
 			Binaries:  []string{"/usr/local/bin/commitproof"},
-			BuildArgs: [][2]string{{"CP_COMMIT", src.Commit}, {"CP_DIRTY", fmt.Sprint(src.Dirty)}}},
+			BuildArgs: [][2]string{{"CP_COMMIT", src.Commit}, {"CP_DIRTY", fmt.Sprint(src.Dirty)}},
+			Versions:  [][]string{{"docker", "--version"}}},
 	}
+}
+
+// RunnerTag is the runner image tag for a set of nemesis sabotage tags
+// ("real" when none).
+func RunnerTag(sabotage []string) string {
+	if len(sabotage) == 0 {
+		return "real"
+	}
+	return "sab-" + strings.Join(sabotage, "-")
 }
 
 // MultigresBinaries are the six binaries of K1.2.
@@ -188,6 +211,11 @@ func (b *Builder) Build(ctx context.Context, noCache bool) (map[string]any, erro
 		}
 		dockerfiles[s.Dockerfile] = entry
 		for _, ref := range gate.FromRefs(content) {
+			if s.Extends != "" && ref == s.Extends {
+				// A local image built by this run, checked by layers
+				// after the build (ADR-0022).
+				continue
+			}
 			name, digest, ok := strings.Cut(ref, "@")
 			if !ok {
 				return nil, fmt.Errorf("%s: FROM %s is not digest-pinned", s.Dockerfile, ref)
@@ -262,6 +290,33 @@ func (b *Builder) Build(ctx context.Context, noCache bool) (map[string]any, erro
 			}
 			entry["pgbackrest_version"] = strings.TrimSpace(string(r.Stdout))
 		}
+		if len(s.Versions) > 0 {
+			vs := map[string]any{}
+			for _, v := range s.Versions {
+				argv := append([]string{"docker", "run", "--rm", "--label", projectLabel, "--network", "none", "--user", "0:0",
+					"--entrypoint", v[0], s.Tag}, v[1:]...)
+				r, err := b.cmd(ctx, "version-"+v[0], argv, cmdlog.Opts{}, "")
+				if err != nil {
+					return nil, err
+				}
+				vs[strings.Join(v, " ")] = strings.TrimSpace(string(r.Stdout) + string(r.Stderr))
+			}
+			entry["versions"] = vs
+		}
+		if s.Extends != "" {
+			base, err := b.ImageID(ctx, s.Extends)
+			if err != nil {
+				return nil, err
+			}
+			prev, _ := imgs[s.Extends].(map[string]any)
+			if want, _ := prev["id"].(string); want != base {
+				return nil, fmt.Errorf("%s: base %s is %s, not the image built above (%s)", s.Tag, s.Extends, base, want)
+			}
+			if err := b.checkLayers(ctx, s.Extends, s.Tag); err != nil {
+				return nil, err
+			}
+			entry["extends"] = map[string]any{"tag": s.Extends, "id": base, "layers_prefix": true}
+		}
 		imgs[s.Tag] = entry
 	}
 	baseMap := map[string]any{}
@@ -290,6 +345,69 @@ func (b *Builder) Build(ctx context.Context, noCache bool) (map[string]any, erro
 		return nil, err
 	}
 	return lock, nil
+}
+
+// checkLayers requires the layers of base to be a prefix of derived's: the
+// derived image is base plus its own layers, with base unchanged.
+func (b *Builder) checkLayers(ctx context.Context, base, derived string) error {
+	layers := func(ref string) ([]string, error) {
+		r, err := b.cmd(ctx, "layers", []string{"docker", "image", "inspect", "--format", "{{json .RootFS.Layers}}", ref}, cmdlog.Opts{}, "")
+		if err != nil {
+			return nil, err
+		}
+		var ls []string
+		return ls, json.Unmarshal(r.Stdout, &ls)
+	}
+	lb, err := layers(base)
+	if err != nil {
+		return err
+	}
+	ld, err := layers(derived)
+	if err != nil {
+		return err
+	}
+	if len(ld) <= len(lb) {
+		return fmt.Errorf("%s has %d layers, not more than its base %s (%d)", derived, len(ld), base, len(lb))
+	}
+	for i := range lb {
+		if lb[i] != ld[i] {
+			return fmt.Errorf("%s layer %d is %s, base %s has %s", derived, i, ld[i], base, lb[i])
+		}
+	}
+	return nil
+}
+
+// BuildSabotageRunner builds the runner image with one nemesis sabotage
+// tag set (K3.2, K3.3), tagged commitproof/runner:<RunnerTag> and labelled
+// with the tags and the commit. These images are test fixtures: never in
+// the lock.
+func (b *Builder) BuildSabotageRunner(ctx context.Context, tags []string) (string, error) {
+	src, err := host.SourceIdentity(b.Root)
+	if err != nil {
+		return "", err
+	}
+	var full []string
+	for _, t := range tags {
+		full = append(full, "cp_sabotage_"+t)
+	}
+	tag := "commitproof/runner:" + RunnerTag(tags)
+	argv := []string{"docker", "buildx", "build", "--progress=plain", "--provenance=false", "--sbom=false",
+		"--file", "build/Dockerfile.runner", "--tag", tag,
+		"--build-arg", "CP_COMMIT=" + src.Commit, "--build-arg", fmt.Sprintf("CP_DIRTY=%v", src.Dirty),
+		"--build-arg", "CP_BUILD_TAGS=" + strings.Join(full, ","), "."}
+	if _, err := b.cmd(ctx, "build-sabotage-runner", argv, cmdlog.Opts{}, "build"); err != nil {
+		return "", err
+	}
+	return b.ImageID(ctx, tag)
+}
+
+// ImageLabel returns one label of a local image.
+func (b *Builder) ImageLabel(ctx context.Context, ref, label string) (string, error) {
+	r, err := b.cmd(ctx, "image-label", []string{"docker", "image", "inspect", "--format", "{{index .Config.Labels \"" + label + "\"}}", ref}, cmdlog.Opts{}, "")
+	if err != nil {
+		return "", err
+	}
+	return strings.TrimSpace(string(r.Stdout)), nil
 }
 
 // ImageID returns the local image ID of ref.

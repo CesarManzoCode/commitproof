@@ -100,13 +100,27 @@ services:
     depends_on:
       etcd: {condition: service_healthy}
 
+  # pg-nX (K3, ADR-0006/ADR-0022): PID 1 is the slowfs launcher, which
+  # mounts the slow-disk pass-through of the node's volume (/data-backing)
+  # on /data before pgctld starts, bind-mounts the volume's pg_sockets over
+  # it (multipooler reaches PostgreSQL's socket through the plain volume),
+  # runs pgctld as the postgres user (999) and reaps orphans. It needs
+  # /dev/fuse and CAP_SYS_ADMIN (container-scoped; no privileged mode); the
+  # control file /run/slowfs/control is outside the mount. AppArmor's
+  # default profile forbids mount(2), hence apparmor:unconfined (a no-op on
+  # hosts without AppArmor).
   pg-n1: &pg
     image: commitproof/pgctld:${CP_IMAGE_TAG:-real}
     pull_policy: never
     restart: "no"
     healthcheck: {disable: true}
     hostname: pg-n1
-    entrypoint: ["/usr/local/bin/pgctld"]
+    user: "0:0"
+    devices: ["/dev/fuse:/dev/fuse"]
+    cap_add: [SYS_ADMIN]
+    security_opt: ["apparmor:unconfined"]
+    entrypoint: ["/usr/local/bin/slowfs", "run", "--backing=/data-backing", "--mount=/data", "--control=/run/slowfs/control",
+                 "--bypass=pg_sockets", "--uid=999", "--gid=999", "--", "/usr/local/bin/pgctld"]
     command: &pgctld-flags
       - server
       - --pooler-dir=/data
@@ -118,7 +132,7 @@ services:
       - --pgbackrest-cert-dir=/certs
     environment: *node-env
     volumes:
-      - data-n1:/data
+      - data-n1:/data-backing
       - certs:/certs
       - backups:/backups
       - ./pg_hba_template.conf:/etc/pgctld/pg_hba_template.conf:ro
@@ -170,7 +184,7 @@ services:
     <<: *pg
     hostname: pg-n2
     volumes:
-      - data-n2:/data
+      - data-n2:/data-backing
       - certs:/certs
       - backups:/backups
       - ./pg_hba_template.conf:/etc/pgctld/pg_hba_template.conf:ro
@@ -213,7 +227,7 @@ services:
     <<: *pg
     hostname: pg-n3
     volumes:
-      - data-n3:/data
+      - data-n3:/data-backing
       - certs:/certs
       - backups:/backups
       - ./pg_hba_template.conf:/etc/pgctld/pg_hba_template.conf:ro
@@ -258,7 +272,7 @@ services:
     profiles: [n4]
     hostname: pg-n4
     volumes:
-      - data-n4:/data
+      - data-n4:/data-backing
       - certs:/certs
       - backups:/backups
       - ./pg_hba_template.conf:/etc/pgctld/pg_hba_template.conf:ro
@@ -413,8 +427,85 @@ services:
       cpnet:
         ipv4_address: ${CP_NET_PREFIX:-10.77.0}.33
 
+  # Nemesis helpers (CONTRACT §5.1, §8; ADR-0005): one per network
+  # namespace, sharing it, capability NET_ADMIN only (every other capability
+  # dropped), idle until the runner execs iptables, tc or cpnet in them.
+  # nem-runner is started by the runner in its own namespace at run time.
+  nem-etcd: &nem
+    image: commitproof/nemesis:${CP_IMAGE_TAG:-real}
+    pull_policy: never
+    restart: "no"
+    network_mode: service:etcd
+    cap_drop: [ALL]
+    cap_add: [NET_ADMIN]
+    depends_on:
+      etcd: {condition: service_started}
+
+  nem-pg-n1:
+    <<: *nem
+    network_mode: service:pg-n1
+    depends_on:
+      pg-n1: {condition: service_started}
+
+  nem-pg-n2:
+    <<: *nem
+    network_mode: service:pg-n2
+    depends_on:
+      pg-n2: {condition: service_started}
+
+  nem-pg-n3:
+    <<: *nem
+    network_mode: service:pg-n3
+    depends_on:
+      pg-n3: {condition: service_started}
+
+  nem-orch-z1:
+    <<: *nem
+    network_mode: service:orch-z1
+    depends_on:
+      orch-z1: {condition: service_started}
+
+  nem-orch-z2:
+    <<: *nem
+    network_mode: service:orch-z2
+    depends_on:
+      orch-z2: {condition: service_started}
+
+  nem-orch-z3:
+    <<: *nem
+    network_mode: service:orch-z3
+    depends_on:
+      orch-z3: {condition: service_started}
+
+  nem-gw-z1:
+    <<: *nem
+    network_mode: service:gw-z1
+    depends_on:
+      gw-z1: {condition: service_started}
+
+  nem-gw-z2:
+    <<: *nem
+    network_mode: service:gw-z2
+    depends_on:
+      gw-z2: {condition: service_started}
+
+  nem-gw-z3:
+    <<: *nem
+    network_mode: service:gw-z3
+    depends_on:
+      gw-z3: {condition: service_started}
+
+  nem-pg-n4:
+    <<: *nem
+    profiles: [n4]
+    network_mode: service:pg-n4
+    depends_on:
+      pg-n4: {condition: service_started}
+
   # ADR-0018: the single process that writes history.jsonl. Started per
-  # command with `docker compose run` (never by `up`).
+  # command with `docker compose run` (never by `up`). It drives the nemesis
+  # through the Docker socket (docker CLI in the image), so it joins the
+  # socket's group (CP_DOCKER_GID, set by commitproof from the socket).
   runner:
     image: commitproof/runner:${CP_RUNNER_TAG:-real}
     pull_policy: never
@@ -422,6 +513,9 @@ services:
     profiles: [runner]
     hostname: runner
     entrypoint: ["/usr/local/bin/commitproof"]
+    group_add: ["${CP_DOCKER_GID:-0}"]
+    environment:
+      DOCKER_CONFIG: /tmp/.docker
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:

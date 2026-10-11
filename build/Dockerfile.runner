@@ -1,6 +1,9 @@
 # CommitProof runner image (ADR-0018): the commitproof binary on the pinned
-# helper base. CommitProof-owned (not derived from upstream). Built by
-# `commitproof images build` with the repository root as context.
+# helper base, plus the docker CLI the nemesis uses through the mounted
+# socket (CONTRACT §8). CommitProof-owned (not derived from upstream). Built
+# by `commitproof images build` with the repository root as context;
+# CP_BUILD_TAGS is empty for the real image and names one nemesis sabotage
+# tag for the K3.2/K3.3 fail-closed images (never locked, labelled).
 FROM golang:1.26.9-alpine@sha256:3082400e369fa24d5fc60bca20edab3f6d604e0c5a690ec66b295eff4dd87ade AS builder
 WORKDIR /src
 COPY go.mod go.sum ./
@@ -9,10 +12,17 @@ COPY cmd ./cmd
 COPY internal ./internal
 ARG CP_COMMIT=unknown
 ARG CP_DIRTY=unknown
-RUN CGO_ENABLED=0 go build -trimpath \
+ARG CP_BUILD_TAGS=
+RUN CGO_ENABLED=0 go build -trimpath -tags "${CP_BUILD_TAGS}" \
     -ldflags "-s -w -X github.com/CesarManzoCode/commitproof/internal/buildinfo.Commit=${CP_COMMIT} -X github.com/CesarManzoCode/commitproof/internal/buildinfo.Dirty=${CP_DIRTY}" \
     -o /out/commitproof ./cmd/commitproof
 
 FROM alpine:3.24.2@sha256:294b683cb724975bec92580e1e685676bd4b50bda910ddb8c51d4cabeaec77e6
+# docker-cli from the pinned base's own repository (version recorded in
+# images.lock.json).
+RUN apk add --no-cache docker-cli && docker --version
+ARG CP_COMMIT=unknown
+ARG CP_BUILD_TAGS=
+LABEL org.commitproof.commit="${CP_COMMIT}" org.commitproof.build-tags="${CP_BUILD_TAGS}"
 COPY --from=builder /out/commitproof /usr/local/bin/commitproof
 ENTRYPOINT ["/usr/local/bin/commitproof"]

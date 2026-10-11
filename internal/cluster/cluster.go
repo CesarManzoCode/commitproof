@@ -16,11 +16,13 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+	"syscall"
 	"time"
 
 	"github.com/CesarManzoCode/commitproof/internal/cmdlog"
 	"github.com/CesarManzoCode/commitproof/internal/host"
 	"github.com/CesarManzoCode/commitproof/internal/images"
+	"github.com/CesarManzoCode/commitproof/internal/nemesis"
 	"github.com/CesarManzoCode/commitproof/internal/params"
 )
 
@@ -39,6 +41,9 @@ type Cluster struct {
 	Profile string
 	Rec     *cmdlog.Recorder
 	Echo    io.Writer
+	// RunnerTag selects the runner image of `run` (images.RunnerTag);
+	// HEALTHY checks always use the real runner.
+	RunnerTag string
 }
 
 // New validates the profile.
@@ -46,25 +51,60 @@ func New(root, profile string, rec *cmdlog.Recorder) (*Cluster, error) {
 	if !implemented[profile] {
 		return nil, fmt.Errorf("profile %q is not implemented yet (implemented: baseline)", profile)
 	}
-	return &Cluster{Root: root, Profile: profile, Rec: rec}, nil
+	return &Cluster{Root: root, Profile: profile, Rec: rec, RunnerTag: "real"}, nil
 }
 
-// env returns the Compose interpolation variables (P26: CP_SUBNET).
-func (c *Cluster) env() ([]string, error) {
+// DockerSocket is mounted into the runner (ADR-0018).
+const DockerSocket = "/var/run/docker.sock"
+
+// dockerGID is the group owning the Docker socket: the runner, running as
+// the invoking user, joins it to drive the nemesis.
+func dockerGID() (string, error) {
+	st, err := os.Stat(DockerSocket)
+	if err != nil {
+		return "", fmt.Errorf("docker socket: %w", err)
+	}
+	sys, ok := st.Sys().(*syscall.Stat_t)
+	if !ok {
+		return "", fmt.Errorf("docker socket: no owner information")
+	}
+	return fmt.Sprint(sys.Gid), nil
+}
+
+// NetPrefix is the /24 prefix ("10.77.0") of CP_SUBNET (P26).
+func NetPrefix() (string, error) {
 	subnet := os.Getenv("CP_SUBNET")
 	if subnet == "" {
 		subnet = params.DockerSubnet
 	}
 	ip, ipnet, err := net.ParseCIDR(subnet)
 	if err != nil || ip.To4() == nil {
-		return nil, fmt.Errorf("CP_SUBNET %q: want an IPv4 /24", subnet)
+		return "", fmt.Errorf("CP_SUBNET %q: want an IPv4 /24", subnet)
 	}
 	if ones, _ := ipnet.Mask.Size(); ones != 24 {
-		return nil, fmt.Errorf("CP_SUBNET %q: want an IPv4 /24", subnet)
+		return "", fmt.Errorf("CP_SUBNET %q: want an IPv4 /24", subnet)
 	}
 	v4 := ipnet.IP.To4()
-	prefix := fmt.Sprintf("%d.%d.%d", v4[0], v4[1], v4[2])
-	return []string{"CP_SUBNET=" + ipnet.String(), "CP_NET_PREFIX=" + prefix, "CP_IMAGE_TAG=real", "CP_RUNNER_TAG=real"}, nil
+	return fmt.Sprintf("%d.%d.%d", v4[0], v4[1], v4[2]), nil
+}
+
+// env returns the Compose interpolation variables (P26: CP_SUBNET; the
+// runner's image tag and the Docker socket's group).
+func (c *Cluster) env() ([]string, error) {
+	prefix, err := NetPrefix()
+	if err != nil {
+		return nil, err
+	}
+	gid, err := dockerGID()
+	if err != nil {
+		return nil, err
+	}
+	tag := c.RunnerTag
+	if tag == "" {
+		tag = "real"
+	}
+	return []string{"CP_SUBNET=" + prefix + ".0/24", "CP_NET_PREFIX=" + prefix, "CP_IMAGE_TAG=real", "CP_RUNNER_TAG=" + tag,
+		"CP_DOCKER_GID=" + gid}, nil
 }
 
 func (c *Cluster) compose(args ...string) []string {
@@ -242,22 +282,34 @@ func (c *Cluster) Up(ctx context.Context) UpResult {
 // sources are paths relative to the repository root ("./runs/<id>"); compose
 // resolves them against its working directory.
 func (c *Cluster) RunnerArgs(mounts []string, args ...string) []string {
+	return c.runnerArgs("", mounts, args...)
+}
+
+// runnerArgs is RunnerArgs with an optional container name (the run's
+// runner is named so that nem-runner can join its namespace).
+func (c *Cluster) runnerArgs(name string, mounts []string, args ...string) []string {
 	argv := c.compose("run", "--rm", "--no-deps", "--quiet-pull", "--user", fmt.Sprintf("%d:%d", os.Getuid(), os.Getgid()))
+	if name != "" {
+		argv = append(argv, "--name", name)
+	}
 	for _, m := range mounts {
 		argv = append(argv, "--volume", m)
 	}
 	return append(append(argv, "runner"), args...)
 }
 
-// Healthy runs the predicate inside the runner container, re-evaluating
-// every second until it holds or deadline passes. It returns the runner's
-// JSON summary.
+// Healthy runs the predicate inside the (real) runner container,
+// re-evaluating every second until it holds or deadline passes. It returns
+// the runner's JSON summary.
 func (c *Cluster) Healthy(ctx context.Context, deadline time.Duration) (map[string]any, error) {
 	if deadline < 0 {
 		deadline = 0
 	}
 	argv := c.RunnerArgs(nil, "__runner", "healthy", fmt.Sprintf("--deadline-ms=%d", deadline.Milliseconds()))
+	saved := c.RunnerTag
+	c.RunnerTag = "real"
 	r := c.run(ctx, deadline+host.ComposeTimeout, "runner-healthy", argv, cmdlog.Opts{})
+	c.RunnerTag = saved
 	if r.Err != nil {
 		return nil, r.Err
 	}
@@ -286,6 +338,15 @@ func LastJSON(out []byte) (map[string]any, error) {
 // reports what is left.
 func (c *Cluster) Down(ctx context.Context) (map[string]any, int) {
 	sum := map[string]any{"command": "cluster down", "profile": c.Profile}
+	// Containers of the project created outside Compose (nem-runner, by the
+	// runner) or left by an interrupted run (the named runner).
+	for _, name := range []string{nemesis.NemRunner, nemesis.RunnerContainer} {
+		l := c.run(ctx, host.QuickTimeout, "list-"+name, []string{"docker", "ps", "--all", "--quiet",
+			"--filter", "label=" + ProjectLabel, "--filter", "name=^" + name + "$"}, cmdlog.Opts{})
+		if ok(l) == nil && len(strings.TrimSpace(string(l.Stdout))) > 0 {
+			c.run(ctx, host.QuickTimeout, "remove-"+name, []string{"docker", "rm", "--force", name}, cmdlog.Opts{})
+		}
+	}
 	r := c.run(ctx, host.ComposeTimeout, "compose-down",
 		c.compose("--profile", "n4", "--profile", "runner", "down", "--volumes", "--remove-orphans", "--timeout", "10"), cmdlog.Opts{})
 	sum["compose_down_exit"] = r.ExitCode
