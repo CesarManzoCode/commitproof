@@ -1,0 +1,15 @@
+# Elle oracle image (CONTRACT §10.11, §14; ADR-0004): elle-cli built from its
+# pinned commit inside the pinned clojure image. CommitProof-owned; used only
+# as a differential oracle for C3 (K2.4) and to double-check C3 findings (K7).
+# elle-cli is never vendored: the build context is the git-ignored clone
+# .cache/elle-cli at commit 9c2a18b3719f573dab06ae05c955c9c9d5225673, checked
+# by scripts/elle-oracle.sh before the build.
+FROM clojure:temurin-21-lein-2.13.0-bookworm@sha256:724a7f5840394bf9e659730e5039bf7498f31185e747e3586dbab626b717c34f
+WORKDIR /elle-cli
+COPY project.clj ./
+RUN lein deps
+COPY src ./src
+RUN lein uberjar \
+ && cp target/elle-cli-0.1.11-standalone.jar /elle-cli.jar \
+ && sha256sum /elle-cli.jar
+ENTRYPOINT ["java", "-Xmx4g", "-Djava.awt.headless=true", "-jar", "/elle-cli.jar"]
