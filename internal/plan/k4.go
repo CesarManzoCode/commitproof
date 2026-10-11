@@ -115,7 +115,8 @@ func c3Shape(r *rand.Rand, _ uint64) []stepSpec {
 // with the seed so that seeds 1–3 cover every sequence of the K4 table:
 // admission (seed−1) mod 3 = plain F5a, F5a→F2a(leader), F5a→F3a(the two
 // original followers)→F2a(leader) (D2's shape); removal (seed−1) mod 2 =
-// plain F5b, F5b during F1a(leader).
+// plain F5b, F5b during F1a(leader) (F5b confirmed after F1a heals,
+// ADR-0026).
 func c4Shape(_ *rand.Rand, seed uint64) []stepSpec {
 	v := seed - 1
 	var add []Element
@@ -129,7 +130,11 @@ func c4Shape(_ *rand.Rand, seed uint64) []stepSpec {
 	}
 	rm := []Element{el("F5b", "n4")}
 	if v%2 == 1 {
-		rm = []Element{el("F1a", "leader"), el("F5b", "n4")}
+		// F5b is injected while F1a holds; its predicate is evaluated after
+		// F1a heals (ADR-0026).
+		f5b := el("F5b", "n4")
+		f5b.ConfirmAfterHeals = true
+		rm = []Element{el("F1a", "leader"), f5b}
 	}
 	return []stepSpec{{Duration: c4Hold, Elements: add}, {Duration: c4Hold, Elements: rm}}
 }

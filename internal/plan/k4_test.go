@@ -160,6 +160,9 @@ func TestK4Shapes(t *testing.T) {
 			t.Errorf("C4 seed %d: %v, want %v", seed, got, w)
 		}
 	}
+	if e := mkplan(t, "C4", 2, "baseline").Steps[1].Elements; !e[1].ConfirmAfterHeals || e[0].ConfirmAfterHeals {
+		t.Errorf("C4 seed 2: F5b during F1a must be confirmed after the heals (ADR-0026): %+v", e)
+	}
 	// C6: F2a pairs, the second anchored on the new leader, 3–8 s.
 	for seed := uint64(1); seed <= 5; seed++ {
 		p := mkplan(t, "C6", seed, "baseline")

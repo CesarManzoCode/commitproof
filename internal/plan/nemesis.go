@@ -53,12 +53,17 @@ func Healable(kind string) bool { return kind != "F5a" && kind != "F5b" }
 // HoldMS is how long the nemesis waits after this element is confirmed
 // before injecting the next element of the step (0 for the last element:
 // the step's DurationMS applies).
+//
+// ConfirmAfterHeals defers the element's confirmation predicate until the
+// step's heal sequence has completed (ADR-0026: C4's "F5b during F1a(leader)",
+// whose predicate cannot hold while the leader is partitioned).
 type Element struct {
-	Kind    string
-	Targets []string
-	A, B    []string
-	Pick    int64
-	HoldMS  int64
+	Kind              string
+	Targets           []string
+	A, B              []string
+	Pick              int64
+	HoldMS            int64
+	ConfirmAfterHeals bool
 }
 
 // Heal is one entry of a step's explicit heal sequence: element Element is
@@ -218,6 +223,9 @@ func (s Step) Map() map[string]any {
 		if e.HoldMS > 0 {
 			m["hold_ms"] = e.HoldMS
 		}
+		if e.ConfirmAfterHeals {
+			m["confirm_after_heals"] = true
+		}
 		els[i] = m
 	}
 	m := map[string]any{"step": s.Index, "after": s.After, "delay_ms": s.DelayMS, "duration_ms": s.DurationMS, "elements": els}
@@ -296,6 +304,12 @@ func ParseSteps(v any) ([]Step, error) {
 				if e.HoldMS, err = toInt(h); err != nil || e.HoldMS < 0 {
 					return nil, fmt.Errorf("plan nemesis[%d].elements[%d]: bad hold_ms", i, k)
 				}
+			}
+			if c, ok := em["confirm_after_heals"]; ok {
+				if c != true {
+					return nil, fmt.Errorf("plan nemesis[%d].elements[%d]: bad confirm_after_heals", i, k)
+				}
+				e.ConfirmAfterHeals = true
 			}
 			st.Elements = append(st.Elements, e)
 		}

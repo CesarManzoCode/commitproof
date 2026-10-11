@@ -47,6 +47,10 @@ type active struct {
 	f       fault
 	node    string
 	rule    *ruleObs
+	// deferred: injected, confirmation pending until the step's heals
+	// (ADR-0026); inj are its injection commands.
+	deferred bool
+	inj      []Probe
 }
 
 // Outcome of the schedule.
@@ -157,6 +161,14 @@ func (e *Env) Run(ctx context.Context, steps []plan.Step, start time.Time) Outco
 				}
 			}
 			if reason := e.healOne(ctx, act[h.Element]); reason != "" {
+				return Outcome{Reason: reason, Faults: out.Faults}
+			}
+		}
+		for _, a := range act {
+			if !a.deferred {
+				continue
+			}
+			if reason := e.confirmLoop(ctx, a.id, a.kind, a.targets, a.f, a.inj, map[string]any{"deferred": "confirmation evaluated after the step's heals (ADR-0026)"}); reason != "" {
 				return Outcome{Reason: reason, Faults: out.Faults}
 			}
 		}
@@ -388,20 +400,39 @@ func (e *Env) apply(ctx context.Context, id string, el plan.Element, same map[in
 	if injectNoop(el.Kind) == "" {
 		inj = f.inject(ctx)
 	}
-	deadline := plan.ConfirmDeadline(el.Kind)
+	a := active{id: id, kind: el.Kind, targets: targets, f: f, node: node, rule: rule}
+	if el.ConfirmAfterHeals {
+		a.deferred, a.inj = true, inj
+		e.Marker("confirmation-deferred", map[string]any{"fault": id, "kind": el.Kind, "inject": evidenceList(inj)})
+		return a, ""
+	}
+	if reason := e.confirmLoop(ctx, id, el.Kind, targets, f, inj, nil); reason != "" {
+		return active{}, reason
+	}
+	return a, ""
+}
+
+// confirmLoop polls the confirmation predicate until it holds within the
+// kind's deadline (confirmed) or not (not-applied, the run's INVALID
+// reason).
+func (e *Env) confirmLoop(ctx context.Context, id, kind string, targets []string, f fault, inj []Probe, extra map[string]any) string {
+	deadline := plan.ConfirmDeadline(kind)
 	returned := time.Now()
 	for round := 1; ; round++ {
 		ok, probes, det := f.confirm(ctx)
 		elapsed := time.Since(returned)
 		cev := map[string]any{"inject": evidenceList(inj), "probes": evidenceList(probes), "details": det,
 			"rounds": int64(round), "elapsed_ms": elapsed.Milliseconds(), "deadline_ms": deadline.Milliseconds()}
+		for k, v := range extra {
+			cev[k] = v
+		}
 		if ok && elapsed <= deadline {
-			e.emit(id, el.Kind, PhaseConfirmed, targets, cev)
-			return active{id: id, kind: el.Kind, targets: targets, f: f, node: node, rule: rule}, ""
+			e.emit(id, kind, PhaseConfirmed, targets, cev)
+			return ""
 		}
 		if elapsed > deadline || ctx.Err() != nil {
-			e.emit(id, el.Kind, PhaseNotApplied, targets, cev)
-			return active{}, fmt.Sprintf("fault %s (%s) not-applied: confirmation predicate did not hold within %s", id, el.Kind, deadline)
+			e.emit(id, kind, PhaseNotApplied, targets, cev)
+			return fmt.Sprintf("fault %s (%s) not-applied: confirmation predicate did not hold within %s", id, kind, deadline)
 		}
 		sleepCtx(ctx, pollInterval)
 	}

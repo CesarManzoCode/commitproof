@@ -12,7 +12,7 @@ import (
 
 // ContractVersion is the docs/CONTRACT.md version this code implements
 // (checked against the contract header by params_test.go).
-const ContractVersion = "1.0.5"
+const ContractVersion = "1.0.6"
 
 // Typed values. Each one is tied to its row's text by Param.Derived.
 const (
