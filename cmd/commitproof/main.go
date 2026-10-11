@@ -13,12 +13,14 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"sync"
 	"syscall"
 
 	"github.com/CesarManzoCode/commitproof/internal/buildinfo"
+	"github.com/CesarManzoCode/commitproof/internal/campaign"
 	"github.com/CesarManzoCode/commitproof/internal/canonjson"
 	"github.com/CesarManzoCode/commitproof/internal/cluster"
 	"github.com/CesarManzoCode/commitproof/internal/cmdlog"
@@ -26,6 +28,7 @@ import (
 	"github.com/CesarManzoCode/commitproof/internal/images"
 	"github.com/CesarManzoCode/commitproof/internal/nemesis"
 	"github.com/CesarManzoCode/commitproof/internal/observe"
+	"github.com/CesarManzoCode/commitproof/internal/params"
 	"github.com/CesarManzoCode/commitproof/internal/plan"
 	"github.com/CesarManzoCode/commitproof/internal/runner"
 )
@@ -36,7 +39,10 @@ const usage = `usage:
   commitproof cluster up|down|verify --profile <p> [--mutant M<n>]
   commitproof plan --campaign <C> --seed <u64> [--profile <p>]
   commitproof run  --campaign <C> --seed <u64> [--profile <p>] [--mutant M<n>] [--directed D<n>] --out runs/
-  (probe, minimize, replay, campaign: later sprints)`
+  commitproof probe --suite claims [--mutant M<n>] [--seed <u64>] --out runs/
+  commitproof minimize <run-dir> --out runs/ [--cpcheck bin/cpcheck]
+  commitproof replay <run-dir> --times <k> --out runs/ [--cpcheck bin/cpcheck]
+  commitproof campaign --matrix <file> --out runs/ [--cpcheck bin/cpcheck]`
 
 // summary prints the final JSON line and returns code.
 func summary(m map[string]any, code int) int {
@@ -75,8 +81,10 @@ func dispatch(ctx context.Context, args []string) int {
 		return planCmd(args[1:])
 	case "run":
 		return runCmd(ctx, args[1:])
-	case "probe", "minimize", "replay", "campaign":
-		return summary(map[string]any{"command": args[0], "error": "not implemented in K1 (CONTRACT §15: K4)"}, 3)
+	case "probe":
+		return probeSuiteCmd(ctx, args[1:])
+	case "minimize", "replay", "campaign":
+		return driverCmd(ctx, args[0], args[1:])
 	case "__runner":
 		return runnerCmd(ctx, args[1:])
 	case "__init":
@@ -116,14 +124,26 @@ func imagesCmd(ctx context.Context, args []string) int {
 		return usageErr("images", "missing images subcommand")
 	}
 	fs := flag.NewFlagSet("images "+args[0], flag.ContinueOnError)
-	mutant := fs.String("mutant", "", "mutant M<n> (K4)")
+	mutant := fs.String("mutant", "", "mutant M<n>: build commitproof/multigres:M<n> from the pinned commit + mutants/M<n>.patch")
+	profile := fs.String("profile", "", "profile whose images to build (h1)")
 	noCache := fs.Bool("no-cache", false, "build without the builder cache")
 	if err := fs.Parse(args[1:]); err != nil {
 		return usageErr("images", err.Error())
 	}
 	cmd := "images " + args[0]
-	if *mutant != "" {
-		return summary(map[string]any{"command": cmd, "error": "mutant builds are K4"}, 3)
+	variant := ""
+	switch {
+	case *mutant != "" && *profile != "":
+		return usageErr(cmd, "--mutant and --profile are exclusive")
+	case *mutant != "":
+		if !images.IsMutant(*mutant) {
+			return usageErr(cmd, "--mutant wants M<n>")
+		}
+		variant = *mutant
+	case *profile == images.VariantH1:
+		variant = images.VariantH1
+	case *profile != "" && *profile != "baseline":
+		return usageErr(cmd, "--profile: only h1 has its own images")
 	}
 	root, err := host.RepoRoot()
 	if err != nil {
@@ -137,9 +157,14 @@ func imagesCmd(ctx context.Context, args []string) int {
 	b := &images.Builder{Root: root, Rec: rec}
 	switch args[0] {
 	case "build":
-		lock, err := b.Build(ctx, *noCache)
+		var lock map[string]any
+		if variant != "" {
+			lock, err = b.BuildVariant(ctx, variant, *noCache)
+		} else {
+			lock, err = b.Build(ctx, *noCache)
+		}
 		if err != nil {
-			return summary(map[string]any{"command": cmd, "error": err.Error()}, 2)
+			return summary(map[string]any{"command": cmd, "variant": variant, "error": err.Error()}, 2)
 		}
 		raw, _ := os.ReadFile(root + "/" + images.LockFile)
 		sum := sha256.Sum256(raw)
@@ -149,8 +174,12 @@ func imagesCmd(ctx context.Context, args []string) int {
 			m, _ := e.(map[string]any)
 			ids[t] = m["id"]
 		}
-		return summary(map[string]any{"command": cmd, "no_cache": *noCache, "lock": images.LockFile,
-			"lock_sha256": hex.EncodeToString(sum[:]), "images": ids}, 0)
+		out := map[string]any{"command": cmd, "no_cache": *noCache, "lock": images.LockFile,
+			"lock_sha256": hex.EncodeToString(sum[:]), "images": ids, "variant": variant}
+		if vs, ok := lock["variants"].(map[string]any); ok && variant != "" {
+			out["variant_record"] = vs[variant]
+		}
+		return summary(out, 0)
 	case "sabotage-runner":
 		// Hidden (K3.2, K3.3): a binary built with nemesis sabotage tags
 		// builds the runner image carrying the same tags.
@@ -165,7 +194,7 @@ func imagesCmd(ctx context.Context, args []string) int {
 		return summary(map[string]any{"command": cmd, "image": "commitproof/runner:" + images.RunnerTag(tags), "id": id,
 			"sabotage": strsAny(tags)}, 0)
 	case "verify":
-		mm, _, err := b.Verify(ctx)
+		mm, _, err := b.Verify(ctx, "")
 		if err != nil {
 			return summary(map[string]any{"command": cmd, "error": err.Error()}, 3)
 		}
@@ -196,9 +225,6 @@ func clusterCmd(ctx context.Context, args []string) int {
 	if *profile == "" {
 		return usageErr(cmd, "--profile is required")
 	}
-	if *mutant != "" {
-		return summary(map[string]any{"command": cmd, "error": "mutant clusters are K4"}, 3)
-	}
 	root, err := host.RepoRoot()
 	if err != nil {
 		return summary(map[string]any{"command": cmd, "error": err.Error()}, 3)
@@ -209,6 +235,9 @@ func clusterCmd(ctx context.Context, args []string) int {
 	}
 	defer cleanup()
 	c, err := cluster.New(root, *profile, rec)
+	if err == nil {
+		err = c.SetMutant(*mutant)
+	}
 	if err != nil {
 		return summary(map[string]any{"command": cmd, "error": err.Error()}, 3)
 	}
@@ -271,12 +300,12 @@ func runCmd(ctx context.Context, args []string) int {
 	if *out == "" {
 		return usageErr("run", "--out is required")
 	}
-	if *mutant != "" {
-		return summary(map[string]any{"command": "run", "error": "mutant runs are K4"}, 3)
-	}
 	seed, err := parseSeed(*seedS)
 	if err != nil {
 		return usageErr("run", err.Error())
+	}
+	if *campaign == "" {
+		*campaign = *directed // `run --directed D1`: the directed schedule is the campaign
 	}
 	p, err := plan.Generate(*campaign, seed, *profile, *directed)
 	if err != nil {
@@ -286,7 +315,7 @@ func runCmd(ctx context.Context, args []string) int {
 	if err != nil {
 		return summary(map[string]any{"command": "run", "error": err.Error()}, 3)
 	}
-	return summary(cluster.RunPlan(ctx, root, *profile, *mutant, p, *out))
+	return summary(cluster.RunPlan(ctx, root, *profile, cluster.RunOpts{Mutant: *mutant}, p, *out))
 }
 
 // runnerCmd is executed inside the runner container (ADR-0018).
@@ -299,13 +328,14 @@ func runnerCmd(ctx context.Context, args []string) int {
 	runDir := fs.String("run-dir", "", "run directory")
 	nemImage := fs.String("nemesis-image", "", "image ID of the nemesis helper (nem-runner)")
 	netPrefix := fs.String("net-prefix", "", "cpnet /24 prefix (a.b.c)")
+	profile := fs.String("profile", "baseline", "profile (HEALTHY predicate variant)")
 	if err := fs.Parse(args[1:]); err != nil {
 		return usageErr("__runner", err.Error())
 	}
 	switch args[0] {
 	case "healthy":
 		evals := 0
-		h, n := runner.WaitHealthy(ctx, msDuration(*deadlineMS), func(h runner.Health) {
+		h, n := runner.WaitHealthy(ctx, msDuration(*deadlineMS), *profile, func(h runner.Health) {
 			evals++
 			fmt.Fprintf(os.Stderr, "healthy evaluation %d: healthy=%v a=%q b=%q c=%v d=%q\n", evals, h.Healthy, h.A, h.B, h.C, h.D)
 		})
@@ -393,4 +423,154 @@ func initCmd(args []string) int {
 		}
 	}
 	return summary(map[string]any{"command": "init", "certs": *certs, "volumes": len(vols)}, 0)
+}
+
+// probeSuiteCmd runs the claims probe suite as a run (CONTRACT §15 K4: P1,
+// P2 recorded as runs; the verdict is cpcheck's probe checker).
+func probeSuiteCmd(ctx context.Context, args []string) int {
+	fs := flag.NewFlagSet("probe", flag.ContinueOnError)
+	suite := fs.String("suite", "", "probe suite (claims)")
+	mutant := fs.String("mutant", "", "mutant M<n>")
+	seedS := fs.String("seed", "1", "seed (identifies the repetition; probes draw nothing from it)")
+	out := fs.String("out", "", "output directory for run directories")
+	if err := fs.Parse(args); err != nil {
+		return usageErr("probe", err.Error())
+	}
+	if *suite != plan.ProbeSuite || *out == "" {
+		return usageErr("probe", "want --suite "+plan.ProbeSuite+" and --out")
+	}
+	seed, err := parseSeed(*seedS)
+	if err != nil {
+		return usageErr("probe", err.Error())
+	}
+	p, err := plan.Generate(plan.ProbeSuite, seed, "baseline", "")
+	if err != nil {
+		return usageErr("probe", err.Error())
+	}
+	root, err := host.RepoRoot()
+	if err != nil {
+		return summary(map[string]any{"command": "probe", "error": err.Error()}, 3)
+	}
+	return summary(cluster.RunPlan(ctx, root, "baseline", cluster.RunOpts{Mutant: *mutant, Command: "probe"}, p, *out))
+}
+
+// driverCmd is `minimize`, `replay` and `campaign` (internal/campaign).
+func driverCmd(ctx context.Context, name string, args []string) int {
+	fs := flag.NewFlagSet(name, flag.ContinueOnError)
+	out := fs.String("out", "", "runs directory")
+	cpcheck := fs.String("cpcheck", "", "cpcheck binary (default: next to this binary)")
+	times := fs.Int("times", 0, "replays (replay)")
+	matrix := fs.String("matrix", "", "matrix file (campaign)")
+	var pos []string
+	for len(args) > 0 {
+		if err := fs.Parse(args); err != nil {
+			return usageErr(name, err.Error())
+		}
+		args = fs.Args()
+		if len(args) > 0 {
+			pos, args = append(pos, args[0]), args[1:]
+		}
+	}
+	if *out == "" {
+		return usageErr(name, "--out is required")
+	}
+	if *cpcheck == "" {
+		exe, err := os.Executable()
+		if err != nil {
+			return summary(map[string]any{"command": name, "error": err.Error()}, 3)
+		}
+		*cpcheck = filepath.Join(filepath.Dir(exe), "cpcheck")
+	}
+	if st, err := os.Stat(*cpcheck); err != nil || st.IsDir() {
+		return usageErr(name, "cpcheck binary not found: "+*cpcheck)
+	}
+	root, err := host.RepoRoot()
+	if err != nil {
+		return summary(map[string]any{"command": name, "error": err.Error()}, 3)
+	}
+	d := &campaign.Driver{Root: root, Out: filepath.Clean(*out), CPCheck: *cpcheck, Log: os.Stdout}
+	unlock, err := d.Lock()
+	if err != nil {
+		return summary(map[string]any{"command": name, "error": err.Error()}, 3)
+	}
+	defer unlock()
+	sum := map[string]any{"command": name, "out": filepath.ToSlash(d.Out)}
+	switch name {
+	case "minimize", "replay":
+		if len(pos) != 1 {
+			return usageErr(name, "want exactly one run directory")
+		}
+		r, err := d.Find(pos[0])
+		if err == nil {
+			err = d.Check(ctx, r)
+		}
+		if err != nil {
+			sum["error"] = err.Error()
+			return summary(sum, 3)
+		}
+		if name == "minimize" {
+			m, err := d.Minimize(ctx, r)
+			if err != nil {
+				sum["error"] = err.Error()
+				return summary(sum, 2)
+			}
+			sum["original"], sum["target_class"], sum["minimized_run"] = r.ID, m.Class, m.Run.ID
+			sum["minimized_run_dir"] = filepath.ToSlash(m.Run.Dir)
+			sum["candidates"] = int64(len(m.Candidates))
+			return summary(sum, 0)
+		}
+		if *times != params.Replays {
+			return usageErr(name, fmt.Sprintf("--times %d: CONTRACT P13 says %d", *times, params.Replays))
+		}
+		class := campaign.TargetClass(r)
+		reps, hits, err := d.Replay(ctx, r, *times, class)
+		rl := []any{}
+		for _, x := range reps {
+			rl = append(rl, x.ID)
+		}
+		sum["of"], sum["class"], sum["replays"], sum["replays_with_class"] = r.ID, class, rl, int64(hits)
+		sum["reproducibility"] = campaign.Reproducibility(hits)
+		if err != nil {
+			sum["error"] = err.Error()
+			return summary(sum, 2)
+		}
+		return summary(sum, 0)
+	}
+	// campaign
+	if *matrix == "" || len(pos) != 0 {
+		return usageErr(name, "want --matrix <file> and no positional arguments")
+	}
+	m, err := campaign.ReadMatrix(*matrix)
+	if err != nil {
+		sum["error"] = err.Error()
+		return summary(sum, 3)
+	}
+	cells, complete, err := d.RunMatrix(ctx, m)
+	sum["matrix"], sum["cells"], sum["complete"] = m.Name, int64(len(cells)), complete
+	verdicts := map[string]any{}
+	failed := false
+	for _, c := range cells {
+		v := "INVALID"
+		if c.Valid {
+			v = c.Run.Verdict
+		}
+		verdicts[v] = toInt64(verdicts[v]) + 1
+		failed = failed || v == "FAIL"
+	}
+	sum["verdicts"] = verdicts
+	switch {
+	case err != nil:
+		sum["error"] = err.Error()
+		return summary(sum, 2)
+	case !complete:
+		return summary(sum, 2)
+	case failed:
+		return summary(sum, 1)
+	}
+	return summary(sum, 0)
+}
+
+func toInt64(v any) int64 {
+	n, _ := v.(int64)
+	return n
 }
