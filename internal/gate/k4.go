@@ -25,10 +25,17 @@ var (
 	K4Mutants      = []string{"M1", "M2", "M4"}
 )
 
+// D2′ (ADR-0027) is M2's directed schedule; the original D2 is superseded
+// and its runs stay recorded (contract 1.0.6).
+const (
+	k4D2Prime      = "D2p"
+	k4SupersededD2 = "D2"
+)
+
 // k4Directed: mutant → (directed campaign, expected class, checker).
 var k4Directed = map[string]struct{ Campaign, Class, Checker string }{
 	"M1": {"D1", "lost-write", "C1"},
-	"M2": {"D2", "lost-write", "C1"},
+	"M2": {k4D2Prime, "lost-write", "C1"},
 	"M4": {"claims", "p1-not-rejected", "P"},
 }
 
@@ -329,6 +336,23 @@ func evalK43(e *Evidence) (string, []string, []string) {
 		}
 		details = append(details, fmt.Sprintf("%s via %s: %s %d/5 with %s; mutant %v; real %v", m, d.Campaign, outcome, hits, d.Class, mv, rv))
 	}
+	// The superseded D2 (ADR-0027): its runs stay recorded, unedited, and
+	// are checked like any run; they no longer decide M2's detection.
+	sup := map[string][]string{}
+	for _, s := range K4DirectedSeed {
+		for _, b := range []string{"M2", "real"} {
+			r, all, pp := ix.cell(k4SupersededD2, "baseline", b, s)
+			p = append(p, pp...)
+			for _, a := range all {
+				p = append(p, runOK(a, false)...)
+				p = append(p, checkResult(res, a)...)
+			}
+			if r != nil {
+				sup[b] = append(sup[b], fmt.Sprintf("%s%v", r.Verdict, r.Classes))
+			}
+		}
+	}
+	details = append(details, fmt.Sprintf("superseded %s (ADR-0027, recorded): mutant M2 %v; real %v", k4SupersededD2, sup["M2"], sup["real"]))
 	return "runs/", p, details
 }
 
@@ -704,7 +728,7 @@ var (
 	k4Origins      = []string{"MULTIGRES", "POSTGRES_INHERITED", "UNDETERMINED"}
 	k4Known        = []string{"NEW", "KNOWN_GAP", "KNOWN_FIXED"}
 	k4ClaimLevel   = map[string]string{"G1": "EXPLICIT", "G2": "EXPLICIT", "G3": "EXPLICIT", "G4": "INFERRED", "G5": "INFERRED", "G6": "DESIGN", "G7": "DESIGN", "G8": "DESIGN", "G9": "DESIGN", "G10": "DESIGN", "G11": "DESIGN", "G12": "DESIGN", "G13": "INFERRED"}
-	k4RealCampaign = map[string]bool{"C1": true, "C2": true, "C3": true, "C4": true, "C5": true, "C6": true, "C7": true, "D1": true, "D2": true, "claims": true}
+	k4RealCampaign = map[string]bool{"C1": true, "C2": true, "C3": true, "C4": true, "C5": true, "C6": true, "C7": true, "D1": true, "D2": true, k4D2Prime: true, "claims": true}
 )
 
 func in(xs []string, x string) bool {

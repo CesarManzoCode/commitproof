@@ -60,3 +60,23 @@ func TestCheckPatch(t *testing.T) {
 		t.Fatal("header without sources accepted")
 	}
 }
+
+// ADR-0027: M2 is judged on D2′ with D2's class and checker; K4 runs of
+// contract 1.0.6 stay evidence except as D2′ runs, which D2′ postdates.
+func TestK4D2Prime(t *testing.T) {
+	if d := k4Directed["M2"]; d.Campaign != "D2p" || d.Class != "lost-write" || d.Checker != "C1" {
+		t.Errorf("M2 directed %+v", d)
+	}
+	for _, c := range []struct {
+		campaign, version string
+		want              bool
+	}{
+		{"D2p", "1.0.7", true}, {"D2p", "1.0.6", false},
+		{"D2", "1.0.6", true}, {"C1", "1.0.6", true}, {"D1", "1.0.7", true},
+		{"C1", "1.0.5", false}, {"D2", "", false},
+	} {
+		if got := k4ContractOK(c.campaign, c.version); got != c.want {
+			t.Errorf("k4ContractOK(%s, %s) = %v", c.campaign, c.version, got)
+		}
+	}
+}

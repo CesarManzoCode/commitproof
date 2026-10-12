@@ -172,8 +172,8 @@ func (e *Evidence) loadK4Run(r *k4Run) {
 	if str(r.Manifest, "run_id") != r.ID {
 		bad("manifest run_id %q", str(r.Manifest, "run_id"))
 	}
-	if str(r.Manifest, "contract_version") != params.ContractVersion {
-		bad("contract version %s, not %s", str(r.Manifest, "contract_version"), params.ContractVersion)
+	if v := str(r.Manifest, "contract_version"); !k4ContractOK(r.campaign(), v) {
+		bad("contract version %s, not %s (or %s for a run other than D2′)", v, params.ContractVersion, params.K4RunsContractVersion)
 	}
 	if fmt.Sprint(r.Manifest["commitproof_dirty"]) != "false" || fmt.Sprint(r.Manifest["runner_image_dirty"]) != "false" {
 		bad("run from a dirty tree")
@@ -257,6 +257,13 @@ func (e *Evidence) extractStub(archive, id string) (string, error) {
 	return d, nil
 }
 
+// k4ContractOK: a K4 run carries the current contract version, or the
+// version of the K4 runs made before ADR-0027 unless it is a D2′ run
+// (contract 1.0.7 added D2′ and changed no other K4 plan).
+func k4ContractOK(campaign, version string) bool {
+	return version == params.ContractVersion || version == params.K4RunsContractVersion && campaign != k4D2Prime
+}
+
 // primaries returns the primary runs of (campaign, profile, mutant, seed),
 // INVALID attempts included.
 func (ix *k4Index) primaries(campaign, profile, mutant, seed string) []*k4Run {
@@ -296,7 +303,7 @@ func (ix *k4Index) cell(campaign, profile, mutant, seed string) (*k4Run, []*k4Ru
 // internal/campaign.TargetClass, restated here: cpgate imports neither the
 // campaign driver nor the plan generator, CONTRACT §5.3).
 func k4TargetClass(r *k4Run) string {
-	expected := map[string]string{"D1": "lost-write", "D2": "lost-write", "DH1": "lost-write", "claims": "p1-not-rejected"}
+	expected := map[string]string{"D1": "lost-write", "D2": "lost-write", k4D2Prime: "lost-write", "DH1": "lost-write", "claims": "p1-not-rejected"}
 	if c, ok := expected[r.campaign()]; ok && r.has(c) {
 		return c
 	}
