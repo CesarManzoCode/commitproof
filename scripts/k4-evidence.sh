@@ -8,9 +8,13 @@
 # new name (campaign-k4-<n>) until one invocation completes the matrix.
 # Run from the repository root on a committed tree, one cluster at a time.
 #
-# usage: k4-evidence.sh setup|campaign|oracle|ci|store|gate|all
+# usage: k4-evidence.sh setup|rebuild|campaign|oracle|ci|store|gate|all
 #   setup     precondition, builds (real, M1, M2, M4, h1), quorum table,
 #             h1 deployment record
+#   rebuild   after a harness fix: binaries and the real images rebuilt from
+#             the fixed commit (the variant images and their lock entries are
+#             kept: their sources did not change), recorded as build-<n>,
+#             images-build-<n>, images-verify-<n>
 #   campaign  campaigns/k4.json into evidence/K4/runs (hours; background)
 #   oracle    elle-cli cross-check of every real-build FAIL with C3 anomalies
 #   ci        make ci-unit ci-checkers ci-cluster-smoke ci-nemesis-smoke
@@ -62,6 +66,14 @@ setup() {
 	step 0 h1-cluster-down bin/commitproof cluster down --profile h1
 }
 
+rebuild() {
+	local n=2
+	while [ -n "$(recorded "build-$n")" ]; do n=$((n + 1)); done
+	step 0 "build-$n" make build
+	step 0 "images-build-$n" bin/commitproof images build
+	step 0 "images-verify-$n" bin/commitproof images verify
+}
+
 campaign() {
 	local n=1 prev
 	while :; do
@@ -111,11 +123,12 @@ gate() {
 
 case "${1:-}" in
 setup) setup ;;
+rebuild) rebuild ;;
 campaign) campaign ;;
 oracle) oracle ;;
 ci) ci ;;
 store) store ;;
 gate) gate ;;
 all) setup && campaign && oracle && ci && store && gate ;;
-*) echo "usage: $0 setup|campaign|oracle|ci|store|gate|all" >&2; exit 3 ;;
+*) echo "usage: $0 setup|rebuild|campaign|oracle|ci|store|gate|all" >&2; exit 3 ;;
 esac
