@@ -1,0 +1,2613 @@
+[
+  {
+    "campaign": "D1",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 1249,
+      "append/ok": 4530,
+      "ledger/ok": 3562
+    },
+    "errors": {
+      "append/fail/40001/commit": 84,
+      "append/fail/40001/statement": 1146,
+      "append/fail/40P01/statement": 19
+    },
+    "fault_time_ms_by_kind": {
+      "F1c": 30001
+    },
+    "faults_confirmed_by_kind": {
+      "F1c": 1
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 0,
+      "append_present": 0,
+      "ledger_absent": 0,
+      "ledger_present": 0
+    },
+    "mutant": "M1",
+    "notices": {},
+    "ok_writes": 8412,
+    "profile": "baseline",
+    "run_id": "20261011T215900Z-D1-1-M1-59a95336",
+    "seed": 1
+  },
+  {
+    "campaign": "D1",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 1222,
+      "append/ok": 4473,
+      "ledger/ok": 3562
+    },
+    "errors": {
+      "append/fail/40001/commit": 94,
+      "append/fail/40001/statement": 1108,
+      "append/fail/40P01/statement": 20
+    },
+    "fault_time_ms_by_kind": {
+      "F1c": 30000
+    },
+    "faults_confirmed_by_kind": {
+      "F1c": 1
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 0,
+      "append_present": 0,
+      "ledger_absent": 0,
+      "ledger_present": 0
+    },
+    "mutant": "M1",
+    "notices": {},
+    "ok_writes": 8402,
+    "profile": "baseline",
+    "run_id": "20261011T220118Z-D1-2-M1-8b22bb67",
+    "seed": 2
+  },
+  {
+    "campaign": "D1",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 1246,
+      "append/ok": 4730,
+      "ledger/ok": 3562
+    },
+    "errors": {
+      "append/fail/40001/commit": 78,
+      "append/fail/40001/statement": 1152,
+      "append/fail/40P01/statement": 16
+    },
+    "fault_time_ms_by_kind": {
+      "F1c": 30000
+    },
+    "faults_confirmed_by_kind": {
+      "F1c": 1
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 0,
+      "append_present": 0,
+      "ledger_absent": 0,
+      "ledger_present": 0
+    },
+    "mutant": "M1",
+    "notices": {},
+    "ok_writes": 8620,
+    "profile": "baseline",
+    "run_id": "20261011T220335Z-D1-3-M1-da159fa0",
+    "seed": 3
+  },
+  {
+    "campaign": "D1",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 1175,
+      "append/ok": 4522,
+      "ledger/ok": 3562
+    },
+    "errors": {
+      "append/fail/40001/commit": 73,
+      "append/fail/40001/statement": 1082,
+      "append/fail/40P01/statement": 20
+    },
+    "fault_time_ms_by_kind": {
+      "F1c": 30000
+    },
+    "faults_confirmed_by_kind": {
+      "F1c": 1
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 0,
+      "append_present": 0,
+      "ledger_absent": 0,
+      "ledger_present": 0
+    },
+    "mutant": "M1",
+    "notices": {},
+    "ok_writes": 8434,
+    "profile": "baseline",
+    "run_id": "20261011T220553Z-D1-4-M1-ad3fca18",
+    "seed": 4
+  },
+  {
+    "campaign": "D1",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 978,
+      "append/ok": 5329,
+      "ledger/ok": 3562
+    },
+    "errors": {
+      "append/fail/40001/commit": 78,
+      "append/fail/40001/statement": 887,
+      "append/fail/40P01/statement": 13
+    },
+    "fault_time_ms_by_kind": {
+      "F1c": 30000
+    },
+    "faults_confirmed_by_kind": {
+      "F1c": 1
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 0,
+      "append_present": 0,
+      "ledger_absent": 0,
+      "ledger_present": 0
+    },
+    "mutant": "M1",
+    "notices": {},
+    "ok_writes": 9689,
+    "profile": "baseline",
+    "run_id": "20261011T220810Z-D1-5-M1-3319a30c",
+    "seed": 5
+  },
+  {
+    "campaign": "D1",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 720,
+      "append/info": 7,
+      "append/ok": 3220,
+      "ledger/info": 6,
+      "ledger/ok": 2374
+    },
+    "errors": {
+      "append/fail/40001/commit": 43,
+      "append/fail/40001/statement": 663,
+      "append/fail/40P01/statement": 14,
+      "append/info//client-timeout": 7,
+      "ledger/info//client-timeout": 6
+    },
+    "fault_time_ms_by_kind": {
+      "F1c": 30000
+    },
+    "faults_confirmed_by_kind": {
+      "F1c": 1
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 15,
+      "append_present": 0,
+      "ledger_absent": 6,
+      "ledger_present": 0
+    },
+    "mutant": "real",
+    "notices": {},
+    "ok_writes": 5953,
+    "profile": "baseline",
+    "run_id": "20261011T221027Z-D1-1-real-59a95336",
+    "seed": 1
+  },
+  {
+    "campaign": "D1",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 749,
+      "append/info": 9,
+      "append/ok": 3180,
+      "ledger/info": 6,
+      "ledger/ok": 2374
+    },
+    "errors": {
+      "append/fail/40001/commit": 51,
+      "append/fail/40001/statement": 686,
+      "append/fail/40P01/statement": 12,
+      "append/info//client-timeout": 9,
+      "ledger/info//client-timeout": 6
+    },
+    "fault_time_ms_by_kind": {
+      "F1c": 30001
+    },
+    "faults_confirmed_by_kind": {
+      "F1c": 1
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 17,
+      "append_present": 0,
+      "ledger_absent": 6,
+      "ledger_present": 0
+    },
+    "mutant": "real",
+    "notices": {},
+    "ok_writes": 5893,
+    "profile": "baseline",
+    "run_id": "20261011T221249Z-D1-2-real-8b22bb67",
+    "seed": 2
+  },
+  {
+    "campaign": "D1",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 689,
+      "append/info": 10,
+      "append/ok": 3341,
+      "ledger/info": 6,
+      "ledger/ok": 2376
+    },
+    "errors": {
+      "append/fail/40001/commit": 37,
+      "append/fail/40001/statement": 642,
+      "append/fail/40P01/statement": 10,
+      "append/info//client-timeout": 10,
+      "ledger/info//client-timeout": 6
+    },
+    "fault_time_ms_by_kind": {
+      "F1c": 30000
+    },
+    "faults_confirmed_by_kind": {
+      "F1c": 1
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 18,
+      "append_present": 0,
+      "ledger_absent": 6,
+      "ledger_present": 0
+    },
+    "mutant": "real",
+    "notices": {},
+    "ok_writes": 6054,
+    "profile": "baseline",
+    "run_id": "20261011T221506Z-D1-3-real-da159fa0",
+    "seed": 3
+  },
+  {
+    "campaign": "D1",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 640,
+      "append/info": 7,
+      "append/ok": 3964,
+      "ledger/info": 6,
+      "ledger/ok": 2370
+    },
+    "errors": {
+      "append/fail/40001/commit": 38,
+      "append/fail/40001/statement": 599,
+      "append/fail/40P01/statement": 3,
+      "append/info//client-timeout": 7,
+      "ledger/info//client-timeout": 6
+    },
+    "fault_time_ms_by_kind": {
+      "F1c": 30000
+    },
+    "faults_confirmed_by_kind": {
+      "F1c": 1
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 13,
+      "append_present": 0,
+      "ledger_absent": 6,
+      "ledger_present": 0
+    },
+    "mutant": "real",
+    "notices": {},
+    "ok_writes": 6922,
+    "profile": "baseline",
+    "run_id": "20261011T221728Z-D1-4-real-ad3fca18",
+    "seed": 4
+  },
+  {
+    "campaign": "D1",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 796,
+      "append/info": 7,
+      "append/ok": 3171,
+      "ledger/info": 6,
+      "ledger/ok": 2376
+    },
+    "errors": {
+      "append/fail/40001/commit": 58,
+      "append/fail/40001/statement": 726,
+      "append/fail/40P01/statement": 12,
+      "append/info//client-timeout": 7,
+      "ledger/info//client-timeout": 6
+    },
+    "fault_time_ms_by_kind": {
+      "F1c": 30000
+    },
+    "faults_confirmed_by_kind": {
+      "F1c": 1
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 13,
+      "append_present": 0,
+      "ledger_absent": 5,
+      "ledger_present": 1
+    },
+    "mutant": "real",
+    "notices": {},
+    "ok_writes": 5889,
+    "profile": "baseline",
+    "run_id": "20261011T221944Z-D1-5-real-3319a30c",
+    "seed": 5
+  },
+  {
+    "campaign": "D2",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 1806,
+      "append/info": 13,
+      "append/ok": 2768,
+      "ledger/fail": 600,
+      "ledger/info": 6,
+      "ledger/ok": 2022
+    },
+    "errors": {
+      "append/fail/40001/commit": 29,
+      "append/fail/40001/statement": 567,
+      "append/fail/40P01/statement": 10,
+      "append/fail/57P03/statement": 1200,
+      "append/info//client-timeout": 5,
+      "append/info/MTD04/statement": 4,
+      "append/info/XX000/commit": 3,
+      "append/info/XX000/statement": 1,
+      "ledger/fail/57P03/statement": 600,
+      "ledger/info//client-timeout": 2,
+      "ledger/info/08006/statement": 2,
+      "ledger/info/XX000/statement": 2
+    },
+    "fault_time_ms_by_kind": {
+      "F2a": 41558,
+      "F2b": 40707,
+      "F3a": 96129
+    },
+    "faults_confirmed_by_kind": {
+      "F2a": 1,
+      "F2b": 1,
+      "F3a": 2,
+      "F5a": 1
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 10,
+      "append_present": 11,
+      "ledger_absent": 2,
+      "ledger_present": 4
+    },
+    "mutant": "M2",
+    "notices": {},
+    "ok_writes": 5097,
+    "profile": "baseline",
+    "run_id": "20261011T222206Z-D2-1-M2-56b84e41",
+    "seed": 1
+  },
+  {
+    "campaign": "D2",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 2189,
+      "append/info": 4,
+      "append/ok": 3901,
+      "ledger/fail": 584,
+      "ledger/info": 2,
+      "ledger/ok": 2804
+    },
+    "errors": {
+      "append/fail/40001/commit": 81,
+      "append/fail/40001/statement": 934,
+      "append/fail/40P01/statement": 10,
+      "append/fail/57P03/statement": 1164,
+      "append/info/MTD04/statement": 4,
+      "ledger/fail/57P03/connect": 584,
+      "ledger/info/57P01/statement": 2
+    },
+    "fault_time_ms_by_kind": {
+      "F2a": 40359,
+      "F2b": 39469,
+      "F3a": 95595
+    },
+    "faults_confirmed_by_kind": {
+      "F2a": 1,
+      "F2b": 1,
+      "F3a": 2,
+      "F5a": 1
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 5,
+      "append_present": 0,
+      "ledger_absent": 2,
+      "ledger_present": 0
+    },
+    "mutant": "M2",
+    "notices": {},
+    "ok_writes": 7042,
+    "profile": "baseline",
+    "run_id": "20261011T222454Z-D2-2-M2-b344e176",
+    "seed": 2
+  },
+  {
+    "campaign": "D2",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 2255,
+      "append/info": 8,
+      "append/ok": 4056,
+      "ledger/fail": 616,
+      "ledger/info": 4,
+      "ledger/ok": 2920
+    },
+    "errors": {
+      "append/fail/40001/commit": 74,
+      "append/fail/40001/statement": 939,
+      "append/fail/40P01/statement": 10,
+      "append/fail/57P03/statement": 1232,
+      "append/info/MTD04/statement": 4,
+      "append/info/XX000/statement": 4,
+      "ledger/fail/57P03/statement": 616,
+      "ledger/info/08006/statement": 2,
+      "ledger/info/XX000/statement": 2
+    },
+    "fault_time_ms_by_kind": {
+      "F2a": 41013,
+      "F2b": 40683,
+      "F3a": 96228
+    },
+    "faults_confirmed_by_kind": {
+      "F2a": 1,
+      "F2b": 1,
+      "F3a": 2,
+      "F5a": 1
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 12,
+      "append_present": 0,
+      "ledger_absent": 4,
+      "ledger_present": 0
+    },
+    "mutant": "M2",
+    "notices": {},
+    "ok_writes": 7262,
+    "profile": "baseline",
+    "run_id": "20261011T222741Z-D2-3-M2-bee038ba",
+    "seed": 3
+  },
+  {
+    "campaign": "D2",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 2197,
+      "append/info": 4,
+      "append/ok": 4249,
+      "ledger/fail": 580,
+      "ledger/info": 4,
+      "ledger/ok": 2912
+    },
+    "errors": {
+      "append/fail/40001/commit": 85,
+      "append/fail/40001/statement": 944,
+      "append/fail/40P01/statement": 8,
+      "append/fail/57P03/statement": 1160,
+      "append/info/MTD04/statement": 4,
+      "ledger/fail/57P03/statement": 580,
+      "ledger/info/08006/statement": 1,
+      "ledger/info/XX000/statement": 3
+    },
+    "fault_time_ms_by_kind": {
+      "F2a": 33032,
+      "F2b": 32159,
+      "F3a": 94393
+    },
+    "faults_confirmed_by_kind": {
+      "F2a": 1,
+      "F2b": 1,
+      "F3a": 2,
+      "F5a": 1
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 4,
+      "append_present": 0,
+      "ledger_absent": 4,
+      "ledger_present": 0
+    },
+    "mutant": "M2",
+    "notices": {},
+    "ok_writes": 7555,
+    "profile": "baseline",
+    "run_id": "20261011T223029Z-D2-4-M2-9b5c849c",
+    "seed": 4
+  },
+  {
+    "campaign": "D2",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 2124,
+      "append/info": 8,
+      "append/ok": 3930,
+      "ledger/fail": 586,
+      "ledger/info": 4,
+      "ledger/ok": 2865
+    },
+    "errors": {
+      "append/fail/40001/commit": 68,
+      "append/fail/40001/statement": 872,
+      "append/fail/40P01/statement": 12,
+      "append/fail/57P03/statement": 1172,
+      "append/info/MTD04/statement": 4,
+      "append/info/XX000/statement": 4,
+      "ledger/fail/57P03/statement": 586,
+      "ledger/info/08006/statement": 2,
+      "ledger/info/XX000/statement": 2
+    },
+    "fault_time_ms_by_kind": {
+      "F2a": 33084,
+      "F2b": 32765,
+      "F3a": 94363
+    },
+    "faults_confirmed_by_kind": {
+      "F2a": 1,
+      "F2b": 1,
+      "F3a": 2,
+      "F5a": 1
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 12,
+      "append_present": 0,
+      "ledger_absent": 4,
+      "ledger_present": 0
+    },
+    "mutant": "M2",
+    "notices": {},
+    "ok_writes": 7170,
+    "profile": "baseline",
+    "run_id": "20261011T223310Z-D2-5-M2-7b36cafd",
+    "seed": 5
+  },
+  {
+    "campaign": "D2",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 2182,
+      "append/info": 4,
+      "append/ok": 4160,
+      "ledger/fail": 542,
+      "ledger/info": 4,
+      "ledger/ok": 3018
+    },
+    "errors": {
+      "append/fail/40001/commit": 65,
+      "append/fail/40001/statement": 1019,
+      "append/fail/40P01/statement": 11,
+      "append/fail/57P03/statement": 1087,
+      "append/info/MTD04/statement": 4,
+      "ledger/fail/57P03/statement": 542,
+      "ledger/info/08006/statement": 2,
+      "ledger/info/XX000/statement": 2
+    },
+    "fault_time_ms_by_kind": {
+      "F2a": 37961,
+      "F2b": 37080,
+      "F3a": 99833
+    },
+    "faults_confirmed_by_kind": {
+      "F2a": 1,
+      "F2b": 1,
+      "F3a": 2,
+      "F5a": 1
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 3,
+      "append_present": 0,
+      "ledger_absent": 4,
+      "ledger_present": 0
+    },
+    "mutant": "real",
+    "notices": {},
+    "ok_writes": 7506,
+    "profile": "baseline",
+    "run_id": "20261011T223551Z-D2-1-real-56b84e41",
+    "seed": 1
+  },
+  {
+    "campaign": "D2",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 2181,
+      "append/info": 6,
+      "append/ok": 4222,
+      "ledger/fail": 550,
+      "ledger/info": 4,
+      "ledger/ok": 3010
+    },
+    "errors": {
+      "append/fail/40001/commit": 89,
+      "append/fail/40001/statement": 978,
+      "append/fail/40P01/statement": 10,
+      "append/fail/57P03/statement": 1104,
+      "append/info/MTD04/statement": 4,
+      "append/info/XX000/commit": 2,
+      "ledger/fail/57P03/statement": 550,
+      "ledger/info/XX000/statement": 4
+    },
+    "fault_time_ms_by_kind": {
+      "F2a": 34283,
+      "F2b": 33411,
+      "F3a": 96157
+    },
+    "faults_confirmed_by_kind": {
+      "F2a": 1,
+      "F2b": 1,
+      "F3a": 2,
+      "F5a": 1
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 5,
+      "append_present": 1,
+      "ledger_absent": 4,
+      "ledger_present": 0
+    },
+    "mutant": "real",
+    "notices": {},
+    "ok_writes": 7607,
+    "profile": "baseline",
+    "run_id": "20261011T223836Z-D2-2-real-b344e176",
+    "seed": 2
+  },
+  {
+    "campaign": "D2",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 2133,
+      "append/info": 8,
+      "append/ok": 4071,
+      "ledger/fail": 524,
+      "ledger/info": 4,
+      "ledger/ok": 3036
+    },
+    "errors": {
+      "append/fail/40001/commit": 80,
+      "append/fail/40001/statement": 993,
+      "append/fail/40P01/statement": 12,
+      "append/fail/57P03/statement": 1048,
+      "append/info/MTD04/statement": 4,
+      "append/info/XX000/statement": 4,
+      "ledger/fail/57P03/statement": 524,
+      "ledger/info/08006/statement": 2,
+      "ledger/info/XX000/statement": 2
+    },
+    "fault_time_ms_by_kind": {
+      "F2a": 37279,
+      "F2b": 36418,
+      "F3a": 93688
+    },
+    "faults_confirmed_by_kind": {
+      "F2a": 1,
+      "F2b": 1,
+      "F3a": 2,
+      "F5a": 1
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 16,
+      "append_present": 0,
+      "ledger_absent": 4,
+      "ledger_present": 0
+    },
+    "mutant": "real",
+    "notices": {},
+    "ok_writes": 7372,
+    "profile": "baseline",
+    "run_id": "20261011T224133Z-D2-3-real-bee038ba",
+    "seed": 3
+  },
+  {
+    "campaign": "D2",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 2216,
+      "append/info": 4,
+      "append/ok": 4419,
+      "ledger/fail": 512,
+      "ledger/info": 4,
+      "ledger/ok": 3046
+    },
+    "errors": {
+      "append/fail/40001/commit": 90,
+      "append/fail/40001/statement": 1095,
+      "append/fail/40P01/statement": 7,
+      "append/fail/57P03/statement": 1024,
+      "append/info/MTD04/statement": 4,
+      "ledger/fail/57P03/statement": 512,
+      "ledger/info/08006/statement": 2,
+      "ledger/info/XX000/statement": 2
+    },
+    "fault_time_ms_by_kind": {
+      "F2a": 40948,
+      "F2b": 40093,
+      "F3a": 95550
+    },
+    "faults_confirmed_by_kind": {
+      "F2a": 1,
+      "F2b": 1,
+      "F3a": 2,
+      "F5a": 1
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 8,
+      "append_present": 0,
+      "ledger_absent": 4,
+      "ledger_present": 0
+    },
+    "mutant": "real",
+    "notices": {},
+    "ok_writes": 7773,
+    "profile": "baseline",
+    "run_id": "20261011T224419Z-D2-4-real-9b5c849c",
+    "seed": 4
+  },
+  {
+    "campaign": "D2",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 1880,
+      "append/info": 8,
+      "append/ok": 4530,
+      "ledger/fail": 420,
+      "ledger/info": 4,
+      "ledger/ok": 3140
+    },
+    "errors": {
+      "append/fail/40001/commit": 73,
+      "append/fail/40001/statement": 958,
+      "append/fail/40P01/statement": 9,
+      "append/fail/57P03/statement": 840,
+      "append/info/MTD04/statement": 4,
+      "append/info/XX000/statement": 4,
+      "ledger/fail/57P03/statement": 420,
+      "ledger/info/08006/statement": 1,
+      "ledger/info/XX000/statement": 3
+    },
+    "fault_time_ms_by_kind": {
+      "F2a": 41041,
+      "F2b": 40722,
+      "F3a": 96755
+    },
+    "faults_confirmed_by_kind": {
+      "F2a": 1,
+      "F2b": 1,
+      "F3a": 2,
+      "F5a": 1
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 13,
+      "append_present": 0,
+      "ledger_absent": 4,
+      "ledger_present": 0
+    },
+    "mutant": "real",
+    "notices": {},
+    "ok_writes": 8118,
+    "profile": "baseline",
+    "run_id": "20261011T224710Z-D2-5-real-7b36cafd",
+    "seed": 5
+  },
+  {
+    "campaign": "claims",
+    "cancel_requests": {},
+    "completions": {
+      "probe/fail": 3,
+      "probe/ok": 6
+    },
+    "errors": {
+      "probe/fail/0A000/statement": 3
+    },
+    "fault_time_ms_by_kind": {},
+    "faults_confirmed_by_kind": {},
+    "info_writes_in_final_read": {
+      "append_absent": 0,
+      "append_present": 0,
+      "ledger_absent": 0,
+      "ledger_present": 0
+    },
+    "mutant": "M4",
+    "notices": {},
+    "ok_writes": 0,
+    "profile": "baseline",
+    "run_id": "20261011T225003Z-claims-1-M4-b2d2d093",
+    "seed": 1
+  },
+  {
+    "campaign": "claims",
+    "cancel_requests": {},
+    "completions": {
+      "probe/fail": 3,
+      "probe/ok": 6
+    },
+    "errors": {
+      "probe/fail/0A000/statement": 3
+    },
+    "fault_time_ms_by_kind": {},
+    "faults_confirmed_by_kind": {},
+    "info_writes_in_final_read": {
+      "append_absent": 0,
+      "append_present": 0,
+      "ledger_absent": 0,
+      "ledger_present": 0
+    },
+    "mutant": "M4",
+    "notices": {},
+    "ok_writes": 0,
+    "profile": "baseline",
+    "run_id": "20261011T225048Z-claims-2-M4-ceb64287",
+    "seed": 2
+  },
+  {
+    "campaign": "claims",
+    "cancel_requests": {},
+    "completions": {
+      "probe/fail": 3,
+      "probe/ok": 6
+    },
+    "errors": {
+      "probe/fail/0A000/statement": 3
+    },
+    "fault_time_ms_by_kind": {},
+    "faults_confirmed_by_kind": {},
+    "info_writes_in_final_read": {
+      "append_absent": 0,
+      "append_present": 0,
+      "ledger_absent": 0,
+      "ledger_present": 0
+    },
+    "mutant": "M4",
+    "notices": {},
+    "ok_writes": 0,
+    "profile": "baseline",
+    "run_id": "20261011T225133Z-claims-3-M4-b7c8d86a",
+    "seed": 3
+  },
+  {
+    "campaign": "claims",
+    "cancel_requests": {},
+    "completions": {
+      "probe/fail": 3,
+      "probe/ok": 6
+    },
+    "errors": {
+      "probe/fail/0A000/statement": 3
+    },
+    "fault_time_ms_by_kind": {},
+    "faults_confirmed_by_kind": {},
+    "info_writes_in_final_read": {
+      "append_absent": 0,
+      "append_present": 0,
+      "ledger_absent": 0,
+      "ledger_present": 0
+    },
+    "mutant": "M4",
+    "notices": {},
+    "ok_writes": 0,
+    "profile": "baseline",
+    "run_id": "20261011T225218Z-claims-4-M4-705f45a9",
+    "seed": 4
+  },
+  {
+    "campaign": "claims",
+    "cancel_requests": {},
+    "completions": {
+      "probe/fail": 3,
+      "probe/ok": 6
+    },
+    "errors": {
+      "probe/fail/0A000/statement": 3
+    },
+    "fault_time_ms_by_kind": {},
+    "faults_confirmed_by_kind": {},
+    "info_writes_in_final_read": {
+      "append_absent": 0,
+      "append_present": 0,
+      "ledger_absent": 0,
+      "ledger_present": 0
+    },
+    "mutant": "M4",
+    "notices": {},
+    "ok_writes": 0,
+    "profile": "baseline",
+    "run_id": "20261011T225304Z-claims-5-M4-397bf01f",
+    "seed": 5
+  },
+  {
+    "campaign": "claims",
+    "cancel_requests": {},
+    "completions": {
+      "probe/fail": 6,
+      "probe/ok": 3
+    },
+    "errors": {
+      "probe/fail/0A000/statement": 6
+    },
+    "fault_time_ms_by_kind": {},
+    "faults_confirmed_by_kind": {},
+    "info_writes_in_final_read": {
+      "append_absent": 0,
+      "append_present": 0,
+      "ledger_absent": 0,
+      "ledger_present": 0
+    },
+    "mutant": "real",
+    "notices": {},
+    "ok_writes": 0,
+    "profile": "baseline",
+    "run_id": "20261011T225349Z-claims-1-real-b2d2d093",
+    "seed": 1
+  },
+  {
+    "campaign": "claims",
+    "cancel_requests": {},
+    "completions": {
+      "probe/fail": 6,
+      "probe/ok": 3
+    },
+    "errors": {
+      "probe/fail/0A000/statement": 6
+    },
+    "fault_time_ms_by_kind": {},
+    "faults_confirmed_by_kind": {},
+    "info_writes_in_final_read": {
+      "append_absent": 0,
+      "append_present": 0,
+      "ledger_absent": 0,
+      "ledger_present": 0
+    },
+    "mutant": "real",
+    "notices": {},
+    "ok_writes": 0,
+    "profile": "baseline",
+    "run_id": "20261011T225434Z-claims-2-real-ceb64287",
+    "seed": 2
+  },
+  {
+    "campaign": "claims",
+    "cancel_requests": {},
+    "completions": {
+      "probe/fail": 6,
+      "probe/ok": 3
+    },
+    "errors": {
+      "probe/fail/0A000/statement": 6
+    },
+    "fault_time_ms_by_kind": {},
+    "faults_confirmed_by_kind": {},
+    "info_writes_in_final_read": {
+      "append_absent": 0,
+      "append_present": 0,
+      "ledger_absent": 0,
+      "ledger_present": 0
+    },
+    "mutant": "real",
+    "notices": {},
+    "ok_writes": 0,
+    "profile": "baseline",
+    "run_id": "20261011T225520Z-claims-3-real-b7c8d86a",
+    "seed": 3
+  },
+  {
+    "campaign": "claims",
+    "cancel_requests": {},
+    "completions": {
+      "probe/fail": 6,
+      "probe/ok": 3
+    },
+    "errors": {
+      "probe/fail/0A000/statement": 6
+    },
+    "fault_time_ms_by_kind": {},
+    "faults_confirmed_by_kind": {},
+    "info_writes_in_final_read": {
+      "append_absent": 0,
+      "append_present": 0,
+      "ledger_absent": 0,
+      "ledger_present": 0
+    },
+    "mutant": "real",
+    "notices": {},
+    "ok_writes": 0,
+    "profile": "baseline",
+    "run_id": "20261011T225605Z-claims-4-real-705f45a9",
+    "seed": 4
+  },
+  {
+    "campaign": "claims",
+    "cancel_requests": {},
+    "completions": {
+      "probe/fail": 6,
+      "probe/ok": 3
+    },
+    "errors": {
+      "probe/fail/0A000/statement": 6
+    },
+    "fault_time_ms_by_kind": {},
+    "faults_confirmed_by_kind": {},
+    "info_writes_in_final_read": {
+      "append_absent": 0,
+      "append_present": 0,
+      "ledger_absent": 0,
+      "ledger_present": 0
+    },
+    "mutant": "real",
+    "notices": {},
+    "ok_writes": 0,
+    "profile": "baseline",
+    "run_id": "20261011T225651Z-claims-5-real-397bf01f",
+    "seed": 5
+  },
+  {
+    "campaign": "C1",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 1129,
+      "append/info": 4,
+      "append/ok": 4871,
+      "bank/fail": 376,
+      "bank/info": 4,
+      "bank/ok": 2497,
+      "ledger/ok": 3562
+    },
+    "errors": {
+      "append/fail//connect": 210,
+      "append/fail/40001/commit": 92,
+      "append/fail/40001/statement": 809,
+      "append/fail/40P01/statement": 14,
+      "append/fail/57P03/connect": 4,
+      "append/info//transport": 4,
+      "bank/fail//connect": 105,
+      "bank/fail/40001/statement": 264,
+      "bank/fail/40P01/statement": 6,
+      "bank/fail/57P03/connect": 1,
+      "bank/info//transport": 4
+    },
+    "fault_time_ms_by_kind": {
+      "F2d": 20003
+    },
+    "faults_confirmed_by_kind": {
+      "F2d": 4
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 5,
+      "append_present": 0,
+      "ledger_absent": 0,
+      "ledger_present": 0
+    },
+    "mutant": "real",
+    "notices": {},
+    "ok_writes": 10730,
+    "profile": "baseline",
+    "run_id": "20261011T225737Z-C1-1-real-c0ce92da",
+    "seed": 1
+  },
+  {
+    "campaign": "C1",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 2104,
+      "append/info": 2,
+      "append/ok": 4060,
+      "bank/fail": 526,
+      "bank/info": 1,
+      "bank/ok": 2960,
+      "ledger/fail": 724,
+      "ledger/ok": 2838
+    },
+    "errors": {
+      "append/fail/40001/commit": 73,
+      "append/fail/40001/statement": 840,
+      "append/fail/40P01/statement": 15,
+      "append/fail/57P03/statement": 1176,
+      "append/info/08006/commit": 2,
+      "bank/fail/40001/statement": 71,
+      "bank/fail/40P01/statement": 2,
+      "bank/fail/57P03/statement": 453,
+      "bank/info/08006/commit": 1,
+      "ledger/fail/57P03/statement": 724
+    },
+    "fault_time_ms_by_kind": {
+      "F2a": 0,
+      "F2b": 5000,
+      "F2c": 5000
+    },
+    "faults_confirmed_by_kind": {
+      "F2a": 2,
+      "F2b": 1,
+      "F2c": 1
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 0,
+      "append_present": 2,
+      "ledger_absent": 0,
+      "ledger_present": 0
+    },
+    "mutant": "real",
+    "notices": {},
+    "ok_writes": 9352,
+    "profile": "baseline",
+    "run_id": "20261011T225954Z-C1-2-real-b139aac2",
+    "seed": 2
+  },
+  {
+    "campaign": "C1",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 1846,
+      "append/ok": 4029,
+      "bank/fail": 840,
+      "bank/info": 2,
+      "bank/ok": 2062,
+      "ledger/fail": 414,
+      "ledger/ok": 3150
+    },
+    "errors": {
+      "append/fail/40001/commit": 56,
+      "append/fail/40001/statement": 950,
+      "append/fail/40P01/statement": 16,
+      "append/fail/57P03/statement": 824,
+      "bank/fail/40001/commit": 2,
+      "bank/fail/40001/statement": 412,
+      "bank/fail/40P01/statement": 16,
+      "bank/fail/57P03/statement": 410,
+      "bank/info/08006/statement": 2,
+      "ledger/fail/57P03/statement": 414
+    },
+    "fault_time_ms_by_kind": {
+      "F2b": 10000,
+      "F2c": 10000
+    },
+    "faults_confirmed_by_kind": {
+      "F2b": 2,
+      "F2c": 2
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 0,
+      "append_present": 0,
+      "ledger_absent": 0,
+      "ledger_present": 0
+    },
+    "mutant": "real",
+    "notices": {},
+    "ok_writes": 8812,
+    "profile": "baseline",
+    "run_id": "20261011T230211Z-C1-3-real-ed8b194d",
+    "seed": 3
+  },
+  {
+    "campaign": "C2",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 532,
+      "append/info": 11,
+      "append/ok": 2704,
+      "ledger/fail": 4,
+      "ledger/info": 6,
+      "ledger/ok": 1870,
+      "register/fail": 4,
+      "register/info": 6,
+      "register/ok": 1877
+    },
+    "errors": {
+      "append/fail//client-timeout": 8,
+      "append/fail/40001/commit": 30,
+      "append/fail/40001/statement": 487,
+      "append/fail/40P01/statement": 7,
+      "append/info//client-timeout": 11,
+      "ledger/fail//client-timeout": 4,
+      "ledger/info//client-timeout": 6,
+      "register/fail//client-timeout": 4,
+      "register/info//client-timeout": 6
+    },
+    "fault_time_ms_by_kind": {
+      "F1b": 40002,
+      "F1d": 30000
+    },
+    "faults_confirmed_by_kind": {
+      "F1b": 2,
+      "F1d": 1
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 8,
+      "append_present": 12,
+      "ledger_absent": 2,
+      "ledger_present": 4
+    },
+    "mutant": "real",
+    "notices": {},
+    "ok_writes": 6047,
+    "profile": "baseline",
+    "run_id": "20261011T230429Z-C2-1-real-9811d19d",
+    "seed": 1
+  },
+  {
+    "campaign": "C2",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 840,
+      "append/info": 4,
+      "append/ok": 3118,
+      "ledger/fail": 4,
+      "ledger/info": 2,
+      "ledger/ok": 2374,
+      "register/fail": 4,
+      "register/info": 2,
+      "register/ok": 2374
+    },
+    "errors": {
+      "append/fail//client-timeout": 8,
+      "append/fail/40001/commit": 69,
+      "append/fail/40001/statement": 752,
+      "append/fail/40P01/statement": 11,
+      "append/info//client-timeout": 4,
+      "ledger/fail//client-timeout": 4,
+      "ledger/info//client-timeout": 2,
+      "register/fail//client-timeout": 4,
+      "register/info//client-timeout": 2
+    },
+    "fault_time_ms_by_kind": {
+      "F1a": 70002
+    },
+    "faults_confirmed_by_kind": {
+      "F1a": 3
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 6,
+      "append_present": 1,
+      "ledger_absent": 1,
+      "ledger_present": 1
+    },
+    "mutant": "real",
+    "notices": {},
+    "ok_writes": 7182,
+    "profile": "baseline",
+    "run_id": "20261011T230739Z-C2-2-real-9f3f45cb",
+    "seed": 2
+  },
+  {
+    "campaign": "C2",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 331,
+      "append/info": 21,
+      "append/ok": 1480,
+      "ledger/info": 14,
+      "ledger/ok": 1002,
+      "register/info": 14,
+      "register/ok": 1015
+    },
+    "errors": {
+      "append/fail/40001/commit": 20,
+      "append/fail/40001/statement": 308,
+      "append/fail/40P01/statement": 3,
+      "append/info//client-timeout": 18,
+      "append/info/XX000/commit": 3,
+      "ledger/info//client-timeout": 14,
+      "register/info//client-timeout": 14
+    },
+    "fault_time_ms_by_kind": {
+      "F1c": 70003
+    },
+    "faults_confirmed_by_kind": {
+      "F1c": 3
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 15,
+      "append_present": 17,
+      "ledger_absent": 6,
+      "ledger_present": 8
+    },
+    "mutant": "real",
+    "notices": {},
+    "ok_writes": 3174,
+    "profile": "baseline",
+    "run_id": "20261011T231036Z-C2-3-real-f4505b54",
+    "seed": 3
+  },
+  {
+    "campaign": "C3",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 1217,
+      "append/ok": 4762,
+      "ledger/ok": 3562,
+      "register/ok": 3562
+    },
+    "errors": {
+      "append/fail/40001/commit": 87,
+      "append/fail/40001/statement": 1114,
+      "append/fail/40P01/statement": 16
+    },
+    "fault_time_ms_by_kind": {
+      "F3a": 3000,
+      "F3b": 63002
+    },
+    "faults_confirmed_by_kind": {
+      "F3a": 1,
+      "F3b": 2
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 0,
+      "append_present": 0,
+      "ledger_absent": 0,
+      "ledger_present": 0
+    },
+    "mutant": "real",
+    "notices": {},
+    "ok_writes": 11015,
+    "profile": "baseline",
+    "run_id": "20261011T231328Z-C3-1-real-44a99ac9",
+    "seed": 1
+  },
+  {
+    "campaign": "C3",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 1222,
+      "append/info": 8,
+      "append/ok": 4344,
+      "ledger/fail": 286,
+      "ledger/info": 4,
+      "ledger/ok": 2824,
+      "register/fail": 286,
+      "register/info": 4,
+      "register/ok": 2824
+    },
+    "errors": {
+      "append/fail/40001/statement": 645,
+      "append/fail/40P01/statement": 9,
+      "append/fail/57P03/connect": 568,
+      "append/info//client-timeout": 8,
+      "ledger/fail/57P03/connect": 286,
+      "ledger/info//client-timeout": 4,
+      "register/fail/57P03/connect": 286,
+      "register/info//client-timeout": 4
+    },
+    "fault_time_ms_by_kind": {
+      "F3a": 120000,
+      "F3b": 60001
+    },
+    "faults_confirmed_by_kind": {
+      "F3a": 2,
+      "F3b": 1
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 7,
+      "append_present": 0,
+      "ledger_absent": 4,
+      "ledger_present": 0
+    },
+    "mutant": "real",
+    "notices": {},
+    "ok_writes": 9504,
+    "profile": "baseline",
+    "run_id": "20261011T231604Z-C3-2-real-52940370",
+    "seed": 2
+  },
+  {
+    "campaign": "C3",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 697,
+      "append/info": 4,
+      "append/ok": 2809,
+      "ledger/fail": 4,
+      "ledger/info": 2,
+      "ledger/ok": 2134,
+      "register/fail": 4,
+      "register/info": 2,
+      "register/ok": 2134
+    },
+    "errors": {
+      "append/fail//client-timeout": 8,
+      "append/fail/40001/commit": 42,
+      "append/fail/40001/statement": 636,
+      "append/fail/40P01/statement": 11,
+      "append/info//client-timeout": 4,
+      "ledger/fail//client-timeout": 4,
+      "ledger/info//client-timeout": 2,
+      "register/fail//client-timeout": 4,
+      "register/info//client-timeout": 2
+    },
+    "fault_time_ms_by_kind": {
+      "F3a": 6000,
+      "F3b": 60000
+    },
+    "faults_confirmed_by_kind": {
+      "F3a": 2,
+      "F3b": 1
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 6,
+      "append_present": 0,
+      "ledger_absent": 0,
+      "ledger_present": 2
+    },
+    "mutant": "real",
+    "notices": {},
+    "ok_writes": 6581,
+    "profile": "baseline",
+    "run_id": "20261011T232034Z-C3-3-real-9608c3b8",
+    "seed": 3
+  },
+  {
+    "campaign": "C4",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 1163,
+      "append/ok": 5070,
+      "ledger/ok": 3562
+    },
+    "errors": {
+      "append/fail/40001/commit": 85,
+      "append/fail/40001/statement": 1065,
+      "append/fail/40P01/statement": 13
+    },
+    "fault_time_ms_by_kind": {},
+    "faults_confirmed_by_kind": {
+      "F5a": 1,
+      "F5b": 1
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 0,
+      "append_present": 0,
+      "ledger_absent": 0,
+      "ledger_present": 0
+    },
+    "mutant": "real",
+    "notices": {},
+    "ok_writes": 9025,
+    "profile": "baseline",
+    "run_id": "20261011T232310Z-C4-1-real-4d9e8fd0",
+    "seed": 1
+  },
+  {
+    "campaign": "C4",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 3032,
+      "append/info": 52,
+      "append/ok": 3323,
+      "ledger/fail": 1182,
+      "ledger/info": 24,
+      "ledger/ok": 2352
+    },
+    "errors": {
+      "append/fail/40001/commit": 53,
+      "append/fail/40001/statement": 742,
+      "append/fail/40P01/statement": 8,
+      "append/fail/57P03/connect": 205,
+      "append/fail/57P03/statement": 2024,
+      "append/info/57P03/statement": 52,
+      "ledger/fail/28P01/connect": 4,
+      "ledger/fail/57P03/connect": 472,
+      "ledger/fail/57P03/statement": 706,
+      "ledger/info/57P01/statement": 2,
+      "ledger/info/57P03/statement": 22
+    },
+    "fault_time_ms_by_kind": {
+      "F2a": 5000,
+      "F3a": 23016
+    },
+    "faults_confirmed_by_kind": {
+      "F2a": 1,
+      "F3a": 2,
+      "F5a": 1,
+      "F5b": 1
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 70,
+      "append_present": 0,
+      "ledger_absent": 24,
+      "ledger_present": 0
+    },
+    "mutant": "real",
+    "notices": {},
+    "ok_writes": 5996,
+    "profile": "baseline",
+    "run_id": "20261011T233126Z-C4-3-real-5c45606a",
+    "seed": 3
+  },
+  {
+    "campaign": "C5",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 1934,
+      "append/info": 16,
+      "append/ok": 4177,
+      "ledger/fail": 541,
+      "ledger/info": 10,
+      "ledger/ok": 2823
+    },
+    "errors": {
+      "append/fail/40001/commit": 65,
+      "append/fail/40001/statement": 817,
+      "append/fail/40P01/statement": 8,
+      "append/fail/57P03/connect": 936,
+      "append/fail/57P03/statement": 108,
+      "append/info/57P03/statement": 12,
+      "append/info/XX000/commit": 4,
+      "ledger/fail/57P03/connect": 470,
+      "ledger/fail/57P03/statement": 71,
+      "ledger/info/57P03/statement": 6,
+      "ledger/info/XX000/statement": 4
+    },
+    "fault_time_ms_by_kind": {
+      "F2a": 20001,
+      "F4a": 10342
+    },
+    "faults_confirmed_by_kind": {
+      "F2a": 2,
+      "F4a": 2
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 24,
+      "append_present": 0,
+      "ledger_absent": 10,
+      "ledger_present": 0
+    },
+    "mutant": "real",
+    "notices": {},
+    "ok_writes": 7507,
+    "profile": "baseline",
+    "run_id": "20261011T233347Z-C5-1-real-d0654ac1",
+    "seed": 1
+  },
+  {
+    "campaign": "C5",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 2057,
+      "append/info": 33,
+      "append/ok": 3490,
+      "ledger/fail": 582,
+      "ledger/info": 17,
+      "ledger/ok": 2624
+    },
+    "errors": {
+      "append/fail/40001/commit": 74,
+      "append/fail/40001/statement": 811,
+      "append/fail/40P01/statement": 12,
+      "append/fail/57P03/connect": 1160,
+      "append/info/57P03/statement": 30,
+      "append/info/XX000/commit": 1,
+      "append/info/XX000/statement": 2,
+      "ledger/fail/57P03/connect": 582,
+      "ledger/info/57P03/statement": 13,
+      "ledger/info/XX000/statement": 4
+    },
+    "fault_time_ms_by_kind": {
+      "F2a": 20001,
+      "F4a": 10469
+    },
+    "faults_confirmed_by_kind": {
+      "F2a": 2,
+      "F4a": 2
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 35,
+      "append_present": 0,
+      "ledger_absent": 17,
+      "ledger_present": 0
+    },
+    "mutant": "real",
+    "notices": {},
+    "ok_writes": 6451,
+    "profile": "baseline",
+    "run_id": "20261011T233629Z-C5-1-real-d0654ac1",
+    "seed": 1
+  },
+  {
+    "campaign": "C5",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 1938,
+      "append/info": 34,
+      "append/ok": 3524,
+      "ledger/fail": 542,
+      "ledger/info": 18,
+      "ledger/ok": 2618
+    },
+    "errors": {
+      "append/fail/40001/commit": 61,
+      "append/fail/40001/statement": 787,
+      "append/fail/40P01/statement": 12,
+      "append/fail/57P03/statement": 1078,
+      "append/info/57P03/statement": 32,
+      "append/info/XX000/statement": 2,
+      "ledger/fail/57P03/statement": 542,
+      "ledger/info/57P03/statement": 14,
+      "ledger/info/XX000/statement": 4
+    },
+    "fault_time_ms_by_kind": {
+      "F2a": 20001,
+      "F4a": 10361
+    },
+    "faults_confirmed_by_kind": {
+      "F2a": 2,
+      "F4a": 2
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 43,
+      "append_present": 0,
+      "ledger_absent": 18,
+      "ledger_present": 0
+    },
+    "mutant": "real",
+    "notices": {},
+    "ok_writes": 6492,
+    "profile": "baseline",
+    "run_id": "20261011T233912Z-C5-1-real-d0654ac1",
+    "seed": 1
+  },
+  {
+    "campaign": "C5",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 1835,
+      "append/info": 26,
+      "append/ok": 4217,
+      "ledger/fail": 420,
+      "ledger/info": 13,
+      "ledger/ok": 2826
+    },
+    "errors": {
+      "append/fail/40001/commit": 64,
+      "append/fail/40001/statement": 929,
+      "append/fail/40P01/statement": 6,
+      "append/fail/57P03/connect": 836,
+      "append/info/57P03/statement": 22,
+      "append/info/XX000/commit": 2,
+      "append/info/XX000/statement": 2,
+      "ledger/fail/57P03/statement": 420,
+      "ledger/info/57P03/statement": 9,
+      "ledger/info/XX000/statement": 4
+    },
+    "fault_time_ms_by_kind": {
+      "F2a": 20000,
+      "F4a": 10629
+    },
+    "faults_confirmed_by_kind": {
+      "F2a": 2,
+      "F4a": 2
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 32,
+      "append_present": 0,
+      "ledger_absent": 13,
+      "ledger_present": 0
+    },
+    "mutant": "real",
+    "notices": {},
+    "ok_writes": 7514,
+    "profile": "baseline",
+    "run_id": "20261011T234147Z-C5-2-real-0940c39b",
+    "seed": 2
+  },
+  {
+    "campaign": "C5",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 1985,
+      "append/info": 25,
+      "append/ok": 3793,
+      "ledger/fail": 880,
+      "ledger/info": 16,
+      "ledger/ok": 2348
+    },
+    "errors": {
+      "append/fail/40001/commit": 57,
+      "append/fail/40001/statement": 473,
+      "append/fail/40P01/statement": 6,
+      "append/fail/57P03/connect": 70,
+      "append/fail/57P03/statement": 1379,
+      "append/info//client-timeout": 2,
+      "append/info/57P03/statement": 21,
+      "append/info/XX000/commit": 2,
+      "ledger/fail/57P03/statement": 880,
+      "ledger/info/57P03/statement": 12,
+      "ledger/info/XX000/statement": 4
+    },
+    "fault_time_ms_by_kind": {
+      "F2a": 20001,
+      "F4a": 10352
+    },
+    "faults_confirmed_by_kind": {
+      "F2a": 2,
+      "F4a": 2
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 36,
+      "append_present": 0,
+      "ledger_absent": 16,
+      "ledger_present": 0
+    },
+    "mutant": "real",
+    "notices": {},
+    "ok_writes": 6738,
+    "profile": "baseline",
+    "run_id": "20261011T234422Z-C5-2-real-0940c39b",
+    "seed": 2
+  },
+  {
+    "campaign": "C5",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 1823,
+      "append/info": 36,
+      "append/ok": 3726,
+      "ledger/fail": 453,
+      "ledger/info": 21,
+      "ledger/ok": 2715
+    },
+    "errors": {
+      "append/fail/40001/commit": 63,
+      "append/fail/40001/statement": 847,
+      "append/fail/40P01/statement": 11,
+      "append/fail/57P03/statement": 902,
+      "append/info/57P03/statement": 33,
+      "append/info/XX000/commit": 3,
+      "ledger/fail/57P03/statement": 453,
+      "ledger/info/57P03/statement": 16,
+      "ledger/info/XX000/statement": 5
+    },
+    "fault_time_ms_by_kind": {
+      "F2a": 20001,
+      "F4a": 10360
+    },
+    "faults_confirmed_by_kind": {
+      "F2a": 2,
+      "F4a": 2
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 46,
+      "append_present": 0,
+      "ledger_absent": 21,
+      "ledger_present": 0
+    },
+    "mutant": "real",
+    "notices": {},
+    "ok_writes": 6809,
+    "profile": "baseline",
+    "run_id": "20261011T234703Z-C5-2-real-0940c39b",
+    "seed": 2
+  },
+  {
+    "campaign": "C5",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 826,
+      "append/info": 14,
+      "append/ok": 4819,
+      "ledger/info": 8,
+      "ledger/ok": 3134
+    },
+    "errors": {
+      "append/fail/28P01/connect": 2,
+      "append/fail/40001/commit": 56,
+      "append/fail/40001/statement": 694,
+      "append/fail/40P01/statement": 11,
+      "append/fail/57P03/connect": 63,
+      "append/info/57P01/commit": 1,
+      "append/info/57P03/statement": 11,
+      "append/info/XX000/commit": 2,
+      "ledger/info/57P03/statement": 6,
+      "ledger/info/XX000/statement": 2
+    },
+    "fault_time_ms_by_kind": {
+      "F2a": 10000
+    },
+    "faults_confirmed_by_kind": {
+      "F2a": 1,
+      "F4a": 1
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 19,
+      "append_present": 0,
+      "ledger_absent": 8,
+      "ledger_present": 0
+    },
+    "mutant": "real",
+    "notices": {},
+    "ok_writes": 8623,
+    "profile": "baseline",
+    "run_id": "20261011T234947Z-C5-3-real-0bbefd35",
+    "seed": 3
+  },
+  {
+    "campaign": "C5",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 1160,
+      "append/info": 18,
+      "append/ok": 4354,
+      "ledger/fail": 8,
+      "ledger/info": 9,
+      "ledger/ok": 3192
+    },
+    "errors": {
+      "append/fail/40001/commit": 71,
+      "append/fail/40001/statement": 1057,
+      "append/fail/40P01/statement": 13,
+      "append/fail/57P03/statement": 19,
+      "append/info/57P03/statement": 14,
+      "append/info/XX000/commit": 3,
+      "append/info/XX000/statement": 1,
+      "ledger/fail/57P03/statement": 8,
+      "ledger/info/57P03/statement": 7,
+      "ledger/info/XX000/statement": 2
+    },
+    "fault_time_ms_by_kind": {
+      "F2a": 10000
+    },
+    "faults_confirmed_by_kind": {
+      "F2a": 1,
+      "F4a": 1
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 21,
+      "append_present": 0,
+      "ledger_absent": 9,
+      "ledger_present": 0
+    },
+    "mutant": "real",
+    "notices": {},
+    "ok_writes": 7801,
+    "profile": "baseline",
+    "run_id": "20261011T235204Z-C5-3-real-0bbefd35",
+    "seed": 3
+  },
+  {
+    "campaign": "C5",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 1790,
+      "append/info": 17,
+      "append/ok": 3764,
+      "ledger/fail": 419,
+      "ledger/info": 9,
+      "ledger/ok": 2789
+    },
+    "errors": {
+      "append/fail/40001/commit": 66,
+      "append/fail/40001/statement": 869,
+      "append/fail/40P01/statement": 13,
+      "append/fail/57P03/statement": 842,
+      "append/info/57P03/statement": 14,
+      "append/info/XX000/commit": 3,
+      "ledger/fail/57P03/statement": 419,
+      "ledger/info/57P03/statement": 7,
+      "ledger/info/XX000/statement": 2
+    },
+    "fault_time_ms_by_kind": {
+      "F2a": 10000
+    },
+    "faults_confirmed_by_kind": {
+      "F2a": 1,
+      "F4a": 1
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 20,
+      "append_present": 0,
+      "ledger_absent": 9,
+      "ledger_present": 0
+    },
+    "mutant": "real",
+    "notices": {},
+    "ok_writes": 6798,
+    "profile": "baseline",
+    "run_id": "20261011T235423Z-C5-3-real-0bbefd35",
+    "seed": 3
+  },
+  {
+    "campaign": "C6",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 1717,
+      "append/info": 12,
+      "append/ok": 4371,
+      "ledger/fail": 333,
+      "ledger/info": 8,
+      "ledger/ok": 3153
+    },
+    "errors": {
+      "append/fail/40001/commit": 89,
+      "append/fail/40001/statement": 1005,
+      "append/fail/40P01/statement": 11,
+      "append/fail/57P03/connect": 8,
+      "append/fail/57P03/statement": 604,
+      "append/info/57P03/statement": 8,
+      "append/info/MTD04/statement": 2,
+      "append/info/XX000/statement": 2,
+      "ledger/fail/57P03/connect": 7,
+      "ledger/fail/57P03/statement": 326,
+      "ledger/info/57P03/statement": 4,
+      "ledger/info/XX000/statement": 4
+    },
+    "fault_time_ms_by_kind": {
+      "F2a": 0
+    },
+    "faults_confirmed_by_kind": {
+      "F2a": 3
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 14,
+      "append_present": 0,
+      "ledger_absent": 8,
+      "ledger_present": 0
+    },
+    "mutant": "real",
+    "notices": {},
+    "ok_writes": 7897,
+    "profile": "baseline",
+    "run_id": "20261011T235642Z-C6-1-real-ade478c0",
+    "seed": 1
+  },
+  {
+    "campaign": "C6",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 1318,
+      "append/info": 39,
+      "append/ok": 4236,
+      "ledger/fail": 173,
+      "ledger/info": 29,
+      "ledger/ok": 2998
+    },
+    "errors": {
+      "append/fail/40001/commit": 52,
+      "append/fail/40001/statement": 910,
+      "append/fail/40P01/statement": 11,
+      "append/fail/57P03/connect": 204,
+      "append/fail/57P03/statement": 141,
+      "append/info/57P03/statement": 39,
+      "ledger/fail/57P03/connect": 137,
+      "ledger/fail/57P03/statement": 36,
+      "ledger/info/57P03/statement": 20,
+      "ledger/info/XX000/statement": 9
+    },
+    "fault_time_ms_by_kind": {
+      "F2a": 0
+    },
+    "faults_confirmed_by_kind": {
+      "F2a": 4
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 53,
+      "append_present": 0,
+      "ledger_absent": 29,
+      "ledger_present": 0
+    },
+    "mutant": "real",
+    "notices": {},
+    "ok_writes": 7682,
+    "profile": "baseline",
+    "run_id": "20261011T235852Z-C6-1-real-ade478c0",
+    "seed": 1
+  },
+  {
+    "campaign": "C6",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 1417,
+      "append/info": 48,
+      "append/ok": 4096,
+      "ledger/fail": 496,
+      "ledger/info": 24,
+      "ledger/ok": 2756
+    },
+    "errors": {
+      "append/fail/40001/commit": 47,
+      "append/fail/40001/statement": 777,
+      "append/fail/40P01/statement": 8,
+      "append/fail/57P03/statement": 585,
+      "append/info/57P03/statement": 46,
+      "append/info/MTD04/statement": 2,
+      "ledger/fail/28P01/connect": 4,
+      "ledger/fail/57P03/connect": 226,
+      "ledger/fail/57P03/statement": 266,
+      "ledger/info/57P01/statement": 2,
+      "ledger/info/57P03/statement": 16,
+      "ledger/info/XX000/statement": 6
+    },
+    "fault_time_ms_by_kind": {
+      "F2a": 0
+    },
+    "faults_confirmed_by_kind": {
+      "F2a": 4
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 54,
+      "append_present": 0,
+      "ledger_absent": 22,
+      "ledger_present": 2
+    },
+    "mutant": "real",
+    "notices": {},
+    "ok_writes": 7265,
+    "profile": "baseline",
+    "run_id": "20261012T000109Z-C6-2-real-585e78f0",
+    "seed": 2
+  },
+  {
+    "campaign": "C6",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 1160,
+      "append/info": 35,
+      "append/ok": 4587,
+      "ledger/fail": 138,
+      "ledger/info": 19,
+      "ledger/ok": 3215
+    },
+    "errors": {
+      "append/fail/40001/commit": 67,
+      "append/fail/40001/statement": 995,
+      "append/fail/40P01/statement": 11,
+      "append/fail/57P03/connect": 63,
+      "append/fail/57P03/statement": 24,
+      "append/info/57P03/statement": 31,
+      "append/info/XX000/statement": 4,
+      "ledger/fail/28P01/connect": 4,
+      "ledger/fail/57P03/connect": 134,
+      "ledger/info/57P01/statement": 2,
+      "ledger/info/57P03/statement": 10,
+      "ledger/info/XX000/statement": 7
+    },
+    "fault_time_ms_by_kind": {
+      "F2a": 0
+    },
+    "faults_confirmed_by_kind": {
+      "F2a": 4
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 50,
+      "append_present": 0,
+      "ledger_absent": 19,
+      "ledger_present": 0
+    },
+    "mutant": "real",
+    "notices": {},
+    "ok_writes": 8183,
+    "profile": "baseline",
+    "run_id": "20261012T000328Z-C6-3-real-e49b6d52",
+    "seed": 3
+  },
+  {
+    "campaign": "C7",
+    "cancel_requests": {
+      "sent → info": 95
+    },
+    "completions": {
+      "append/fail": 2257,
+      "append/info": 127,
+      "append/ok": 1259,
+      "ledger/fail": 994,
+      "ledger/info": 53,
+      "ledger/ok": 860
+    },
+    "errors": {
+      "append/fail/40001/commit": 14,
+      "append/fail/40001/statement": 316,
+      "append/fail/40P01/statement": 4,
+      "append/fail/57P03/statement": 1923,
+      "append/info/57014/commit": 95,
+      "append/info/57P03/statement": 24,
+      "append/info/XX000/commit": 5,
+      "append/info/XX000/statement": 3,
+      "ledger/fail/28P01/connect": 4,
+      "ledger/fail/57P03/connect": 66,
+      "ledger/fail/57P03/statement": 924,
+      "ledger/info/57014/statement": 36,
+      "ledger/info/57P01/statement": 1,
+      "ledger/info/57P03/statement": 10,
+      "ledger/info/XX000/statement": 6
+    },
+    "fault_time_ms_by_kind": {
+      "F1b": 42556,
+      "F2a": 0
+    },
+    "faults_confirmed_by_kind": {
+      "F1b": 2,
+      "F2a": 2
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 115,
+      "append_present": 73,
+      "ledger_absent": 33,
+      "ledger_present": 20
+    },
+    "mutant": "real",
+    "notices": {},
+    "ok_writes": 2214,
+    "profile": "baseline",
+    "run_id": "20261012T000546Z-C7-1-real-f98a0215",
+    "seed": 1
+  },
+  {
+    "campaign": "C7",
+    "cancel_requests": {
+      "sent → info": 93
+    },
+    "completions": {
+      "append/fail": 2727,
+      "append/info": 105,
+      "append/ok": 1363,
+      "ledger/fail": 1182,
+      "ledger/info": 45,
+      "ledger/ok": 796
+    },
+    "errors": {
+      "append/fail/40001/commit": 58,
+      "append/fail/40001/statement": 322,
+      "append/fail/40P01/statement": 1,
+      "append/fail/57P03/statement": 2346,
+      "append/info/57014/commit": 93,
+      "append/info/57P03/statement": 4,
+      "append/info/XX000/commit": 5,
+      "append/info/XX000/statement": 3,
+      "ledger/fail/57P03/connect": 551,
+      "ledger/fail/57P03/statement": 631,
+      "ledger/info/57014/statement": 36,
+      "ledger/info/57P01/statement": 1,
+      "ledger/info/57P03/statement": 2,
+      "ledger/info/XX000/statement": 6
+    },
+    "fault_time_ms_by_kind": {
+      "F1b": 38837,
+      "F2a": 0
+    },
+    "faults_confirmed_by_kind": {
+      "F1b": 2,
+      "F2a": 2
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 10,
+      "append_present": 146,
+      "ledger_absent": 5,
+      "ledger_present": 40
+    },
+    "mutant": "real",
+    "notices": {},
+    "ok_writes": 2275,
+    "profile": "baseline",
+    "run_id": "20261012T000816Z-C7-2-real-afcdcb27",
+    "seed": 2
+  },
+  {
+    "campaign": "C7",
+    "cancel_requests": {
+      "sent → info": 45
+    },
+    "completions": {
+      "append/fail": 4505,
+      "append/info": 53,
+      "append/ok": 746,
+      "ledger/fail": 2175,
+      "ledger/info": 22,
+      "ledger/ok": 604
+    },
+    "errors": {
+      "append/fail/40001/commit": 8,
+      "append/fail/40001/statement": 176,
+      "append/fail/40P01/statement": 5,
+      "append/fail/57P03/statement": 4316,
+      "append/info/57014/commit": 45,
+      "append/info/57P03/statement": 4,
+      "append/info/XX000/commit": 3,
+      "append/info/XX000/statement": 1,
+      "ledger/fail/28P01/connect": 1,
+      "ledger/fail/57P03/connect": 1095,
+      "ledger/fail/57P03/statement": 1079,
+      "ledger/info/57014/statement": 18,
+      "ledger/info/57P01/statement": 1,
+      "ledger/info/57P03/statement": 1,
+      "ledger/info/XX000/statement": 2
+    },
+    "fault_time_ms_by_kind": {
+      "F1b": 39355,
+      "F2a": 0
+    },
+    "faults_confirmed_by_kind": {
+      "F1b": 2,
+      "F2a": 2
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 2,
+      "append_present": 67,
+      "ledger_absent": 2,
+      "ledger_present": 20
+    },
+    "mutant": "real",
+    "notices": {},
+    "ok_writes": 1389,
+    "profile": "baseline",
+    "run_id": "20261012T001043Z-C7-3-real-b11856f8",
+    "seed": 3
+  },
+  {
+    "campaign": "DH1",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 163,
+      "append/info": 10,
+      "append/ok": 539,
+      "ledger/fail": 14,
+      "ledger/info": 2,
+      "ledger/ok": 410
+    },
+    "errors": {
+      "append/fail//client-timeout": 28,
+      "append/fail/40001/statement": 133,
+      "append/fail/40P01/statement": 2,
+      "append/info//client-timeout": 4,
+      "append/info/XX000/commit": 6,
+      "ledger/fail//client-timeout": 14,
+      "ledger/info//client-timeout": 2
+    },
+    "fault_time_ms_by_kind": {
+      "F3a": 120000
+    },
+    "faults_confirmed_by_kind": {
+      "F3a": 1
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 14,
+      "append_present": 0,
+      "ledger_absent": 2,
+      "ledger_present": 0
+    },
+    "mutant": "real",
+    "notices": {},
+    "ok_writes": 991,
+    "profile": "h1",
+    "run_id": "20261012T001313Z-DH1-1-real-d643274e",
+    "seed": 1
+  },
+  {
+    "campaign": "DH1",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 158,
+      "append/info": 8,
+      "append/ok": 523,
+      "ledger/fail": 14,
+      "ledger/info": 2,
+      "ledger/ok": 410
+    },
+    "errors": {
+      "append/fail//client-timeout": 28,
+      "append/fail/40001/statement": 128,
+      "append/fail/40P01/statement": 2,
+      "append/info//client-timeout": 4,
+      "append/info/XX000/commit": 4,
+      "ledger/fail//client-timeout": 14,
+      "ledger/info//client-timeout": 2
+    },
+    "fault_time_ms_by_kind": {
+      "F3a": 120001
+    },
+    "faults_confirmed_by_kind": {
+      "F3a": 1
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 16,
+      "append_present": 0,
+      "ledger_absent": 0,
+      "ledger_present": 2
+    },
+    "mutant": "real",
+    "notices": {},
+    "ok_writes": 958,
+    "profile": "h1",
+    "run_id": "20261012T001608Z-DH1-2-real-cff632e5",
+    "seed": 2
+  },
+  {
+    "campaign": "DH1",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 162,
+      "append/info": 12,
+      "append/ok": 603,
+      "ledger/fail": 14,
+      "ledger/info": 2,
+      "ledger/ok": 410
+    },
+    "errors": {
+      "append/fail//client-timeout": 28,
+      "append/fail/40001/statement": 133,
+      "append/fail/40P01/statement": 1,
+      "append/info//client-timeout": 4,
+      "append/info/XX000/commit": 8,
+      "ledger/fail//client-timeout": 14,
+      "ledger/info//client-timeout": 2
+    },
+    "fault_time_ms_by_kind": {
+      "F3a": 120001
+    },
+    "faults_confirmed_by_kind": {
+      "F3a": 1
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 18,
+      "append_present": 0,
+      "ledger_absent": 2,
+      "ledger_present": 0
+    },
+    "mutant": "real",
+    "notices": {},
+    "ok_writes": 1041,
+    "profile": "h1",
+    "run_id": "20261012T001859Z-DH1-3-real-aef049f1",
+    "seed": 3
+  },
+  {
+    "campaign": "DH1",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 173,
+      "append/info": 11,
+      "append/ok": 453,
+      "ledger/fail": 14,
+      "ledger/info": 2,
+      "ledger/ok": 410
+    },
+    "errors": {
+      "append/fail//client-timeout": 28,
+      "append/fail/40001/statement": 142,
+      "append/fail/40P01/statement": 3,
+      "append/info//client-timeout": 4,
+      "append/info/XX000/commit": 7,
+      "ledger/fail//client-timeout": 14,
+      "ledger/info//client-timeout": 2
+    },
+    "fault_time_ms_by_kind": {
+      "F3a": 120000
+    },
+    "faults_confirmed_by_kind": {
+      "F3a": 1
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 17,
+      "append_present": 0,
+      "ledger_absent": 2,
+      "ledger_present": 0
+    },
+    "mutant": "real",
+    "notices": {},
+    "ok_writes": 912,
+    "profile": "h1",
+    "run_id": "20261012T002150Z-DH1-4-real-2eb750cd",
+    "seed": 4
+  },
+  {
+    "campaign": "DH1",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 161,
+      "append/info": 8,
+      "append/ok": 618,
+      "ledger/fail": 14,
+      "ledger/info": 2,
+      "ledger/ok": 410
+    },
+    "errors": {
+      "append/fail//client-timeout": 28,
+      "append/fail/40001/statement": 132,
+      "append/fail/40P01/statement": 1,
+      "append/info//client-timeout": 4,
+      "append/info/XX000/commit": 4,
+      "ledger/fail//client-timeout": 14,
+      "ledger/info//client-timeout": 2
+    },
+    "fault_time_ms_by_kind": {
+      "F3a": 120000
+    },
+    "faults_confirmed_by_kind": {
+      "F3a": 1
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 9,
+      "append_present": 0,
+      "ledger_absent": 2,
+      "ledger_present": 0
+    },
+    "mutant": "real",
+    "notices": {},
+    "ok_writes": 1065,
+    "profile": "h1",
+    "run_id": "20261012T002441Z-DH1-5-real-a8683424",
+    "seed": 5
+  },
+  {
+    "campaign": "C4",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 973,
+      "append/info": 16,
+      "append/ok": 4758,
+      "ledger/fail": 96,
+      "ledger/info": 12,
+      "ledger/ok": 3005
+    },
+    "errors": {
+      "append/fail/28P01/connect": 2,
+      "append/fail/40001/commit": 51,
+      "append/fail/40001/statement": 638,
+      "append/fail/40P01/statement": 9,
+      "append/fail/57P03/connect": 171,
+      "append/fail/57P03/statement": 102,
+      "append/info/57P01/statement": 1,
+      "append/info/57P03/statement": 13,
+      "append/info/XX000/commit": 1,
+      "append/info/XX000/statement": 1,
+      "ledger/fail/57P03/connect": 96,
+      "ledger/info/57P03/statement": 10,
+      "ledger/info/XX000/statement": 2
+    },
+    "fault_time_ms_by_kind": {
+      "F1a": 5809,
+      "F2a": 5000
+    },
+    "faults_confirmed_by_kind": {
+      "F1a": 1,
+      "F2a": 1,
+      "F5a": 1,
+      "F5b": 1
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 20,
+      "append_present": 3,
+      "ledger_absent": 10,
+      "ledger_present": 2
+    },
+    "mutant": "real",
+    "notices": {},
+    "ok_writes": 8483,
+    "profile": "baseline",
+    "run_id": "20261012T031145Z-C4-2-real-1b6468fb",
+    "seed": 2
+  },
+  {
+    "campaign": "C5",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 1899,
+      "append/info": 37,
+      "append/ok": 3561,
+      "ledger/fail": 624,
+      "ledger/info": 20,
+      "ledger/ok": 2415
+    },
+    "errors": {
+      "append/fail/40001/commit": 43,
+      "append/fail/40001/statement": 598,
+      "append/fail/40P01/statement": 10,
+      "append/fail/57P03/statement": 1248,
+      "append/info/57P03/statement": 29,
+      "append/info/XX000/commit": 6,
+      "append/info/XX000/statement": 2,
+      "ledger/fail/57P03/statement": 624,
+      "ledger/info/57P03/statement": 13,
+      "ledger/info/XX000/statement": 7
+    },
+    "fault_time_ms_by_kind": {
+      "F2a": 30706,
+      "F4a": 30851
+    },
+    "faults_confirmed_by_kind": {
+      "F2a": 3,
+      "F4a": 3
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 47,
+      "append_present": 6,
+      "ledger_absent": 18,
+      "ledger_present": 2
+    },
+    "mutant": "real",
+    "notices": {},
+    "ok_writes": 6464,
+    "profile": "baseline",
+    "run_id": "20261012T031403Z-C5-1-real-6a391306",
+    "seed": 1
+  },
+  {
+    "campaign": "C5",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 2660,
+      "append/info": 38,
+      "append/ok": 2907,
+      "ledger/fail": 1300,
+      "ledger/info": 23,
+      "ledger/ok": 1769
+    },
+    "errors": {
+      "append/fail/40001/commit": 22,
+      "append/fail/40001/statement": 321,
+      "append/fail/40P01/statement": 5,
+      "append/fail/57P03/statement": 2312,
+      "append/info//client-timeout": 2,
+      "append/info/57P03/statement": 31,
+      "append/info/XX000/commit": 5,
+      "ledger/fail/57P03/statement": 1300,
+      "ledger/info/57P03/statement": 15,
+      "ledger/info/XX000/statement": 8
+    },
+    "fault_time_ms_by_kind": {
+      "F2a": 30896,
+      "F4a": 30690
+    },
+    "faults_confirmed_by_kind": {
+      "F2a": 3,
+      "F4a": 3
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 47,
+      "append_present": 4,
+      "ledger_absent": 21,
+      "ledger_present": 2
+    },
+    "mutant": "real",
+    "notices": {},
+    "ok_writes": 5176,
+    "profile": "baseline",
+    "run_id": "20261012T031623Z-C5-2-real-25a6e5fe",
+    "seed": 2
+  },
+  {
+    "campaign": "C5",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 3167,
+      "append/info": 32,
+      "append/ok": 2611,
+      "ledger/fail": 1331,
+      "ledger/info": 17,
+      "ledger/ok": 1804
+    },
+    "errors": {
+      "append/fail/40001/commit": 27,
+      "append/fail/40001/statement": 451,
+      "append/fail/40P01/statement": 8,
+      "append/fail/57P03/statement": 2681,
+      "append/info/57P03/statement": 24,
+      "append/info/XX000/commit": 5,
+      "append/info/XX000/statement": 3,
+      "ledger/fail/57P03/statement": 1331,
+      "ledger/info/57P03/statement": 10,
+      "ledger/info/XX000/statement": 7
+    },
+    "fault_time_ms_by_kind": {
+      "F2a": 30896,
+      "F4a": 32763
+    },
+    "faults_confirmed_by_kind": {
+      "F2a": 3,
+      "F4a": 3
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 36,
+      "append_present": 6,
+      "ledger_absent": 15,
+      "ledger_present": 2
+    },
+    "mutant": "real",
+    "notices": {},
+    "ok_writes": 4652,
+    "profile": "baseline",
+    "run_id": "20261012T031844Z-C5-3-real-3cbb1b04",
+    "seed": 3
+  }
+]

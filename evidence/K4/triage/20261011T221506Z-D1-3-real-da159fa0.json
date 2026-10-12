@@ -1,0 +1,76 @@
+{
+  "analysis": "While F1c cut the leader from its followers, orchestrators and etcd (not from the gateways), COMMITs on the leader waited for a synchronous standby. When a client gave up after P01 (10 s; completion info, \u00a76.2 row 9), the pooler cancelled the backend's statement on context end (go/services/multipooler/internal/pools/regular/regular_conn.go execWithContextCancel \u2192 handleContextCancellation); PostgreSQL ends a cancelled synchronous-replication wait by completing the commit locally (S61: 'The transaction has already committed locally, but might not have been replicated'). Other sessions on the old leader then read the unacknowledged values (ok reads). After multiorch failed over to a follower that never received them, the old leader was rewound and the values disappeared: two ok reads of one key are not prefixes of each other (C3 incompatible-order). No ok write is missing from the final reads (C1 valid) and no failed write is visible (C2 valid).",
+  "anomaly_class": "incompatible-order",
+  "checks_sha256": "23119a8ccc9ee34913acfd6e55ac41c48f4aa93b695bb68524805b284ca726b2",
+  "classes": [
+    "incompatible-order"
+  ],
+  "classification": {
+    "claim_level": "EXPLICIT",
+    "class": "SAFETY_VIOLATION",
+    "guarantee": "G2",
+    "known_status": "NEW",
+    "origin": "UNDETERMINED",
+    "reproducibility": "REPRODUCED",
+    "severity": "critical"
+  },
+  "completion_review": [
+    {
+      "complete_t_ns": 20754900035,
+      "completion": "ok",
+      "f": "txn",
+      "gw": "gw-z2",
+      "invoke_t_ns": 20744581498,
+      "op": 2142,
+      "row": 1,
+      "row_reason": "success",
+      "wl": "append"
+    },
+    {
+      "complete_t_ns": 42226354839,
+      "completion": "ok",
+      "f": "txn",
+      "gw": "gw-z3",
+      "invoke_t_ns": 42218163400,
+      "op": 2523,
+      "row": 1,
+      "row_reason": "success",
+      "wl": "append"
+    },
+    {
+      "completion": "info",
+      "err": {
+        "class": "timeout",
+        "phase": "client-timeout",
+        "sqlstate": ""
+      },
+      "f": "txn",
+      "gw": "gw-z2",
+      "op": 2132,
+      "row": 9,
+      "row_reason": "client timeout after a write was sent (the write whose value later vanished)",
+      "wl": "append"
+    }
+  ],
+  "finding_id": "FND-D1-2e860fd2",
+  "harness_defect": false,
+  "harness_review": "\u00a76.2 review: every reviewed completion matches its recorded err and row (reads ok, row 1; the writes of the vanished values info, row 9: the client's P01 deadline expired after the write was sent). A misclassification could hide or invent this anomaly only if an ok read were not a successful read or a vanished value came from an ok/fail write; neither holds. Every fault of the run was confirmed and healed (run-end complete); the anomaly is between ok reads of the real build's history; the minimized plan reproduces it (REPRODUCED).",
+  "known_status_reasoning": "No match among the alpha-known-gap issues named in RESEARCH S50 (#1059 prune unhealthy cohort members, #1060 problem code when failover is unsafe); the contents of #1065 and #1126\u2013#1128 are not in the research register, so a match there is not excluded. Nothing was looked up online (AGENTS.md \u00a76).",
+  "minimized_run": "20261012T020127Z-D1-3-real-fb2e3778",
+  "oracle": {
+    "agree": false,
+    "artifact": "20261011T221506Z-D1-3-real-da159fa0.elle/",
+    "elle_classes": [
+      "G-single",
+      "G-single-realtime",
+      "incompatible-order"
+    ],
+    "elle_valid": "false",
+    "result": "oracle-disagreement",
+    "source": "checks.json stats.elle (cpcheck --elle-oracle)",
+    "triage": "elle-cli (validity, process and realtime passes, cpcheck --elle-oracle) also judges the history invalid and also reports incompatible-order on key 13, and in addition a G-single cycle (and G-single-realtime) whose anti-dependency edge starts at the read (t = 20.75 s) that observed value 35 \u2014 the unacknowledged write that later vanished. Adya's cycle classes presuppose one version order per object (S72); the reads of key 13 admit none (incompatible order), so an edge derived from that read depends on the order a tool chooses. CONTRACT \u00a710.3 defines C3's order as the longest read and reports non-prefix reads as incompatible-order; by that definition the history's class is incompatible-order and neither tool is wrong about validity. Labelled oracle-disagreement (\u00a710.11); no checker change (K4 forbids checker changes without a K2 case; this is not a C3 defect by \u00a710.3). LIMITATIONS: C3 does not derive cycles through keys whose reads are incompatible."
+  },
+  "origin_reasoning": "The visibility of a commit whose synchronous-replication wait was cancelled is documented PostgreSQL behavior (S61); the cancel is issued by Multigres' pooler when the request context ends, and the loss follows from a Multigres failover. Not reproduced on plain PostgreSQL streaming replication (R15), so the origin hypothesis is UNDETERMINED.",
+  "run_id": "20261011T221506Z-D1-3-real-da159fa0",
+  "seal_root": "7926f6cb4aeea04a8732c8e40aeba5d3671f083604b5db00b87bde490f3c5a96"
+}

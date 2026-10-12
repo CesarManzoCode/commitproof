@@ -1,0 +1,126 @@
+{
+  "sprint": "K4",
+  "contract_version": "1.0.6",
+  "evidence": "evidence/K4",
+  "result": "FAIL",
+  "criteria": [
+    {
+      "id": "K4.1",
+      "name": "Quorum table",
+      "result": "PASS",
+      "evidence": "quorum-table.json",
+      "sha256": "fad7b8d8da4a0c993d54f0ae7b134ebd097e06892f82ee5ee66163bf56c0e9d2",
+      "problems": [],
+      "details": [
+        "330 rows, 0 mismatches, coincident (n/N) [1/1 2/1 3/2 4/2 5/3 6/3 7/4 8/4 9/5]; AT_LEAST_2 coincides for n ∈ [3 4]"
+      ]
+    },
+    {
+      "id": "K4.2",
+      "name": "Campaign runs",
+      "result": "PASS",
+      "evidence": "results.json",
+      "sha256": "7ca6183acc63ee8bd65948d2b6a54a27b2256afa2b79176221ab49b481bbf134",
+      "problems": [],
+      "details": [
+        "C1: seed 1 PASS[]; seed 2 PASS[]; seed 3 PASS[]",
+        "C2: seed 1 PASS[]; seed 2 PASS[]; seed 3 FAIL[incompatible-order non-linearizable]",
+        "C3: seed 1 PASS[]; seed 2 PASS[]; seed 3 PASS[]",
+        "C4: seed 1 PASS[]; seed 2 PASS[]; seed 3 PASS[]",
+        "C5: seed 1 PASS[]; seed 2 PASS[]; seed 3 PASS[]",
+        "C6: seed 1 PASS[]; seed 2 PASS[]; seed 3 PASS[]",
+        "C7: seed 1 PASS[]; seed 2 PASS[]; seed 3 PASS[]"
+      ]
+    },
+    {
+      "id": "K4.3",
+      "name": "Mutant detection",
+      "result": "FAIL",
+      "evidence": "runs/",
+      "sha256": "",
+      "problems": [
+        "M2 via D2: 0/5 runs FAIL with lost-write, need 4"
+      ],
+      "details": [
+        "M1 via D1: DETECTED 5/5 with lost-write; mutant [FAIL[lost-write incompatible-order] FAIL[lost-write incompatible-order] FAIL[lost-write incompatible-order] FAIL[lost-write incompatible-order] FAIL[lost-write incompatible-order]]; real [FAIL[incompatible-order] PASS[] FAIL[incompatible-order] FAIL[incompatible-order] PASS[]]",
+        "M2 via D2: UNDETECTED 0/5 with lost-write; mutant [PASS[] PASS[] PASS[] PASS[] PASS[]]; real [PASS[] PASS[] PASS[] PASS[] PASS[]]",
+        "M4 via claims: DETECTED 5/5 with p1-not-rejected; mutant [FAIL[p1-not-rejected] FAIL[p1-not-rejected] FAIL[p1-not-rejected] FAIL[p1-not-rejected] FAIL[p1-not-rejected]]; real [PASS[] PASS[] PASS[] PASS[] PASS[]]"
+      ]
+    },
+    {
+      "id": "K4.4",
+      "name": "Mutant isolation",
+      "result": "PASS",
+      "evidence": "images.lock.json",
+      "sha256": "f1438b12fbf8bedc59a5a405521f0e18ffd90e07b7c1be14bcfbf651e3d4dfc9",
+      "problems": [],
+      "details": [
+        "M1: 1 binary(ies) linking [go/services/multipooler/internal/manager/consensus/sync_standby_manager.go] differ; the others equal the real build",
+        "M2: 1 binary(ies) linking [go/services/multipooler/internal/manager/rpc_manager.go] differ; the others equal the real build",
+        "M4: 2 binary(ies) linking [go/common/pgsettings/restricted.go] differ; the others equal the real build"
+      ]
+    },
+    {
+      "id": "K4.5",
+      "name": "Minimize and replay",
+      "result": "PASS",
+      "evidence": "runs/",
+      "sha256": "",
+      "problems": [],
+      "details": [
+        "20261011T215900Z-D1-1-M1-59a95336 → 20261012T003438Z-D1-1-M1-188571f5 (lost-write, 4 reductions) replays [FAIL FAIL FAIL FAIL FAIL]: 5/5 with lost-write → REPRODUCED",
+        "20261011T220118Z-D1-2-M1-8b22bb67 → 20261012T004915Z-D1-2-M1-7b2fd14a (lost-write, 3 reductions) replays [FAIL FAIL FAIL FAIL FAIL]: 5/5 with lost-write → REPRODUCED",
+        "20261011T220335Z-D1-3-M1-da159fa0 → 20261012T010513Z-D1-3-M1-67652f5e (lost-write, 4 reductions) replays [FAIL FAIL FAIL FAIL FAIL]: 5/5 with lost-write → REPRODUCED",
+        "20261011T220553Z-D1-4-M1-ad3fca18 → 20261012T011944Z-D1-4-M1-86972226 (lost-write, 3 reductions) replays [FAIL FAIL FAIL FAIL FAIL]: 5/5 with lost-write → REPRODUCED",
+        "20261011T220810Z-D1-5-M1-3319a30c → 20261012T013537Z-D1-5-M1-eec6dadf (lost-write, 4 reductions) replays [FAIL FAIL FAIL FAIL FAIL]: 5/5 with lost-write → REPRODUCED",
+        "20261011T221027Z-D1-1-real-59a95336 → 20261012T014955Z-D1-1-real-6625432a (incompatible-order, 2 reductions) replays [FAIL FAIL PASS FAIL FAIL]: 4/5 with incompatible-order → REPRODUCED",
+        "20261011T221506Z-D1-3-real-da159fa0 → 20261012T020127Z-D1-3-real-fb2e3778 (incompatible-order, 1 reductions) replays [FAIL FAIL FAIL FAIL PASS]: 4/5 with incompatible-order → REPRODUCED",
+        "20261011T221728Z-D1-4-real-ad3fca18 → 20261012T021947Z-D1-4-real-eb537f55 (incompatible-order, 2 reductions) replays [FAIL FAIL FAIL FAIL FAIL]: 5/5 with incompatible-order → REPRODUCED",
+        "20261011T225003Z-claims-1-M4-b2d2d093 → 20261011T225003Z-claims-1-M4-b2d2d093 (p1-not-rejected, 0 reductions) replays [FAIL FAIL FAIL FAIL FAIL]: 5/5 with p1-not-rejected → REPRODUCED",
+        "20261011T225048Z-claims-2-M4-ceb64287 → 20261011T225048Z-claims-2-M4-ceb64287 (p1-not-rejected, 0 reductions) replays [FAIL FAIL FAIL FAIL FAIL]: 5/5 with p1-not-rejected → REPRODUCED",
+        "20261011T225133Z-claims-3-M4-b7c8d86a → 20261011T225133Z-claims-3-M4-b7c8d86a (p1-not-rejected, 0 reductions) replays [FAIL FAIL FAIL FAIL FAIL]: 5/5 with p1-not-rejected → REPRODUCED",
+        "20261011T225218Z-claims-4-M4-705f45a9 → 20261011T225218Z-claims-4-M4-705f45a9 (p1-not-rejected, 0 reductions) replays [FAIL FAIL FAIL FAIL FAIL]: 5/5 with p1-not-rejected → REPRODUCED",
+        "20261011T225304Z-claims-5-M4-397bf01f → 20261011T225304Z-claims-5-M4-397bf01f (p1-not-rejected, 0 reductions) replays [FAIL FAIL FAIL FAIL FAIL]: 5/5 with p1-not-rejected → REPRODUCED",
+        "20261011T231036Z-C2-3-real-f4505b54 → 20261012T025629Z-C2-3-real-3fb018bf (incompatible-order, 2 reductions) replays [FAIL PASS FAIL FAIL FAIL]: 2/5 with incompatible-order → INTERMITTENT",
+        "14 FAIL runs minimized and replayed"
+      ]
+    },
+    {
+      "id": "K4.6",
+      "name": "Historical control",
+      "result": "PASS",
+      "evidence": "h1.json",
+      "sha256": "22050a4c174ae138dfc9faf6e665fa727c938f65b25e0ff9cef2075b31d99653",
+      "problems": [],
+      "details": [
+        "H1 NOT_DETECTED: 0/5 DH1 runs with lost-write; [PASS[] PASS[] PASS[] PASS[] PASS[]]"
+      ]
+    },
+    {
+      "id": "K4.7",
+      "name": "Findings triage",
+      "result": "PASS",
+      "evidence": "triage/",
+      "sha256": "",
+      "problems": [],
+      "details": [
+        "20261011T221027Z-D1-1-real-59a95336: FND-D1-fb8d0f8c SAFETY_VIOLATION G2 REPRODUCED critical",
+        "20261011T221506Z-D1-3-real-da159fa0: FND-D1-2e860fd2 SAFETY_VIOLATION G2 REPRODUCED critical",
+        "20261011T221728Z-D1-4-real-ad3fca18: FND-D1-a8eb9857 SAFETY_VIOLATION G2 REPRODUCED critical",
+        "20261011T231036Z-C2-3-real-f4505b54: FND-C2-2a534585 SAFETY_VIOLATION G2 INTERMITTENT critical",
+        "4 real-build FAIL runs, 4 triage records"
+      ]
+    },
+    {
+      "id": "K4.8",
+      "name": "CI-equivalent",
+      "result": "PASS",
+      "evidence": "commands.jsonl",
+      "sha256": "53166a4c452d77b75ff408156eec606fec7da7b46dd155912bd278cbe9eed555",
+      "problems": [],
+      "details": [
+        "ci-2: argv [\"make\" \"ci-unit\" \"ci-checkers\" \"ci-cluster-smoke\" \"ci-nemesis-smoke\" \"ci-mutant-smoke\"] exit 0; earlier attempts [ci exit 2]"
+      ]
+    }
+  ]
+}

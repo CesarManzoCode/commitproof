@@ -1,0 +1,203 @@
+{
+  "analysis": "While F1c cut the leader from its followers, orchestrators and etcd (not from the gateways), COMMITs on the leader waited for a synchronous standby. When a client gave up after P01 (10 s; completion info, \u00a76.2 row 9), the pooler cancelled the backend's statement on context end (go/services/multipooler/internal/pools/regular/regular_conn.go execWithContextCancel \u2192 handleContextCancellation); PostgreSQL ends a cancelled synchronous-replication wait by completing the commit locally (S61: 'The transaction has already committed locally, but might not have been replicated'). Other sessions on the old leader then read the unacknowledged values (ok reads). After multiorch failed over to a follower that never received them, the old leader was rewound and the values disappeared: two ok reads of one key are not prefixes of each other (C3 incompatible-order). No ok write is missing from the final reads (C1 valid) and no failed write is visible (C2 valid).",
+  "anomaly_class": "incompatible-order",
+  "checks_sha256": "f0e185d28ab4cc299cbd98c1227a03447cb9355d67717b185c5e3edf866a37a8",
+  "classes": [
+    "incompatible-order"
+  ],
+  "classification": {
+    "claim_level": "EXPLICIT",
+    "class": "SAFETY_VIOLATION",
+    "guarantee": "G2",
+    "known_status": "NEW",
+    "origin": "UNDETERMINED",
+    "reproducibility": "REPRODUCED",
+    "severity": "critical"
+  },
+  "completion_review": [
+    {
+      "complete_t_ns": 21498015055,
+      "completion": "ok",
+      "f": "txn",
+      "gw": "gw-z2",
+      "invoke_t_ns": 21487310282,
+      "op": 2438,
+      "row": 1,
+      "row_reason": "success",
+      "wl": "append"
+    },
+    {
+      "complete_t_ns": 40761211899,
+      "completion": "ok",
+      "f": "txn",
+      "gw": "gw-z2",
+      "invoke_t_ns": 40745609043,
+      "op": 2506,
+      "row": 1,
+      "row_reason": "success",
+      "wl": "append"
+    },
+    {
+      "complete_t_ns": 21492909519,
+      "completion": "ok",
+      "f": "txn",
+      "gw": "gw-z3",
+      "invoke_t_ns": 21489618765,
+      "op": 2442,
+      "row": 1,
+      "row_reason": "success",
+      "wl": "append"
+    },
+    {
+      "complete_t_ns": 40761211899,
+      "completion": "ok",
+      "f": "txn",
+      "gw": "gw-z2",
+      "invoke_t_ns": 40745609043,
+      "op": 2506,
+      "row": 1,
+      "row_reason": "success",
+      "wl": "append"
+    },
+    {
+      "complete_t_ns": 21590079459,
+      "completion": "ok",
+      "f": "txn",
+      "gw": "gw-z2",
+      "invoke_t_ns": 21587577976,
+      "op": 2449,
+      "row": 1,
+      "row_reason": "success",
+      "wl": "append"
+    },
+    {
+      "complete_t_ns": 40761211899,
+      "completion": "ok",
+      "f": "txn",
+      "gw": "gw-z2",
+      "invoke_t_ns": 40745609043,
+      "op": 2506,
+      "row": 1,
+      "row_reason": "success",
+      "wl": "append"
+    },
+    {
+      "complete_t_ns": 30592817265,
+      "completion": "ok",
+      "f": "txn",
+      "gw": "gw-z3",
+      "invoke_t_ns": 30591451223,
+      "op": 2456,
+      "row": 1,
+      "row_reason": "success",
+      "wl": "append"
+    },
+    {
+      "complete_t_ns": 40761211899,
+      "completion": "ok",
+      "f": "txn",
+      "gw": "gw-z2",
+      "invoke_t_ns": 40745609043,
+      "op": 2506,
+      "row": 1,
+      "row_reason": "success",
+      "wl": "append"
+    },
+    {
+      "complete_t_ns": 31644750547,
+      "completion": "ok",
+      "f": "txn",
+      "gw": "gw-z2",
+      "invoke_t_ns": 31638343919,
+      "op": 2468,
+      "row": 1,
+      "row_reason": "success",
+      "wl": "append"
+    },
+    {
+      "complete_t_ns": 45180441322,
+      "completion": "ok",
+      "f": "txn",
+      "gw": "gw-z1",
+      "invoke_t_ns": 45173019104,
+      "op": 3517,
+      "row": 1,
+      "row_reason": "success",
+      "wl": "append"
+    },
+    {
+      "completion": "info",
+      "err": {
+        "class": "timeout",
+        "phase": "client-timeout",
+        "sqlstate": ""
+      },
+      "f": "txn",
+      "gw": "gw-z3",
+      "op": 2400,
+      "row": 9,
+      "row_reason": "client timeout after a write was sent (the write whose value later vanished)",
+      "wl": "append"
+    },
+    {
+      "completion": "info",
+      "err": {
+        "class": "timeout",
+        "phase": "client-timeout",
+        "sqlstate": ""
+      },
+      "f": "txn",
+      "gw": "gw-z1",
+      "op": 2425,
+      "row": 9,
+      "row_reason": "client timeout after a write was sent (the write whose value later vanished)",
+      "wl": "append"
+    },
+    {
+      "completion": "info",
+      "err": {
+        "class": "timeout",
+        "phase": "client-timeout",
+        "sqlstate": ""
+      },
+      "f": "txn",
+      "gw": "gw-z1",
+      "op": 2430,
+      "row": 9,
+      "row_reason": "client timeout after a write was sent (the write whose value later vanished)",
+      "wl": "append"
+    },
+    {
+      "completion": "info",
+      "err": {
+        "class": "timeout",
+        "phase": "client-timeout",
+        "sqlstate": ""
+      },
+      "f": "txn",
+      "gw": "gw-z2",
+      "op": 2452,
+      "row": 9,
+      "row_reason": "client timeout after a write was sent (the write whose value later vanished)",
+      "wl": "append"
+    }
+  ],
+  "finding_id": "FND-D1-a8eb9857",
+  "harness_defect": false,
+  "harness_review": "\u00a76.2 review: every reviewed completion matches its recorded err and row (reads ok, row 1; the writes of the vanished values info, row 9: the client's P01 deadline expired after the write was sent). A misclassification could hide or invent this anomaly only if an ok read were not a successful read or a vanished value came from an ok/fail write; neither holds. Every fault of the run was confirmed and healed (run-end complete); the anomaly is between ok reads of the real build's history; the minimized plan reproduces it (REPRODUCED).",
+  "known_status_reasoning": "No match among the alpha-known-gap issues named in RESEARCH S50 (#1059 prune unhealthy cohort members, #1060 problem code when failover is unsafe); the contents of #1065 and #1126\u2013#1128 are not in the research register, so a match there is not excluded. Nothing was looked up online (AGENTS.md \u00a76).",
+  "minimized_run": "20261012T021947Z-D1-4-real-eb537f55",
+  "oracle": {
+    "records": [
+      "elle-validity-20261011T221728Z-D1-4-real-ad3fca18",
+      "elle-process-20261011T221728Z-D1-4-real-ad3fca18",
+      "elle-validity-xmx9g-20261011T221728Z-D1-4-real-ad3fca18"
+    ],
+    "result": "oracle-disagreement",
+    "source": "recorded elle-cli runs",
+    "triage": "elle-cli did not complete on this history: the validity pass and the process pass exited 255 with java.lang.OutOfMemoryError (default heap; the validity pass also with -Xmx9g, records elle-validity-\u2026, elle-process-\u2026, elle-validity-xmx9g-\u2026); cpcheck --elle-oracle exited 3. The oracle therefore does not confirm the C3 finding, which is labelled oracle-disagreement (\u00a710.11) with this reason. The same class from the same mechanism is confirmed by elle-cli's validity pass on D1 seed 1 and C2 seed 3 and reported by elle-cli on D1 seed 3."
+  },
+  "origin_reasoning": "The visibility of a commit whose synchronous-replication wait was cancelled is documented PostgreSQL behavior (S61); the cancel is issued by Multigres' pooler when the request context ends, and the loss follows from a Multigres failover. Not reproduced on plain PostgreSQL streaming replication (R15), so the origin hypothesis is UNDETERMINED.",
+  "run_id": "20261011T221728Z-D1-4-real-ad3fca18",
+  "seal_root": "45a068bff1408e07a3b68ad6f5c536cb12ae01b8d03f6660cdc51f6aca08c2b8"
+}

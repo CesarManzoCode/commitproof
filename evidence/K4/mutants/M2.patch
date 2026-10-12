@@ -1,0 +1,51 @@
+CommitProof mutant M2 — cohort-add-local-view (CONTRACT §9.2, ADR-0007)
+
+Intent: in MultipoolerManager.UpdateConsensusRule
+(go/services/multipooler/internal/manager/rpc_manager.go:405), for
+RULE_OPERATION_COHORT_ADD only, apply the incoming synchronous-standby policy
+(the new member is counted for acks) and return success without writing the
+rule (DoUpdateRule skipped). Every other operation is unchanged.
+Failure mode modelled: membership admitted from a local view instead of by
+consensus — a write acknowledged with the new member's participation is lost
+when a failover recruits from the old cohort (S41's 3→4 scenario; the leader-
+led ADD path of S24).
+Sources: S41, S24.
+Detection (§9.2): directed schedule D2; expected C1 lost-write.
+Function touched: UpdateConsensusRule (one function).
+
+diff --git a/go/services/multipooler/internal/manager/rpc_manager.go b/go/services/multipooler/internal/manager/rpc_manager.go
+index f9d71ed..221a4df 100644
+--- a/go/services/multipooler/internal/manager/rpc_manager.go
++++ b/go/services/multipooler/internal/manager/rpc_manager.go
+@@ -550,9 +550,28 @@ func (pm *MultipoolerManager) UpdateConsensusRule(ctx context.Context, operation
+ 			expectedOutgoingRule.GetCoordinatorTerm(),
+ 			expectedOutgoingRule.GetLeaderSubterm(),
+ 		)
+-	newPos, err := pm.DoUpdateRule(ctx, standbyUpdate)
+-	if err != nil {
+-		return nil, mterrors.Wrap(err, "failed to record replication config history")
++	var newPos *clustermetadatapb.PoolerPosition
++	if operation == multipoolermanagerdatapb.RuleOperation_RULE_OPERATION_COHORT_ADD {
++		// CommitProof mutant M2 (cohort-add-local-view): the new member is
++		// admitted from this pooler's local view. The incoming synchronous-
++		// standby policy is applied (the new member counts for acks) and
++		// success is returned without writing the rule (DoUpdateRule
++		// skipped): the recorded cohort, which a failover recruits from,
++		// never contains the member.
++		incoming, perr := commonconsensus.NewPolicyWithCohort(updatedStandbyIDs, pos.GetPosition().GetDecision().GetDurabilityPolicy())
++		if perr != nil {
++			return nil, mterrors.Wrap(perr, "failed to build the incoming policy")
++		}
++		ssm := consensus.NewSyncStandbyManager(pm.logger, pm.internalQueryService(), pm.serviceID)
++		if perr := ssm.SetPolicy(consensus.WithPriorRuleWritesDrained(ctx), incoming); perr != nil {
++			return nil, mterrors.Wrap(perr, "failed to apply the incoming policy")
++		}
++		newPos = pos
++	} else {
++		newPos, err = pm.DoUpdateRule(ctx, standbyUpdate)
++		if err != nil {
++			return nil, mterrors.Wrap(err, "failed to record replication config history")
++		}
+ 	}
+ 
+ 	// Slot-based replication (flag-gated): keep the per-follower physical slots in

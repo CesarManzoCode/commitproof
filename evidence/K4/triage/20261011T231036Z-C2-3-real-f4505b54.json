@@ -1,0 +1,112 @@
+{
+  "analysis": "While F1c cut the leader from its followers, orchestrators and etcd (not from the gateways), COMMITs on the leader waited for a synchronous standby. When a client gave up after P01 (10 s; completion info, \u00a76.2 row 9), the pooler cancelled the backend's statement on context end (go/services/multipooler/internal/pools/regular/regular_conn.go execWithContextCancel \u2192 handleContextCancellation); PostgreSQL ends a cancelled synchronous-replication wait by completing the commit locally (S61: 'The transaction has already committed locally, but might not have been replicated'). Other sessions on the old leader then read the unacknowledged values (ok reads). After multiorch failed over to a follower that never received them, the old leader was rewound and the values disappeared: two ok reads of one key are not prefixes of each other (C3 incompatible-order). No ok write is missing from the final reads (C1 valid) and no failed write is visible (C2 valid). The run also has C4 non-linearizable on registers 1 and 4 (G6): reads at ~30.8 s returned values that were later absent and superseded, by the same mechanism (register writes whose completion was info).",
+  "anomaly_class": "incompatible-order",
+  "checks_sha256": "2a520b5dca7e16367c5ab61676b72e70858204855ab235447f66c2d0f679d066",
+  "classes": [
+    "incompatible-order",
+    "non-linearizable"
+  ],
+  "classification": {
+    "claim_level": "EXPLICIT",
+    "class": "SAFETY_VIOLATION",
+    "guarantee": "G2",
+    "known_status": "NEW",
+    "origin": "UNDETERMINED",
+    "reproducibility": "INTERMITTENT",
+    "severity": "critical"
+  },
+  "completion_review": [
+    {
+      "complete_t_ns": 30739357359,
+      "completion": "ok",
+      "f": "txn",
+      "gw": "gw-z1",
+      "invoke_t_ns": 30732100800,
+      "op": 3298,
+      "row": 1,
+      "row_reason": "success",
+      "wl": "append"
+    },
+    {
+      "complete_t_ns": 41605926099,
+      "completion": "ok",
+      "f": "txn",
+      "gw": "gw-z1",
+      "invoke_t_ns": 41592516921,
+      "op": 3591,
+      "row": 1,
+      "row_reason": "success",
+      "wl": "append"
+    },
+    {
+      "complete_t_ns": 30739357359,
+      "completion": "ok",
+      "f": "txn",
+      "gw": "gw-z1",
+      "invoke_t_ns": 30732100800,
+      "op": 3298,
+      "row": 1,
+      "row_reason": "success",
+      "wl": "append"
+    },
+    {
+      "complete_t_ns": 41449879672,
+      "completion": "ok",
+      "f": "txn",
+      "gw": "gw-z2",
+      "invoke_t_ns": 41440037248,
+      "op": 3541,
+      "row": 1,
+      "row_reason": "success",
+      "wl": "append"
+    },
+    {
+      "completion": "info",
+      "err": {
+        "class": "timeout",
+        "phase": "client-timeout",
+        "sqlstate": ""
+      },
+      "f": "txn",
+      "gw": "gw-z1",
+      "op": 3259,
+      "row": 9,
+      "row_reason": "client timeout after a write was sent (the write whose value later vanished)",
+      "wl": "append"
+    },
+    {
+      "completion": "info",
+      "err": {
+        "class": "timeout",
+        "phase": "client-timeout",
+        "sqlstate": ""
+      },
+      "f": "txn",
+      "gw": "gw-z3",
+      "op": 3282,
+      "row": 9,
+      "row_reason": "client timeout after a write was sent (the write whose value later vanished)",
+      "wl": "append"
+    }
+  ],
+  "finding_id": "FND-C2-2a534585",
+  "harness_defect": false,
+  "harness_review": "\u00a76.2 review: every reviewed completion matches its recorded err and row (reads ok, row 1; the writes of the vanished values info, row 9: the client's P01 deadline expired after the write was sent). A misclassification could hide or invent this anomaly only if an ok read were not a successful read or a vanished value came from an ok/fail write; neither holds. Every fault of the run was confirmed and healed (run-end complete); the anomaly is between ok reads of the real build's history; the minimized plan reproduces it (INTERMITTENT).",
+  "known_status_reasoning": "No match among the alpha-known-gap issues named in RESEARCH S50 (#1059 prune unhealthy cohort members, #1060 problem code when failover is unsafe); the contents of #1065 and #1126\u2013#1128 are not in the research register, so a match there is not excluded. Nothing was looked up online (AGENTS.md \u00a76).",
+  "minimized_run": "20261012T025629Z-C2-3-real-3fb018bf",
+  "oracle": {
+    "elle_classes": [
+      "incompatible-order"
+    ],
+    "elle_valid": "false",
+    "records": [
+      "elle-validity-20261011T231036Z-C2-3-real-f4505b54",
+      "elle-process-20261011T231036Z-C2-3-real-f4505b54"
+    ],
+    "result": "confirmed",
+    "source": "recorded elle-cli validity pass (cpcheck --elle-oracle could not finish: the process pass exits 255 with OutOfMemoryError)"
+  },
+  "origin_reasoning": "The visibility of a commit whose synchronous-replication wait was cancelled is documented PostgreSQL behavior (S61); the cancel is issued by Multigres' pooler when the request context ends, and the loss follows from a Multigres failover. Not reproduced on plain PostgreSQL streaming replication (R15), so the origin hypothesis is UNDETERMINED.",
+  "run_id": "20261011T231036Z-C2-3-real-f4505b54",
+  "seal_root": "a5472bd9c4212b63ab9397b7ff513a05ba7efe81aeeed54c7da492d6b20c4969"
+}
