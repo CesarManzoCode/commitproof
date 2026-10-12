@@ -804,23 +804,12 @@ func checkTriage(e *Evidence, r *k4Run, t map[string]any) ([]string, string) {
 		bad("classes %s, checks.json %s", got, strings.Join(r.Classes, ","))
 	}
 	// Elle cross-check of C3 anomalies (§10.11): cpcheck --elle-oracle's
-	// verdict in checks.json stats.elle.
+	// result in checks.json stats.elle or, when cpcheck's three passes could
+	// not finish, recorded elle-cli runs of the validity pass. A finding the
+	// oracle does not confirm (other classes, or no answer) is labelled
+	// oracle-disagreement and triaged.
 	if r.Valid["C3"] == "false" {
-		var elle map[string]any
-		cs, _ := r.Checks["checkers"].([]any)
-		for _, x := range cs {
-			c, _ := x.(map[string]any)
-			if str(c, "id") == "C3" {
-				st, _ := c["stats"].(map[string]any)
-				elle, _ = st["elle"].(map[string]any)
-			}
-		}
-		o, _ := t["oracle"].(map[string]any)
-		if elle == nil {
-			bad("C3 anomalies without an elle-cli cross-check in checks.json")
-		} else if fmt.Sprint(o["agree"]) != fmt.Sprint(elle["agree"]) || str(o, "elle_valid") != fmt.Sprint(elle["valid"]) {
-			bad("oracle record %v differs from checks.json stats.elle %v", o, elle)
-		}
+		p = append(p, checkOracle(e, r, t)...)
 	}
 	c, _ := t["classification"].(map[string]any)
 	cl, g, lvl := str(c, "class"), str(c, "guarantee"), str(c, "claim_level")
@@ -911,4 +900,105 @@ func sabotageK47(dir string) error {
 func evalK48(e *Evidence) (string, []string, []string) {
 	r, _, p := exitOK(e, "ci", "make", "ci-unit", "ci-checkers", "ci-cluster-smoke", "ci-nemesis-smoke", "ci-mutant-smoke")
 	return "commands.jsonl", p, []string{fmt.Sprintf("argv %q exit %d", r.Argv, r.ExitCode)}
+}
+
+// elleName maps an Elle 0.2.7 anomaly name to CONTRACT §10.3's ("" for
+// informational names).
+func elleName(n string) string {
+	switch n {
+	case "empty-transaction-graph":
+		return ""
+	case "G1a":
+		return "g1a"
+	case "G1b":
+		return "g1b"
+	}
+	n = strings.Replace(n, "G-single-item", "G-single", 1)
+	return strings.Replace(n, "G-nonadjacent-item", "G-nonadjacent", 1)
+}
+
+func c3Classes(r *k4Run) []string {
+	var out []string
+	seen := map[string]bool{}
+	for _, a := range r.Anoms {
+		if a.Checker == "C3" && !seen[a.Class] {
+			seen[a.Class] = true
+			out = append(out, a.Class)
+		}
+	}
+	sort.Strings(out)
+	return out
+}
+
+// checkOracle verifies a triage record's oracle field against the evidence.
+func checkOracle(e *Evidence, r *k4Run, t map[string]any) []string {
+	var p []string
+	bad := func(f string, a ...any) { p = append(p, fmt.Sprintf("triage %s oracle: ", r.ID)+fmt.Sprintf(f, a...)) }
+	o, _ := t["oracle"].(map[string]any)
+	if o == nil {
+		return []string{fmt.Sprintf("triage %s: C3 anomalies without an oracle record", r.ID)}
+	}
+	result := str(o, "result")
+	var elle map[string]any
+	cs, _ := r.Checks["checkers"].([]any)
+	for _, x := range cs {
+		c, _ := x.(map[string]any)
+		if str(c, "id") == "C3" {
+			st, _ := c["stats"].(map[string]any)
+			elle, _ = st["elle"].(map[string]any)
+		}
+	}
+	if elle != nil {
+		agree := fmt.Sprint(elle["agree"]) == "true"
+		if fmt.Sprint(o["agree"]) != fmt.Sprint(agree) || str(o, "elle_valid") != fmt.Sprint(elle["valid"]) {
+			bad("%v differs from checks.json stats.elle %v", o, elle)
+		}
+		if want := map[bool]string{true: "confirmed", false: "oracle-disagreement"}[agree]; result != want {
+			bad("result %q, cpcheck's oracle says %s", result, want)
+		}
+		if !agree && strings.TrimSpace(str(o, "triage")) == "" {
+			bad("oracle-disagreement without its triage")
+		}
+		return p
+	}
+	recs := strListOf(o["records"])
+	if len(recs) == 0 {
+		return append(p, fmt.Sprintf("triage %s: no stats.elle in checks.json and no recorded elle-cli run", r.ID))
+	}
+	answered, confirmed := false, false
+	for _, name := range recs {
+		rec, out, err := e.Get(name)
+		if err != nil {
+			bad("%v", err)
+			continue
+		}
+		if !argvHas(rec, "commitproof/elle-oracle", r.ID+".elle") {
+			bad("record %s is not elle-cli on this run's export", name)
+			continue
+		}
+		var v map[string]any
+		if rec.ExitCode != 1 && rec.ExitCode != 0 || json.Unmarshal(out, &v) != nil || strings.Contains(strings.Join(rec.Argv, " "), "-process") {
+			continue // no answer from this run (e.g. OutOfMemoryError) or not the validity pass
+		}
+		answered = true
+		var got []string
+		for _, a := range strListOf(v["anomaly-types"]) {
+			if n := elleName(a); n != "" {
+				got = append(got, n)
+			}
+		}
+		sort.Strings(got)
+		confirmed = fmt.Sprint(v["valid?"]) == "false" && r.Valid["C3"] == "false" && strings.Join(got, ",") == strings.Join(c3Classes(r), ",")
+	}
+	want := "oracle-disagreement"
+	if answered && confirmed {
+		want = "confirmed"
+	}
+	if result != want {
+		bad("result %q, the recorded elle-cli runs give %s", result, want)
+	}
+	if want != "confirmed" && strings.TrimSpace(str(o, "triage")) == "" {
+		bad("oracle-disagreement without its triage")
+	}
+	return p
 }
