@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"regexp"
 	"sort"
 	"strings"
 
@@ -56,10 +57,11 @@ func K4() []Criterion {
 			Sabotage: "delete one triage record (or, with none, add one for a run that is not a real-build FAIL)",
 			Apply:    sabotageK47},
 		{ID: "K4.8", Name: "CI-equivalent", Eval: evalK48,
-			Sabotage: "replace the recorded exit code of `make ci-unit ci-checkers ci-cluster-smoke ci-nemesis-smoke ci-mutant-smoke` with 1",
+			Sabotage: "replace the recorded exit code of the latest `make ci-unit ci-checkers ci-cluster-smoke ci-nemesis-smoke ci-mutant-smoke` with 1",
 			Apply: func(dir string) error {
+				last := lastCI(LoadEvidence(dir))
 				return editRecords(dir, func(r map[string]any) {
-					if r["name"] == "ci" {
+					if r["name"] == last {
 						r["exit_code"] = 1
 					}
 				})
@@ -897,9 +899,34 @@ func sabotageK47(dir string) error {
 
 // ---- K4.8 ------------------------------------------------------------
 
+var ciAttempt = regexp.MustCompile(`^ci(-[0-9]+)?$`)
+
+// lastCI is the name of the latest recorded CI attempt ("ci", "ci-2", …).
+func lastCI(e *Evidence) string {
+	name := ""
+	for _, r := range e.Records {
+		if ciAttempt.MatchString(r.Name) {
+			name = r.Name
+		}
+	}
+	return name
+}
+
+// evalK48: the latest CI attempt ran every CI target and exited 0 (earlier
+// failed attempts stay recorded and are listed).
 func evalK48(e *Evidence) (string, []string, []string) {
-	r, _, p := exitOK(e, "ci", "make", "ci-unit", "ci-checkers", "ci-cluster-smoke", "ci-nemesis-smoke", "ci-mutant-smoke")
-	return "commands.jsonl", p, []string{fmt.Sprintf("argv %q exit %d", r.Argv, r.ExitCode)}
+	name := lastCI(e)
+	if name == "" {
+		return "commands.jsonl", []string{"no ci record"}, nil
+	}
+	r, _, p := exitOK(e, name, "make", "ci-unit", "ci-checkers", "ci-cluster-smoke", "ci-nemesis-smoke", "ci-mutant-smoke")
+	var earlier []string
+	for _, x := range e.Records {
+		if ciAttempt.MatchString(x.Name) && x.Name != name {
+			earlier = append(earlier, fmt.Sprintf("%s exit %d", x.Name, x.ExitCode))
+		}
+	}
+	return "commands.jsonl", p, []string{fmt.Sprintf("%s: argv %q exit %d; earlier attempts %v", name, r.Argv, r.ExitCode, earlier)}
 }
 
 // elleName maps an Elle 0.2.7 anomaly name to CONTRACT §10.3's ("" for

@@ -31,8 +31,6 @@ func num(v any) (int64, bool) {
 	return 0, false
 }
 
-type key struct{ wl, typ string }
-
 func summarize(dir string) (map[string]any, error) {
 	rep := history.VerifySeal(dir)
 	if !rep.Valid {

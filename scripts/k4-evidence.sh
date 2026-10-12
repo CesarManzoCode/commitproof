@@ -125,7 +125,15 @@ oracle() {
 
 ci() {
 	step 0 lint-workflow make lint-workflow
-	step 0 ci make ci-unit ci-checkers ci-cluster-smoke ci-nemesis-smoke ci-mutant-smoke
+	# A failed attempt stays recorded; the next one is ci-<n> (K4.8 reads the
+	# latest attempt).
+	local name=ci n=1 prev
+	while prev=$(recorded "$name") && [ -n "$prev" ]; do
+		[ "$prev" = 0 ] && { echo "== skip $name (recorded, exit 0)" >&2; return 0; }
+		n=$((n + 1))
+		name="ci-$n"
+	done
+	step 0 "$name" make ci-unit ci-checkers ci-cluster-smoke ci-nemesis-smoke ci-mutant-smoke
 }
 
 store() {
