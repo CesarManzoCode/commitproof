@@ -36,9 +36,14 @@ recorded() { # name → exit code of its record, or empty
 	[ -f "$EV/commands.jsonl" ] || return 0
 	grep -F "\"name\":\"$1\"" "$EV/commands.jsonl" | tail -n 1 | sed -n 's/.*"exit_code":\([0-9]*\).*/\1/p'
 }
-next() { # base → the first unrecorded name of base, base-2, base-3, …
+interrupted() { # name → true when its logs exist without a record (the host
+	# stopped while it ran); record-command.sh never overwrites those logs,
+	# so the next attempt takes the next name and they stay as they are
+	[ -z "$(recorded "$1")" ] && { [ -e "$EV/logs/$1.stdout" ] || [ -e "$EV/logs/$1.stderr" ]; }
+}
+next() { # base → the first unrecorded, uninterrupted name of base, base-2, base-3, …
 	local name=$1 n=1
-	while [ -n "$(recorded "$name")" ]; do n=$((n + 1)); name="$1-$n"; done
+	while [ -n "$(recorded "$name")" ] || interrupted "$name"; do n=$((n + 1)); name="$1-$n"; done
 	echo "$name"
 }
 line() { # extended regexp of record names → line number of the last such record, or 0
@@ -88,7 +93,7 @@ setup() {
 
 rebuild() {
 	local n=2
-	while [ -n "$(recorded "build-$n")" ]; do n=$((n + 1)); done
+	while [ -n "$(recorded "build-$n")" ] || interrupted "build-$n"; do n=$((n + 1)); done
 	step 0 "build-$n" make build
 	step 0 "images-build-$n" bin/commitproof images build
 	step 0 "images-verify-$n" bin/commitproof images verify
@@ -99,7 +104,10 @@ campaign() {
 	while :; do
 		prev=$(recorded "campaign-k4-$n")
 		case "$prev" in
-		"") break ;;
+		"")
+			interrupted "campaign-k4-$n" || break
+			echo "== campaign-k4-$n was interrupted (logs, no record); resuming as the next attempt" >&2
+			n=$((n + 1)) ;;
 		0 | 1) echo "== campaign complete (campaign-k4-$n exit $prev)" >&2; return 0 ;;
 		*) n=$((n + 1)) ;;
 		esac
@@ -114,7 +122,10 @@ d2p() {
 	while :; do
 		prev=$(recorded "campaign-k4-d2p-$n")
 		case "$prev" in
-		"") break ;;
+		"")
+			interrupted "campaign-k4-d2p-$n" || break
+			echo "== campaign-k4-d2p-$n was interrupted (logs, no record); resuming as the next attempt" >&2
+			n=$((n + 1)) ;;
 		0 | 1) echo "== D2′ campaign complete (campaign-k4-d2p-$n exit $prev)" >&2; return 0 ;;
 		*) n=$((n + 1)) ;;
 		esac
