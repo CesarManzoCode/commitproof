@@ -101,6 +101,25 @@ oracle() {
 		grep -q '"verdict":"FAIL"' "$c" || continue
 		python3 -c "import json,sys; c=json.load(open(sys.argv[1])); sys.exit(0 if any(x['id']=='C3' and x['valid'] is False for x in c['checkers']) else 1)" "$c" || continue
 		step any "oracle-$(basename "$d")" bin/cpcheck check "$d" --elle-oracle
+		# cpcheck runs three elle-cli passes (validity, process, realtime). If
+		# one fails (elle-cli exits 255 with OutOfMemoryError in its process-
+		# order cycle search on ~18 000-operation histories), the validity
+		# pass — the one that decides validity and the anomaly classes — is
+		# recorded on its own as the cross-check, and the process pass is
+		# recorded to show the failure (LIMITATIONS).
+		if [ "$(recorded "oracle-$(basename "$d")")" != 1 ] && [ -f "$d.elle/history.elle.json" ]; then
+			iso=$(grep -o '"iso":"[a-z-]*"' "$d/plan.json" | sort -u | sed 's/.*:"\(.*\)"/\1/')
+			model=serializable
+			[ "$iso" = repeatable-read ] && model=snapshot-isolation
+			step any "elle-validity-$(basename "$d")" docker run --rm --label com.docker.compose.project=commitproof --network none \
+				--read-only --tmpfs /tmp -v "./$d.elle:/h:ro" commitproof/elle-oracle:9c2a18b -m list-append -c "$model" \
+				--output json --cycle-search-timeout 10000 /h/history.elle.json
+			step any "elle-process-$(basename "$d")" docker run --rm --label com.docker.compose.project=commitproof --network none \
+				--read-only --tmpfs /tmp -v "./$d.elle:/h:ro" commitproof/elle-oracle:9c2a18b -m list-append -c "$model" \
+				--output json --cycle-search-timeout 10000 \
+				-a G0,G1a,G1b,G1c,G-single,G-nonadjacent,G2-item,incompatible-order,dirty-update,G0-process,G1c-process,G-single-process,G-nonadjacent-process,G2-item-process \
+				/h/history.elle.json
+		fi
 	done
 }
 
