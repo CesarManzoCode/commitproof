@@ -1,0 +1,9 @@
+{
+  "name": "k4-d2p",
+  "minimize_failures": true,
+  "replays": 5,
+  "entries": [
+    {"campaign": "D2p", "mutant": "M2", "seeds": [1, 2, 3, 4, 5]},
+    {"campaign": "D2p", "seeds": [1, 2, 3, 4, 5]}
+  ]
+}

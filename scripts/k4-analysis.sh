@@ -17,10 +17,19 @@ for d in "$EV"/runs/*/; do
 	dirs+=("$d")
 done
 [ "${#dirs[@]}" -gt 0 ] || { echo "k4-analysis: no primary run directories" >&2; exit 3; }
+# Each invocation covers the primary run directories present (the first, the
+# K4 matrix; later ones, e.g. D2′'s, are recorded as k3obs-<n>, k4obs-<n>).
+# Skipped when every such directory is already named in a record's argv.
 for name in k3obs k4obs; do
-	if grep -qF "\"name\":\"$name\"" "$EV/commands.jsonl" 2>/dev/null; then
-		echo "== skip $name (recorded)" >&2
+	new=0
+	for d in "${dirs[@]}"; do
+		grep -F "\"name\":\"$name" "$EV/commands.jsonl" 2>/dev/null | grep -qF "\"$d\"" || new=1
+	done
+	if [ "$new" = 0 ]; then
+		echo "== skip $name (recorded for these runs)" >&2
 		continue
 	fi
-	"${REC[@]}" "$name" -- go run "./internal/tools/$name" "${dirs[@]}" >/dev/null || exit 1
+	rec=$name n=1
+	while grep -qF "\"name\":\"$rec\"" "$EV/commands.jsonl" 2>/dev/null; do n=$((n + 1)); rec="$name-$n"; done
+	"${REC[@]}" "$rec" -- go run "./internal/tools/$name" "${dirs[@]}" >/dev/null || exit 1
 done
