@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Contract version | **1.0.6** (K0; K1 corrections: ADR-0019, ADR-0020, ADR-0021; K3 corrections: ADR-0022, ADR-0023; K4 clarifications and corrections: ADR-0024, ADR-0025, ADR-0026) |
+| Contract version | **1.0.7** (K0; K1 corrections: ADR-0019, ADR-0020, ADR-0021; K3 corrections: ADR-0022, ADR-0023; K4 clarifications and corrections: ADR-0024, ADR-0025, ADR-0026; K4 amendment approved by the owner: ADR-0027) |
 | Date | 2026-10-09 |
 | Owner | César Manzo (GitHub `CesarManzoCode`) |
 | System under test | Multigres, `github.com/multigres/multigres` @ `e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73` |
@@ -387,7 +387,7 @@ Every fault has: an injection mechanism, a **confirmation predicate** evaluated 
 | ID | Name | Patch (semantics) | Models | Source | Directed schedule | Expected detection |
 |---|---|---|---|---|---|---|
 | M1 | `sync-standby-cleared` | `postgresqlSyncStandbyManager.setStandbyNames` (sync_standby_manager.go:101) always writes `synchronous_standby_names = ''`: commits are acknowledged after local flush only ("ack before quorum") | durability not tied to quorum | S09, S25 | D1: steady W1+W4 load; at t=10 s apply F1c on the leader (gateways still reach it) for 30 s; heal; recovery; final reads | C1 lost-acked-writes (writes acked by the isolated old leader are rewound away) |
-| M2 | `cohort-add-local-view` | in `UpdateConsensusRule` (rpc_manager.go:405), for `COHORT_ADD` only: apply the incoming synchronous-standby policy (new member counted for acks) and return success **without** writing the rule (`DoUpdateRule` skipped) | membership admitted from a local view, not by consensus | S41, S24 | D2: F5a (wait for n4 admission predicate) → F3a on the other two followers → 40 s of W4/W1 load → F2a + F2b on the leader (F2b on the node F2a killed) → heal F3a → the old leader stays down 30 s, then F2b and F2a are healed (ADR-0024) → recovery → final reads | C1 (writes acked only by n4 are lost when failover recruits from the old cohort) |
+| M2 | `cohort-add-local-view` | in `UpdateConsensusRule` (rpc_manager.go:405), for `COHORT_ADD` only: apply the incoming synchronous-standby policy (new member counted for acks) and return success **without** writing the rule (`DoUpdateRule` skipped) | membership admitted from a local view, not by consensus | S41, S24 | D2′ (ADR-0027; identifier `D2p`): F5a (wait for n4 admission predicate) → F3a(base-follower:0), F3a(base-follower:1) held 40 s (W4/W1 load) → F2a(leader), F2b(same:3) (F2b on the node F2a killed) and F2b(n4) → heal both F3a → the old leader and n4 stay down 30 s → heals: F2b and F2a of the old leader, then F2b(n4) → recovery → final reads. Supersedes D2 (contract ≤ 1.0.6: the same without F2b(n4)), which multiorch defeats by recruiting every pooler of the shard and electing n4 (ADR-0027) | C1 (writes acked only by n4 are lost when a failover that cannot reach n4 recruits from the old cohort) |
 | M3 | `gateway-retry-any` | `classifyError` (pooler_gateway.go:96) returns buffer/retry for every error on PRIMARY targets, including errors after execution began | unsafe retry → duplicate execution | S14 | D3 (profile `buffered`): W1 autocommit-append variant and W4 at 2× pacing; F2a on the leader three times, 15 s apart | C3 `duplicate-elements` (an autocommit append executed twice); C2 `g1a` (a ledger insert reported to the client as failed with `23505` on the retry while the first execution's row is present) |
 | M4 | `guard-removed` | delete the `synchronous_commit` entry from the restricted-GUC map (`go/common/pgsettings/restricted.go:46`) | durability guard bypass | S11 | probe P1 | P1 expects `0A000`, mutant returns success |
 | M5 | `standby-slots-cleared` | `setSynchronizedStandbySlots` (pg_replication.go:600) always sets `synchronized_standby_slots = ''` | logical decoding runs ahead of the cohort | S13, S12 | D5: W7 consumer streaming; W4 load; F1b with A = {all followers' nodes}, B = everything else, for 20 s (commits block, become `info`); then F2a+F2b on the leader; heal; recovery | C7 phantom (consumer received changes that are absent from the final state) |
@@ -671,14 +671,14 @@ Negative controls: standard evidence sabotage per criterion (K2.6 is itself a ch
 | C1 failover-kill | W1, W3, W4 | F2a, F2b on leader or random node; F2c, F2d random |
 | C2 partition | W1, W2, W4 | F1a (leader/follower), F1b, F1c, F1d |
 | C3 pause | W1 (both isolation levels across runs), W2, W4 | F3a short/long on leader and follower; F3b on pooler/orch/gateway |
-| C4 membership | W1, W4 | F5a/F5b sequences; composite F5a→F2a(leader); composite F5a→F3a(followers)→F2a(leader) (D2 shape); F5b during F1a(leader) (F5b confirmed after F1a heals, ADR-0026) |
+| C4 membership | W1, W4 | F5a/F5b sequences; composite F5a→F2a(leader); composite F5a→F3a(followers)→F2a(leader) (the original D2's shape); F5b during F1a(leader) (F5b confirmed after F1a heals, ADR-0026) |
 | C5 slow-disk | W1, W4 | F4a on leader or follower, combined with F2a |
 | C6 rewind | W1, W4 | F2a(leader) then, 3–8 s after the new leader is observed, F2a(new leader); repeated twice per run |
 | C7 commit-cancel | W4 with session `statement_timeout` P19, W1 | F1b with A = {all followers' nodes}, B = everything else (commits block) for 15 s, then F2a on the leader; also client `CancelRequest` 1 s after `COMMIT` is sent |
 
 Fault counts, holds, role names and the directed schedules' seeds and heal timing are fixed by ADR-0024 (before any K4 run).
 
-**Deliverables.** Campaign driver; `minimize`, `replay`; mutant patches M1, M2, M4 and directed schedules D1, D2; probe suite P1 (`SET synchronous_commit = off` → expect `0A000`) and P2 (`ALTER SYSTEM SET work_mem = '8MB'` → expect rejection); `h1` profile and DH1; `quorumxcheck`; `evidence/K4/`.
+**Deliverables.** Campaign driver; `minimize`, `replay`; mutant patches M1, M2, M4 and directed schedules D1, D2′ (ADR-0027); probe suite P1 (`SET synchronous_commit = off` → expect `0A000`) and P2 (`ALTER SYSTEM SET work_mem = '8MB'` → expect rejection); `h1` profile and DH1; `quorumxcheck`; `evidence/K4/`.
 
 **Gate K4:**
 
@@ -686,7 +686,7 @@ Fault counts, holds, role names and the directed schedules' seeds and heal timin
 |---|---|
 | K4.1 Quorum table | 0 mismatches; table and coincidence list recorded |
 | K4.2 Campaign runs | each of C1–C7: ≥ 3 valid runs on `baseline`, seeds 1–3; every run checked; results recorded verbatim in `evidence/K4/results.json` whatever they are |
-| K4.3 Mutant detection | M1 via D1 and M2 via D2: DETECTED (≥ 4/5) with the expected class; M4 via P1: probe fails on M4 in 5/5 and passes on real in 5/5; real build results for D1/D2 (5 runs each) recorded |
+| K4.3 Mutant detection | M1 via D1 and M2 via D2′: DETECTED (≥ 4/5) with the expected class; M4 via P1: probe fails on M4 in 5/5 and passes on real in 5/5; real build results for D1/D2′ (5 runs each) recorded; the superseded D2's runs (contract 1.0.6) stay recorded (ADR-0027) |
 | K4.4 Mutant isolation | for each mutant image, binaries not containing the patched package have baseline hashes |
 | K4.5 Minimize and replay | every FAIL run of K4 (mutant or real) has a minimized plan and 5 replays with reproducibility classified (§11.1) |
 | K4.6 Historical control | H1 attempted with 5 runs of DH1 (or NOT_DEPLOYABLE with evidence of the derivation attempt); outcome classified |
