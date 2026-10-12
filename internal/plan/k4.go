@@ -139,11 +139,15 @@ func c4Shape(_ *rand.Rand, seed uint64) []stepSpec {
 	return []stepSpec{{Duration: c4Hold, Elements: add}, {Duration: c4Hold, Elements: rm}}
 }
 
-// c5Shape: three composites F4a(leader or follower) → F2a(leader).
+// c5Shape: three composites F4a(leader or follower) → F2a(leader). The slow
+// disk is healed before F2a's heal predicate waits for PostgreSQL's restart
+// (ADR-0028): with both on one node, crash recovery at 200 ms per write and
+// fsync cannot finish within P28.
 func c5Shape(r *rand.Rand, _ uint64) []stepSpec {
 	var out []stepSpec
 	for range 3 {
-		out = append(out, stepSpec{Duration: c5Hold, Elements: []Element{el("F4a", pick(r, "leader", "random-follower")), el("F2a", "leader")}})
+		out = append(out, stepSpec{Duration: c5Hold, Elements: []Element{el("F4a", pick(r, "leader", "random-follower")), el("F2a", "leader")},
+			Heals: []Heal{{Element: 0}, {Element: 1}}})
 	}
 	return out
 }
