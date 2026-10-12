@@ -319,10 +319,10 @@ func (d *Driver) Ensure(ctx context.Context, s Spec) (*Run, []*Run, bool, error)
 
 // TargetClass is the anomaly class a failing run is minimized and replayed
 // for: the directed schedule's expected class when the run shows it (§9.2:
-// D1/D2 → lost-write; the probe suite → p1-not-rejected), else the first
+// D1/D2/D2′ → lost-write; the probe suite → p1-not-rejected), else the first
 // class of the first invalid checker (checks.json order).
 func TargetClass(r *Run) string {
-	expected := map[string]string{"D1": "lost-write", "D2": "lost-write", "DH1": "lost-write", plan.ProbeSuite: "p1-not-rejected"}
+	expected := map[string]string{"D1": "lost-write", "D2": "lost-write", "D2p": "lost-write", "DH1": "lost-write", plan.ProbeSuite: "p1-not-rejected"}
 	if c, ok := expected[str(r.Manifest, "campaign")]; ok && r.has(c) {
 		return c
 	}

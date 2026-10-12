@@ -105,7 +105,7 @@ func has(r *run, c string) bool {
 
 // target is ADR-0024's target class.
 func target(r *run) string {
-	exp := map[string]string{"D1": "lost-write", "D2": "lost-write", "DH1": "lost-write", "claims": "p1-not-rejected"}
+	exp := map[string]string{"D1": "lost-write", "D2": "lost-write", "D2p": "lost-write", "DH1": "lost-write", "claims": "p1-not-rejected"}
 	if c, ok := exp[str(r.man, "campaign")]; ok && has(r, c) {
 		return c
 	}

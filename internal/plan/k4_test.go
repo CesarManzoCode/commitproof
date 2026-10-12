@@ -27,7 +27,7 @@ func kinds(s Step) string {
 }
 
 func TestK4CampaignsDeterministicAndRoundTrip(t *testing.T) {
-	for _, c := range []string{"C1", "C2", "C3", "C4", "C5", "C6", "C7", "D1", "D2", ProbeSuite} {
+	for _, c := range []string{"C1", "C2", "C3", "C4", "C5", "C6", "C7", "D1", "D2", "D2p", ProbeSuite} {
 		for seed := uint64(1); seed <= 5; seed++ {
 			a, b := mkplan(t, c, seed, "baseline"), mkplan(t, c, seed, "baseline")
 			ab, _ := a.Canonical()
@@ -60,6 +60,7 @@ func TestK4Workloads(t *testing.T) {
 		"C3": {WLAppend: 4, WLRegister: 2, WLLedger: 2},
 		"C4": {WLAppend: 4, WLLedger: 2}, "C5": {WLAppend: 4, WLLedger: 2}, "C6": {WLAppend: 4, WLLedger: 2},
 		"C7": {WLAppend: 4, WLLedger: 2}, "D1": {WLAppend: 4, WLLedger: 2}, "D2": {WLAppend: 4, WLLedger: 2},
+		"D2p":      {WLAppend: 4, WLLedger: 2},
 		ProbeSuite: {WLProbe: 3},
 	}
 	for c, w := range want {
@@ -112,7 +113,7 @@ func TestC7ClientOptions(t *testing.T) {
 	}
 }
 
-// The directed schedules are exactly §9.2 / §9.4 (ADR-0024).
+// The directed schedules are exactly §9.2 / §9.4 (ADR-0024, ADR-0027).
 func TestDirectedSchedules(t *testing.T) {
 	d1 := mkplan(t, "D1", 3, "baseline")
 	if d1.Directed != "D1" || len(d1.Steps) != 1 || kinds(d1.Steps[0]) != "F1c" || d1.Steps[0].Elements[0].Targets[0] != "leader" ||
@@ -132,6 +133,30 @@ func TestDirectedSchedules(t *testing.T) {
 	if want := []Heal{{2, 0}, {1, 0}, {4, 30_000}, {3, 0}}; !reflect.DeepEqual(s[0].Heals, want) {
 		t.Errorf("D2 heals %+v, want %+v", s[0].Heals, want)
 	}
+	// D2′ is D2 plus F2b(n4), healed last; nothing else differs (picks are
+	// drawn from a stream keyed by the campaign name and select nothing:
+	// none of D2's roles is random).
+	noPick := func(es []Element) []Element {
+		out := append([]Element{}, es...)
+		for i := range out {
+			out[i].Pick = 0
+		}
+		return out
+	}
+	for seed := uint64(1); seed <= 5; seed++ {
+		dp, d := mkplan(t, "D2p", seed, "baseline"), mkplan(t, "D2", seed, "baseline")
+		sp, sd := dp.Steps, d.Steps
+		if dp.Directed != "D2p" || len(sp) != 1 || kinds(sp[0]) != "F5a+F3a+F3a+F2a+F2b+F2b" || sp[0].DurationMS != 0 {
+			t.Fatalf("D2p seed %d: %+v", seed, sp)
+		}
+		if !reflect.DeepEqual(noPick(sp[0].Elements[:5]), noPick(sd[0].Elements)) || sp[0].Elements[5].Targets[0] != "n4" || sp[0].Elements[5].HoldMS != 0 ||
+			sp[0].DelayMS != sd[0].DelayMS || sp[0].After != sd[0].After || dp.DurationMS != d.DurationMS {
+			t.Errorf("D2p seed %d differs from D2 beyond F2b(n4): %+v vs %+v", seed, sp[0], sd[0])
+		}
+		if want := append(append([]Heal{}, sd[0].Heals...), Heal{5, 0}); !reflect.DeepEqual(sp[0].Heals, want) {
+			t.Errorf("D2p heals %+v, want %+v", sp[0].Heals, want)
+		}
+	}
 	dh1 := mkplan(t, "DH1", 1, "h1")
 	if len(dh1.Steps) != 1 || kinds(dh1.Steps[0]) != "F3a" || dh1.Steps[0].DurationMS != 120_000 || dh1.Steps[0].Elements[0].Targets[0] != "leader" {
 		t.Errorf("DH1: %+v", dh1.Steps)
@@ -144,6 +169,9 @@ func TestDirectedSchedules(t *testing.T) {
 	}
 	if p, err := Generate("D2", 1, "baseline", "D2"); err != nil || p.Directed != "D2" {
 		t.Errorf("D2 with --directed D2: %v", err)
+	}
+	if _, err := Generate("D2p", 1, "baseline", "D2"); err == nil {
+		t.Error("D2p accepted with --directed D2")
 	}
 }
 

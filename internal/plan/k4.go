@@ -36,11 +36,11 @@ const (
 // (§15 K4, C7).
 const C7CancelAfter = 1 * time.Second
 
-// Directed-schedule constants (§9.2, §9.4; ADR-0024).
+// Directed-schedule constants (§9.2, §9.4; ADR-0024, ADR-0027).
 const (
 	d1Hold        = 30 * time.Second  // D1: F1c "for 30 s"
-	d2Load        = 40 * time.Second  // D2: "40 s of W4/W1 load" with both followers paused
-	d2LeaderDown  = 30 * time.Second  // D2: leader kept down after the F3a heals (ADR-0024)
+	d2Load        = 40 * time.Second  // D2, D2′: "40 s of W4/W1 load" with both followers paused
+	d2LeaderDown  = 30 * time.Second  // D2, D2′: leader (D2′: and n4) kept down after the F3a heals
 	dh1Pause      = 120 * time.Second // DH1: "F3a on the leader's PostgreSQL for 120 s"
 	c2HoldShort   = 10 * time.Second
 	c2HoldLong    = 30 * time.Second
@@ -179,10 +179,12 @@ func d1Shape(_ *rand.Rand, _ uint64) []stepSpec {
 	return []stepSpec{{Duration: d1Hold, Elements: []Element{el("F1c", "leader")}}}
 }
 
-// D2 (§9.2, ADR-0024): F5a (admission predicate) → F3a on the other two
-// followers → 40 s of load → F2a + F2b on the leader → heal F3a; the
-// leader's pooler and PostgreSQL stay down for d2LeaderDown, then F2b and F2a
-// are healed (F2a: PostgreSQL restarts by itself once its pooler runs).
+// D2 (contract ≤ 1.0.6, ADR-0024), superseded by D2′ (ADR-0027) and kept
+// for the superseded matrix campaigns/k4.json: F5a (admission predicate) →
+// F3a on the other two followers → 40 s of load → F2a + F2b on the leader →
+// heal F3a; the leader's pooler and PostgreSQL stay down for d2LeaderDown,
+// then F2b and F2a are healed (F2a: PostgreSQL restarts by itself once its
+// pooler runs).
 func d2Shape(_ *rand.Rand, _ uint64) []stepSpec {
 	return []stepSpec{{
 		Duration: 0,
@@ -194,6 +196,25 @@ func d2Shape(_ *rand.Rand, _ uint64) []stepSpec {
 			el("F2b", "same:3"),
 		},
 		Heals: []Heal{{Element: 2}, {Element: 1}, {Element: 4, DelayMS: d2LeaderDown.Milliseconds()}, {Element: 3}},
+	}}
+}
+
+// D2′ (§9.2, ADR-0027; campaign "D2p"): D2 with n4's pooler killed with the
+// leader's (F2b(n4), element 5), so that the failover cannot recruit n4.
+// After the F3a heals, the old leader and n4 stay down for d2LeaderDown; then
+// the old leader's F2b and F2a are healed, then F2b(n4).
+func d2pShape(_ *rand.Rand, _ uint64) []stepSpec {
+	return []stepSpec{{
+		Duration: 0,
+		Elements: []Element{
+			el("F5a", "n4"),
+			el("F3a", "base-follower:0"),
+			held(el("F3a", "base-follower:1"), d2Load),
+			el("F2a", "leader"),
+			el("F2b", "same:3"),
+			el("F2b", "n4"),
+		},
+		Heals: []Heal{{Element: 2}, {Element: 1}, {Element: 4, DelayMS: d2LeaderDown.Milliseconds()}, {Element: 3}, {Element: 5}},
 	}}
 }
 
@@ -217,6 +238,7 @@ func k4Campaigns() map[string]Campaign {
 		"C7":  camp("C7", wlW1W4, c7Shape),
 		"D1":  camp("D1", wlW1W4, d1Shape),
 		"D2":  camp("D2", wlW1W4, d2Shape),
+		"D2p": camp("D2p", wlW1W4, d2pShape),
 		"DH1": camp("DH1", wlW1W4, dh1Shape),
 	}
 	c3 := cs["C3"]
@@ -225,7 +247,7 @@ func k4Campaigns() map[string]Campaign {
 	c7 := cs["C7"]
 	c7.c7 = true
 	cs["C7"] = c7
-	for _, d := range []string{"D1", "D2", "DH1"} {
+	for _, d := range []string{"D1", "D2", "D2p", "DH1"} {
 		c := cs[d]
 		c.Directed = d
 		cs[d] = c
