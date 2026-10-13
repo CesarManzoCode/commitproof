@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Contract version | **1.0.7** (K0; K1 corrections: ADR-0019, ADR-0020, ADR-0021; K3 corrections: ADR-0022, ADR-0023; K4 clarifications and corrections: ADR-0024, ADR-0025, ADR-0026; K4 amendment approved by the owner: ADR-0027) |
+| Contract version | **1.0.8** (K0; K1 corrections: ADR-0019, ADR-0020, ADR-0021; K3 corrections: ADR-0022, ADR-0023; K4 clarifications and corrections: ADR-0024, ADR-0025, ADR-0026; K4 amendment approved by the owner: ADR-0027; K5 corrections: ADR-0029) |
 | Date | 2026-10-09 |
 | Owner | César Manzo (GitHub `CesarManzoCode`) |
 | System under test | Multigres, `github.com/multigres/multigres` @ `e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73` |
@@ -83,7 +83,7 @@ Each item is labelled **FACT** (directly supported by a cited source), **INFEREN
 ### 2.6 CDC, pooler, gateway
 
 - **FACT F17.** Without the flag, only temporary slots are allowed and failover tears the stream down; with it, failover slots are synced and `synchronized_standby_slots` gates logical decoding on the cohort (S12, S13).
-- **FACT F18.** Gateway defaults: `--buffer-enabled=false`, `--statement-timeout=30s` (S14, S16).
+- **FACT F18.** Gateway defaults: `--buffer-enabled=false`, `--statement-timeout=30s`; with buffering enabled, a failover less than `--buffer-min-time-between-failovers` (1 min) after the previous buffering episode ended is not buffered (S14, S16; ADR-0029).
 - **FACT F19.** PostgreSQL acknowledges a commit whose sync-rep wait was cancelled, with a WARNING only (S61).
 
 ### 2.7 Existing verification and conventions
@@ -107,7 +107,7 @@ Claim levels: **EXPLICIT** (public product statement), **DESIGN** (repository de
 | G5 | Transactions at SERIALIZABLE through the primary port are serializable; at REPEATABLE READ they satisfy snapshot isolation; across failovers. | INFERRED | I2, S63 | C3, C5 | C1–C6, C12 |
 | G6 | Single-key autocommit reads and writes through the primary port are linearizable (no stale read from a superseded primary). | DESIGN | S28 | C4, C6 | C2, C3, C12 |
 | G7 | User assignment to `synchronous_commit` is rejected with SQLSTATE `0A000`; `ALTER SYSTEM` is rejected. | DESIGN | S11 | P (probes P1, P2; §10.12) | K4 probe suite |
-| G8 | With buffering enabled, a planned failover produces zero client-visible errors for single autocommit statements; explicit transactions open across the switch receive `40001` and nothing else. | DESIGN | S14, S15 | C9 availability | C8 |
+| G8 | With buffering enabled, a planned failover that the documented configuration buffers (not within `--buffer-min-time-between-failovers`, 1 min, of the previous buffering episode; S14, ADR-0029) produces zero client-visible errors for single autocommit statements; explicit transactions open across the switch receive `40001` and nothing else. | DESIGN | S14, S15 | C9 availability | C8 |
 | G9 | Gateway-tracked session settings and named prepared statements remain effective for the same client session after a failover. | DESIGN | S18 | C8 session-state | C9 |
 | G10 | LISTEN subscriptions resume after a failover: notifications sent after recovery are delivered. Loss during reconnect windows is expected and is measured, not judged. | DESIGN | S19 | C8 session-state | C9 |
 | G11 | A logical-replication consumer of a failover slot, reconnecting through the gateway after failover, observes every acknowledged committed change (no gap), no change that is absent from the final committed state (no phantom), and no duplicate beyond its last confirmed flush. | DESIGN | S12, S13 | C7 CDC | C10 |
@@ -158,7 +158,7 @@ Common flags for all Multigres components: `--topo-global-server-addresses=etcd:
 
 Bootstrap HEALTHY predicate (used by K1.4 and by every run): (a) exactly one pooler reports itself leader of a decided rule and all of n1–n3 report that rule; (b) the rule's cohort is exactly {n1, n2, n3}; (c) a write and a read-back succeed through each of gw-z1, gw-z2, gw-z3; (d) `SELECT multigres.version()` through gw-z1 reports the pinned commit. Observation of (a)/(b) uses pooler status RPCs (§5.6, observations only).
 
-The derivation of every flag from S03 is recorded in `deploy/DERIVATION.md` (created in K1): one line per flag with its S03 file:line, or the reason for divergence. Divergences allowed: service IDs, cells, addresses, volume layout, OpenTelemetry/pprof flags removed, `--hostname` set to the service name, and the process user of multipooler (it runs as the pgctld image's postgres user, uid 999, so both processes of a node share `/data`, `/certs` and `/backups`; ADR-0021).
+The derivation of every flag from S03 is recorded in `deploy/DERIVATION.md` (created in K1): one line per flag with its S03 file:line, or the reason for divergence. Divergences allowed: service IDs, cells, addresses, volume layout, OpenTelemetry/pprof flags removed, `--hostname` set to the service name, the process user of multipooler (it runs as the pgctld image's postgres user, uid 999, so both processes of a node share `/data`, `/certs` and `/backups`; ADR-0021), and the pg_hba template's `local all all` line set to `trust` instead of `peer` (`deploy/pg_hba_template.baseline.conf`: the pooler's per-user pools connect as the client's role over the Unix socket, which `peer` refuses for every role but the pooler's OS user; ADR-0029).
 
 ### 5.2 Images
 
@@ -202,7 +202,7 @@ After sealing, every file is chmod `0444` and the directory `0555`. `cpcheck ver
 | Profile | Difference from `baseline` | Used by |
 |---|---|---|
 | `baseline` | — | default everywhere |
-| `buffered` | gateways add `--buffer-enabled=true` (defaults otherwise, S14) | C8, mutant M3 |
+| `buffered` | gateways add `--buffer-enabled=true` (defaults otherwise, S14: window 10 s, size 1000, max failover duration 20 s, min time between failovers 1 min); the runner waits 60 s after the run-start HEALTHY evaluation before the workload starts, so that bootstrap's buffering episode cannot suppress the first failover's (ADR-0029) | C8, mutant M3 |
 | `slotless` | pooler and gateway `--enable-slot-based-replication=false` | K7 variant V2 |
 | `replica-port` | gateways add `--pg-replica-port=15433` | C13 |
 | `h1` | topology for historical commit `4bca1d5770a6…` with flags taken from that commit's `demo/k8s/*.yaml` (derivation file `deploy/DERIVATION-h1.md`); images from that commit's Dockerfiles, FROM-only; HEALTHY evaluated as (a') one node out of recovery, (b') its `synchronous_standby_names` names exactly the other two, both streaming, (c) as §5.1, (d') the containers run the locked h1 images — the commit has no rule model and no `multigres.version()` (ADR-0025) | H1 |
@@ -337,7 +337,7 @@ All tables live in database `postgres`, schema `cp`, created by the runner at ru
 | W4 | ledger | `cp.ledger(id bigint primary key, payload text not null)`; autocommit inserts with unique ids | C1, C2 |
 | W5 | session | per client session: `SET` of tracked GUCs (`application_name`, `search_path`, `work_mem`, `DateStyle`), `PREPARE`/protocol-level named statements, `SHOW`/`EXECUTE` probes before and after failover | C8 |
 | W6 | notify | one listener session per gateway, `LISTEN cp_chan`; notifier inserts a ledger row and `NOTIFY cp_chan, '<id>'` in the same transaction | C8 |
-| W7 | cdc | consumer connects through gw-z1 in logical replication mode, creates a non-temporary `pgoutput` slot with `failover=true` on publication `cp_pub` (tables `cp.ledger`, `cp.append`), streams, sends standby status updates every 1 s with `confirmed_flush` = last fully received commit LSN, reconnects after any error with the same slot name | C7 |
+| W7 | cdc | consumer connects through gw-z1 in logical replication mode, creates a non-temporary `pgoutput` slot with `failover=true` on publication `cp_pub` (tables `cp.ledger`, `cp.append`), streams, sends standby status updates every 1 s with `confirmed_flush` = last fully received commit LSN — the transaction's commit **end** LSN (pgoutput COMMIT `end_lsn`), from which PostgreSQL resumes without re-sending it (ADR-0029) — and reconnects after any error with the same slot name, starting at its last confirmed flush | C7 |
 | W8 | overload | role `cp_storm` opens connections at up to 4× `--connpool-global-capacity` (50, S03) and runs `select pg_sleep(0.5)`; role `cp_steady` runs W4 at P03 pacing | C9, C8 |
 
 ---
@@ -443,7 +443,7 @@ For a `non-linearizable` register key, classify the earliest offending read as `
 
 ### 10.7 C7 CDC
 
-Inputs: W7 stream events (each change carries table, key, commit LSN, xid, and the consumer's confirmed-flush LSN at receipt), W4/W1 histories, final reads.
+Inputs: W7 stream events (each change carries table, key, commit LSN — the transaction's commit end LSN, the position the consumer confirms, §7 W7, ADR-0029 —, xid, and the consumer's confirmed-flush LSN at receipt), W4/W1 histories, final reads.
 - `cdc-gap`: an `ok` committed change present in the final state never appears in the stream after the consumer has caught up to the final LSN.
 - `cdc-phantom`: a streamed change whose row/value is absent from the final state.
 - `cdc-duplicate`: a change delivered twice where the second delivery's commit LSN ≤ the consumer's confirmed flush at the time of the first delivery's acknowledgement (duplicates after the last confirmed flush are allowed: at-least-once).
@@ -461,7 +461,7 @@ Inputs: W7 stream events (each change carries table, key, commit LSN, xid, and t
 
 ### 10.10 C9 availability (observation + G8)
 
-Computes unavailability windows per gateway (first failed/unknown op after a fault to first `ok` after heal), latency percentiles per phase, error class counts. G8 check: in C8 (profile `buffered`, F6), any `fail`/`info` on single autocommit statements within the switchover window is `planned-failover-error`; explicit transactions may fail only with `40001`.
+Computes unavailability windows per gateway (first failed/unknown op after a fault to first `ok` after heal), latency percentiles per phase, error class counts. G8 check: in C8 (profile `buffered`, F6), any `fail`/`info` on single autocommit statements within a judged switchover window is `planned-failover-error`; explicit transactions may fail only with `40001`. A switchover window (F6 inject to healed) is judged if its injection is at least 60 s (`--buffer-min-time-between-failovers`, S14) after `max(end, start + 20 s)` (`--buffer-max-failover-duration`) of every earlier fault window of the run; the same errors in the other F6 windows are the observation `planned-failover-unbuffered` (documented timing guard, ADR-0029).
 
 ### 10.12 P probe checker (G7)
 

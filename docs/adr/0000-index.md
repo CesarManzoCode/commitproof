@@ -30,5 +30,6 @@
 | [0026](0026-f5b-during-f1a-confirmed-after-heal.md) | "F5b during F1a(leader)": F5b's confirmation is evaluated after F1a heals | Accepted (K4, contract 1.0.6) |
 | [0027](0027-d2-n4-unavailable.md) | D2′: D2 makes n4 unavailable when the failover recruits | Accepted by the owner (K4, contract 1.0.7) |
 | [0028](0028-c5-heals-slow-disk-first.md) | C5 heals the slow disk before waiting for PostgreSQL's restart | Accepted (K4; amends ADR-0024's C5 shape) |
+| [0029](0029-k5-contract-defects.md) | Three contract defects found before any K5 run: the buffer timing guard (G8), the LSN that W7 confirms (G11), W8's roles under S03's pg_hba (G12) | Accepted (K5, contract 1.0.8) |
 
 New ADRs continue the numbering. Each ADR: Context, Decision, Alternatives rejected, Consequences, Sources.
