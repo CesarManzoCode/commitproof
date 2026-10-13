@@ -398,7 +398,8 @@ func (f *pauseContainer) healed(ctx context.Context) (bool, []Probe, map[string]
 }
 
 // switchover is F6: docker kill -s TERM of the leader's pooler (graceful
-// drain), docker start after the plan's duration.
+// drain), docker start after the plan's duration, once the drained pooler
+// has exited.
 type switchover struct {
 	e      *Env
 	id     string
@@ -436,8 +437,29 @@ func (s *switchover) confirm(ctx context.Context) (bool, []Probe, map[string]any
 	return false, []Probe{pr}, det
 }
 
+// heal starts the drained pooler again. The TERM begins a graceful
+// shutdown that can outlast the plan's hold — the pooler waits for open
+// gRPC streams (gateways' LISTEN notification streams, replication streams)
+// up to its own shutdown timeout, ~30 s — and `docker start` on a container
+// that still runs does nothing, so the heal first waits, at most P28, until
+// the container has exited (each inspect recorded), then starts it. A
+// pooler that has not exited by then is started anyway: the start is a
+// no-op, the heal predicate fails and the run ends INVALID (fail-closed).
 func (s *switchover) heal(ctx context.Context) []Probe {
-	return []Probe{s.e.docker(ctx, s.id+"-heal-start", cmdTimeout, "start", Container("pooler-"+s.leader))}
+	var ps []Probe
+	end := time.Now().Add(params.HealConfirmDeadline)
+	for {
+		pr, st, err := s.e.inspectState(ctx, s.id+"-heal-wait-inspect", Container("pooler-"+s.leader))
+		ps = append(ps, pr)
+		if err != nil || !st.Running || !time.Now().Before(end) || ctx.Err() != nil {
+			break
+		}
+		select {
+		case <-ctx.Done():
+		case <-time.After(time.Second):
+		}
+	}
+	return append(ps, s.e.docker(ctx, s.id+"-heal-start", cmdTimeout, "start", Container("pooler-"+s.leader)))
 }
 
 // healed: the pooler container runs and /ready on 16000 answers 200.
