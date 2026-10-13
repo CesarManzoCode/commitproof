@@ -232,6 +232,12 @@ func runStorm(wctx context.Context, c map[string]any, rec *recorder, start, dead
 	role, _ := c["role"].(string)
 	var errMu sync.Mutex
 	var firstErr error
+	// One logical process per connection index across the phases: a process
+	// retired by an info completion in one phase stays retired (Jepsen).
+	ps := make([]*procs, n)
+	for k := range ps {
+		ps[k] = &procs{rec: rec, proc: base + int64(k)}
+	}
 	for pi, ph := range asList(c["phases_ms"]) {
 		pr := asList(ph)
 		if len(pr) != 2 {
@@ -263,7 +269,7 @@ func runStorm(wctx context.Context, c map[string]any, rec *recorder, start, dead
 				gw := plan.Gateways[k%3]
 				s := &workload.Session{GW: gw, AppName: fmt.Sprintf("commitproof-storm-%d", client), Timeout: opTimeout, User: role, Password: role}
 				defer s.Close()
-				p := &procs{rec: rec, proc: client}
+				p := ps[k]
 				conn := client*1000 + phase
 				for time.Now().Before(to) && wctx.Err() == nil {
 					v := map[string]any{"role": role, "phase": phase, "conn": conn}
