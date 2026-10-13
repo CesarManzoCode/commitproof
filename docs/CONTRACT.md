@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Contract version | **1.0.8** (K0; K1 corrections: ADR-0019, ADR-0020, ADR-0021; K3 corrections: ADR-0022, ADR-0023; K4 clarifications and corrections: ADR-0024, ADR-0025, ADR-0026; K4 amendment approved by the owner: ADR-0027; K5 corrections: ADR-0029) |
+| Contract version | **1.0.9** (K0; K1 corrections: ADR-0019, ADR-0020, ADR-0021; K3 corrections: ADR-0022, ADR-0023; K4 clarifications and corrections: ADR-0024, ADR-0025, ADR-0026; K4 amendment approved by the owner: ADR-0027; K5 corrections and clarifications: ADR-0029, ADR-0030) |
 | Date | 2026-10-09 |
 | Owner | César Manzo (GitHub `CesarManzoCode`) |
 | System under test | Multigres, `github.com/multigres/multigres` @ `e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73` |
@@ -281,7 +281,7 @@ All numbers used by gates live here. Implementations read them from one Go const
 | `t` | int | nanoseconds since run start, from the runner's monotonic clock |
 | `type` | enum | `invoke`, `ok`, `fail`, `info`, `nemesis`, `marker` |
 | `proc` | int | logical process; a process issues one op at a time; after an `info` completion the process is retired and the client continues as a new `proc` (Jepsen semantics) |
-| `client` | int | physical client index (0–9) |
+| `client` | int | physical client index (0–9 for P02's clients; the runner's recovery and final-read clients are 10–12; K5's workloads use the numbers of ADR-0030) |
 | `gw` | string | gateway used (`gw-z1`…) |
 | `wl` | enum | `append`, `register`, `bank`, `ledger`, `session`, `cdc`, `notify`, `probe`, `overload` |
 | `f` | string | operation (`txn`, `read`, `write`, `cas`, `transfer`, `read-all`, `insert`, …) |
@@ -335,10 +335,10 @@ All tables live in database `postgres`, schema `cp`, created by the runner at ru
 | W2 | register | `cp.reg(k int primary key, v bigint)`; autocommit `read`, `write`, `cas` (`update … where v = $old returning v`) | C4, C6 |
 | W3 | bank | `cp.acct(id int primary key, bal bigint not null)`; `transfer(from,to,amt)` and `read-all` in one transaction; `serializable` | C5 |
 | W4 | ledger | `cp.ledger(id bigint primary key, payload text not null)`; autocommit inserts with unique ids | C1, C2 |
-| W5 | session | per client session: `SET` of tracked GUCs (`application_name`, `search_path`, `work_mem`, `DateStyle`), `PREPARE`/protocol-level named statements, `SHOW`/`EXECUTE` probes before and after failover | C8 |
-| W6 | notify | one listener session per gateway, `LISTEN cp_chan`; notifier inserts a ledger row and `NOTIFY cp_chan, '<id>'` in the same transaction | C8 |
+| W5 | session | per client session: `SET` of tracked GUCs (`application_name`, `search_path`, `work_mem`, `DateStyle`), `PREPARE`/protocol-level named statements, `SHOW`/`EXECUTE` probes before and after failover; the session state is set up again on every new connection (ADR-0030) | C8 |
+| W6 | notify | one listener session per gateway, `LISTEN cp_chan`; notifier inserts a ledger row and `NOTIFY cp_chan, '<id>'` in the same transaction (one notifier per gateway; listeners wait in 1 s steps until 11 s after the workload; ADR-0030) | C8 |
 | W7 | cdc | consumer connects through gw-z1 in logical replication mode, creates a non-temporary `pgoutput` slot with `failover=true` on publication `cp_pub` (tables `cp.ledger`, `cp.append`), streams, sends standby status updates every 1 s with `confirmed_flush` = last fully received commit LSN — the transaction's commit **end** LSN (pgoutput COMMIT `end_lsn`), from which PostgreSQL resumes without re-sending it (ADR-0029) — and reconnects after any error with the same slot name, starting at its last confirmed flush | C7 |
-| W8 | overload | role `cp_storm` opens connections at up to 4× `--connpool-global-capacity` (50, S03) and runs `select pg_sleep(0.5)`; role `cp_steady` runs W4 at P03 pacing | C9, C8 |
+| W8 | overload | role `cp_storm` opens connections at up to 4× `--connpool-global-capacity` (50, S03) and runs `select pg_sleep(0.5)`; role `cp_steady` runs W4 at P03 pacing, each insert returning `pg_postmaster_start_time()` as the server identity (storm phases and roles: ADR-0030) | C9, C8 |
 
 ---
 
@@ -388,9 +388,9 @@ Every fault has: an injection mechanism, a **confirmation predicate** evaluated 
 |---|---|---|---|---|---|---|
 | M1 | `sync-standby-cleared` | `postgresqlSyncStandbyManager.setStandbyNames` (sync_standby_manager.go:101) always writes `synchronous_standby_names = ''`: commits are acknowledged after local flush only ("ack before quorum") | durability not tied to quorum | S09, S25 | D1: steady W1+W4 load; at t=10 s apply F1c on the leader (gateways still reach it) for 30 s; heal; recovery; final reads | C1 lost-acked-writes (writes acked by the isolated old leader are rewound away) |
 | M2 | `cohort-add-local-view` | in `UpdateConsensusRule` (rpc_manager.go:405), for `COHORT_ADD` only: apply the incoming synchronous-standby policy (new member counted for acks) and return success **without** writing the rule (`DoUpdateRule` skipped) | membership admitted from a local view, not by consensus | S41, S24 | D2′ (ADR-0027; identifier `D2p`): F5a (wait for n4 admission predicate) → F3a(base-follower:0), F3a(base-follower:1) held 40 s (W4/W1 load) → F2a(leader), F2b(same:3) (F2b on the node F2a killed) and F2b(n4) → heal both F3a → the old leader and n4 stay down 30 s → heals: F2b and F2a of the old leader, then F2b(n4) → recovery → final reads. Supersedes D2 (contract ≤ 1.0.6: the same without F2b(n4)), which multiorch defeats by recruiting every pooler of the shard and electing n4 (ADR-0027) | C1 (writes acked only by n4 are lost when a failover that cannot reach n4 recruits from the old cohort) |
-| M3 | `gateway-retry-any` | `classifyError` (pooler_gateway.go:96) returns buffer/retry for every error on PRIMARY targets, including errors after execution began | unsafe retry → duplicate execution | S14 | D3 (profile `buffered`): W1 autocommit-append variant and W4 at 2× pacing; F2a on the leader three times, 15 s apart | C3 `duplicate-elements` (an autocommit append executed twice); C2 `g1a` (a ledger insert reported to the client as failed with `23505` on the retry while the first execution's row is present) |
+| M3 | `gateway-retry-any` | `classifyError` (pooler_gateway.go:96) returns buffer/retry for every error on PRIMARY targets, including errors after execution began | unsafe retry → duplicate execution | S14 | D3 (profile `buffered`): W1 autocommit-append variant and W4 at 2× pacing; F2a on the leader three times, 15 s apart (each 15 s after the previous heal is confirmed, ADR-0030; the buffer's timing guard buffers at most the first, ADR-0029) | C3 `duplicate-elements` (an autocommit append executed twice); C2 `g1a` (a ledger insert reported to the client as failed with `23505` on the retry while the first execution's row is present) — either class detects (ADR-0030) |
 | M4 | `guard-removed` | delete the `synchronous_commit` entry from the restricted-GUC map (`go/common/pgsettings/restricted.go:46`) | durability guard bypass | S11 | probe P1 | P1 expects `0A000`, mutant returns success |
-| M5 | `standby-slots-cleared` | `setSynchronizedStandbySlots` (pg_replication.go:600) always sets `synchronized_standby_slots = ''` | logical decoding runs ahead of the cohort | S13, S12 | D5: W7 consumer streaming; W4 load; F1b with A = {all followers' nodes}, B = everything else, for 20 s (commits block, become `info`); then F2a+F2b on the leader; heal; recovery | C7 phantom (consumer received changes that are absent from the final state) |
+| M5 | `standby-slots-cleared` | `setSynchronizedStandbySlots` (pg_replication.go:600) always sets `synchronized_standby_slots = ''` | logical decoding runs ahead of the cohort | S13, S12 | D5: W7 consumer streaming; W4 load; F1b with A = {all followers' nodes}, B = everything else, for 20 s (commits block, become `info`); then F2a+F2b on the leader; heal: F1b first, the old leader's pooler 30 s later, then its PostgreSQL (ADR-0030); recovery | C7 phantom (consumer received changes that are absent from the final state) |
 
 ### 9.3 Rejected mutants (recorded so reviewers see the reasoning)
 
@@ -456,7 +456,7 @@ Inputs: W7 stream events (each change carries table, key, commit LSN — the tra
 ### 10.9 C8 session-state
 
 - G9: after the failover window (first successful op after a recorded leader change), `SHOW` of each tracked GUC equals the value set before; `EXECUTE` of each named prepared statement succeeds and returns the expected row. Violations `session-setting-lost`, `prepared-statement-lost`.
-- G10: notifications whose `NOTIFY` transaction committed `ok` **after** the listener's first successful op post-recovery must be delivered within 10 s (`notify-not-resumed`). Notifications in the reconnect window are counted (`notify-window-loss`, observation only).
+- G10: notifications whose `NOTIFY` transaction committed `ok` **after** the listener's first successful op post-recovery must be delivered within 10 s (`notify-not-resumed`). Notifications in the reconnect window are counted (`notify-window-loss`, observation only). Recovery from a fault window is the first `ok` write through the listener's gateway invoked after the window's last nemesis event (P06's notion); a NOTIFY whose 10 s window overlaps a fault window, or that no listener session was live for, is in a reconnect window (ADR-0030).
 - G12: during W8 storm, `cp_steady` ops: fraction `ok` ≥ 0.9 and no rule change attributable to the storm (no leader change during a storm window without a nemesis fault) — violations `fair-share-starvation`, `overload-failover`.
 
 ### 10.10 C9 availability (observation + G8)
@@ -541,7 +541,7 @@ GitHub Actions (public repo, `ubuntu-24.04`, 4 CPU/16 GB/14 GB SSD, 6 h/job, S88
 | `make ci-report` | regenerate the K6 reference report from the committed reference run and compare bytes | CI + local |
 | `make campaign-k4` / `campaign-k5` / `campaign-k7` | full matrices | **local only**, evidence recorded |
 
-Local evidence policy: every run cited by a claim is committed sealed under `evidence/` (compressed with zstd, still sealed by hash of the uncompressed files); total ≤ P25. Runs not cited are summarized in `evidence/K7/runs-index.json` with their seal roots; if the budget is exceeded, uncited runs are summarized only, and LIMITATIONS says they are not independently re-checkable without re-running.
+Local evidence policy: every run cited by a claim is committed sealed under `evidence/` (compressed with zstd, still sealed by hash of the uncompressed files); total ≤ P25. K5 commits in full only the runs a gate criterion reads in full (C10 primary runs for K5.3; the primary and minimized runs of every real-build failure), the others as stubs (ADR-0030). Runs not cited are summarized in `evidence/K7/runs-index.json` with their seal roots; if the budget is exceeded, uncited runs are summarized only, and LIMITATIONS says they are not independently re-checkable without re-running.
 
 ---
 
@@ -712,6 +712,8 @@ Fault counts, holds, role names and the directed schedules' seeds and heal timin
 | C10 cdc | `baseline` | W7, W4, W1 | F2a(leader), F2b(leader), F1c, F6 |
 | C11 overload | `baseline` | W8 | storm phases of 20 s; one run with no nemesis, one with F2a during a storm |
 
+Clients, fault counts, holds and order per run, the directed schedules' timing, the C8 completions, K5.3's observation and the storage of K5 runs are fixed by ADR-0030 (before any K5 run).
+
 **Deliverables.** W5–W8; C7–C9 checker completions; synthetic corpus additions with planted session/notify/CDC/availability anomalies; M3, M5 patches and D3, D5; `evidence/K5/`.
 
 **Gate K5:**
@@ -720,7 +722,7 @@ Fault counts, holds, role names and the directed schedules' seeds and heal timin
 |---|---|
 | K5.1 Synthetic validation | planted `session-setting-lost`, `prepared-statement-lost`, `notify-not-resumed`, `fair-share-starvation`, `overload-failover`, `planned-failover-error`, `cdc-gap`, `cdc-phantom`, `cdc-duplicate`, `cdc-order`: exact classification; clean histories valid; sabotage controls per rule |
 | K5.2 Campaign runs | C8, C9, C11: ≥ 3 valid runs each; C10: ≥ 5 valid runs; results recorded whatever they are |
-| K5.3 CDC slot failover precondition | in every C10 run, the slot is observed `failover = true` and synced on standbys (pg_replication_slots on followers, observation) before the first fault; otherwise the run is INVALID |
+| K5.3 CDC slot failover precondition | in every C10 run, the slot is observed `failover = true` and synced on standbys (pg_replication_slots on followers, observation) before the first fault; otherwise the run is INVALID. "Synced" means failover-ready: `synced` and not `temporary` and not invalidated (S12; ADR-0030) |
 | K5.4 Mutant detection | M3 via D3 (`buffered`) and M5 via D5: DETECTED (≥ 4/5) with the expected class; real-build results (5 runs each) recorded |
 | K5.5 Minimize/replay/triage | as K4.5 and K4.7 for every K5 FAIL |
 | K5.6 CI-equivalent | all `make ci-*` exit 0 |
