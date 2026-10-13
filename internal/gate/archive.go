@@ -190,3 +190,21 @@ func ArchiveRun(dir, archive string) error {
 	}
 	return zw.Close()
 }
+
+// ReadMaybeZstd reads path, decompressing it when it ends in ".zst".
+func ReadMaybeZstd(path string) ([]byte, error) {
+	b, err := os.ReadFile(path)
+	if err != nil || !strings.HasSuffix(path, ".zst") {
+		return b, err
+	}
+	zr, err := zstd.NewReader(nil)
+	if err != nil {
+		return nil, err
+	}
+	defer zr.Close()
+	out, err := zr.DecodeAll(b, nil)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", path, err)
+	}
+	return out, nil
+}

@@ -1,0 +1,1 @@
+{"campaign":"synthetic","contract_version":"1.0.9","generator":"internal/synth (cmd: go run ./internal/tools/gencorpus)","mutant":"none","plan_sha256":"7c678f5092271073c547c6e3dd028998f7b4233ba354e0820df51e5eb98ca407","profile":"buffered","run_id":"g8k-unbuffered-02","seed":5350287000184674685,"synthetic":true}

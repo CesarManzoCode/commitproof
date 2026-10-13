@@ -1,0 +1,1 @@
+{"campaign":"synthetic","contract_version":"1.0.9","generator":"internal/synth (cmd: go run ./internal/tools/gencorpus)","mutant":"none","plan_sha256":"3c60beb60cfd8249657053ec1d567be5bdaf87d8467db6af452eaa5383f19563","profile":"baseline","run_id":"w8k-starvation-02","seed":4960886319501389353,"synthetic":true}

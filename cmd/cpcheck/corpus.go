@@ -186,6 +186,13 @@ func cmdCorpus(args []string) int {
 			return summary(map[string]any{"command": "corpus", "error": err.Error()}, 3)
 		}
 		m["out"] = filepath.ToSlash(*out)
+		// The results file's hash ties a stored (e.g. compressed) copy of it
+		// to this recorded run (K5 evidence, P25).
+		b, err := os.ReadFile(filepath.Join(*out, "results.jsonl"))
+		if err != nil {
+			return summary(map[string]any{"command": "corpus", "error": err.Error()}, 3)
+		}
+		m["results_sha256"] = sha(b)
 	}
 	for _, er := range entries {
 		if len(er.diffs) > 0 {

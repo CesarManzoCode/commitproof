@@ -2,6 +2,7 @@ package gate
 
 import (
 	"bufio"
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -63,15 +64,15 @@ type K2Expected struct {
 
 var k2Checkers = []string{"C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9"}
 
-// LoadK2Results reads a results.jsonl.
+// LoadK2Results reads a results.jsonl, or its zstd-compressed copy
+// results.jsonl.zst (K5 evidence, P25).
 func LoadK2Results(path string) ([]K2Result, error) {
-	f, err := os.Open(path)
+	b, err := ReadMaybeZstd(path)
 	if err != nil {
 		return nil, err
 	}
-	defer f.Close()
 	var out []K2Result
-	sc := bufio.NewScanner(f)
+	sc := bufio.NewScanner(bytes.NewReader(b))
 	sc.Buffer(make([]byte, 1<<20), 1<<24)
 	for n := 1; sc.Scan(); n++ {
 		var r K2Result
@@ -210,20 +211,7 @@ func K2Failing(corpus, results string) (map[string]bool, []string) {
 // K2CheckSabotage compares a sabotage run's failing labels with
 // K2SabotageDeps[rule].
 func K2CheckSabotage(rule, corpus, results string) (string, []string) {
-	failing, p := K2Failing(corpus, results)
-	want := map[string]bool{}
-	for _, l := range K2SabotageDeps[rule] {
-		want[l] = true
-	}
-	var got []string
-	for l := range failing {
-		got = append(got, l)
-	}
-	sort.Strings(got)
-	if setOf(got) != setOf(K2SabotageDeps[rule]) {
-		p = append(p, fmt.Sprintf("sabotage %s fails labels {%s}, expected exactly {%s}", rule, setOf(got), setOf(K2SabotageDeps[rule])))
-	}
-	return fmt.Sprintf("%s: failing labels {%s}", rule, setOf(got)), p
+	return CheckSabotage(K2SabotageDeps, rule, corpus, results)
 }
 
 // ElleMap converts an Elle 0.2.7 anomaly name to the CONTRACT §10.3 name
