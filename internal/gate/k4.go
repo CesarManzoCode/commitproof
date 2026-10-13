@@ -484,6 +484,13 @@ func sabotageK44(dir string) error {
 
 // k4FollowUp verifies the minimization and replays of a FAIL primary run.
 func k4FollowUp(ix *k4Index, res map[string]map[string]any, dir string, orig *k4Run, allowStub bool) (string, []string) {
+	return followUp(ix, res, dir, orig, allowStub, allowStub)
+}
+
+// followUp is k4FollowUp with separate stub allowances for the minimized
+// run and for the replays (K5 commits a real-build failure's minimized run
+// in full and its replays as stubs, ADR-0030).
+func followUp(ix *k4Index, res map[string]map[string]any, dir string, orig *k4Run, allowStubMin, allowStubReplays bool) (string, []string) {
 	var p []string
 	class := k4TargetClass(orig)
 	j, err := readJSON(filepath.Join(dir, "runs", orig.ID+".minimize.json"))
@@ -501,7 +508,7 @@ func k4FollowUp(ix *k4Index, res map[string]map[string]any, dir string, orig *k4
 	case min != orig && (str(min.Manifest, k4CandidateOf) != orig.ID || !min.valid() || min.Verdict != "FAIL" || !min.has(class)):
 		p = append(p, fmt.Sprintf("%s: minimized run %s is not a FAIL candidate of it with %s", orig.ID, min.ID, class))
 	}
-	p = append(p, runOK(min, allowStub)...)
+	p = append(p, runOK(min, allowStubMin)...)
 	// The minimized plan derives from the original plan through the
 	// candidates' plans (reduced_from chain).
 	byPlan := map[string]*k4Run{}
@@ -536,7 +543,7 @@ func k4FollowUp(ix *k4Index, res map[string]map[string]any, dir string, orig *k4
 			p = append(p, fmt.Sprintf("%s: replay %d of %s missing or INVALID", orig.ID, i, min.ID))
 			continue
 		}
-		p = append(p, runOK(got, allowStub)...)
+		p = append(p, runOK(got, allowStubReplays)...)
 		p = append(p, checkResult(res, got)...)
 		if got.PlanSHA != min.PlanSHA {
 			p = append(p, fmt.Sprintf("%s: replay %s ran another plan", orig.ID, got.ID))
@@ -573,17 +580,18 @@ func strListOf(v any) []string {
 	return out
 }
 
-// k4Repro returns the reproducibility class K4.5 computes for a FAIL run.
-func k4Repro(e *Evidence, r *k4Run) string {
+// reproIn returns the reproducibility class K4.5 (K5.5) computes for a FAIL
+// run of a sprint's run index.
+func reproIn(e *Evidence, ix *k4Index, r *k4Run) string {
 	res, _ := k4Results(e)
-	_, p := k4FollowUp(e.k4(), res, e.Dir, r, true)
+	_, p := followUp(ix, res, e.Dir, r, true, true)
 	if len(p) > 0 {
 		return ""
 	}
 	j, _ := readJSON(filepath.Join(e.Dir, "runs", r.ID+".minimize.json"))
-	min := e.k4().ByID[str(j, "minimized_run")]
+	min := ix.ByID[str(j, "minimized_run")]
 	hits := 0
-	for _, x := range e.k4().Runs {
+	for _, x := range ix.Runs {
 		if min != nil && str(x.Manifest, k4ReplayOf) == min.ID && x.valid() && x.Verdict == "FAIL" && x.has(k4TargetClass(r)) {
 			hits++
 		}
@@ -806,7 +814,7 @@ func evalK47(e *Evidence) (string, []string, []string) {
 			p = append(p, "triage/"+ent.Name()+": "+err.Error())
 			continue
 		}
-		pp, d := checkTriage(e, r, t)
+		pp, d := checkTriage(e, e.k4(), r, t)
 		p = append(p, pp...)
 		details = append(details, d)
 	}
@@ -820,7 +828,7 @@ func evalK47(e *Evidence) (string, []string, []string) {
 	return "triage/", p, details
 }
 
-func checkTriage(e *Evidence, r *k4Run, t map[string]any) ([]string, string) {
+func checkTriage(e *Evidence, ix *k4Index, r *k4Run, t map[string]any) ([]string, string) {
 	var p []string
 	bad := func(f string, a ...any) { p = append(p, fmt.Sprintf("triage %s: ", r.ID)+fmt.Sprintf(f, a...)) }
 	if str(t, "run_id") != r.ID || str(t, "seal_root") != r.SealRoot || str(t, "checks_sha256") != r.ChecksSHA {
@@ -848,7 +856,7 @@ func checkTriage(e *Evidence, r *k4Run, t map[string]any) ([]string, string) {
 	if sv := k4Severity(cl, lvl, g); str(c, "severity") != sv {
 		bad("severity %s, §11.2 derives %s", str(c, "severity"), sv)
 	}
-	if rp := k4Repro(e, r); str(c, "reproducibility") != rp {
+	if rp := reproIn(e, ix, r); str(c, "reproducibility") != rp {
 		bad("reproducibility %s, K4.5 computes %q", str(c, "reproducibility"), rp)
 	}
 	anomaly := str(t, "anomaly_class")
@@ -856,7 +864,7 @@ func checkTriage(e *Evidence, r *k4Run, t map[string]any) ([]string, string) {
 		bad("anomaly class %s not in the run", anomaly)
 	}
 	j, _ := readJSON(filepath.Join(e.Dir, "runs", r.ID+".minimize.json"))
-	min := e.k4().ByID[str(j, "minimized_run")]
+	min := ix.ByID[str(j, "minimized_run")]
 	if min != nil {
 		if id := k4FindingID(r.campaign(), cl, g, anomaly, min.PlanSHA); str(t, "finding_id") != id {
 			bad("finding id %s, §11.3 gives %s", str(t, "finding_id"), id)

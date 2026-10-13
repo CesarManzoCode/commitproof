@@ -90,19 +90,23 @@ type k4Index struct {
 	Error error
 }
 
-func (e *Evidence) k4() *k4Index {
+func (e *Evidence) k4() *k4Index { return e.runIndex("k4", k4ContractOK) }
+
+// runIndex builds (once per evaluation) the index of evidence runs/ whose
+// manifests must carry a contract version contractOK accepts.
+func (e *Evidence) runIndex(key string, contractOK func(campaign, version string) bool) *k4Index {
 	if e.memo == nil {
 		e.memo = map[string]any{}
 	}
-	if ix, ok := e.memo["k4"].(*k4Index); ok {
+	if ix, ok := e.memo[key].(*k4Index); ok {
 		return ix
 	}
-	ix := buildK4Index(e)
-	e.memo["k4"] = ix
+	ix := buildRunIndex(e, contractOK)
+	e.memo[key] = ix
 	return ix
 }
 
-func buildK4Index(e *Evidence) *k4Index {
+func buildRunIndex(e *Evidence, contractOK func(campaign, version string) bool) *k4Index {
 	ix := &k4Index{ByID: map[string]*k4Run{}}
 	dir := filepath.Join(e.Dir, "runs")
 	ents, err := os.ReadDir(dir)
@@ -128,13 +132,13 @@ func buildK4Index(e *Evidence) *k4Index {
 			r.Problems = append(r.Problems, "run committed twice (full and stub)")
 		}
 		ix.ByID[id] = r
-		e.loadK4Run(r)
+		e.loadRun(r, contractOK)
 	}
 	sort.Slice(ix.Runs, func(i, j int) bool { return ix.Runs[i].ID < ix.Runs[j].ID })
 	return ix
 }
 
-func (e *Evidence) loadK4Run(r *k4Run) {
+func (e *Evidence) loadRun(r *k4Run, contractOK func(campaign, version string) bool) {
 	bad := func(f string, a ...any) { r.Problems = append(r.Problems, fmt.Sprintf(f, a...)) }
 	var err error
 	if r.Stub {
@@ -172,8 +176,8 @@ func (e *Evidence) loadK4Run(r *k4Run) {
 	if str(r.Manifest, "run_id") != r.ID {
 		bad("manifest run_id %q", str(r.Manifest, "run_id"))
 	}
-	if v := str(r.Manifest, "contract_version"); !k4ContractOK(r.campaign(), v) {
-		bad("contract version %s, not %s (or %s for a run other than D2′)", v, params.K4ContractVersion, params.K4RunsContractVersion)
+	if v := str(r.Manifest, "contract_version"); !contractOK(r.campaign(), v) {
+		bad("contract version %s is not one this sprint's runs carry", v)
 	}
 	if fmt.Sprint(r.Manifest["commitproof_dirty"]) != "false" || fmt.Sprint(r.Manifest["runner_image_dirty"]) != "false" {
 		bad("run from a dirty tree")
@@ -300,13 +304,18 @@ func (ix *k4Index) cell(campaign, profile, mutant, seed string) (*k4Run, []*k4Ru
 	return valid[0], all, []string{fmt.Sprintf("%s: %d valid runs (the campaign runs a cell until one is valid)", name, len(valid))}
 }
 
-// k4TargetClass is ADR-0024's target class (the same rule as
+// k4TargetClass is ADR-0024's and ADR-0030's target class (the same rule as
 // internal/campaign.TargetClass, restated here: cpgate imports neither the
 // campaign driver nor the plan generator, CONTRACT §5.3).
 func k4TargetClass(r *k4Run) string {
-	expected := map[string]string{"D1": "lost-write", "D2": "lost-write", k4D2Prime: "lost-write", "DH1": "lost-write", "claims": "p1-not-rejected"}
-	if c, ok := expected[r.campaign()]; ok && r.has(c) {
-		return c
+	expected := map[string][]string{"D1": {"lost-write"}, "D2": {"lost-write"}, k4D2Prime: {"lost-write"}, "DH1": {"lost-write"},
+		"claims": {"p1-not-rejected"},
+		// ADR-0030: D3 → duplicate-elements, else g1a; D5 → cdc-phantom.
+		"D3": {"duplicate-elements", "g1a"}, "D5": {"cdc-phantom"}}
+	for _, c := range expected[r.campaign()] {
+		if r.has(c) {
+			return c
+		}
 	}
 	if len(r.Classes) > 0 {
 		return r.Classes[0]
