@@ -151,3 +151,21 @@ func TestK5Shapes(t *testing.T) {
 		}
 	}
 }
+
+// A halved D3 plan keeps the 2×-paced clients' ops that fit (ADR-0030).
+func TestK5HalveKeepsClientPacing(t *testing.T) {
+	p := mkplan(t, "D3", 1, "buffered")
+	q, err := p.HalveDuration()
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, c := range q.Clients {
+		pacing := q.PacingMS
+		if c.PacingMS > 0 {
+			pacing = c.PacingMS
+		}
+		if want := int(q.DurationMS / pacing); len(c.Ops) != want {
+			t.Errorf("client %d (pacing %d ms): %d ops after halving, want %d", c.Client, pacing, len(c.Ops), want)
+		}
+	}
+}

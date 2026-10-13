@@ -155,16 +155,22 @@ func (p *Plan) KeepSteps(keep []int) (*Plan, error) {
 }
 
 // HalveDuration halves the workload duration and truncates every client's
-// operations to the rounds that fit (P03 pacing).
+// operations to the rounds that fit (P03 pacing, or the client's own pacing,
+// ADR-0030: D3's W4 at 2×). Clients without planned operations (W6
+// listeners, the W7 consumer, the W8 storm) follow the workload deadline at
+// run time (a storm phase past it is dropped).
 func (p *Plan) HalveDuration() (*Plan, error) {
 	q, err := p.derive("halve-duration")
 	if err != nil {
 		return nil, err
 	}
 	q.DurationMS = p.DurationMS / 2
-	n := int(q.DurationMS / p.PacingMS)
 	for i, c := range q.Clients {
-		if len(c.Ops) > n {
+		pacing := p.PacingMS
+		if c.PacingMS > 0 {
+			pacing = c.PacingMS
+		}
+		if n := int(q.DurationMS / pacing); len(c.Ops) > n {
 			c.Ops = append([]Op{}, c.Ops[:n]...)
 		}
 		q.Clients[i] = c

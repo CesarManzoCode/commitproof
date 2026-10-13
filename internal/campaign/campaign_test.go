@@ -46,3 +46,37 @@ func TestReproducibility(t *testing.T) {
 		}
 	}
 }
+
+// ADR-0024 and ADR-0030's minimization targets.
+func TestTargetClass(t *testing.T) {
+	for _, c := range []struct {
+		campaign string
+		classes  []string
+		want     string
+	}{
+		{"D1", []string{"incompatible-order", "lost-write"}, "lost-write"},
+		{"D3", []string{"g1a", "duplicate-elements"}, "duplicate-elements"},
+		{"D3", []string{"lost-write", "g1a"}, "g1a"},
+		{"D3", []string{"lost-write"}, "lost-write"},
+		{"D5", []string{"cdc-gap", "cdc-phantom"}, "cdc-phantom"},
+		{"C10", []string{"incompatible-order", "cdc-gap"}, "incompatible-order"},
+	} {
+		r := &Run{Manifest: map[string]any{"campaign": c.campaign}, Classes: c.classes}
+		if got := TargetClass(r); got != c.want {
+			t.Errorf("TargetClass(%s %v) = %q, want %q", c.campaign, c.classes, got, c.want)
+		}
+	}
+}
+
+// The committed matrices decode and their plans generate (§15 K4, K5).
+func TestMatricesRead(t *testing.T) {
+	for _, f := range []string{"k4.json", "k4-d2p.json", "k5.json"} {
+		m, err := ReadMatrix("../../campaigns/" + f)
+		if err != nil {
+			t.Fatalf("%s: %v", f, err)
+		}
+		if !m.MinimizeFailures || m.Replays != 5 {
+			t.Errorf("%s: minimize %v replays %d", f, m.MinimizeFailures, m.Replays)
+		}
+	}
+}
