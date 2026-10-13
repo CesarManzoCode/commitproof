@@ -1,0 +1,7 @@
+{"scope":"boot -1 (before the power-off)","failed_forwards":305,"by_question":{"_grpc_config.localhost TXT":8,"_grpc_config.pooler-nX TXT":297}}
+{"scope":"boot 0 (after the power-off)","failed_forwards":1172,"by_question":{"_grpc_config.localhost TXT":27,"_grpc_config.pooler-nX TXT":1126,"pooler-nX A":10,"pooler-nX AAAA":9}}
+{"scope":"D2p-1-M2 outage (kill 04:20:12Z ±60 s)","failed_forwards":1,"by_question":{"_grpc_config.pooler-nX TXT":1}}
+{"scope":"INVALID D2p-3-M2 replay attempt 20261012T233152Z","failed_forwards":45,"by_question":{"_grpc_config.pooler-nX TXT":45}}
+{"scope":"INVALID ci-3 nsmoke-f3a 20261013T003337Z","failed_forwards":30,"by_question":{"_grpc_config.pooler-nX TXT":30}}
+{"scope":"campaign-k4-d2p-2","failed_forwards":951,"by_question":{"_grpc_config.localhost TXT":21,"_grpc_config.pooler-nX TXT":911,"pooler-nX A":10,"pooler-nX AAAA":9}}
+{"scope":"ci-4","failed_forwards":121,"by_question":{"_grpc_config.localhost TXT":6,"_grpc_config.pooler-nX TXT":115}}

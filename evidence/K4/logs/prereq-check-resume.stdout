@@ -1,0 +1,27 @@
+PASS  R1    RAM available                 observed=MemAvailable=12.39 GiB (MemTotal=14.91 GiB)
+PASS  R2    CPU cores                     observed=12
+PASS  R3    Disk (Docker root)            observed=/var/lib/docker on /: 390.2 GiB free
+PASS  R4    Disk (repository)             observed=repository filesystem: 390.2 GiB free
+PASS  R5    No suspend during campaigns   observed=sleep.target=masked
+PASS  P1    docker                        observed=server 29.9.0; docker 1:29.9.0-1
+PASS  P2    docker-buildx                 observed=github.com/docker/buildx 0.38.0 0dbe87f36ed472fe36b6796c3f70b4210a731fc5; docker-buildx 0.38.0-1
+PASS  P3    docker-compose                observed=Docker Compose version 5.6.0; docker-compose 5.6.0-1
+PASS  P4    go                            observed=go version go1.27.2-X:nodwarf5 linux/amd64; go 2:1.27.2-1
+PASS  P5    git                           observed=git version 2.56.0
+PASS  P6    make                          observed=GNU Make 4.4.1
+PASS  P7    zstd                          observed=*** Zstandard CLI (64-bit) v1.5.7, by Yann Collet ***
+PASS  P8    jq                            observed=jq-1.8.2
+PASS  D1    Docker daemon running         observed=is-active=active; is-enabled=enabled
+PASS  D2    User in docker group          observed=groups: cesarmanzocode docker wheel; docker info without sudo: ok
+PASS  D3    cgroup v2                     observed=2
+PASS  D4    Storage driver                observed=overlay2
+PASS  D5    Bridge subnet free            observed=ip routes in 10.77.0.0/24: 0; docker networks using it: none
+PASS  K1    kernel module nf_tables       observed=loaded (lsmod); kernel 7.2.9-arch1-1
+PASS  K2    kernel module nft_compat      observed=loaded (lsmod); kernel 7.2.9-arch1-1
+PASS  K3    kernel module sch_netem       observed=loaded (lsmod); kernel 7.2.9-arch1-1
+PASS  K4    /dev/fuse                     observed=crw-rw-rw- 1 root root 10, 229 Oct 12 16:41 /dev/fuse
+PASS  G1    Repository                    observed=## main...origin/main [ahead 32]
+PASS  G2    Git identity                  observed=user.name=Manzo Olivares César Alberto; user.email=cesarmanzocode@gmail.com
+PASS  G3    Claude Code                   observed=2.1.296 (Claude Code)
+PASS  G4    GitHub remote                 observed=1 remote(s) configured
+{"command":"prereq-check","fail":0,"output":"evidence/K1/prereq.json","pass":26,"result":"PASS","total":26}

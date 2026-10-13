@@ -1,8 +1,8 @@
 {
   "sprint": "K4",
-  "contract_version": "1.0.6",
+  "contract_version": "1.0.7",
   "evidence": "evidence/K4",
-  "result": "FAIL",
+  "result": "PASS",
   "criteria": [
     {
       "id": "K4.1",
@@ -20,7 +20,7 @@
       "name": "Campaign runs",
       "result": "PASS",
       "evidence": "results.json",
-      "sha256": "7ca6183acc63ee8bd65948d2b6a54a27b2256afa2b79176221ab49b481bbf134",
+      "sha256": "5602f0255cac0f749a021b3bba20bba83d480bdee4fb665e6e86c1f53eb71cc3",
       "problems": [],
       "details": [
         "C1: seed 1 PASS[]; seed 2 PASS[]; seed 3 PASS[]",
@@ -35,16 +35,15 @@
     {
       "id": "K4.3",
       "name": "Mutant detection",
-      "result": "FAIL",
+      "result": "PASS",
       "evidence": "runs/",
       "sha256": "",
-      "problems": [
-        "M2 via D2: 0/5 runs FAIL with lost-write, need 4"
-      ],
+      "problems": [],
       "details": [
         "M1 via D1: DETECTED 5/5 with lost-write; mutant [FAIL[lost-write incompatible-order] FAIL[lost-write incompatible-order] FAIL[lost-write incompatible-order] FAIL[lost-write incompatible-order] FAIL[lost-write incompatible-order]]; real [FAIL[incompatible-order] PASS[] FAIL[incompatible-order] FAIL[incompatible-order] PASS[]]",
-        "M2 via D2: UNDETECTED 0/5 with lost-write; mutant [PASS[] PASS[] PASS[] PASS[] PASS[]]; real [PASS[] PASS[] PASS[] PASS[] PASS[]]",
-        "M4 via claims: DETECTED 5/5 with p1-not-rejected; mutant [FAIL[p1-not-rejected] FAIL[p1-not-rejected] FAIL[p1-not-rejected] FAIL[p1-not-rejected] FAIL[p1-not-rejected]]; real [PASS[] PASS[] PASS[] PASS[] PASS[]]"
+        "M2 via D2p: DETECTED 4/5 with lost-write; mutant [PASS[] FAIL[lost-write] FAIL[lost-write] FAIL[lost-write] FAIL[lost-write]]; real [PASS[] PASS[] PASS[] PASS[] PASS[]]",
+        "M4 via claims: DETECTED 5/5 with p1-not-rejected; mutant [FAIL[p1-not-rejected] FAIL[p1-not-rejected] FAIL[p1-not-rejected] FAIL[p1-not-rejected] FAIL[p1-not-rejected]]; real [PASS[] PASS[] PASS[] PASS[] PASS[]]",
+        "superseded D2 (ADR-0027, recorded): mutant M2 [PASS[] PASS[] PASS[] PASS[] PASS[]]; real [PASS[] PASS[] PASS[] PASS[] PASS[]]"
       ]
     },
     {
@@ -52,7 +51,7 @@
       "name": "Mutant isolation",
       "result": "PASS",
       "evidence": "images.lock.json",
-      "sha256": "f1438b12fbf8bedc59a5a405521f0e18ffd90e07b7c1be14bcfbf651e3d4dfc9",
+      "sha256": "093b0fd6c6ed0770cfd6aab5b8f9de55356cbefc797c209187cf12ca0a7c03cc",
       "problems": [],
       "details": [
         "M1: 1 binary(ies) linking [go/services/multipooler/internal/manager/consensus/sync_standby_manager.go] differ; the others equal the real build",
@@ -82,7 +81,11 @@
         "20261011T225218Z-claims-4-M4-705f45a9 → 20261011T225218Z-claims-4-M4-705f45a9 (p1-not-rejected, 0 reductions) replays [FAIL FAIL FAIL FAIL FAIL]: 5/5 with p1-not-rejected → REPRODUCED",
         "20261011T225304Z-claims-5-M4-397bf01f → 20261011T225304Z-claims-5-M4-397bf01f (p1-not-rejected, 0 reductions) replays [FAIL FAIL FAIL FAIL FAIL]: 5/5 with p1-not-rejected → REPRODUCED",
         "20261011T231036Z-C2-3-real-f4505b54 → 20261012T025629Z-C2-3-real-3fb018bf (incompatible-order, 2 reductions) replays [FAIL PASS FAIL FAIL FAIL]: 2/5 with incompatible-order → INTERMITTENT",
-        "14 FAIL runs minimized and replayed"
+        "20261012T042125Z-D2p-2-M2-f3aaba7f → 20261012T225039Z-D2p-2-M2-2f9705c6 (lost-write, 1 reductions) replays [FAIL PASS FAIL FAIL FAIL]: 4/5 with lost-write → REPRODUCED",
+        "20261012T042412Z-D2p-3-M2-029cd422 → 20261012T231339Z-D2p-3-M2-aeb8485c (lost-write, 1 reductions) replays [FAIL FAIL FAIL FAIL FAIL]: 5/5 with lost-write → REPRODUCED",
+        "20261012T042700Z-D2p-4-M2-a663d58e → 20261012T233929Z-D2p-4-M2-3de1ae22 (lost-write, 1 reductions) replays [FAIL FAIL FAIL FAIL FAIL]: 5/5 with lost-write → REPRODUCED",
+        "20261012T042948Z-D2p-5-M2-b2028f9f → 20261013T000246Z-D2p-5-M2-4e4494e9 (lost-write, 1 reductions) replays [FAIL FAIL FAIL FAIL FAIL]: 5/5 with lost-write → REPRODUCED",
+        "18 FAIL runs minimized and replayed"
       ]
     },
     {
@@ -116,10 +119,10 @@
       "name": "CI-equivalent",
       "result": "PASS",
       "evidence": "commands.jsonl",
-      "sha256": "53166a4c452d77b75ff408156eec606fec7da7b46dd155912bd278cbe9eed555",
+      "sha256": "f9796d336ad700392552fbb35f82371eb37280f330519d98cc7c75736d8170fb",
       "problems": [],
       "details": [
-        "ci-2: argv [\"make\" \"ci-unit\" \"ci-checkers\" \"ci-cluster-smoke\" \"ci-nemesis-smoke\" \"ci-mutant-smoke\"] exit 0; earlier attempts [ci exit 2]"
+        "ci-4: argv [\"make\" \"ci-unit\" \"ci-checkers\" \"ci-cluster-smoke\" \"ci-nemesis-smoke\" \"ci-mutant-smoke\"] exit 0; earlier attempts [ci exit 2 ci-2 exit 0 ci-3 exit 2]"
       ]
     }
   ]

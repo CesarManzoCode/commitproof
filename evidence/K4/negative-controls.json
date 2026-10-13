@@ -3,10 +3,9 @@
     "criterion": "K4.1",
     "sabotage": "flip upstream_sufficient of row (n=4, N=2, r=2) in the quorum table and update the recorded table hash",
     "failed": [
-      "K4.1",
-      "K4.3"
+      "K4.1"
     ],
-    "failed_only_target": false,
+    "failed_only_target": true,
     "target_problems": [
       "row [4 2 2]: upstream CheckSufficientRecruitment says true, the definitions false",
       "mismatches recorded 0 recomputed 1; (b)⇔(c) violations 0"
@@ -16,10 +15,9 @@
     "criterion": "K4.2",
     "sabotage": "flip the verdict of the first C1 run in results.json",
     "failed": [
-      "K4.2",
-      "K4.3"
+      "K4.2"
     ],
-    "failed_only_target": false,
+    "failed_only_target": true,
     "target_problems": [
       "results.json entry of 20261011T225737Z-C1-1-real-c0ce92da (FAIL  seal 3dacd50f stub false) differs from the run (PASS  seal 3dacd50f stub false)"
     ]
@@ -34,18 +32,16 @@
     "target_problems": [
       "results.json entry of 20261011T215900Z-D1-1-M1-59a95336 (FAIL lost-write,incompatible-order seal 58d54145 stub false) differs from the run (PASS  seal 58d54145 stub false)",
       "results.json entry of 20261011T220118Z-D1-2-M1-8b22bb67 (FAIL lost-write,incompatible-order seal 742060b5 stub false) differs from the run (PASS  seal 742060b5 stub false)",
-      "M1 via D1: 3/5 runs FAIL with lost-write, need 4",
-      "M2 via D2: 0/5 runs FAIL with lost-write, need 4"
+      "M1 via D1: 3/5 runs FAIL with lost-write, need 4"
     ]
   },
   {
     "criterion": "K4.4",
     "sabotage": "replace multiorch's hash in the M1 image entry of the lock copy",
     "failed": [
-      "K4.3",
       "K4.4"
     ],
-    "failed_only_target": false,
+    "failed_only_target": true,
     "target_problems": [
       "M1 /multigres/bin/multiorch: isolation record does not match the lock's hashes",
       "M1: /multigres/bin/multiorch does not link a patched package but differs from the real build"
@@ -55,10 +51,9 @@
     "criterion": "K4.5",
     "sabotage": "delete the last replay of the minimized run of the first FAIL run of M1 (archive and checks.json)",
     "failed": [
-      "K4.3",
       "K4.5"
     ],
-    "failed_only_target": false,
+    "failed_only_target": true,
     "target_problems": [
       "20261011T215900Z-D1-1-M1-59a95336: replay 5 of 20261012T003438Z-D1-1-M1-188571f5 missing or INVALID"
     ]
@@ -67,10 +62,9 @@
     "criterion": "K4.6",
     "sabotage": "replace the recorded H1 outcome in h1.json with another outcome",
     "failed": [
-      "K4.3",
       "K4.6"
     ],
-    "failed_only_target": false,
+    "failed_only_target": true,
     "target_problems": [
       "h1.json outcome \"DETECTED\", the runs give \"NOT_DETECTED\""
     ]
@@ -79,10 +73,9 @@
     "criterion": "K4.7",
     "sabotage": "delete one triage record (or, with none, add one for a run that is not a real-build FAIL)",
     "failed": [
-      "K4.3",
       "K4.7"
     ],
-    "failed_only_target": false,
+    "failed_only_target": true,
     "target_problems": [
       "real-build FAIL 20261011T221027Z-D1-1-real-59a95336 has no triage record"
     ]
@@ -91,12 +84,11 @@
     "criterion": "K4.8",
     "sabotage": "replace the recorded exit code of the latest `make ci-unit ci-checkers ci-cluster-smoke ci-nemesis-smoke ci-mutant-smoke` with 1",
     "failed": [
-      "K4.3",
       "K4.8"
     ],
-    "failed_only_target": false,
+    "failed_only_target": true,
     "target_problems": [
-      "ci-2 exited 1"
+      "ci-4 exited 1"
     ]
   }
 ]

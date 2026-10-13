@@ -1,0 +1,2267 @@
+[
+  {
+    "anchor": "2026-10-11T22:23:48.757699301Z",
+    "attempts": [
+      {
+        "orch": "z3",
+        "t_s": 15.379,
+        "term": 2,
+        "reason": "LeaderUnreachableByCohort",
+        "outcome": "success",
+        "new_primary": "n4",
+        "recruited": [
+          {
+            "pooler": "n2",
+            "lsn": "0/4000000"
+          },
+          {
+            "pooler": "n4",
+            "lsn": "0/4201B80"
+          },
+          {
+            "pooler": "n3",
+            "lsn": "0/4000000"
+          }
+        ],
+        "refused": [
+          {
+            "pooler": "n1",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.11:16100: connect: connection refused\""
+          }
+        ]
+      }
+    ],
+    "attempts_failed_insufficient_recruitment": 0,
+    "campaign": "D2",
+    "failed_attempts_before_first_success": 0,
+    "first_success": {
+      "new_primary": "n4",
+      "orch": "z3",
+      "reason": "LeaderUnreachableByCohort",
+      "t_s": 15.379,
+      "term": 2
+    },
+    "killed_leader": "n1",
+    "mutant": "M2",
+    "run": "20261011T222206Z-D2-1-M2-56b84e41",
+    "seed": 1
+  },
+  {
+    "anchor": "2026-10-11T22:26:36.629129331Z",
+    "attempts": [
+      {
+        "orch": "z3",
+        "t_s": 17.87,
+        "term": 2,
+        "reason": "LeaderUnreachableByCohort",
+        "outcome": "success",
+        "new_primary": "n4",
+        "recruited": [
+          {
+            "pooler": "n4",
+            "lsn": "0/42B2D10"
+          },
+          {
+            "pooler": "n3",
+            "lsn": "0/4000000"
+          },
+          {
+            "pooler": "n1",
+            "lsn": "0/4000000"
+          }
+        ],
+        "refused": [
+          {
+            "pooler": "n2",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.12:16100: connect: connection refused\""
+          }
+        ]
+      },
+      {
+        "orch": "z2",
+        "t_s": 17.886,
+        "term": 2,
+        "reason": "LeaderUnreachableByCohort",
+        "outcome": "failed",
+        "error": "recruitment failed: no nodes responded to recruit",
+        "recruited": [],
+        "refused": [
+          {
+            "pooler": "n2",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.12:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n4",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 2 from coordinator zone3_tfgtftdj, requested by zone2_zj82czz7"
+          },
+          {
+            "pooler": "n3",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 2 from coordinator zone3_tfgtftdj, requested by zone2_zj82czz7"
+          },
+          {
+            "pooler": "n1",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 2 from coordinator zone3_tfgtftdj, requested by zone2_zj82czz7"
+          }
+        ]
+      }
+    ],
+    "attempts_failed_insufficient_recruitment": 0,
+    "campaign": "D2",
+    "failed_attempts_before_first_success": 0,
+    "first_success": {
+      "new_primary": "n4",
+      "orch": "z3",
+      "reason": "LeaderUnreachableByCohort",
+      "t_s": 17.87,
+      "term": 2
+    },
+    "killed_leader": "n2",
+    "mutant": "M2",
+    "run": "20261011T222454Z-D2-2-M2-b344e176",
+    "seed": 2
+  },
+  {
+    "anchor": "2026-10-11T22:29:23.530203783Z",
+    "attempts": [
+      {
+        "orch": "z2",
+        "t_s": 15.558,
+        "term": 2,
+        "reason": "LeaderUnreachableByCohort",
+        "outcome": "success",
+        "new_primary": "n4",
+        "recruited": [
+          {
+            "pooler": "n3",
+            "lsn": "0/4000000"
+          },
+          {
+            "pooler": "n4",
+            "lsn": "0/42C2168"
+          },
+          {
+            "pooler": "n1",
+            "lsn": "0/4000000"
+          }
+        ],
+        "refused": [
+          {
+            "pooler": "n2",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.12:16100: connect: connection refused\""
+          }
+        ]
+      }
+    ],
+    "attempts_failed_insufficient_recruitment": 0,
+    "campaign": "D2",
+    "failed_attempts_before_first_success": 0,
+    "first_success": {
+      "new_primary": "n4",
+      "orch": "z2",
+      "reason": "LeaderUnreachableByCohort",
+      "t_s": 15.558,
+      "term": 2
+    },
+    "killed_leader": "n2",
+    "mutant": "M2",
+    "run": "20261011T222741Z-D2-3-M2-bee038ba",
+    "seed": 3
+  },
+  {
+    "anchor": "2026-10-11T22:32:13.048079386Z",
+    "attempts": [
+      {
+        "orch": "z2",
+        "t_s": 17.496,
+        "term": 2,
+        "reason": "LeaderUnreachableByCohort",
+        "outcome": "success",
+        "new_primary": "n4",
+        "recruited": [
+          {
+            "pooler": "n4",
+            "lsn": "0/42EA650"
+          },
+          {
+            "pooler": "n3",
+            "lsn": "0/4000000"
+          },
+          {
+            "pooler": "n1",
+            "lsn": "0/4000000"
+          }
+        ],
+        "refused": [
+          {
+            "pooler": "n2",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.12:16100: connect: connection refused\""
+          }
+        ]
+      }
+    ],
+    "attempts_failed_insufficient_recruitment": 0,
+    "campaign": "D2",
+    "failed_attempts_before_first_success": 0,
+    "first_success": {
+      "new_primary": "n4",
+      "orch": "z2",
+      "reason": "LeaderUnreachableByCohort",
+      "t_s": 17.496,
+      "term": 2
+    },
+    "killed_leader": "n2",
+    "mutant": "M2",
+    "run": "20261011T223029Z-D2-4-M2-9b5c849c",
+    "seed": 4
+  },
+  {
+    "anchor": "2026-10-11T22:34:53.78746616Z",
+    "attempts": [
+      {
+        "orch": "z2",
+        "t_s": 17.341,
+        "term": 2,
+        "reason": "LeaderUnreachableByCohort",
+        "outcome": "success",
+        "new_primary": "n4",
+        "recruited": [
+          {
+            "pooler": "n4",
+            "lsn": "0/42BD280"
+          },
+          {
+            "pooler": "n3",
+            "lsn": "0/4000000"
+          },
+          {
+            "pooler": "n1",
+            "lsn": "0/4000000"
+          }
+        ],
+        "refused": [
+          {
+            "pooler": "n2",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.12:16100: connect: connection refused\""
+          }
+        ]
+      }
+    ],
+    "attempts_failed_insufficient_recruitment": 0,
+    "campaign": "D2",
+    "failed_attempts_before_first_success": 0,
+    "first_success": {
+      "new_primary": "n4",
+      "orch": "z2",
+      "reason": "LeaderUnreachableByCohort",
+      "t_s": 17.341,
+      "term": 2
+    },
+    "killed_leader": "n2",
+    "mutant": "M2",
+    "run": "20261011T223310Z-D2-5-M2-7b36cafd",
+    "seed": 5
+  },
+  {
+    "anchor": "2026-10-11T22:37:33.281441947Z",
+    "attempts": [
+      {
+        "orch": "z3",
+        "t_s": 12.994,
+        "term": 2,
+        "reason": "LeaderUnreachableByCohort",
+        "outcome": "success",
+        "new_primary": "n2",
+        "recruited": [
+          {
+            "pooler": "n2",
+            "lsn": "0/42C5B78"
+          },
+          {
+            "pooler": "n4",
+            "lsn": "0/42C5B78"
+          },
+          {
+            "pooler": "n3",
+            "lsn": "0/4000000"
+          }
+        ],
+        "refused": [
+          {
+            "pooler": "n1",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.11:16100: connect: connection refused\""
+          }
+        ]
+      },
+      {
+        "orch": "z2",
+        "t_s": 13.192,
+        "term": 2,
+        "reason": "LeaderUnreachableByCohort",
+        "outcome": "failed",
+        "error": "recruitment failed: no nodes responded to recruit",
+        "recruited": [],
+        "refused": [
+          {
+            "pooler": "n1",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.11:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n3",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 2 from coordinator zone3_zkjtgrfc, requested by zone2_m6bfdngz"
+          },
+          {
+            "pooler": "n4",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 2 from coordinator zone3_zkjtgrfc, requested by zone2_m6bfdngz"
+          },
+          {
+            "pooler": "n2",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: recorded position 2.0 is not revoked by outgoing_rule 1.1 / revoked_below_term 2"
+          }
+        ]
+      },
+      {
+        "orch": "z1",
+        "t_s": 13.192,
+        "term": 2,
+        "reason": "LeaderUnreachableByCohort",
+        "outcome": "failed",
+        "error": "recruitment failed: no nodes responded to recruit",
+        "recruited": [],
+        "refused": [
+          {
+            "pooler": "n1",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.11:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n4",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 2 from coordinator zone3_zkjtgrfc, requested by zone1_kscq8fcv"
+          },
+          {
+            "pooler": "n3",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 2 from coordinator zone3_zkjtgrfc, requested by zone1_kscq8fcv"
+          },
+          {
+            "pooler": "n2",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: recorded position 2.0 is not revoked by outgoing_rule 1.1 / revoked_below_term 2"
+          }
+        ]
+      }
+    ],
+    "attempts_failed_insufficient_recruitment": 0,
+    "campaign": "D2",
+    "failed_attempts_before_first_success": 0,
+    "first_success": {
+      "new_primary": "n2",
+      "orch": "z3",
+      "reason": "LeaderUnreachableByCohort",
+      "t_s": 12.994,
+      "term": 2
+    },
+    "killed_leader": "n1",
+    "mutant": "real",
+    "run": "20261011T223551Z-D2-1-real-56b84e41",
+    "seed": 1
+  },
+  {
+    "anchor": "2026-10-11T22:40:17.822796428Z",
+    "attempts": [
+      {
+        "orch": "z2",
+        "t_s": 13.213,
+        "term": 2,
+        "reason": "LeaderUnreachableByCohort",
+        "outcome": "success",
+        "new_primary": "n4",
+        "recruited": [
+          {
+            "pooler": "n2",
+            "lsn": "0/42480E8"
+          },
+          {
+            "pooler": "n4",
+            "lsn": "0/42D19A8"
+          },
+          {
+            "pooler": "n3",
+            "lsn": "0/4000000"
+          }
+        ],
+        "refused": [
+          {
+            "pooler": "n1",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.11:16100: connect: connection refused\""
+          }
+        ]
+      }
+    ],
+    "attempts_failed_insufficient_recruitment": 0,
+    "campaign": "D2",
+    "failed_attempts_before_first_success": 0,
+    "first_success": {
+      "new_primary": "n4",
+      "orch": "z2",
+      "reason": "LeaderUnreachableByCohort",
+      "t_s": 13.213,
+      "term": 2
+    },
+    "killed_leader": "n1",
+    "mutant": "real",
+    "run": "20261011T223836Z-D2-2-real-b344e176",
+    "seed": 2
+  },
+  {
+    "anchor": "2026-10-11T22:43:17.823096283Z",
+    "attempts": [
+      {
+        "orch": "z3",
+        "t_s": 12.678,
+        "term": 2,
+        "reason": "LeaderUnreachableByCohort",
+        "outcome": "success",
+        "new_primary": "n4",
+        "recruited": [
+          {
+            "pooler": "n1",
+            "lsn": "0/4000000"
+          },
+          {
+            "pooler": "n4",
+            "lsn": "0/42C7438"
+          },
+          {
+            "pooler": "n3",
+            "lsn": "0/4000000"
+          }
+        ],
+        "refused": [
+          {
+            "pooler": "n2",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.12:16100: connect: connection refused\""
+          }
+        ]
+      },
+      {
+        "orch": "z2",
+        "t_s": 12.68,
+        "term": 2,
+        "reason": "LeaderUnreachableByCohort",
+        "outcome": "failed",
+        "error": "recruitment failed: no nodes responded to recruit",
+        "recruited": [],
+        "refused": [
+          {
+            "pooler": "n2",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.12:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n4",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 2 from coordinator zone3_qgcszrmn, requested by zone2_dxnb7bcw"
+          },
+          {
+            "pooler": "n1",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 2 from coordinator zone3_qgcszrmn, requested by zone2_dxnb7bcw"
+          },
+          {
+            "pooler": "n3",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 2 from coordinator zone3_qgcszrmn, requested by zone2_dxnb7bcw"
+          }
+        ]
+      },
+      {
+        "orch": "z1",
+        "t_s": 12.685,
+        "term": 2,
+        "reason": "LeaderUnreachableByCohort",
+        "outcome": "failed",
+        "error": "recruitment failed: no nodes responded to recruit",
+        "recruited": [],
+        "refused": [
+          {
+            "pooler": "n2",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.12:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n4",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 2 from coordinator zone3_qgcszrmn, requested by zone1_4km9swpx"
+          },
+          {
+            "pooler": "n1",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 2 from coordinator zone3_qgcszrmn, requested by zone1_4km9swpx"
+          },
+          {
+            "pooler": "n3",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 2 from coordinator zone3_qgcszrmn, requested by zone1_4km9swpx"
+          }
+        ]
+      }
+    ],
+    "attempts_failed_insufficient_recruitment": 0,
+    "campaign": "D2",
+    "failed_attempts_before_first_success": 0,
+    "first_success": {
+      "new_primary": "n4",
+      "orch": "z3",
+      "reason": "LeaderUnreachableByCohort",
+      "t_s": 12.678,
+      "term": 2
+    },
+    "killed_leader": "n2",
+    "mutant": "real",
+    "run": "20261011T224133Z-D2-3-real-bee038ba",
+    "seed": 3
+  },
+  {
+    "anchor": "2026-10-11T22:46:02.405363576Z",
+    "attempts": [
+      {
+        "orch": "z1",
+        "t_s": 12.226,
+        "term": 2,
+        "reason": "LeaderUnreachableByCohort",
+        "outcome": "success",
+        "new_primary": "n4",
+        "recruited": [
+          {
+            "pooler": "n4",
+            "lsn": "0/42F40E0"
+          },
+          {
+            "pooler": "n2",
+            "lsn": "0/4000000"
+          },
+          {
+            "pooler": "n3",
+            "lsn": "0/4000000"
+          }
+        ],
+        "refused": [
+          {
+            "pooler": "n1",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.11:16100: connect: connection refused\""
+          }
+        ]
+      },
+      {
+        "orch": "z3",
+        "t_s": 12.283,
+        "term": 2,
+        "reason": "LeaderUnreachableByCohort",
+        "outcome": "failed",
+        "error": "recruitment failed: no nodes responded to recruit",
+        "recruited": [],
+        "refused": [
+          {
+            "pooler": "n1",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.11:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n4",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 2 from coordinator zone1_4jfwjfwr, requested by zone3_qnjq29pj"
+          },
+          {
+            "pooler": "n2",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 2 from coordinator zone1_4jfwjfwr, requested by zone3_qnjq29pj"
+          },
+          {
+            "pooler": "n3",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 2 from coordinator zone1_4jfwjfwr, requested by zone3_qnjq29pj"
+          }
+        ]
+      }
+    ],
+    "attempts_failed_insufficient_recruitment": 0,
+    "campaign": "D2",
+    "failed_attempts_before_first_success": 0,
+    "first_success": {
+      "new_primary": "n4",
+      "orch": "z1",
+      "reason": "LeaderUnreachableByCohort",
+      "t_s": 12.226,
+      "term": 2
+    },
+    "killed_leader": "n1",
+    "mutant": "real",
+    "run": "20261011T224419Z-D2-4-real-9b5c849c",
+    "seed": 4
+  },
+  {
+    "anchor": "2026-10-11T22:48:57.299582888Z",
+    "attempts": [
+      {
+        "orch": "z2",
+        "t_s": 15.723,
+        "term": 2,
+        "reason": "LeaderUnreachableByCohort",
+        "outcome": "success",
+        "new_primary": "n4",
+        "recruited": [
+          {
+            "pooler": "n4",
+            "lsn": "0/4318920"
+          },
+          {
+            "pooler": "n3",
+            "lsn": "0/4000000"
+          },
+          {
+            "pooler": "n1",
+            "lsn": "0/4000000"
+          }
+        ],
+        "refused": [
+          {
+            "pooler": "n2",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.12:16100: connect: connection refused\""
+          }
+        ]
+      },
+      {
+        "orch": "z3",
+        "t_s": 15.758,
+        "term": 2,
+        "reason": "LeaderUnreachableByCohort",
+        "outcome": "failed",
+        "error": "recruitment failed: no nodes responded to recruit",
+        "recruited": [],
+        "refused": [
+          {
+            "pooler": "n2",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.12:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n4",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 2 from coordinator zone2_4qf8cqgk, requested by zone3_86mzmlkx"
+          },
+          {
+            "pooler": "n3",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 2 from coordinator zone2_4qf8cqgk, requested by zone3_86mzmlkx"
+          },
+          {
+            "pooler": "n1",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 2 from coordinator zone2_4qf8cqgk, requested by zone3_86mzmlkx"
+          }
+        ]
+      }
+    ],
+    "attempts_failed_insufficient_recruitment": 0,
+    "campaign": "D2",
+    "failed_attempts_before_first_success": 0,
+    "first_success": {
+      "new_primary": "n4",
+      "orch": "z2",
+      "reason": "LeaderUnreachableByCohort",
+      "t_s": 15.723,
+      "term": 2
+    },
+    "killed_leader": "n2",
+    "mutant": "real",
+    "run": "20261011T224710Z-D2-5-real-7b36cafd",
+    "seed": 5
+  },
+  {
+    "anchor": "2026-10-12T04:20:12.555856405Z",
+    "attempts": [
+      {
+        "orch": "z2",
+        "t_s": 18.188,
+        "term": 2,
+        "reason": "LeaderUnreachableByCohort",
+        "outcome": "failed",
+        "error": "recruitment failed: insufficient outgoing cohort recruitment: majority not satisfied: recruited 1 of 3 cohort poolers, need at least 2",
+        "recruited": [
+          {
+            "pooler": "n1",
+            "lsn": "0/4000000"
+          }
+        ],
+        "refused": [
+          {
+            "pooler": "n4",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.14:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n2",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.12:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n3",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 2 from coordinator zone1_c95mwxl9, requested by zone2_j6vqx44x"
+          }
+        ]
+      },
+      {
+        "orch": "z1",
+        "t_s": 18.188,
+        "term": 2,
+        "reason": "LeaderUnreachableByCohort",
+        "outcome": "failed",
+        "error": "recruitment failed: insufficient outgoing cohort recruitment: majority not satisfied: recruited 1 of 3 cohort poolers, need at least 2",
+        "recruited": [
+          {
+            "pooler": "n3",
+            "lsn": "0/4000000"
+          }
+        ],
+        "refused": [
+          {
+            "pooler": "n2",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.12:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n4",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.14:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n1",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 2 from coordinator zone2_j6vqx44x, requested by zone1_c95mwxl9"
+          }
+        ]
+      },
+      {
+        "orch": "z2",
+        "t_s": 18.817,
+        "term": 2,
+        "reason": "LeaderUnreachableByCohort",
+        "outcome": "failed",
+        "error": "recruitment failed: no nodes responded to recruit",
+        "recruited": [],
+        "refused": [
+          {
+            "pooler": "n4",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.14:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n2",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.12:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n3",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 2 from coordinator zone1_c95mwxl9, requested by zone2_j6vqx44x"
+          },
+          {
+            "pooler": "n1",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: coordinator zone2_j6vqx44x reused term 2 with a different coordinator_initiated_at"
+          }
+        ]
+      },
+      {
+        "orch": "z1",
+        "t_s": 18.817,
+        "term": 2,
+        "reason": "LeaderUnreachableByCohort",
+        "outcome": "failed",
+        "error": "recruitment failed: no nodes responded to recruit",
+        "recruited": [],
+        "refused": [
+          {
+            "pooler": "n2",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.12:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n4",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.14:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n3",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: coordinator zone1_c95mwxl9 reused term 2 with a different coordinator_initiated_at"
+          },
+          {
+            "pooler": "n1",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 2 from coordinator zone2_j6vqx44x, requested by zone1_c95mwxl9"
+          }
+        ]
+      },
+      {
+        "orch": "z2",
+        "t_s": 19.319,
+        "term": 2,
+        "reason": "LeaderUnreachableByCohort",
+        "outcome": "failed",
+        "error": "recruitment failed: no nodes responded to recruit",
+        "recruited": [],
+        "refused": [
+          {
+            "pooler": "n4",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.14:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n2",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.12:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n3",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 2 from coordinator zone1_c95mwxl9, requested by zone2_j6vqx44x"
+          },
+          {
+            "pooler": "n1",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: coordinator zone2_j6vqx44x reused term 2 with a different coordinator_initiated_at"
+          }
+        ]
+      },
+      {
+        "orch": "z1",
+        "t_s": 19.319,
+        "term": 2,
+        "reason": "LeaderUnreachableByCohort",
+        "outcome": "failed",
+        "error": "recruitment failed: no nodes responded to recruit",
+        "recruited": [],
+        "refused": [
+          {
+            "pooler": "n4",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.14:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n2",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.12:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n3",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: coordinator zone1_c95mwxl9 reused term 2 with a different coordinator_initiated_at"
+          },
+          {
+            "pooler": "n1",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 2 from coordinator zone2_j6vqx44x, requested by zone1_c95mwxl9"
+          }
+        ]
+      },
+      {
+        "orch": "z3",
+        "t_s": 19.491,
+        "term": 2,
+        "reason": "LeaderUnreachableByCohort",
+        "outcome": "failed",
+        "error": "recruitment failed: no nodes responded to recruit",
+        "recruited": [],
+        "refused": [
+          {
+            "pooler": "n4",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.14:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n2",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.12:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n1",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 2 from coordinator zone2_j6vqx44x, requested by zone3_lx8prnjh"
+          },
+          {
+            "pooler": "n3",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 2 from coordinator zone1_c95mwxl9, requested by zone3_lx8prnjh"
+          }
+        ]
+      },
+      {
+        "orch": "z2",
+        "t_s": 19.821,
+        "term": 2,
+        "reason": "LeaderUnreachableByCohort",
+        "outcome": "failed",
+        "error": "recruitment failed: no nodes responded to recruit",
+        "recruited": [],
+        "refused": [
+          {
+            "pooler": "n4",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.14:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n2",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.12:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n3",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 2 from coordinator zone1_c95mwxl9, requested by zone2_j6vqx44x"
+          },
+          {
+            "pooler": "n1",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: coordinator zone2_j6vqx44x reused term 2 with a different coordinator_initiated_at"
+          }
+        ]
+      },
+      {
+        "orch": "z1",
+        "t_s": 19.822,
+        "term": 2,
+        "reason": "LeaderUnreachableByCohort",
+        "outcome": "failed",
+        "error": "recruitment failed: no nodes responded to recruit",
+        "recruited": [],
+        "refused": [
+          {
+            "pooler": "n4",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.14:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n2",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.12:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n1",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 2 from coordinator zone2_j6vqx44x, requested by zone1_c95mwxl9"
+          },
+          {
+            "pooler": "n3",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: coordinator zone1_c95mwxl9 reused term 2 with a different coordinator_initiated_at"
+          }
+        ]
+      },
+      {
+        "orch": "z3",
+        "t_s": 19.992,
+        "term": 2,
+        "reason": "LeaderUnreachableByCohort",
+        "outcome": "failed",
+        "error": "recruitment failed: no nodes responded to recruit",
+        "recruited": [],
+        "refused": [
+          {
+            "pooler": "n2",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.12:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n4",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.14:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n1",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 2 from coordinator zone2_j6vqx44x, requested by zone3_lx8prnjh"
+          },
+          {
+            "pooler": "n3",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 2 from coordinator zone1_c95mwxl9, requested by zone3_lx8prnjh"
+          }
+        ]
+      },
+      {
+        "orch": "z2",
+        "t_s": 20.323,
+        "term": 2,
+        "reason": "LeaderUnreachableByCohort",
+        "outcome": "failed",
+        "error": "recruitment failed: no nodes responded to recruit",
+        "recruited": [],
+        "refused": [
+          {
+            "pooler": "n4",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.14:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n2",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.12:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n1",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: coordinator zone2_j6vqx44x reused term 2 with a different coordinator_initiated_at"
+          },
+          {
+            "pooler": "n3",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 2 from coordinator zone1_c95mwxl9, requested by zone2_j6vqx44x"
+          }
+        ]
+      },
+      {
+        "orch": "z1",
+        "t_s": 20.324,
+        "term": 2,
+        "reason": "LeaderUnreachableByCohort",
+        "outcome": "failed",
+        "error": "recruitment failed: no nodes responded to recruit",
+        "recruited": [],
+        "refused": [
+          {
+            "pooler": "n2",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.12:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n4",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.14:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n3",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: coordinator zone1_c95mwxl9 reused term 2 with a different coordinator_initiated_at"
+          },
+          {
+            "pooler": "n1",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 2 from coordinator zone2_j6vqx44x, requested by zone1_c95mwxl9"
+          }
+        ]
+      },
+      {
+        "orch": "z2",
+        "t_s": 20.825,
+        "term": 2,
+        "reason": "LeaderUnreachableByCohort",
+        "outcome": "failed",
+        "error": "recruitment failed: no nodes responded to recruit",
+        "recruited": [],
+        "refused": [
+          {
+            "pooler": "n2",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.12:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n4",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.14:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n1",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: coordinator zone2_j6vqx44x reused term 2 with a different coordinator_initiated_at"
+          },
+          {
+            "pooler": "n3",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 2 from coordinator zone1_c95mwxl9, requested by zone2_j6vqx44x"
+          }
+        ]
+      },
+      {
+        "orch": "z1",
+        "t_s": 20.826,
+        "term": 2,
+        "reason": "LeaderUnreachableByCohort",
+        "outcome": "failed",
+        "error": "recruitment failed: no nodes responded to recruit",
+        "recruited": [],
+        "refused": [
+          {
+            "pooler": "n4",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.14:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n2",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.12:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n1",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 2 from coordinator zone2_j6vqx44x, requested by zone1_c95mwxl9"
+          },
+          {
+            "pooler": "n3",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: coordinator zone1_c95mwxl9 reused term 2 with a different coordinator_initiated_at"
+          }
+        ]
+      },
+      {
+        "orch": "z2",
+        "t_s": 47.422,
+        "term": 3,
+        "reason": "LeaderResigned",
+        "outcome": "success",
+        "new_primary": "n4",
+        "recruited": [
+          {
+            "pooler": "n1",
+            "lsn": "0/4000000"
+          },
+          {
+            "pooler": "n4",
+            "lsn": "0/426CC70"
+          },
+          {
+            "pooler": "n3",
+            "lsn": "0/4000000"
+          },
+          {
+            "pooler": "n2",
+            "lsn": "0/426CC70"
+          }
+        ],
+        "refused": []
+      },
+      {
+        "orch": "z3",
+        "t_s": 48.539,
+        "term": 4,
+        "reason": "LeaderQuorumWritesStalled",
+        "outcome": "success",
+        "new_primary": "n1",
+        "recruited": [
+          {
+            "pooler": "n1",
+            "lsn": "0/4273640"
+          },
+          {
+            "pooler": "n3",
+            "lsn": "0/4273640"
+          },
+          {
+            "pooler": "n2",
+            "lsn": "0/42749A0"
+          }
+        ],
+        "refused": [
+          {
+            "pooler": "n4",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.14:16100: connect: connection refused\""
+          }
+        ]
+      }
+    ],
+    "attempts_failed_insufficient_recruitment": 2,
+    "campaign": "D2p",
+    "failed_attempts_before_first_success": 14,
+    "first_success": {
+      "new_primary": "n4",
+      "orch": "z2",
+      "reason": "LeaderResigned",
+      "t_s": 47.422,
+      "term": 3
+    },
+    "killed_leader": "n2",
+    "mutant": "M2",
+    "run": "20261012T041823Z-D2p-1-M2-f7ae8f1a",
+    "seed": 1
+  },
+  {
+    "anchor": "2026-10-12T04:23:12.919314262Z",
+    "attempts": [
+      {
+        "orch": "z2",
+        "t_s": -16.924,
+        "term": 2,
+        "reason": "LeaderQuorumWritesStalled",
+        "outcome": "failed",
+        "error": "recruitment failed: insufficient outgoing cohort recruitment: majority not satisfied: recruited 0 of 3 cohort poolers, need at least 2",
+        "recruited": [
+          {
+            "pooler": "n4",
+            "lsn": "0/4180A48"
+          }
+        ],
+        "refused": [
+          {
+            "pooler": "n2",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"
+          },
+          {
+            "pooler": "n3",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"
+          },
+          {
+            "pooler": "n1",
+            "error": "rpc error: code = Unavailable desc = error reading from server: EOF"
+          }
+        ]
+      },
+      {
+        "orch": "z1",
+        "t_s": -13.851,
+        "term": 2,
+        "reason": "LeaderQuorumWritesStalled",
+        "outcome": "failed",
+        "error": "recruitment failed: no nodes responded to recruit",
+        "recruited": [],
+        "refused": [
+          {
+            "pooler": "n4",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 2 from coordinator zone2_fl9469md, requested by zone1_cnt54wv6"
+          },
+          {
+            "pooler": "n3",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"
+          },
+          {
+            "pooler": "n2",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"
+          },
+          {
+            "pooler": "n1",
+            "error": "rpc error: code = Unavailable desc = error reading from server: EOF"
+          }
+        ]
+      },
+      {
+        "orch": "z3",
+        "t_s": -13.85,
+        "term": 2,
+        "reason": "LeaderQuorumWritesStalled",
+        "outcome": "failed",
+        "error": "recruitment failed: no nodes responded to recruit",
+        "recruited": [],
+        "refused": [
+          {
+            "pooler": "n4",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 2 from coordinator zone2_fl9469md, requested by zone3_5qfk56vj"
+          },
+          {
+            "pooler": "n3",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"
+          },
+          {
+            "pooler": "n2",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"
+          },
+          {
+            "pooler": "n1",
+            "error": "rpc error: code = Unavailable desc = error reading from server: EOF"
+          }
+        ]
+      },
+      {
+        "orch": "z3",
+        "t_s": 0.5,
+        "term": 3,
+        "reason": "LeaderResigned",
+        "outcome": "failed",
+        "error": "recruitment failed: no nodes responded to recruit",
+        "recruited": [],
+        "refused": [
+          {
+            "pooler": "n1",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.11:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n4",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.14:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n3",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"
+          },
+          {
+            "pooler": "n2",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"
+          }
+        ]
+      },
+      {
+        "orch": "z2",
+        "t_s": 0.501,
+        "term": 3,
+        "reason": "LeaderResigned",
+        "outcome": "failed",
+        "error": "recruitment failed: no nodes responded to recruit",
+        "recruited": [],
+        "refused": [
+          {
+            "pooler": "n4",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.14:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n1",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.11:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n3",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"
+          },
+          {
+            "pooler": "n2",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"
+          }
+        ]
+      },
+      {
+        "orch": "z1",
+        "t_s": 0.501,
+        "term": 3,
+        "reason": "LeaderResigned",
+        "outcome": "failed",
+        "error": "recruitment failed: no nodes responded to recruit",
+        "recruited": [],
+        "refused": [
+          {
+            "pooler": "n1",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.11:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n4",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.14:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n3",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"
+          },
+          {
+            "pooler": "n2",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"
+          }
+        ]
+      },
+      {
+        "orch": "z2",
+        "t_s": 3.003,
+        "term": 3,
+        "reason": "LeaderResigned",
+        "outcome": "failed",
+        "error": "recruitment failed: no nodes responded to recruit",
+        "recruited": [],
+        "refused": [
+          {
+            "pooler": "n4",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.14:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n1",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.11:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n2",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"
+          },
+          {
+            "pooler": "n3",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 3 from coordinator zone3_5qfk56vj, requested by zone2_fl9469md"
+          }
+        ]
+      },
+      {
+        "orch": "z1",
+        "t_s": 3.003,
+        "term": 3,
+        "reason": "LeaderResigned",
+        "outcome": "failed",
+        "error": "recruitment failed: no nodes responded to recruit",
+        "recruited": [],
+        "refused": [
+          {
+            "pooler": "n4",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.14:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n1",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.11:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n2",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"
+          },
+          {
+            "pooler": "n3",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 3 from coordinator zone3_5qfk56vj, requested by zone1_cnt54wv6"
+          }
+        ]
+      },
+      {
+        "orch": "z3",
+        "t_s": 3.003,
+        "term": 3,
+        "reason": "LeaderResigned",
+        "outcome": "failed",
+        "error": "recruitment failed: insufficient outgoing cohort recruitment: majority not satisfied: recruited 1 of 3 cohort poolers, need at least 2",
+        "recruited": [
+          {
+            "pooler": "n3",
+            "lsn": "0/4000000"
+          }
+        ],
+        "refused": [
+          {
+            "pooler": "n1",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.11:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n4",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.14:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n2",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"
+          }
+        ]
+      },
+      {
+        "orch": "z3",
+        "t_s": 3.631,
+        "term": 3,
+        "reason": "LeaderResigned",
+        "outcome": "failed",
+        "error": "recruitment failed: insufficient outgoing cohort recruitment: majority not satisfied: recruited 1 of 3 cohort poolers, need at least 2",
+        "recruited": [
+          {
+            "pooler": "n2",
+            "lsn": "0/4000000"
+          }
+        ],
+        "refused": [
+          {
+            "pooler": "n1",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.11:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n4",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.14:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n3",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: coordinator zone3_5qfk56vj reused term 3 with a different coordinator_initiated_at"
+          }
+        ]
+      },
+      {
+        "orch": "z1",
+        "t_s": 3.632,
+        "term": 3,
+        "reason": "LeaderResigned",
+        "outcome": "failed",
+        "error": "recruitment failed: no nodes responded to recruit",
+        "recruited": [],
+        "refused": [
+          {
+            "pooler": "n4",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.14:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n1",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.11:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n3",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 3 from coordinator zone3_5qfk56vj, requested by zone1_cnt54wv6"
+          },
+          {
+            "pooler": "n2",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 3 from coordinator zone3_5qfk56vj, requested by zone1_cnt54wv6"
+          }
+        ]
+      },
+      {
+        "orch": "z2",
+        "t_s": 3.632,
+        "term": 3,
+        "reason": "LeaderResigned",
+        "outcome": "failed",
+        "error": "recruitment failed: no nodes responded to recruit",
+        "recruited": [],
+        "refused": [
+          {
+            "pooler": "n4",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.14:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n1",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.11:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n3",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 3 from coordinator zone3_5qfk56vj, requested by zone2_fl9469md"
+          },
+          {
+            "pooler": "n2",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 3 from coordinator zone3_5qfk56vj, requested by zone2_fl9469md"
+          }
+        ]
+      },
+      {
+        "orch": "z3",
+        "t_s": 4.832,
+        "term": 3,
+        "reason": "LeaderResigned",
+        "outcome": "failed",
+        "error": "recruitment failed: no nodes responded to recruit",
+        "recruited": [],
+        "refused": [
+          {
+            "pooler": "n1",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.11:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n4",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.14:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n3",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: coordinator zone3_5qfk56vj reused term 3 with a different coordinator_initiated_at"
+          },
+          {
+            "pooler": "n2",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: coordinator zone3_5qfk56vj reused term 3 with a different coordinator_initiated_at"
+          }
+        ]
+      },
+      {
+        "orch": "z1",
+        "t_s": 4.832,
+        "term": 3,
+        "reason": "LeaderResigned",
+        "outcome": "failed",
+        "error": "recruitment failed: no nodes responded to recruit",
+        "recruited": [],
+        "refused": [
+          {
+            "pooler": "n1",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.11:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n4",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.14:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n3",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 3 from coordinator zone3_5qfk56vj, requested by zone1_cnt54wv6"
+          },
+          {
+            "pooler": "n2",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 3 from coordinator zone3_5qfk56vj, requested by zone1_cnt54wv6"
+          }
+        ]
+      },
+      {
+        "orch": "z2",
+        "t_s": 4.833,
+        "term": 3,
+        "reason": "LeaderResigned",
+        "outcome": "failed",
+        "error": "recruitment failed: no nodes responded to recruit",
+        "recruited": [],
+        "refused": [
+          {
+            "pooler": "n4",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.14:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n1",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.11:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n3",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 3 from coordinator zone3_5qfk56vj, requested by zone2_fl9469md"
+          },
+          {
+            "pooler": "n2",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 3 from coordinator zone3_5qfk56vj, requested by zone2_fl9469md"
+          }
+        ]
+      },
+      {
+        "orch": "z1",
+        "t_s": 5.335,
+        "term": 3,
+        "reason": "LeaderResigned",
+        "outcome": "failed",
+        "error": "recruitment failed: no nodes responded to recruit",
+        "recruited": [],
+        "refused": [
+          {
+            "pooler": "n4",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.14:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n1",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.11:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n3",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 3 from coordinator zone3_5qfk56vj, requested by zone1_cnt54wv6"
+          },
+          {
+            "pooler": "n2",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 3 from coordinator zone3_5qfk56vj, requested by zone1_cnt54wv6"
+          }
+        ]
+      },
+      {
+        "orch": "z3",
+        "t_s": 5.335,
+        "term": 3,
+        "reason": "LeaderResigned",
+        "outcome": "failed",
+        "error": "recruitment failed: no nodes responded to recruit",
+        "recruited": [],
+        "refused": [
+          {
+            "pooler": "n4",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.14:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n1",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.11:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n3",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: coordinator zone3_5qfk56vj reused term 3 with a different coordinator_initiated_at"
+          },
+          {
+            "pooler": "n2",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: coordinator zone3_5qfk56vj reused term 3 with a different coordinator_initiated_at"
+          }
+        ]
+      },
+      {
+        "orch": "z2",
+        "t_s": 5.335,
+        "term": 3,
+        "reason": "LeaderResigned",
+        "outcome": "failed",
+        "error": "recruitment failed: no nodes responded to recruit",
+        "recruited": [],
+        "refused": [
+          {
+            "pooler": "n4",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.14:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n1",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.11:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n2",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 3 from coordinator zone3_5qfk56vj, requested by zone2_fl9469md"
+          },
+          {
+            "pooler": "n3",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 3 from coordinator zone3_5qfk56vj, requested by zone2_fl9469md"
+          }
+        ]
+      },
+      {
+        "orch": "z2",
+        "t_s": 5.837,
+        "term": 3,
+        "reason": "LeaderResigned",
+        "outcome": "failed",
+        "error": "recruitment failed: no nodes responded to recruit",
+        "recruited": [],
+        "refused": [
+          {
+            "pooler": "n4",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.14:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n1",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.11:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n3",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 3 from coordinator zone3_5qfk56vj, requested by zone2_fl9469md"
+          },
+          {
+            "pooler": "n2",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 3 from coordinator zone3_5qfk56vj, requested by zone2_fl9469md"
+          }
+        ]
+      },
+      {
+        "orch": "z3",
+        "t_s": 5.837,
+        "term": 3,
+        "reason": "LeaderResigned",
+        "outcome": "failed",
+        "error": "recruitment failed: no nodes responded to recruit",
+        "recruited": [],
+        "refused": [
+          {
+            "pooler": "n1",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.11:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n4",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.14:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n3",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: coordinator zone3_5qfk56vj reused term 3 with a different coordinator_initiated_at"
+          },
+          {
+            "pooler": "n2",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: coordinator zone3_5qfk56vj reused term 3 with a different coordinator_initiated_at"
+          }
+        ]
+      },
+      {
+        "orch": "z1",
+        "t_s": 5.837,
+        "term": 3,
+        "reason": "LeaderResigned",
+        "outcome": "failed",
+        "error": "recruitment failed: no nodes responded to recruit",
+        "recruited": [],
+        "refused": [
+          {
+            "pooler": "n4",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.14:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n1",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.11:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n3",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 3 from coordinator zone3_5qfk56vj, requested by zone1_cnt54wv6"
+          },
+          {
+            "pooler": "n2",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 3 from coordinator zone3_5qfk56vj, requested by zone1_cnt54wv6"
+          }
+        ]
+      },
+      {
+        "orch": "z2",
+        "t_s": 6.339,
+        "term": 3,
+        "reason": "LeaderResigned",
+        "outcome": "failed",
+        "error": "recruitment failed: no nodes responded to recruit",
+        "recruited": [],
+        "refused": [
+          {
+            "pooler": "n4",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.14:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n1",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.11:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n2",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 3 from coordinator zone3_5qfk56vj, requested by zone2_fl9469md"
+          },
+          {
+            "pooler": "n3",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 3 from coordinator zone3_5qfk56vj, requested by zone2_fl9469md"
+          }
+        ]
+      },
+      {
+        "orch": "z1",
+        "t_s": 6.34,
+        "term": 3,
+        "reason": "LeaderResigned",
+        "outcome": "failed",
+        "error": "recruitment failed: no nodes responded to recruit",
+        "recruited": [],
+        "refused": [
+          {
+            "pooler": "n1",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.11:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n4",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.14:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n3",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 3 from coordinator zone3_5qfk56vj, requested by zone1_cnt54wv6"
+          },
+          {
+            "pooler": "n2",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 3 from coordinator zone3_5qfk56vj, requested by zone1_cnt54wv6"
+          }
+        ]
+      },
+      {
+        "orch": "z2",
+        "t_s": 24.869,
+        "term": 4,
+        "reason": "LeaderResigned",
+        "outcome": "success",
+        "new_primary": "n3",
+        "recruited": [
+          {
+            "pooler": "n3",
+            "lsn": "0/4000000"
+          },
+          {
+            "pooler": "n2",
+            "lsn": "0/4000000"
+          }
+        ],
+        "refused": [
+          {
+            "pooler": "n1",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.11:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n4",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.14:16100: connect: connection refused\""
+          }
+        ]
+      }
+    ],
+    "attempts_failed_insufficient_recruitment": 3,
+    "campaign": "D2p",
+    "failed_attempts_before_first_success": 23,
+    "first_success": {
+      "new_primary": "n3",
+      "orch": "z2",
+      "reason": "LeaderResigned",
+      "t_s": 24.869,
+      "term": 4
+    },
+    "killed_leader": "n1",
+    "mutant": "M2",
+    "run": "20261012T042125Z-D2p-2-M2-f3aaba7f",
+    "seed": 2
+  },
+  {
+    "anchor": "2026-10-12T04:25:59.222826007Z",
+    "attempts": [
+      {
+        "orch": "z1",
+        "t_s": 15.452,
+        "term": 2,
+        "reason": "LeaderUnreachableByCohort",
+        "outcome": "success",
+        "new_primary": "n1",
+        "recruited": [
+          {
+            "pooler": "n3",
+            "lsn": "0/4000000"
+          },
+          {
+            "pooler": "n1",
+            "lsn": "0/4000000"
+          }
+        ],
+        "refused": [
+          {
+            "pooler": "n4",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.14:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n2",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.12:16100: connect: connection refused\""
+          }
+        ]
+      },
+      {
+        "orch": "z2",
+        "t_s": 15.452,
+        "term": 2,
+        "reason": "LeaderUnreachableByCohort",
+        "outcome": "failed",
+        "error": "recruitment failed: no nodes responded to recruit",
+        "recruited": [],
+        "refused": [
+          {
+            "pooler": "n2",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.12:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n4",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.14:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n3",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 2 from coordinator zone1_fn4gsxqn, requested by zone2_mdlv6n2p"
+          },
+          {
+            "pooler": "n1",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 2 from coordinator zone1_fn4gsxqn, requested by zone2_mdlv6n2p"
+          }
+        ]
+      }
+    ],
+    "attempts_failed_insufficient_recruitment": 0,
+    "campaign": "D2p",
+    "failed_attempts_before_first_success": 0,
+    "first_success": {
+      "new_primary": "n1",
+      "orch": "z1",
+      "reason": "LeaderUnreachableByCohort",
+      "t_s": 15.452,
+      "term": 2
+    },
+    "killed_leader": "n2",
+    "mutant": "M2",
+    "run": "20261012T042412Z-D2p-3-M2-029cd422",
+    "seed": 3
+  },
+  {
+    "anchor": "2026-10-12T04:28:45.694655689Z",
+    "attempts": [
+      {
+        "orch": "z3",
+        "t_s": 16.738,
+        "term": 2,
+        "reason": "LeaderUnreachableByCohort",
+        "outcome": "success",
+        "new_primary": "n1",
+        "recruited": [
+          {
+            "pooler": "n1",
+            "lsn": "0/4000000"
+          },
+          {
+            "pooler": "n3",
+            "lsn": "0/4000000"
+          }
+        ],
+        "refused": [
+          {
+            "pooler": "n4",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.14:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n2",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.12:16100: connect: connection refused\""
+          }
+        ]
+      }
+    ],
+    "attempts_failed_insufficient_recruitment": 0,
+    "campaign": "D2p",
+    "failed_attempts_before_first_success": 0,
+    "first_success": {
+      "new_primary": "n1",
+      "orch": "z3",
+      "reason": "LeaderUnreachableByCohort",
+      "t_s": 16.738,
+      "term": 2
+    },
+    "killed_leader": "n2",
+    "mutant": "M2",
+    "run": "20261012T042700Z-D2p-4-M2-a663d58e",
+    "seed": 4
+  },
+  {
+    "anchor": "2026-10-12T04:31:34.105746306Z",
+    "attempts": [
+      {
+        "orch": "z3",
+        "t_s": 18.172,
+        "term": 2,
+        "reason": "LeaderUnreachableByCohort",
+        "outcome": "success",
+        "new_primary": "n3",
+        "recruited": [
+          {
+            "pooler": "n3",
+            "lsn": "0/4000000"
+          },
+          {
+            "pooler": "n2",
+            "lsn": "0/4000000"
+          }
+        ],
+        "refused": [
+          {
+            "pooler": "n1",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.11:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n4",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.14:16100: connect: connection refused\""
+          }
+        ]
+      },
+      {
+        "orch": "z1",
+        "t_s": 18.173,
+        "term": 2,
+        "reason": "LeaderUnreachableByCohort",
+        "outcome": "failed",
+        "error": "recruitment failed: no nodes responded to recruit",
+        "recruited": [],
+        "refused": [
+          {
+            "pooler": "n4",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.14:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n1",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.11:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n3",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 2 from coordinator zone3_csg6j47b, requested by zone1_2tg7f4pm"
+          },
+          {
+            "pooler": "n2",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 2 from coordinator zone3_csg6j47b, requested by zone1_2tg7f4pm"
+          }
+        ]
+      },
+      {
+        "orch": "z2",
+        "t_s": 18.176,
+        "term": 2,
+        "reason": "LeaderUnreachableByCohort",
+        "outcome": "failed",
+        "error": "recruitment failed: no nodes responded to recruit",
+        "recruited": [],
+        "refused": [
+          {
+            "pooler": "n4",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.14:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n1",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.11:16100: connect: connection refused\""
+          },
+          {
+            "pooler": "n2",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 2 from coordinator zone3_csg6j47b, requested by zone2_dhf7gd8c"
+          },
+          {
+            "pooler": "n3",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 2 from coordinator zone3_csg6j47b, requested by zone2_dhf7gd8c"
+          }
+        ]
+      }
+    ],
+    "attempts_failed_insufficient_recruitment": 0,
+    "campaign": "D2p",
+    "failed_attempts_before_first_success": 0,
+    "first_success": {
+      "new_primary": "n3",
+      "orch": "z3",
+      "reason": "LeaderUnreachableByCohort",
+      "t_s": 18.172,
+      "term": 2
+    },
+    "killed_leader": "n1",
+    "mutant": "M2",
+    "run": "20261012T042948Z-D2p-5-M2-b2028f9f",
+    "seed": 5
+  },
+  {
+    "anchor": "2026-10-12T04:34:19.07665755Z",
+    "attempts": [
+      {
+        "orch": "z3",
+        "t_s": 45.47,
+        "term": 2,
+        "reason": "LeaderResigned",
+        "outcome": "success",
+        "new_primary": "n3",
+        "recruited": [
+          {
+            "pooler": "n3",
+            "lsn": "0/42C9F08"
+          },
+          {
+            "pooler": "n1",
+            "lsn": "0/42C9F08"
+          },
+          {
+            "pooler": "n4",
+            "lsn": "0/42C9F08"
+          },
+          {
+            "pooler": "n2",
+            "lsn": "0/42C9F08"
+          }
+        ],
+        "refused": []
+      }
+    ],
+    "attempts_failed_insufficient_recruitment": 0,
+    "campaign": "D2p",
+    "failed_attempts_before_first_success": 0,
+    "first_success": {
+      "new_primary": "n3",
+      "orch": "z3",
+      "reason": "LeaderResigned",
+      "t_s": 45.47,
+      "term": 2
+    },
+    "killed_leader": "n2",
+    "mutant": "real",
+    "run": "20261012T043237Z-D2p-1-real-f7ae8f1a",
+    "seed": 1
+  },
+  {
+    "anchor": "2026-10-12T04:37:11.266054496Z",
+    "attempts": [
+      {
+        "orch": "z2",
+        "t_s": 46.663,
+        "term": 2,
+        "reason": "LeaderQuorumWritesStalled",
+        "outcome": "success",
+        "new_primary": "n1",
+        "recruited": [
+          {
+            "pooler": "n3",
+            "lsn": "0/42F9488"
+          },
+          {
+            "pooler": "n4",
+            "lsn": "0/42F9488"
+          },
+          {
+            "pooler": "n1",
+            "lsn": "0/42F9488"
+          },
+          {
+            "pooler": "n2",
+            "lsn": "0/42F9488"
+          }
+        ],
+        "refused": []
+      },
+      {
+        "orch": "z3",
+        "t_s": 46.763,
+        "term": 2,
+        "reason": "LeaderQuorumWritesStalled",
+        "outcome": "failed",
+        "error": "recruitment failed: no nodes responded to recruit",
+        "recruited": [],
+        "refused": [
+          {
+            "pooler": "n3",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 2 from coordinator zone2_mqx275s4, requested by zone3_hpckrtzt"
+          },
+          {
+            "pooler": "n1",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 2 from coordinator zone2_mqx275s4, requested by zone3_hpckrtzt"
+          },
+          {
+            "pooler": "n4",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 2 from coordinator zone2_mqx275s4, requested by zone3_hpckrtzt"
+          },
+          {
+            "pooler": "n2",
+            "error": "rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 2 from coordinator zone2_mqx275s4, requested by zone3_hpckrtzt"
+          }
+        ]
+      }
+    ],
+    "attempts_failed_insufficient_recruitment": 0,
+    "campaign": "D2p",
+    "failed_attempts_before_first_success": 0,
+    "first_success": {
+      "new_primary": "n1",
+      "orch": "z2",
+      "reason": "LeaderQuorumWritesStalled",
+      "t_s": 46.663,
+      "term": 2
+    },
+    "killed_leader": "n2",
+    "mutant": "real",
+    "run": "20261012T043528Z-D2p-2-real-f3aaba7f",
+    "seed": 2
+  },
+  {
+    "anchor": "2026-10-12T04:40:05.160812691Z",
+    "attempts": [
+      {
+        "orch": "z1",
+        "t_s": 46.482,
+        "term": 3,
+        "reason": "LeaderResigned",
+        "outcome": "success",
+        "new_primary": "n2",
+        "recruited": [
+          {
+            "pooler": "n2",
+            "lsn": "0/42CECA0"
+          },
+          {
+            "pooler": "n4",
+            "lsn": "0/42CECA0"
+          },
+          {
+            "pooler": "n3",
+            "lsn": "0/42CECA0"
+          },
+          {
+            "pooler": "n1",
+            "lsn": "0/42CECA0"
+          }
+        ],
+        "refused": []
+      }
+    ],
+    "attempts_failed_insufficient_recruitment": 0,
+    "campaign": "D2p",
+    "failed_attempts_before_first_success": 0,
+    "first_success": {
+      "new_primary": "n2",
+      "orch": "z1",
+      "reason": "LeaderResigned",
+      "t_s": 46.482,
+      "term": 3
+    },
+    "killed_leader": "n1",
+    "mutant": "real",
+    "run": "20261012T043818Z-D2p-3-real-029cd422",
+    "seed": 3
+  },
+  {
+    "anchor": "2026-10-12T04:43:07.276057009Z",
+    "attempts": [
+      {
+        "orch": "z3",
+        "t_s": 52.134,
+        "term": 2,
+        "reason": "LeaderUnhealthy",
+        "outcome": "success",
+        "new_primary": "n2",
+        "recruited": [
+          {
+            "pooler": "n3",
+            "lsn": "0/42D8958"
+          },
+          {
+            "pooler": "n1",
+            "lsn": "0/42D8958"
+          },
+          {
+            "pooler": "n2",
+            "lsn": "0/42D8958"
+          }
+        ],
+        "refused": [
+          {
+            "pooler": "n4",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.14:16100: connect: connection refused\""
+          }
+        ]
+      }
+    ],
+    "attempts_failed_insufficient_recruitment": 0,
+    "campaign": "D2p",
+    "failed_attempts_before_first_success": 0,
+    "first_success": {
+      "new_primary": "n2",
+      "orch": "z3",
+      "reason": "LeaderUnhealthy",
+      "t_s": 52.134,
+      "term": 2
+    },
+    "killed_leader": "n2",
+    "mutant": "real",
+    "run": "20261012T044115Z-D2p-4-real-a663d58e",
+    "seed": 4
+  },
+  {
+    "anchor": "2026-10-12T04:46:39.930062625Z",
+    "attempts": [
+      {
+        "orch": "z1",
+        "t_s": 46.977,
+        "term": 2,
+        "reason": "LeaderUnhealthy",
+        "outcome": "success",
+        "new_primary": "n2",
+        "recruited": [
+          {
+            "pooler": "n3",
+            "lsn": "0/42F8060"
+          },
+          {
+            "pooler": "n2",
+            "lsn": "0/42F8060"
+          },
+          {
+            "pooler": "n1",
+            "lsn": "0/42F8060"
+          }
+        ],
+        "refused": [
+          {
+            "pooler": "n4",
+            "error": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.77.0.14:16100: connect: connection refused\""
+          }
+        ]
+      }
+    ],
+    "attempts_failed_insufficient_recruitment": 0,
+    "campaign": "D2p",
+    "failed_attempts_before_first_success": 0,
+    "first_success": {
+      "new_primary": "n2",
+      "orch": "z1",
+      "reason": "LeaderUnhealthy",
+      "t_s": 46.977,
+      "term": 2
+    },
+    "killed_leader": "n1",
+    "mutant": "real",
+    "run": "20261012T044452Z-D2p-5-real-b2028f9f",
+    "seed": 5
+  }
+]

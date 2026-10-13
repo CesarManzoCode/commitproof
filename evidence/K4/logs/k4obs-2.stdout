@@ -1,0 +1,463 @@
+[
+  {
+    "campaign": "D2p",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 1807,
+      "append/info": 9,
+      "append/ok": 3398,
+      "ledger/fail": 443,
+      "ledger/info": 7,
+      "ledger/ok": 2552
+    },
+    "errors": {
+      "append/fail/40001/commit": 66,
+      "append/fail/40001/statement": 842,
+      "append/fail/40P01/statement": 11,
+      "append/fail/57P03/statement": 888,
+      "append/info//client-timeout": 1,
+      "append/info/MTD04/statement": 4,
+      "append/info/XX000/statement": 4,
+      "ledger/fail/57P03/statement": 443,
+      "ledger/info//client-timeout": 2,
+      "ledger/info/08006/statement": 2,
+      "ledger/info/XX000/statement": 3
+    },
+    "fault_time_ms_by_kind": {
+      "F2a": 34372,
+      "F2b": 72569,
+      "F3a": 94031
+    },
+    "faults_confirmed_by_kind": {
+      "F2a": 1,
+      "F2b": 2,
+      "F3a": 2,
+      "F5a": 1
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 15,
+      "append_present": 3,
+      "ledger_absent": 3,
+      "ledger_present": 4
+    },
+    "mutant": "M2",
+    "notices": {},
+    "ok_writes": 6249,
+    "profile": "baseline",
+    "run_id": "20261012T041823Z-D2p-1-M2-f7ae8f1a",
+    "seed": 1
+  },
+  {
+    "campaign": "D2p",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 2856,
+      "append/info": 4,
+      "append/ok": 1979,
+      "ledger/fail": 962,
+      "ledger/info": 4,
+      "ledger/ok": 1462
+    },
+    "errors": {
+      "append/fail/40001/commit": 36,
+      "append/fail/40001/statement": 493,
+      "append/fail/40P01/statement": 7,
+      "append/fail/57P03/statement": 1217,
+      "append/fail/MTF01/statement": 1103,
+      "append/info//client-timeout": 2,
+      "append/info/XX000/commit": 2,
+      "ledger/fail/57P03/statement": 608,
+      "ledger/fail/MTF01/statement": 354,
+      "ledger/info//client-timeout": 2,
+      "ledger/info/XX000/statement": 2
+    },
+    "fault_time_ms_by_kind": {
+      "F2a": 34365,
+      "F2b": 72562,
+      "F3a": 94605
+    },
+    "faults_confirmed_by_kind": {
+      "F2a": 1,
+      "F2b": 2,
+      "F3a": 2,
+      "F5a": 1
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 10,
+      "append_present": 0,
+      "ledger_absent": 4,
+      "ledger_present": 0
+    },
+    "mutant": "M2",
+    "notices": {
+      "ledger/info: WARNING canceling the wait for synchronous replication and terminating connection due to administrator command": 2
+    },
+    "ok_writes": 3612,
+    "profile": "baseline",
+    "run_id": "20261012T042125Z-D2p-2-M2-f3aaba7f",
+    "seed": 2
+  },
+  {
+    "campaign": "D2p",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 2004,
+      "append/info": 4,
+      "append/ok": 3939,
+      "ledger/fail": 540,
+      "ledger/info": 2,
+      "ledger/ok": 2926
+    },
+    "errors": {
+      "append/fail/40001/commit": 61,
+      "append/fail/40001/statement": 853,
+      "append/fail/40P01/statement": 14,
+      "append/fail/57P03/statement": 1076,
+      "append/info/MTD04/statement": 4,
+      "ledger/fail/57P03/connect": 540,
+      "ledger/info/57P01/statement": 2
+    },
+    "fault_time_ms_by_kind": {
+      "F2a": 36224,
+      "F2b": 76868,
+      "F3a": 97116
+    },
+    "faults_confirmed_by_kind": {
+      "F2a": 1,
+      "F2b": 2,
+      "F3a": 2,
+      "F5a": 1
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 5,
+      "append_present": 0,
+      "ledger_absent": 2,
+      "ledger_present": 0
+    },
+    "mutant": "M2",
+    "notices": {},
+    "ok_writes": 7241,
+    "profile": "baseline",
+    "run_id": "20261012T042412Z-D2p-3-M2-029cd422",
+    "seed": 3
+  },
+  {
+    "campaign": "D2p",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 1979,
+      "append/info": 4,
+      "append/ok": 3769,
+      "ledger/fail": 560,
+      "ledger/info": 4,
+      "ledger/ok": 2930
+    },
+    "errors": {
+      "append/fail/40001/commit": 64,
+      "append/fail/40001/statement": 776,
+      "append/fail/40P01/statement": 19,
+      "append/fail/57P03/statement": 1120,
+      "append/info/MTD04/statement": 4,
+      "ledger/fail/57P03/statement": 560,
+      "ledger/info/08006/statement": 2,
+      "ledger/info/XX000/statement": 2
+    },
+    "fault_time_ms_by_kind": {
+      "F2a": 37495,
+      "F2b": 78736,
+      "F3a": 94169
+    },
+    "faults_confirmed_by_kind": {
+      "F2a": 1,
+      "F2b": 2,
+      "F3a": 2,
+      "F5a": 1
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 4,
+      "append_present": 0,
+      "ledger_absent": 4,
+      "ledger_present": 0
+    },
+    "mutant": "M2",
+    "notices": {},
+    "ok_writes": 7076,
+    "profile": "baseline",
+    "run_id": "20261012T042700Z-D2p-4-M2-a663d58e",
+    "seed": 4
+  },
+  {
+    "campaign": "D2p",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 2121,
+      "append/info": 8,
+      "append/ok": 3962,
+      "ledger/fail": 560,
+      "ledger/info": 4,
+      "ledger/ok": 2862
+    },
+    "errors": {
+      "append/fail/40001/commit": 71,
+      "append/fail/40001/statement": 918,
+      "append/fail/40P01/statement": 12,
+      "append/fail/57P03/statement": 1120,
+      "append/info/MTD04/statement": 4,
+      "append/info/XX000/commit": 2,
+      "append/info/XX000/statement": 2,
+      "ledger/fail/57P03/statement": 560,
+      "ledger/info/08006/statement": 2,
+      "ledger/info/XX000/statement": 2
+    },
+    "fault_time_ms_by_kind": {
+      "F2a": 36822,
+      "F2b": 78082,
+      "F3a": 94017
+    },
+    "faults_confirmed_by_kind": {
+      "F2a": 1,
+      "F2b": 2,
+      "F3a": 2,
+      "F5a": 1
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 11,
+      "append_present": 0,
+      "ledger_absent": 4,
+      "ledger_present": 0
+    },
+    "mutant": "M2",
+    "notices": {},
+    "ok_writes": 7270,
+    "profile": "baseline",
+    "run_id": "20261012T042948Z-D2p-5-M2-b2028f9f",
+    "seed": 5
+  },
+  {
+    "campaign": "D2p",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 2282,
+      "append/info": 4,
+      "append/ok": 3976,
+      "ledger/fail": 619,
+      "ledger/info": 3,
+      "ledger/ok": 2938
+    },
+    "errors": {
+      "append/fail/40001/commit": 58,
+      "append/fail/40001/statement": 976,
+      "append/fail/40P01/statement": 12,
+      "append/fail/57P03/statement": 1236,
+      "append/info/MTD04/statement": 4,
+      "ledger/fail/57P03/connect": 310,
+      "ledger/fail/57P03/statement": 309,
+      "ledger/info/57P01/statement": 1,
+      "ledger/info/XX000/statement": 2
+    },
+    "fault_time_ms_by_kind": {
+      "F2a": 31970,
+      "F2b": 67789,
+      "F3a": 93977
+    },
+    "faults_confirmed_by_kind": {
+      "F2a": 1,
+      "F2b": 2,
+      "F3a": 2,
+      "F5a": 1
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 1,
+      "append_present": 0,
+      "ledger_absent": 3,
+      "ledger_present": 0
+    },
+    "mutant": "real",
+    "notices": {},
+    "ok_writes": 7293,
+    "profile": "baseline",
+    "run_id": "20261012T043237Z-D2p-1-real-f7ae8f1a",
+    "seed": 1
+  },
+  {
+    "campaign": "D2p",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 2325,
+      "append/info": 4,
+      "append/ok": 4364,
+      "ledger/fail": 588,
+      "ledger/info": 2,
+      "ledger/ok": 2970
+    },
+    "errors": {
+      "append/fail/40001/commit": 78,
+      "append/fail/40001/statement": 1065,
+      "append/fail/40P01/statement": 6,
+      "append/fail/57P03/statement": 1176,
+      "append/info/MTD04/statement": 4,
+      "ledger/fail/57P03/connect": 588,
+      "ledger/info/57P01/statement": 2
+    },
+    "fault_time_ms_by_kind": {
+      "F2a": 33799,
+      "F2b": 71448,
+      "F3a": 95784
+    },
+    "faults_confirmed_by_kind": {
+      "F2a": 1,
+      "F2b": 2,
+      "F3a": 2,
+      "F5a": 1
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 7,
+      "append_present": 0,
+      "ledger_absent": 2,
+      "ledger_present": 0
+    },
+    "mutant": "real",
+    "notices": {},
+    "ok_writes": 7704,
+    "profile": "baseline",
+    "run_id": "20261012T043528Z-D2p-2-real-f3aaba7f",
+    "seed": 2
+  },
+  {
+    "campaign": "D2p",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 2177,
+      "append/info": 4,
+      "append/ok": 4074,
+      "ledger/fail": 587,
+      "ledger/info": 3,
+      "ledger/ok": 2971
+    },
+    "errors": {
+      "append/fail/40001/commit": 61,
+      "append/fail/40001/statement": 932,
+      "append/fail/40P01/statement": 12,
+      "append/fail/57P03/statement": 1172,
+      "append/info/MTD04/statement": 4,
+      "ledger/fail/57P03/connect": 294,
+      "ledger/fail/57P03/statement": 293,
+      "ledger/info/08006/statement": 1,
+      "ledger/info/57P01/statement": 1,
+      "ledger/info/XX000/statement": 1
+    },
+    "fault_time_ms_by_kind": {
+      "F2a": 31967,
+      "F2b": 67787,
+      "F3a": 93985
+    },
+    "faults_confirmed_by_kind": {
+      "F2a": 1,
+      "F2b": 2,
+      "F3a": 2,
+      "F5a": 1
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 5,
+      "append_present": 0,
+      "ledger_absent": 3,
+      "ledger_present": 0
+    },
+    "mutant": "real",
+    "notices": {},
+    "ok_writes": 7389,
+    "profile": "baseline",
+    "run_id": "20261012T043818Z-D2p-3-real-029cd422",
+    "seed": 3
+  },
+  {
+    "campaign": "D2p",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 1870,
+      "append/info": 4,
+      "append/ok": 4131,
+      "ledger/fail": 390,
+      "ledger/info": 4,
+      "ledger/ok": 3168
+    },
+    "errors": {
+      "append/fail/40001/commit": 82,
+      "append/fail/40001/statement": 991,
+      "append/fail/40P01/statement": 17,
+      "append/fail/57P03/statement": 780,
+      "append/info/MTD04/statement": 4,
+      "ledger/fail/57P03/statement": 390,
+      "ledger/info/08006/statement": 2,
+      "ledger/info/XX000/statement": 2
+    },
+    "fault_time_ms_by_kind": {
+      "F2a": 41751,
+      "F2b": 87284,
+      "F3a": 96469
+    },
+    "faults_confirmed_by_kind": {
+      "F2a": 1,
+      "F2b": 2,
+      "F3a": 2,
+      "F5a": 1
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 6,
+      "append_present": 0,
+      "ledger_absent": 4,
+      "ledger_present": 0
+    },
+    "mutant": "real",
+    "notices": {},
+    "ok_writes": 7584,
+    "profile": "baseline",
+    "run_id": "20261012T044115Z-D2p-4-real-a663d58e",
+    "seed": 4
+  },
+  {
+    "campaign": "D2p",
+    "cancel_requests": {},
+    "completions": {
+      "append/fail": 1952,
+      "append/info": 4,
+      "append/ok": 4315,
+      "ledger/fail": 434,
+      "ledger/info": 4,
+      "ledger/ok": 3124
+    },
+    "errors": {
+      "append/fail/40001/commit": 75,
+      "append/fail/40001/statement": 993,
+      "append/fail/40P01/statement": 12,
+      "append/fail/57P03/statement": 872,
+      "append/info/MTD04/statement": 4,
+      "ledger/fail/57P03/statement": 434,
+      "ledger/info/08006/statement": 1,
+      "ledger/info/XX000/statement": 3
+    },
+    "fault_time_ms_by_kind": {
+      "F2a": 37424,
+      "F2b": 79277,
+      "F3a": 97658
+    },
+    "faults_confirmed_by_kind": {
+      "F2a": 1,
+      "F2b": 2,
+      "F3a": 2,
+      "F5a": 1
+    },
+    "info_writes_in_final_read": {
+      "append_absent": 8,
+      "append_present": 0,
+      "ledger_absent": 4,
+      "ledger_present": 0
+    },
+    "mutant": "real",
+    "notices": {},
+    "ok_writes": 7840,
+    "profile": "baseline",
+    "run_id": "20261012T044452Z-D2p-5-real-b2028f9f",
+    "seed": 5
+  }
+]

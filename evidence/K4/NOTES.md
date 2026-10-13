@@ -1,44 +1,57 @@
 # K4 NOTES — Consensus and failover campaigns, minimization, mutants
 
-Contract **1.0.6** (1.0.4 at sprint start; ADR-0024, ADR-0025 → 1.0.5 before
+Contract **1.0.7** (1.0.4 at sprint start; ADR-0024, ADR-0025 → 1.0.5 before
 any K4 run; ADR-0026 → 1.0.6 after a development run showed a contract
-defect). ADR-0028 amends ADR-0024's C5 shape (no contract change); ADR-0027
-is a **proposal awaiting the owner** and is not applied. Evidence produced by
-`scripts/k4-evidence.sh` (phases setup, campaign, rebuild, campaign, oracle,
-ci, store, gate) and `scripts/k4-analysis.sh`, every step recorded in
-`commands.jsonl` (argv, exit code, stdout/stderr sha256), 2026-10-11 21:57 –
-2026-10-12 UTC, one cluster at a time, clean trees (`commitproof_dirty:
-false` in every run manifest; cpgate checks it). No `claims.yaml` exists yet
-(K7): every statement names its record, run id or file; "design says" cites
-RESEARCH ids, "system did" cites runs (under `evidence/K4/runs/`, zstd tars
-of sealed runs or stubs, §13) and the diagnosis records `k3obs` / `k4obs`
-(observations, ADR-0016: never a verdict).
+defect; ADR-0027, approved by the owner after K4 first stopped BLOCKED on
+K4.3, → 1.0.7 before any D2′ run). ADR-0028 amends ADR-0024's C5 shape (no
+contract change). Evidence produced by `scripts/k4-evidence.sh` (phases
+setup, campaign, rebuild, campaign, oracle, ci, store, gate; then, for D2′,
+rebuild, d2p, oracle — nothing to cross-check, no real-build D2′ FAIL —,
+ci, rebuild, ci, store, gate) and
+`scripts/k4-analysis.sh`, every step recorded in `commands.jsonl` (argv,
+exit code, stdout/stderr sha256), 2026-10-11 21:57 – 2026-10-13 01:06 UTC,
+one cluster at a time, clean trees (`commitproof_dirty: false` in every run
+manifest; cpgate checks it). The owner's machine was powered off during the
+D2′ follow-ups (2026-10-12 04:52 – 22:41 UTC); the work resumed from the
+sealed runs (§9 item 8). No `claims.yaml` exists yet (K7): every statement
+names its record, run id or file; "design says" cites RESEARCH ids, "system
+did" cites runs (under `evidence/K4/runs/`, zstd tars of sealed runs or
+stubs, §13) and the diagnosis records `k3obs` / `k4obs` / `k4orch` /
+`dockerd-dns` (observations, ADR-0016: never a verdict).
 
-**Status: BLOCKED on K4.3** — mutant M2 is not detected by its directed
-schedule D2 (0/5). The cause is in D2's design, not in the checkers or the
-mutant (§5 below); changing a directed schedule needs the owner (§9.1, §18).
-Everything else of the sprint is done.
+**Status: DONE.** The gate passes with every negative control failing only
+its own criterion (§1). M2 is detected by D2′ (4/5, §5); the superseded D2
+runs (0/5) stay recorded.
 
 ## 1. Gate
 
-`bin/cpgate K4 --evidence evidence/K4 --negative-controls` → **exit 1**
-(record `cpgate-k4`, 03:54:20–03:59:21 UTC, stdout sha256 `71408c91…`).
-`gate.json` (sha256 `a05048c3…`): **K4.1, K4.2, K4.4, K4.5, K4.6, K4.7, K4.8
-PASS; K4.3 FAIL** with one problem, `M2 via D2: 0/5 runs FAIL with
-lost-write, need 4` (M1 via D1 DETECTED 5/5, M4 via P1 DETECTED 5/5 with the
-real build passing P1 5/5).
+`bin/cpgate K4 --evidence evidence/K4 --negative-controls` → **exit 0**
+(record `cpgate-k4-2`, 2026-10-13 01:00:30–01:06:25 UTC, stdout sha256
+`a087ef4f…`). `gate.json` (sha256 `7a64fbed…`, contract 1.0.7): **K4.1–K4.8
+PASS**, no problem listed. Details: K4.1 330 rows, 0 mismatches; K4.2 C1–C7
+seeds 1–3 valid (C2 seed 3 FAIL, the rest PASS); K4.3 M1 via D1 DETECTED 5/5,
+**M2 via D2p DETECTED 4/5** (mutant `[PASS FAIL FAIL FAIL FAIL]`, real
+`[PASS ×5]`), M4 via P1 DETECTED 5/5 (real PASS 5/5), superseded D2 recorded
+(M2 PASS ×5, real PASS ×5); K4.4 only binaries linking the patched package
+differ; K4.5 18 FAIL runs minimized and replayed; K4.6 H1 NOT_DETECTED; K4.7
+4 real-build FAIL runs, 4 triage records; K4.8 `ci-4` exit 0 (earlier
+attempts `ci` exit 2, `ci-2` exit 0, `ci-3` exit 2).
 
-`negative-controls.json` (sha256 `305a6c26…`): every sabotage failed its own
-criterion — K4.1: one row's upstream column flipped (recorded table hash kept
-consistent) → "row [4 2 2] … mismatches recomputed 1"; K4.2: a C1 verdict
-flipped in results.json; K4.3: M1's D1 checks.json for seeds 1–2 rewritten as
-PASS; K4.4: multiorch's hash changed in the M1 lock entry; K4.5: the last
-replay of M1 seed 1's minimized run removed; K4.6: h1.json's outcome
-replaced; K4.7: one triage record removed; K4.8: the latest CI record's exit
-code set to 1. Because K4.3 fails without sabotage, every control also lists
-K4.3 among the failed criteria, so `failed_only_target` is true only for
-K4.3's own control; no control failed any other criterion. The gate cannot
-pass while K4.3 fails (status BLOCKED, §0).
+`negative-controls.json` (sha256 `d47c36f1…`): **every sabotage failed its
+own criterion and no other** (`failed_only_target: true` ×8) — K4.1: one
+row's upstream column flipped (recorded table hash kept consistent) → "row
+[4 2 2] … mismatches recorded 0 recomputed 1"; K4.2: a C1 verdict flipped in
+results.json; K4.3: M1's D1 checks.json for seeds 1–2 rewritten as PASS →
+"M1 via D1: 3/5 runs FAIL with lost-write, need 4"; K4.4: multiorch's hash
+changed in the M1 lock entry; K4.5: the last replay of M1 seed 1's minimized
+run removed; K4.6: h1.json's outcome replaced; K4.7: one triage record
+removed; K4.8: `ci-4`'s exit code set to 1.
+
+History: the first evaluation, record `cpgate-k4` (2026-10-12 03:54–03:59
+UTC, contract 1.0.6, exit 1), failed K4.3 only ("M2 via D2: 0/5 runs FAIL
+with lost-write, need 4"), and K4 stopped BLOCKED (commit `c38a9b9`, the
+closure then); its gate.json and negative-controls.json were regenerated by
+`cpgate-k4-2`, its stdout stays in `logs/cpgate-k4.stdout`.
 
 Precondition: record `k4-precondition` (exit 0) ran `cpgate K1`, `K2`, `K3`
 on copies of the closed evidence: all criteria PASS.
@@ -74,6 +87,13 @@ on copies of the closed evidence: all criteria PASS.
   and leader view read from PostgreSQL.
 - **cpgate K4** with eight negative controls; **`make ci-mutant-smoke`** in
   the Makefile and the workflow.
+- **D2′** (owner-approved ADR-0027, contract 1.0.7; `86f026d`, `3bd816b`,
+  `6232f91`): plan `D2p` (D2 plus F2b on n4 with the leader's kill, n4 healed
+  last), matrix `campaigns/k4-d2p.json` (M2 and real, seeds 1–5, follow-ups),
+  K4.3 judging M2 on D2′ and still checking the superseded D2 runs, phase
+  `d2p` of the evidence script. **k4orch** (`d3a7924`): multiorch's leader
+  appointments (recruited and refused poolers, LSNs, outcome) from the
+  orchestrators' logs of D2 and D2′ runs, diagnosis only.
 
 ## 3. Quorum table (K4.1)
 
@@ -141,19 +161,22 @@ statements (K7 runs the matrix with 10 per cell and states the bounds).
 | Mutant | Directed schedule | Mutant runs (seeds 1–5) | Real build, same plans |
 |---|---|---|---|
 | M1 sync-standby-cleared | D1: F1c(leader) at 10 s for 30 s | **5/5 FAIL** C1 lost-write (also C3 incompatible-order); `…T215900Z-D1-1-M1-59a95336` … `…T220810Z-D1-5-M1-3319a30c` → **DETECTED** | 3/5 FAIL C3 incompatible-order (seeds 1, 3, 4; §7), 2/5 PASS; no lost-write |
-| M2 cohort-add-local-view | D2 (ADR-0024) | **0/5**: all PASS (`…T222206Z-D2-1-M2-56b84e41` … `…T223310Z-D2-5-M2-7b36cafd`) → **UNDETECTED** | 5/5 PASS |
+| M2 cohort-add-local-view | **D2′** (`D2p`, ADR-0027, contract 1.0.7) | **4/5 FAIL** C1 lost-write (seeds 2–5), seed 1 PASS: `20261012T041823Z-D2p-1-M2-f7ae8f1a` PASS, `…T042125Z-D2p-2-M2-f3aaba7f`, `…T042412Z-D2p-3-M2-029cd422`, `…T042700Z-D2p-4-M2-a663d58e`, `…T042948Z-D2p-5-M2-b2028f9f` FAIL → **DETECTED** (≥ 4/5, P14) | **5/5 PASS** (`…T043237Z-D2p-1-real-f7ae8f1a` … `…T044452Z-D2p-5-real-b2028f9f`) |
+| M2 (superseded) | D2 (ADR-0024, contract ≤ 1.0.6) | 0/5: all PASS (`…T222206Z-D2-1-M2-56b84e41` … `…T223310Z-D2-5-M2-7b36cafd`), recorded, unedited; no longer decides K4.3 (ADR-0027) | 5/5 PASS |
 | M4 guard-removed | probe P1 | **5/5 FAIL** P p1-not-rejected (all three gateways accept `SET synchronous_commit = off`) → **DETECTED** | 5/5 PASS (P1 rejected with 0A000, P2 rejected) |
 
-**Why M2 is not detected (investigation, as §2 of the prompt asks).**
-Design says (§9.2): under M2 "writes acked only by n4 are lost when failover
-recruits from the old cohort". System did: in every M2 run M2's patch took
-effect — after F5a the leader's `synchronous_standby_names` named n4 while
-the recorded rule kept the cohort {n1,n2,n3}, and with both original
-followers paused 1 751–4 011 operations per run completed ok, their writes acknowledged
-with n4 as the only reachable standby (history). Then, 16.6–19.1 s after the leader's PostgreSQL and
-pooler were killed, a pooler reported **n4 as leader of rule 2.0 whose
-recorded cohort is {n1, n2, n3}** (observations; all five runs). n4 held
-every acknowledged write, so none was lost. Code at the pinned commit:
+### 5.1 Why D2 did not detect M2 (the investigation that led to ADR-0027)
+
+Design says (§9.2, contract ≤ 1.0.6): under M2 "writes acked only by n4 are
+lost when failover recruits from the old cohort". System did: in every M2 run
+of D2 M2's patch took effect — after F5a the leader's
+`synchronous_standby_names` named n4 while the recorded rule kept the cohort
+{n1,n2,n3}, and with both original followers paused 1 751–4 011 operations
+per run completed ok, their writes acknowledged with n4 as the only reachable
+standby (history). Then, 16.6–19.1 s after the leader's PostgreSQL and pooler
+were killed, a pooler reported **n4 as leader of rule 2.0 whose recorded
+cohort is {n1, n2, n3}** (observations; all five runs). n4 held every
+acknowledged write, so none was lost. Code at the pinned commit:
 `AppointLeader` recruits every pooler of the shard, not the recorded cohort
 (`go/services/multiorch/recovery/actions/appoint_leader.go`: `cohort[i] =
 p.Health()` over `shard.Poolers`; `consensus/coordinator.go`: "It operates on
@@ -164,14 +187,89 @@ recruited poolers at the most advanced position
 `discoverMostAdvancedRulePositions`, `narrowByLSN`). Classification of the
 cause: not a checker blind spot (nothing acknowledged was lost: C1 valid,
 final reads complete), not equivalence (M2 *is* detectable when n4 is
-unavailable at failover: the old cohort's 2 of 3 then suffice and a follower
-without the n4-only writes is elected), but **D2 not reaching the defect**:
-its design assumes a recruitment set multiorch does not use. ADR-0027
-proposes D2′ (also kill n4's pooler with the leader); per §9.1 and the
-prompt it is not applied, and K4.3 fails.
+unavailable at failover), but **D2 not reaching the defect**: its design
+assumes a recruitment set multiorch does not use. K4 stopped BLOCKED on K4.3
+(record `cpgate-k4`, exit 1) with ADR-0027 proposed. The real build on D2:
+n4 or a base follower became leader 13–17 s after the kill, with cohort
+{n1,n2,n3,n4}; no anomaly. The record `k4orch` (multiorch's leader
+appointments, below) covers these ten D2 runs too.
 
-The real build on D2 is also informative: n4 or a base follower became
-leader 13–17 s after the kill, with cohort {n1,n2,n3,n4}; no anomaly.
+### 5.2 D2′ (owner decision on ADR-0027)
+
+The owner approved ADR-0027 with conditions (one amendment only; M2 and the
+real build re-run on D2′, five runs each, seeds 1–5; if M2 is not detected in
+≥ 4 of 5, UNDETECTED and BLOCKED with no further schedule change; the D2 runs
+stay as the superseded schedule; thresholds, repetitions and expected classes
+unchanged). Order of events, from git and the run manifests: ADR-0027
+accepted with contract 1.0.7 in `8f9485b` (04:14:02 UTC); the predictions
+file `predictions-D2p.md` committed in `ef30e57` (04:14:17 UTC); D2′'s plan,
+gate and CI changes in `86f026d`, `3bd816b`, `6232f91` (04:17:34 UTC);
+records `build-3`, `images-build-3`, `images-verify-3` (04:17:39–04:18:05
+UTC); the first D2′ run `20261012T041823Z-D2p-1-M2-f7ae8f1a` started
+04:18:23 UTC. **Every D2′ run started after the predictions were committed**;
+no D2′ plan was generated or run anywhere before (`runs/` and `evidence/`
+searched for `D2p`). Every D2′ run (primary, candidate, replay) ran on
+commitproof `6232f91` (clean tree; runner image `6232f91`; manifest
+`images_lock_sha256` `cf90f28c…`, the lock committed in `c0de79a`).
+
+D2′'s ten primary runs come from record `campaign-k4-d2p-1` (interrupted by
+the host power-off, §9 item 8; its log has the ten `cell` events) and were
+reused, not recomputed, by record `campaign-k4-d2p-2` (exit 1: matrix
+complete, FAIL present; `{"cells":10,"verdicts":{"FAIL":4,"PASS":6}}`). Every
+fault of every D2′ primary run was confirmed (F5a, F3a ×2, F2a, F2b ×2;
+record `k4obs-2`).
+
+**Predictions against results** (`predictions-D2p.md`):
+
+- *M2: FAIL with lost-write in ≥ 4 of 5* — **held: 4 of 5** (seeds 2–5). C1
+  counts (checks.json `stats.counts`; the anomaly list is capped at 20 per
+  class): 834, 4 875, 4 946, 4 269 lost writes of 3 615, 7 244, 7 079, 7 273
+  ok writes checked. Seed 1 PASS (6 252 ok writes checked, none lost).
+- *Real build: PASS in 5 of 5* — **held: 5 of 5**, 7 293–7 840 ok writes per
+  run, no anomaly of any checker.
+
+**Mechanism** (observations explain, never judge, ADR-0016; record `k4orch`,
+stdout sha256 `85a82d85…`: every appointment attempt the orchestrators
+logged, with the poolers recruited and refused; times from the first
+health-stream drop of the killed leader's pooler):
+
+- M2 seeds 2–5 (FAIL): a base follower was appointed **15.5–24.9 s** after
+  the kill by recruiting **two of the recorded cohort {n1,n2,n3}** at LSN
+  `0/4000000`, while the same attempt was **refused by the old leader and by
+  n4** (`Unavailable … connection error`, both down): seed 2 n3 (recruited
+  n3, n2; after 23 failed attempts), seed 3 n1 (n3, n1), seed 4 n1 (n1, n3),
+  seed 5 n3 (n3, n2). The writes n4 alone had acknowledged were not on the
+  new leader; the final reads lack them (C1). As predicted.
+- M2 seed 1 (PASS): **no appointment succeeded while the old leader and n4
+  were down.** At +18.2 s orchestrators z1 and z2 both proposed term 2 and
+  each recruited one of n1, n3 ("recruited 1 of 3 cohort poolers, need at
+  least 2"); the later attempts reused term 2 and were refused ("cannot accept
+  revocation: already accepted term 2 from coordinator …", "reused term 2
+  with a different coordinator_initiated_at"): 14 failed attempts. At +47.4 s,
+  with nothing refused (all four back), z2 appointed **n4** (term 3,
+  LeaderResigned), n4 and n2 at `0/426CC70` ahead of n1 and n3 at
+  `0/4000000`; then z3 appointed n1 at +48.5 s (term 4, LeaderQuorumWritesStalled;
+  n1 and n3 at `0/4273640`, n2 also recruited at `0/42749A0`; positions are
+  ordered by (rule, LSN), CONTRACT F9, and `k4orch` does not list the rule of
+  each position). n4 held the writes, nothing was lost. The prediction's
+  observation "n4 is never leader after the kill" does **not** hold in this
+  run. What decided it is that competing orchestrators produced no failover
+  inside the outage, so D2′ did not reach M2's defect in seed 1; recorded,
+  not tuned (ADR-0027: one amendment only). Upstream DNS timeouts (§9 item
+  10, LIM-35) are not seen in that outage: record `dockerd-dns` has one
+  failed forward within ±60 s of the kill, at 04:19:18Z, before it
+  (observation only; lookups that were slow but answered are not logged).
+- Real build (all PASS): no appointment succeeded during the outage; the
+  first came **45.5–52.1 s** after the kill, every recruited pooler at the
+  same LSN (e.g. seed 1: n3, n1, n4, n2 at `0/42C9F08`): in seeds 1–3 all four
+  poolers were back (nothing refused); in seeds 4 and 5 n4 was still down and
+  n1, n2, n3 — the returned old leader among them, 3 of the cohort of 4 —
+  appointed n2 (seed 4: the old leader n2 itself; seed 5: the follower n2,
+  the old leader being n1). As predicted (unavailability only). Decided rules observed (`k3obs-2`):
+  every real run shows a rule `<term>.1` (leader subterm 1, the same leader
+  changing the rule, CONTRACT F9) after F5a — 1.1 in seeds 1, 2, 4, 5, 2.1 in
+  seed 3 — and no M2 run shows one; consistent with the COHORT_ADD rule write
+  that M2 skips (§9.2), not otherwise verified.
 
 ## 6. Historical control H1 (K4.6)
 
@@ -259,6 +357,34 @@ REPRODUCED 5/5 (a
 probe run has nothing to reduce: no faults, a 10 s workload, all three
 clients involved).
 
+M2's four D2′ failures (record `campaign-k4-d2p-2`; journals
+`<run>.minimize.json`, all `done: true`) minimize alike: the empty schedule
+PASSes (D2′'s single composite step is needed), the workload halved once
+(90 s → 45 s) keeps lost-write, halved twice PASSes; no client reduction
+(the clients in the anomalies plus one are all six). Replays of the minimal
+plans:
+
+| D2′ M2 run | Minimized run (45 s) | Replays with lost-write | Reproducibility |
+|---|---|---|---|
+| seed 2 `20261012T042125Z-D2p-2-M2-f3aaba7f` | `20261012T225039Z-D2p-2-M2-2f9705c6` | 4/5 (replay 2 PASS) | REPRODUCED |
+| seed 3 `20261012T042412Z-D2p-3-M2-029cd422` | `20261012T231339Z-D2p-3-M2-aeb8485c` | 5/5 | REPRODUCED |
+| seed 4 `20261012T042700Z-D2p-4-M2-a663d58e` | `20261012T233929Z-D2p-4-M2-3de1ae22` | 5/5 | REPRODUCED |
+| seed 5 `20261012T042948Z-D2p-5-M2-b2028f9f` | `20261013T000246Z-D2p-5-M2-4e4494e9` | 5/5 | REPRODUCED |
+
+Seed 2's minimized run is the re-run of the candidate the power-off
+interrupted (§9 item 8): same plan (`plan_sha256` `2f9705c6…`), same seed.
+One attempt of seed 3's replay 5, `20261012T233152Z-D2p-3-M2-aeb8485c`, is
+INVALID (`fault f0.3 (F2a) not-applied: resolve: no pooler reports itself
+leader`): during the 40 s hold with n1 and n3 paused, the runner's
+`__probe status` timed out (3 s, `DeadlineExceeded`) on all four poolers,
+the leader's included, in every resolution attempt within P27 (run logs
+`runner-0073`…`runner-0077`). It counts toward nothing (§12.1); the driver
+re-ran it with the same plan and seed, valid and FAIL
+(`20261012T233414Z-D2p-3-M2-aeb8485c`). Cause, found when CI's
+`nsmoke-f3a` ended INVALID the same way: a harness defect (the runner's
+fresh gRPC clients waited on an upstream DNS lookup), fixed in `e0795f1`
+(§9 item 10); the replay that counts ran before the fix and is valid.
+
 ## 8. C6 and C7: the PostgreSQL mechanisms (S44, S61) and what the system did
 
 **C6 (pg_rewind same-timeline divergence, S44).** Design says: TLA+ found that
@@ -297,7 +423,7 @@ finding (§7) shows the other face of the same PostgreSQL mechanism: the
 locally committed value is not acknowledged but is visible to other sessions
 until a failover removes it.
 
-## 9. Harness defects found and fixed in K4 (none is a Multigres finding, §11.1)
+## 9. Harness defects found and fixed, and interruptions, in K4 (none is a Multigres finding, §11.1)
 
 1. **Variant rebuild dropped the lock entry** (evidence attempt 1, record
    `images-build-M1` exit 2 in `runs/k4-attempt1/`, outside evidence): a
@@ -323,24 +449,102 @@ until a failover removes it.
 7. **CI attempt `ci` failed on staticcheck** (an unused type in `k4obs`):
    fixed in `14c5045`; the latest attempt is `ci-2` (K4.8 reads the latest).
 
-Runs therefore come from two commitproof commits, each a clean tree: 173
-from `f4a5a0f` (`campaign-k4-1`) and 4 from `ccda4a4` (`campaign-k4-2`: C4
-seed 2 and C5 seeds 1–3); the fixes between them touch only the code paths
-named above. The CI record ran on `14c5045`.
+8. **Host power-off during the D2′ follow-ups** (not a harness defect, not a
+   finding). The owner's machine was powered off while record
+   `campaign-k4-d2p-1` ran: `journalctl --list-boots` ends that boot at
+   2026-10-12T04:52:16Z (`last -x`: "shutdown system down" at that minute);
+   the next boot started 22:41:37Z. By then the ten D2′ primary runs and the
+   first minimization candidate of seed 2 (`20261012T044748Z-D2p-2-M2-3ce80a05`)
+   were sealed (`cpcheck verify-seal` valid on all eleven after the reboot).
+   The second candidate, `20261012T045005Z-D2p-2-M2-2f9705c6` (started
+   04:50:05Z), was **interrupted by the host power-off**: no `seal.json`, no
+   checks.json, history ending with the runner's marker `run-end`
+   `{"reason":"nemesis interrupted","status":"invalid"}`. It was not edited
+   and counts toward nothing: archived as found in
+   `harness-defect-runs/20261012T045005Z-D2p-2-M2-2f9705c6.unsealed.tar.zst`
+   (sha256 `e5cfcc57…`; README there), removed from `runs/`, and re-run from
+   scratch with the same plan and seed by the resumed campaign
+   (`20261012T225039Z-D2p-2-M2-2f9705c6`, same `plan_sha256`). The
+   interrupted record has logs (`logs/campaign-k4-d2p-1.*`) but no line in
+   commands.jsonl (record-command.sh appends one when the command exits);
+   they are kept as they are. After the reboot: 29 exited project
+   containers, network `commitproof_cpnet` and seven project volumes were
+   left over; no FUSE mount of our containers and no stuck process. The
+   first `make prereq-check` was 25/26, **D5 FAIL** (`ip routes in
+   10.77.0.0/24: 1; docker networks using it: commitproof_cpnet`), the
+   occupant being that leftover project network
+   (`prereq-resume-1.json`); after removing only resources labelled
+   `com.docker.compose.project=commitproof` (images kept), record
+   `prereq-check-resume` is 26/26 PASS (`prereq-resume-2.json`; the
+   Makefile target writes `evidence/K1/prereq.json`, which was restored to its
+   committed content both times). Record `images-verify-resume`: the images
+   still match the lock.
+9. **The evidence script could not resume an interrupted record**: re-running
+   `k4-evidence.sh d2p` reused the unrecorded name `campaign-k4-d2p-1`, whose
+   logs record-command.sh refuses to overwrite. Fixed in `dbab5e9` (a name
+   with logs and no record is an interrupted attempt; the next attempt takes
+   the next name); the resume is record `campaign-k4-d2p-2`.
+10. **The runner's pooler client depended on the host's upstream DNS**
+   (harness defect; found by CI attempt `ci-3`, exit 2). `ci-3`'s
+   `nsmoke-f3a` (`runs/20261013T003337Z-nsmoke-f3a-1-real-c8c8547b`, outside
+   evidence) and the D2′ replay attempt `20261012T233152Z-D2p-3-M2-aeb8485c`
+   (§7) ended INVALID with `resolve: no pooler reports itself leader`: every
+   `commitproof __probe status` (a new process, new gRPC connections) timed
+   out after 3 s on every pooler, while the runner's observer, on
+   connections already established, got the same poolers' Status in ≤ 100 ms
+   (90 calls, 0 timeouts, in the nsmoke-f3a run) and clients completed
+   ~170 operations/s through the gateways. Cause: grpc-go's dns resolver
+   (v1.81.1) looks up the TXT record `_grpc_config.pooler-<n>` before it gives
+   a connection any address; Docker's embedded DNS forwards that name to the
+   host's upstream resolver — after the power-off a different USB-tethered
+   network (DHCP 10.198.245.0/24, before 10.166.176.0/24) — which times out
+   intermittently. Record `dockerd-dns` counts dockerd's `[resolver] failed
+   to query external DNS server … i/o timeout` lines by question and minute:
+   they are `_grpc_config.<name> TXT` lookups (and a few A/AAAA for stopped
+   poolers), present in the windows of both INVALID runs. The harness must
+   not depend on outbound network (AGENTS.md §5). Fixed in `e0795f1`
+   (`grpc.WithDisableServiceConfig()` on the runner's only gRPC client: no
+   TXT lookup; the address still comes from Docker's DNS); records
+   `build-4`, `images-build-4`, `images-verify-4`, then the CI attempt
+   `ci-4` (§1). Fault predicates, checkers and verdicts are unchanged.
+   Multigres' own gRPC clients (`go/tools/grpccommon.NewClient`: the same
+   resolver, service config on) send the same lookups when they open a
+   connection; in this environment that can delay the SUT's new connections
+   (LIM-35). The failures existed before the power-off too, at a lower rate
+   (`dockerd-dns`: 305 failed forwards in the previous boot, 1 172 in this
+   one; 45 and 30 `_grpc_config.pooler-nX TXT` in the windows of the two
+   INVALID runs; 115 in `ci-4`'s window, after the fix, i.e. from the SUT's
+   clients, with every smoke run valid).
+
+Runs therefore come from three commitproof commits, each a clean tree: 173
+from `f4a5a0f` (`campaign-k4-1`), 4 from `ccda4a4` (`campaign-k4-2`: C4
+seed 2 and C5 seeds 1–3), and every D2′ run from `6232f91`
+(`campaign-k4-d2p-1`, `campaign-k4-d2p-2`); the fixes between them touch only
+the code paths named above and D2′'s plan, gate and CI (ADR-0027). CI
+records: `ci` (exit 2, staticcheck) and `ci-2` (exit 0) on `14c5045`; `ci-3`
+(exit 2, item 10) on `dbab5e9`; **`ci-4` (exit 0) on `e0795f1`**, the latest,
+which K4.8 reads. `e0795f1` changes only the runner's gRPC dial option; no
+evidence run was made with it except CI's smoke runs (outside evidence).
 
 ## 10. Guarantees G1–G7: demonstrated / not demonstrated
 
 - **G1** (acked writes survive): no lost-write in any valid real-build run of
-  K4 (C1–C7 ×3, D1 ×5, D2 ×5, DH1 ×5 on h1). The detector works: M1 → 5/5
-  lost-write. Not demonstrated: any statistical bound (K7), membership-change
-  loss under M2 (undetected, §5), power loss (LIM-03).
+  K4 (C1–C7 ×3, D1 ×5, D2 ×5, D2′ ×5, DH1 ×5 on h1). The detector works:
+  M1 → 5/5 lost-write via D1, M2 → 4/5 lost-write via D2′ (§5). Not
+  demonstrated: any statistical bound (K7), power loss (LIM-03).
 - **G2** (no split brain): **violated by G2's own observable** — reads
   observed writes that later disappeared, with incompatible list orders, in
   D1 (3/5 real) and C2 seed 3 (§7). No two leaders committed divergent
   *acknowledged* histories in K4 (C1 valid everywhere on the real build).
-- **G3** (membership changes keep acked writes): C4 ×3 and D2 ×5 real-build
-  runs PASS, including F5b during an isolated leader and the D2 shape. Not
-  demonstrated: that a membership defect would be caught (M2 undetected).
+- **G3** (membership changes keep acked writes): C4 ×3, D2 ×5 and D2′ ×5
+  real-build runs PASS, including F5b during an isolated leader, the D2 shape
+  and D2′ (the new member and the leader crashed together: no failover until
+  one of them returned, no acknowledged write lost). A membership defect is
+  caught: M2 (membership admitted from a local view) DETECTED 4/5 via D2′.
+  Not demonstrated: detection of an orchestrator failing over with a stale
+  membership view (S41's scenario; multiorch recruits every pooler of the
+  shard, so D2′ models a correlated crash instead, LIM-34); D2′ seed 1 on M2
+  did not reach the defect (no failover inside the outage, §5.2).
 - **G4** (no aborted reads): C2 g1a never fired on the real build.
 - **G5** (serializable / SI): no G0–G2 cycle reported by C3 on the real build;
   C3 seed 2 ran W1 at repeatable-read. The incompatible orders of §7 are G2
@@ -356,20 +560,28 @@ Primary runs and every run of a real-build failure are committed in full;
 minimization candidates and replays of mutant and H1 failures are committed
 as stubs (manifest, plan, seal; cpgate checks them against the seal and
 checks.json), their full archives kept on this machine under `runs/k4-full/`
-(LIMITATIONS: not re-checkable from git alone). Stored by record `store-runs`: 104 runs in full, 73 stubs; `evidence/K4` is
-92 MB and `evidence/` 166 MB in total (P25: ≤ 200 MB), which leaves about
-34 MB for K5–K7: K7's policy of summarizing uncited runs (§13) will have to
-apply from K5 on.
+(LIM-30: not re-checkable from git alone). Stored by records `store-runs`
+(104 runs in full, 73 stubs) and `store-runs-2` (D2′: the 10 primary runs in
+full, 33 candidates and replay attempts as stubs); `results-2` indexes 220
+runs and 18 follow-ups. `evidence/K4` is 112.1 MB and `evidence/` 183.1 MB
+in total (bytes/10⁶ of the files committed; P25: ≤ 200 MB), up from 166.2 MB
+at `c38a9b9`. About 17 MB remain for K5–K7: K7's policy of summarizing
+uncited runs (§13) will have to apply from K5 on.
 
 ## 12. Demonstrated / not demonstrated
 
 Demonstrated (artifacts above): the quorum table with 0 mismatches and the
 coincidence list; 56 matrix cells with valid runs, every one checked;
-M1 and M4 detected (5/5) with isolation of their builds; every FAIL
-minimized and replayed with its reproducibility class; H1 attempted and
+M1 (D1) and M4 (P1) detected 5/5 and **M2 detected 4/5 by D2′**, with
+isolation of their builds and the real build's results on the same schedules
+(D1: 3/5 FAIL incompatible-order; D2′: 5/5 PASS; P1: 5/5 PASS); every FAIL
+(18) minimized and replayed with its reproducibility class; H1 attempted and
 classified NOT_DETECTED; four real-build failures triaged; all CI targets
-including `ci-mutant-smoke`.
+including `ci-mutant-smoke` (`ci-4`).
 
-Not demonstrated: M2's detection (K4.3; owner decision on ADR-0027);
-statistics (K7); H1's data loss; S44's same-timeline promotion pattern;
-plain-PostgreSQL reproduction of §7; remote CI (LIM-16).
+Not demonstrated: detection of a stale-membership failover as S41 describes
+it (D2′ models a correlated crash, LIM-34) and M2 in D2′ seed 1 (no failover
+inside the outage); statistics (K7); H1's data loss; S44's same-timeline
+promotion pattern; plain-PostgreSQL reproduction of §7; whether the test
+host's upstream DNS timeouts changed the course of any run (LIM-35); remote
+CI (LIM-16).
