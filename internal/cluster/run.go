@@ -26,8 +26,22 @@ import (
 // nemesis schedule's worst case, recovery, quiescence and final reads, plus
 // one P09 of slack.
 func runnerTimeout(p *plan.Plan) time.Duration {
-	return time.Duration(p.DurationMS)*time.Millisecond + params.ClientOpTimeout + plan.NemesisBound(p.Steps) +
+	d := time.Duration(p.DurationMS)*time.Millisecond + params.ClientOpTimeout + plan.NemesisBound(p.Steps) +
 		params.RecoveryDeadline + params.Quiescence + params.FinalReadDeadline + 2*params.ClientOpTimeout + params.HealthyDeadline
+	// K5's own waits (ADR-0029, ADR-0030), only for plans that have them.
+	if p.Publication != "" {
+		d += 2*plan.SlotReadyDeadline + plan.CatchUpDeadline
+	}
+	if p.Profile == "buffered" {
+		d += plan.BufferGuardWait
+	}
+	for _, c := range p.Clients {
+		if c.Mode == plan.ModeListener {
+			d += plan.ListenerTail
+			break
+		}
+	}
+	return d
 }
 
 // usesKind reports whether the plan contains a fault of kind.

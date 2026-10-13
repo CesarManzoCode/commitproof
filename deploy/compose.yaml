@@ -135,7 +135,7 @@ services:
       - data-n1:/data-backing
       - certs:/certs
       - backups:/backups
-      - ./pg_hba_template.conf:/etc/pgctld/pg_hba_template.conf:ro
+      - ./pg_hba_template.baseline.conf:/etc/pgctld/pg_hba_template.conf:ro
       - ./postgres-password:/var/run/secrets/multigres/password:ro
     networks:
       cpnet:
@@ -187,7 +187,7 @@ services:
       - data-n2:/data-backing
       - certs:/certs
       - backups:/backups
-      - ./pg_hba_template.conf:/etc/pgctld/pg_hba_template.conf:ro
+      - ./pg_hba_template.baseline.conf:/etc/pgctld/pg_hba_template.conf:ro
       - ./postgres-password:/var/run/secrets/multigres/password:ro
     networks:
       cpnet:
@@ -230,7 +230,7 @@ services:
       - data-n3:/data-backing
       - certs:/certs
       - backups:/backups
-      - ./pg_hba_template.conf:/etc/pgctld/pg_hba_template.conf:ro
+      - ./pg_hba_template.baseline.conf:/etc/pgctld/pg_hba_template.conf:ro
       - ./postgres-password:/var/run/secrets/multigres/password:ro
     networks:
       cpnet:
@@ -275,7 +275,7 @@ services:
       - data-n4:/data-backing
       - certs:/certs
       - backups:/backups
-      - ./pg_hba_template.conf:/etc/pgctld/pg_hba_template.conf:ro
+      - ./pg_hba_template.baseline.conf:/etc/pgctld/pg_hba_template.conf:ro
       - ./postgres-password:/var/run/secrets/multigres/password:ro
     networks:
       cpnet:

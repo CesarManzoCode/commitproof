@@ -22,7 +22,7 @@ Abbreviations: `MP` = `k8s-multipooler-statefulset.yaml`, `MO` =
 | `--grpc-port` | `16200` | MP:214 |
 | `--pg-port` | `5432` | MP:215 |
 | `--grpc-socket-file` | `/data/pgctld.sock` | MP:216 |
-| `--pg-hba-template` | `/etc/pgctld/pg_hba_template.conf` (file `deploy/pg_hba_template.conf` = the ConfigMap `pg-hba-template` of MP:9–44, verbatim) | MP:217, MP:241 |
+| `--pg-hba-template` | `/etc/pgctld/pg_hba_template.conf` (file `deploy/pg_hba_template.baseline.conf` = the ConfigMap `pg-hba-template` of MP:9–44 with one line changed, below; `deploy/pg_hba_template.conf` is the ConfigMap verbatim, used by profile h1) | MP:217, MP:241 |
 | `--pgbackrest-port` | `8432` | MP:218 |
 | `--pgbackrest-cert-dir` | `/certs` | MP:219 |
 | `--pprof-http=true` | removed | allowed divergence (pprof) |
@@ -131,6 +131,8 @@ Not in the demo (CommitProof's own fault-injection layer, CONTRACT §5.1, §8, A
 | Cert copy init container | `setup-certs` copies a Secret into `/certs` (MP:89–105) | `cluster-init` writes the certificates directly into the shared `certs` volume | same files at the same paths; no Kubernetes Secret in Compose |
 | Restart policy | Kubernetes restarts failed containers | `restart: "no"` everywhere | CONTRACT §15 K1 rejection condition; faults must not be healed by the orchestrator (ADR-0001) |
 | Probes | liveness/readiness/startup probes (MP:138–155, MO:52–64, MG:58–69, ET:58–69) | none (etcd healthcheck only, above) | a probe-driven restart would heal faults on its own schedule; readiness is checked by the HEALTHY predicate (CONTRACT §5.1) |
+| pg_hba local line (K5) | `local all all peer` (MP:28) | `local all all trust` (`deploy/pg_hba_template.baseline.conf`) | allowed divergence (CONTRACT §5.1, ADR-0029): the pooler's per-user pools connect as the client's role over the Unix socket, where `peer` refuses every role but the pooler's OS user, so W8's `cp_storm`/`cp_steady` could not run; every `host` line is already `trust` and the postgres user's line is unchanged |
+| Profile `buffered` (K5) | — | `deploy/compose-buffered.yaml` restates each gateway's command with `--buffer-enabled=true` appended | CONTRACT §5.5 (defaults otherwise, S14) |
 | Image HEALTHCHECKs | the upstream Dockerfiles declare HEALTHCHECKs; Kubernetes ignores them | disabled (`healthcheck: {disable: true}`) | same behaviour as the demo; with `restart: "no"` they would only add periodic processes to every container |
 | Images | `docker.io/multigres/*:latest` (MP:108, MP:208, MO:20, MG:20, CM:13) | `commitproof/multigres:real`, `commitproof/pgctld:real` built from the pinned commit (CONTRACT §5.2, ADR-0002); `cluster up --mutant M<n>` runs the Multigres services on `commitproof/multigres:M<n>` (`CP_MULTIGRES_TAG`, K4) | pin by source; mutants are the pinned commit + one patch (§9.1) |
 | multiadmin, multiadmin-web, observability | deployed by the demo | not deployed | not part of the §5.1 topology |

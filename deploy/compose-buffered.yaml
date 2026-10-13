@@ -1,0 +1,45 @@
+# Profile `buffered` (CONTRACT §5.5): an override of compose.yaml. The
+# gateways add --buffer-enabled=true and keep every other buffer flag at its
+# default (S14: window 10 s, size 1000, max failover duration 20 s, min time
+# between failovers 1 min; ADR-0029). Compose replaces a service's command
+# in an override, so each gateway's command is restated: compose.yaml's
+# flags, in order, plus the one flag.
+services:
+  gw-z1:
+    command:
+      - /multigres/bin/multigateway
+      - --http-port=15000
+      - --grpc-port=15100
+      - --pg-port=15432
+      - --hostname=gw-z1
+      - --topo-global-server-addresses=etcd:2379
+      - --topo-global-root=/multigres/test/global
+      - --cell=zone1
+      - --enable-slot-based-replication=true
+      - --buffer-enabled=true
+
+  gw-z2:
+    command:
+      - /multigres/bin/multigateway
+      - --http-port=15000
+      - --grpc-port=15100
+      - --pg-port=15432
+      - --hostname=gw-z2
+      - --topo-global-server-addresses=etcd:2379
+      - --topo-global-root=/multigres/test/global
+      - --cell=zone2
+      - --enable-slot-based-replication=true
+      - --buffer-enabled=true
+
+  gw-z3:
+    command:
+      - /multigres/bin/multigateway
+      - --http-port=15000
+      - --grpc-port=15100
+      - --pg-port=15432
+      - --hostname=gw-z3
+      - --topo-global-server-addresses=etcd:2379
+      - --topo-global-root=/multigres/test/global
+      - --cell=zone3
+      - --enable-slot-based-replication=true
+      - --buffer-enabled=true

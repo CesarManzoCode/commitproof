@@ -32,9 +32,14 @@ const Project = "commitproof"
 // ProjectLabel selects every Docker resource of the project.
 const ProjectLabel = "com.docker.compose.project=" + Project
 
-// Profiles implemented by deploy/ and their Compose files (K1: baseline;
-// K4: h1, the historical control, CONTRACT §5.5, ADR-0025).
-var composeFiles = map[string]string{"baseline": "deploy/compose.yaml", "h1": "deploy/compose-h1.yaml"}
+// Profiles implemented by deploy/ and their Compose files, applied in order
+// (K1: baseline; K4: h1, the historical control, ADR-0025; K5: buffered, an
+// override of the gateways' commands, CONTRACT §5.5).
+var composeFiles = map[string][]string{
+	"baseline": {"deploy/compose.yaml"},
+	"buffered": {"deploy/compose.yaml", "deploy/compose-buffered.yaml"},
+	"h1":       {"deploy/compose-h1.yaml"},
+}
 
 // Cluster is the host-side handle.
 type Cluster struct {
@@ -63,7 +68,8 @@ func New(root, profile string, rec *cmdlog.Recorder) (*Cluster, error) {
 	return &Cluster{Root: root, Profile: profile, Rec: rec, RunnerTag: "real"}, nil
 }
 
-// SetMutant selects a mutant build (baseline profile only).
+// SetMutant selects a mutant build (profiles derived from §5.1 only:
+// baseline, and buffered for M3's D3).
 func (c *Cluster) SetMutant(m string) error {
 	if m == "" {
 		c.Mutant = ""
@@ -72,8 +78,8 @@ func (c *Cluster) SetMutant(m string) error {
 	if !images.IsMutant(m) {
 		return fmt.Errorf("mutant %q: want M<n>", m)
 	}
-	if c.Profile != "baseline" {
-		return fmt.Errorf("mutant %s runs on profile baseline, not %s", m, c.Profile)
+	if c.Profile != "baseline" && c.Profile != "buffered" {
+		return fmt.Errorf("mutant %s runs on profile baseline or buffered, not %s", m, c.Profile)
 	}
 	c.Mutant = m
 	return nil
@@ -150,8 +156,11 @@ func (c *Cluster) env() ([]string, error) {
 func (c *Cluster) compose(args ...string) []string {
 	// Relative to the repository root, the working directory of every
 	// compose command: recorded argv carry no host-specific paths.
-	return append([]string{"docker", "compose", "--project-name", Project,
-		"--file", composeFiles[c.Profile], "--project-directory", "deploy"}, args...)
+	argv := []string{"docker", "compose", "--project-name", Project}
+	for _, f := range composeFiles[c.Profile] {
+		argv = append(argv, "--file", f)
+	}
+	return append(append(argv, "--project-directory", "deploy"), args...)
 }
 
 func (c *Cluster) run(ctx context.Context, timeout time.Duration, name string, argv []string, o cmdlog.Opts) cmdlog.Result {

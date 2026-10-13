@@ -94,6 +94,17 @@ type Run struct {
 	Expected  map[string]*Expect
 	Verdict   string
 	extraKeys map[int64]bool
+	// Version is the contract version the entry is generated under (""
+	// = CorpusContractVersion, the K2 corpus; K5CorpusContractVersion for
+	// testdata/corpus-k5).
+	Version string
+}
+
+func (r *Run) version() string {
+	if r.Version != "" {
+		return r.Version
+	}
+	return CorpusContractVersion
 }
 
 // CheckerIDs are the checkers of CONTRACT §10 in checks.json order.
@@ -270,7 +281,7 @@ func (r *Run) assignProcs() {
 // reads like the runner (CONTRACT §6.4, P06–P08), and returns the history
 // events in order.
 func (r *Run) Finish() []map[string]any {
-	r.Mark(100*us, "run-start", map[string]any{"contract_version": CorpusContractVersion, "synthetic": true})
+	r.Mark(100*us, "run-start", map[string]any{"contract_version": r.version(), "synthetic": true})
 	r.Mark(1*ms, "setup-begin", map[string]any{"gw": "gw-z1"})
 	r.Mark(13*ms, "setup-end", map[string]any{"result": "ok"})
 	r.Mark(r.T0-us, "workload-start", nil)
@@ -423,7 +434,7 @@ func (r *Run) Write(dir string) error {
 		hb.Write(line)
 		hb.WriteByte('\n')
 	}
-	plan := map[string]any{"campaign": "synthetic", "contract_version": CorpusContractVersion, "profile": r.Profile,
+	plan := map[string]any{"campaign": "synthetic", "contract_version": r.version(), "profile": r.Profile,
 		"seed": int64(seedOf(r.ID) >> 1), "directed": "", "clients": []any{}, "nemesis": []any{},
 		"setup": map[string]any{"append_active_keys": params.AppendActiveKeys, "append_retire_at": params.AppendKeyRetireAt,
 			"bank_accounts": params.BankAccounts, "bank_initial": params.BankInitialBalance, "register_keys": params.RegisterKeys},
@@ -433,7 +444,7 @@ func (r *Run) Write(dir string) error {
 		return err
 	}
 	ps := sha256.Sum256(pb)
-	man := map[string]any{"contract_version": CorpusContractVersion, "run_id": r.ID, "campaign": "synthetic", "profile": r.Profile,
+	man := map[string]any{"contract_version": r.version(), "run_id": r.ID, "campaign": "synthetic", "profile": r.Profile,
 		"seed": plan["seed"], "mutant": "none", "plan_sha256": hex.EncodeToString(ps[:]), "synthetic": true,
 		"generator": "internal/synth (cmd: go run ./internal/tools/gencorpus)"}
 	mb, err := canonjson.Marshal(man)

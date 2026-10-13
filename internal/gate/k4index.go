@@ -173,7 +173,7 @@ func (e *Evidence) loadK4Run(r *k4Run) {
 		bad("manifest run_id %q", str(r.Manifest, "run_id"))
 	}
 	if v := str(r.Manifest, "contract_version"); !k4ContractOK(r.campaign(), v) {
-		bad("contract version %s, not %s (or %s for a run other than D2′)", v, params.ContractVersion, params.K4RunsContractVersion)
+		bad("contract version %s, not %s (or %s for a run other than D2′)", v, params.K4ContractVersion, params.K4RunsContractVersion)
 	}
 	if fmt.Sprint(r.Manifest["commitproof_dirty"]) != "false" || fmt.Sprint(r.Manifest["runner_image_dirty"]) != "false" {
 		bad("run from a dirty tree")
@@ -257,11 +257,12 @@ func (e *Evidence) extractStub(archive, id string) (string, error) {
 	return d, nil
 }
 
-// k4ContractOK: a K4 run carries the current contract version, or the
-// version of the K4 runs made before ADR-0027 unless it is a D2′ run
-// (contract 1.0.7 added D2′ and changed no other K4 plan).
+// k4ContractOK: a K4 run carries the contract version K4 closed with, or
+// the version of the K4 runs made before ADR-0027 unless it is a D2′ run
+// (contract 1.0.7 added D2′ and changed no other K4 plan; K5's versions
+// change no K4 plan).
 func k4ContractOK(campaign, version string) bool {
-	return version == params.ContractVersion || version == params.K4RunsContractVersion && campaign != k4D2Prime
+	return version == params.K4ContractVersion || version == params.K4RunsContractVersion && campaign != k4D2Prime
 }
 
 // primaries returns the primary runs of (campaign, profile, mutant, seed),

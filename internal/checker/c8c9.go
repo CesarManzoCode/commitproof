@@ -34,18 +34,38 @@ import (
 //     times.
 //   - prepared-statement-lost: after an ok PREPARE in a conn, an EXECUTE
 //     fails with 26000 or returns a row other than the expected one.
-//   - notify-not-resumed: an ok NOTIFY invoked after a listener session's
-//     LISTEN completed, while that session stayed alive for 10 s after the
-//     NOTIFY completed, was not received within those 10 s.
-//   - notify-window-loss (observation): an ok NOTIFY not received by a
-//     listener that had no live session over that 10 s window.
+//   - notify-not-resumed: an ok NOTIFY not received within 10 s of its
+//     completion by a listener client that had a live session over that
+//     window (LISTEN completed before the NOTIFY was invoked; the session's
+//     last op, or its first non-ok op, completed after the window), no fault
+//     window overlapping it, and invoked after that session's first
+//     successful op post-recovery (CONTRACT §10.9, ADR-0030): recovery from
+//     the latest fault window ended before the NOTIFY is the completion of
+//     the first ok write (W4 insert, NOTIFY transaction) through the
+//     listener's gateway invoked after that window; without an earlier fault
+//     the LISTEN itself is the anchor.
+//   - notify-window-loss (observation): every other miss — no live session,
+//     a fault window overlapping the 10 s, or before the anchor (S19's
+//     reconnect windows).
 //   - fair-share-starvation: fewer than 90% of the cp_steady operations
 //     invoked within a storm window (first invoke to last completion of the
 //     storm operations of one phase) completed ok.
 //   - overload-failover: two consecutive ok cp_steady operations completing
 //     within a storm window report different servers, and no nemesis fault
 //     overlaps the window.
+//
+// cp_steady operations are W4 inserts: wl "ledger" with value role
+// "cp_steady" (K5 runs, so that C1, C2 and C7 judge them as W4 inserts) or
+// wl "overload" with that role (K2's synthetic form).
 const notifyDeadline = 10 * time.Second
+
+// The buffer's documented timing guard and maximum failover duration (S14
+// defaults: --buffer-min-time-between-failovers 1 min,
+// --buffer-max-failover-duration 20 s; CONTRACT §10.10, ADR-0029).
+const (
+	bufferMinBetween  = 60 * time.Second
+	bufferMaxFailover = 20 * time.Second
+)
 
 // CheckSession is C8.
 func CheckSession(h *History) Result {
@@ -111,7 +131,7 @@ func sessionRules(h *History, c *collector, stats map[string]any) {
 				shows++
 				g := str(in, "guc")
 				got := str(obj(o.Value), "value")
-				if s := gucs[g]; s != nil && s.known && !s.possible[got] {
+				if s := gucs[g]; s != nil && s.known && !s.possible[got] && !sabotageSessionSetting {
 					c.add("session-setting-lost", append([]int64{o.Index}, s.setOps...), "conn %d: SHOW %s i=%d returned %q; earlier SETs installed %v", conn, g, o.Index, got, sortedStrings(s.possible))
 				}
 			case "prepare":
@@ -125,7 +145,7 @@ func sessionRules(h *History, c *collector, stats map[string]any) {
 			case "execute":
 				name := str(in, "name")
 				want, ok := prepared[name]
-				if !ok {
+				if !ok || sabotagePreparedStatement {
 					continue
 				}
 				executes++
@@ -159,12 +179,13 @@ func sortedStrings(m map[string]bool) []string {
 func notifyRules(h *History, c *collector, stats map[string]any) {
 	ops := h.opsOf("notify")
 	type session struct {
-		start, end int64 // LISTEN completion; end of the session
+		start, end int64 // LISTEN completion; completion of its last op
 		listen     int64
+		gw         string
+		oks        []*Op           // the session's ok ops, in invoke order
 		recv       map[int64]int64 // payload id → invoke t of the wait that returned it
 	}
 	listeners := map[int64][]*session{} // client → sessions
-	var notifies []*Op
 	conns := byConn(ops)
 	for _, conn := range sortedKeys(conns) {
 		var cur *session
@@ -172,18 +193,19 @@ func notifyRules(h *History, c *collector, stats map[string]any) {
 			switch o.F {
 			case "listen":
 				if o.Type == history.TypeOK {
-					cur = &session{start: o.Complete, end: Never, listen: o.Index, recv: map[int64]int64{}}
+					cur = &session{start: o.Complete, end: o.Complete, listen: o.Index, gw: o.GW, oks: []*Op{o}, recv: map[int64]int64{}}
 					listeners[o.Client] = append(listeners[o.Client], cur)
 				}
 			case "wait":
 				if cur == nil {
 					continue
 				}
+				cur.end = max(cur.end, o.Complete)
 				if o.Type != history.TypeOK {
-					cur.end = o.Complete
 					cur = nil
 					continue
 				}
+				cur.oks = append(cur.oks, o)
 				ids, _ := IntList(obj(o.Value)["payloads"])
 				for _, id := range ids {
 					if _, seen := cur.recv[id]; !seen {
@@ -193,10 +215,45 @@ func notifyRules(h *History, c *collector, stats map[string]any) {
 			}
 		}
 	}
+	var notifies, writes []*Op
 	for _, o := range ops {
 		if o.F == "notify" && o.Type == history.TypeOK {
 			notifies = append(notifies, o)
 		}
+	}
+	for _, o := range h.Ops {
+		if o.Type == history.TypeOK && ((o.WL == "ledger" && o.F == "insert") || (o.WL == "notify" && o.F == "notify")) {
+			writes = append(writes, o)
+		}
+	}
+	faults := h.faultWindows()
+	// anchor is the session's first successful op post-recovery for a
+	// NOTIFY invoked at inv (ok false: none, the miss is window loss).
+	anchor := func(s *session, inv int64) (int64, bool) {
+		var prev *faultWindow
+		for i := range faults {
+			if faults[i].End < inv && (prev == nil || faults[i].End > prev.End) {
+				prev = &faults[i]
+			}
+		}
+		if prev == nil {
+			return s.start, true
+		}
+		rec := int64(-1)
+		for _, w := range writes {
+			if w.GW == s.gw && w.Invoke > prev.End && (rec < 0 || w.Complete < rec) {
+				rec = w.Complete
+			}
+		}
+		if rec < 0 {
+			return 0, false
+		}
+		for _, o := range s.oks {
+			if o.Invoke > rec {
+				return max(o.Complete, s.start), true
+			}
+		}
+		return 0, false
 	}
 	clients := sortedKeys(listeners)
 	var judged, windowLoss int64
@@ -209,29 +266,48 @@ func notifyRules(h *History, c *collector, stats map[string]any) {
 		if deadline > h.End {
 			continue // not enough history after the NOTIFY to judge it
 		}
+		overlap := false
+		for _, f := range faults {
+			if f.Start <= deadline && f.End >= n.Invoke {
+				overlap = true
+			}
+		}
 		for _, cl := range clients {
 			ss := listeners[cl]
 			sort.SliceStable(ss, func(i, j int) bool { return ss[i].start < ss[j].start })
-			delivered, live := false, false
+			delivered := false
 			var liveS *session
 			for _, s := range ss {
 				if t, ok := s.recv[id]; ok && t <= deadline {
 					delivered = true
 				}
 				if s.start < n.Invoke && s.end > deadline {
-					live, liveS = true, s
+					liveS = s
 				}
 			}
 			if delivered {
 				continue
 			}
 			judged++
-			if live {
-				c.add("notify-not-resumed", []int64{liveS.listen, n.Index}, "NOTIFY %d (i=%d) was not received within %s by listener client %d, whose session (LISTEN i=%d) was alive", id, n.Index, notifyDeadline, cl, liveS.listen)
-			} else {
-				windowLoss++
-				c.observe("notify-window-loss", []int64{n.Index}, "NOTIFY %d (i=%d) was not received by listener client %d, which had no live session over the %s window", id, n.Index, cl, notifyDeadline)
+			why := ""
+			switch {
+			case liveS == nil:
+				why = "had no live session over the window"
+			case overlap && !sabotageNotifyAnchor:
+				why = "had a fault window overlapping it (reconnect window)"
+			default:
+				if a, ok := anchor(liveS, n.Invoke); !sabotageNotifyAnchor && (!ok || n.Invoke <= a) {
+					why = "was invoked before the session's first successful op post-recovery (reconnect window)"
+				}
 			}
+			if why == "" {
+				if !sabotageNotifyResume {
+					c.add("notify-not-resumed", []int64{liveS.listen, n.Index}, "NOTIFY %d (i=%d) was not received within %s by listener client %d, whose session (LISTEN i=%d) was alive and past its first successful op after recovery", id, n.Index, notifyDeadline, cl, liveS.listen)
+				}
+				continue
+			}
+			windowLoss++
+			c.observe("notify-window-loss", []int64{n.Index}, "NOTIFY %d (i=%d) was not received by listener client %d, which %s", id, n.Index, cl, why)
 		}
 	}
 	stats["notifies"], stats["notify_misses_judged"], stats["notify_window_loss"] = int64(len(notifies)), judged, windowLoss
@@ -257,6 +333,12 @@ func overloadRules(h *History, c *collector, stats map[string]any) string {
 			steady = append(steady, o)
 		}
 	}
+	for _, o := range h.opsOf("ledger") {
+		if str(obj(o.InValue), "role") == "cp_steady" {
+			steady = append(steady, o)
+		}
+	}
+	sort.SliceStable(steady, func(i, j int) bool { return steady[i].Invoke < steady[j].Invoke })
 	faults := h.faultWindows()
 	reason := ""
 	for _, p := range sortedKeys(phases) {
@@ -274,7 +356,7 @@ func overloadRules(h *History, c *collector, stats map[string]any) string {
 			reason = fmt.Sprintf("storm phase %d: no cp_steady operation was invoked in its window", p)
 			continue
 		}
-		if okN*10 < total*9 {
+		if okN*10 < total*9 && !sabotageFairShare {
 			c.add("fair-share-starvation", nil, "storm phase %d: %d of %d cp_steady operations completed ok (< 90%%)", p, okN, total)
 		}
 		faulted := false
@@ -295,7 +377,7 @@ func overloadRules(h *History, c *collector, stats map[string]any) string {
 		sort.SliceStable(oks, func(i, j int) bool { return oks[i].Complete < oks[j].Complete })
 		for i := 0; i+1 < len(oks); i++ {
 			a, b := str(obj(oks[i].Value), "server"), str(obj(oks[i+1].Value), "server")
-			if a != b {
+			if a != b && !sabotageOverloadFailover {
 				c.add("overload-failover", []int64{oks[i].Index, oks[i+1].Index}, "storm phase %d: cp_steady served by %s (i=%d) then %s (i=%d) with no nemesis fault in the window", p, a, oks[i].Index, b, oks[i+1].Index)
 				break
 			}
@@ -327,10 +409,36 @@ func CheckAvailability(h *History) Result {
 	stats["unavailability_ms"] = unavailability(h, faults)
 	stats["latency_us"] = latencies(h, faults)
 	if h.Profile == "buffered" {
-		var judged int64
-		for _, f := range faults {
+		var judged, windows, unbuffered int64
+		for wi, f := range faults {
 			if f.Kind != "F6" {
 				continue
+			}
+			// The documented timing guard (§10.10, ADR-0029): a switchover
+			// less than bufferMinBetween after an earlier fault window's
+			// buffering could have ended is not buffered by design.
+			buffered := true
+			for _, v := range faults[:wi] {
+				if f.Start < max(v.End, v.Start+int64(bufferMaxFailover))+int64(bufferMinBetween) {
+					buffered = false
+				}
+			}
+			if sabotageBufferGuard {
+				buffered = true
+			}
+			if buffered {
+				windows++
+			} else {
+				unbuffered++
+			}
+			flag := func(ops []int64, format string, a ...any) {
+				if !buffered {
+					c.observe("planned-failover-unbuffered", ops, format+" (not buffered: within the timing guard of an earlier fault window)", a...)
+					return
+				}
+				if !sabotagePlannedFailover {
+					c.add("planned-failover-error", ops, format, a...)
+				}
 			}
 			s, e := f.Start, f.End
 			for _, o := range h.Ops {
@@ -345,16 +453,17 @@ func CheckAvailability(h *History) Result {
 				switch {
 				case auto:
 					judged++
-					c.add("planned-failover-error", []int64{o.Index}, "autocommit %s %s i=%d completed %s (%v) within switchover %s", o.WL, o.F, o.Index, o.Type, o.Err, f.ID)
+					flag([]int64{o.Index}, "autocommit %s %s i=%d completed %s (%v) within switchover %s", o.WL, o.F, o.Index, o.Type, o.Err, f.ID)
 				case explicit:
 					judged++
 					if !(o.Type == history.TypeFail && o.SQLState() == "40001") {
-						c.add("planned-failover-error", []int64{o.Index}, "explicit transaction %s i=%d completed %s (%v), not 40001, within switchover %s", o.WL, o.Index, o.Type, o.Err, f.ID)
+						flag([]int64{o.Index}, "explicit transaction %s i=%d completed %s (%v), not 40001, within switchover %s", o.WL, o.Index, o.Type, o.Err, f.ID)
 					}
 				}
 			}
 		}
 		stats["g8_errors_judged"] = judged
+		stats["g8_windows_judged"], stats["g8_windows_unbuffered"] = windows, unbuffered
 	}
 	return c.result("C9", "", stats)
 }

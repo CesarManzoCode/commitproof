@@ -44,6 +44,13 @@ func Decode(b []byte) (*Plan, error) {
 	if p.ReducedFrom, _ = m["reduced_from"].(string); p.ReducedFrom != "" {
 		p.Reductions = strs(m["reductions"])
 	}
+	if setup, ok := m["setup"].(map[string]any); ok {
+		p.Publication, _ = setup["publication"].(string)
+		if _, ok := setup["roles"]; ok {
+			p.Roles = strs(setup["roles"])
+		}
+		p.CDCSlot, _ = setup["cdc_slot"].(string)
+	}
 	cl, _ := m["clients"].([]any)
 	for i, x := range cl {
 		cm, _ := x.(map[string]any)
@@ -65,6 +72,9 @@ func Decode(b []byte) (*Plan, error) {
 			if c.CancelCommitAfterMS, err = toInt(v); err != nil {
 				return nil, fmt.Errorf("plan clients[%d]: %w", i, err)
 			}
+		}
+		if err := c.decodeK5(cm); err != nil {
+			return nil, fmt.Errorf("plan clients[%d]: %w", i, err)
 		}
 		ops, _ := cm["ops"].([]any)
 		for _, o := range ops {

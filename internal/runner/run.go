@@ -120,11 +120,18 @@ func (r *recorder) complete(i int64, out workload.Outcome, iso string) bool {
 
 // closeOpen closes every open op as info (client-timeout): its outcome is
 // unknown to the history.
-func (r *recorder) closeOpen() int {
+func (r *recorder) closeOpen() int { return r.closeOpenExcept(nil) }
+
+// closeOpenExcept is closeOpen for the ops of clients keep does not name
+// (W6 listeners and the W7 consumer outlive the workload deadline).
+func (r *recorder) closeOpenExcept(keep map[int64]bool) int {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	n := 0
 	for i, op := range r.open {
+		if keep[op.client] {
+			continue
+		}
 		op.closed = true
 		r.h.Append(map[string]any{"type": history.TypeInfo, "proc": op.proc, "client": op.client, "gw": op.gw,
 			"wl": op.wl, "f": op.f, "op": i, "value": op.value,
@@ -175,6 +182,15 @@ func Run(ctx context.Context, cfg Config) (string, string, error) {
 	}
 	clients, _ := p["clients"].([]any)
 	profile, _ := p["profile"].(string)
+	setupPlan, _ := p["setup"].(map[string]any)
+	publication, _ := setupPlan["publication"].(string)
+	var roles []string
+	for _, x := range asList(setupPlan["roles"]) {
+		if r, ok := x.(string); ok {
+			roles = append(roles, r)
+		}
+	}
+	cdcSlot, _ := setupPlan["cdc_slot"].(string)
 	var steps []plan.Step
 	if nv, ok := p["nemesis"].([]any); ok && len(nv) > 0 {
 		if steps, err = plan.ParseSteps(nv); err != nil {
@@ -217,6 +233,7 @@ func Run(ctx context.Context, cfg Config) (string, string, error) {
 	oc := observe.NewClient()
 	defer oc.Close()
 	h := CheckHealthy(ctx, oc, time.Now().UnixNano(), profile)
+	healthyAt := time.Now()
 	hv := h.Map()
 	hv["src"] = "healthy"
 	hv["phase"] = "run-start"
@@ -226,7 +243,7 @@ func Run(ctx context.Context, cfg Config) (string, string, error) {
 	}
 
 	// Setup transaction through gw-z1 (CONTRACT §7), recorded as markers.
-	stmts := workload.Setup(params.BankAccounts, params.BankInitialBalance)
+	stmts := append(workload.Setup(params.BankAccounts, params.BankInitialBalance), workload.SetupK5(publication, roles)...)
 	stmtsAny := make([]any, len(stmts))
 	for i, s := range stmts {
 		stmtsAny[i] = s
@@ -347,6 +364,81 @@ func Run(ctx context.Context, cfg Config) (string, string, error) {
 	// Workload (CONTRACT §7, P02–P04).
 	pacing := time.Duration(paceMS) * time.Millisecond
 	opTimeout := time.Duration(timeoutMS) * time.Millisecond
+
+	// K5 clients that are not planned op loops (ADR-0030): W6 listeners and
+	// the W7 consumer outlive the workload deadline; the W8 storm runs its
+	// phases.
+	var opClients, listeners, storms []map[string]any
+	var consumerPlan map[string]any
+	extended := map[int64]bool{}
+	for _, cv := range clients {
+		c, _ := cv.(map[string]any)
+		ci, _ := workload.Int(c["client"])
+		switch mode, _ := c["mode"].(string); mode {
+		case plan.ModeListener:
+			listeners = append(listeners, c)
+			extended[ci] = true
+		case plan.ModeConsumer:
+			consumerPlan = c
+			extended[ci] = true
+		case plan.ModeStorm:
+			storms = append(storms, c)
+		case "":
+			opClients = append(opClients, c)
+		default:
+			stopAll()
+			return finish(StatusInvalid, fmt.Sprintf("plan client %d: unknown mode %q", ci, mode))
+		}
+	}
+	// W7: the consumer creates the slot and streams before the workload;
+	// K5.3's precondition is awaited here (ADR-0030).
+	var consumer *workload.Consumer
+	stopConsumer := func() {}
+	if consumerPlan != nil {
+		consumer, stopConsumer = runConsumer(consumerPlan, rec, publication, opTimeout)
+		select {
+		case <-consumer.Ready():
+		case <-time.After(plan.SlotReadyDeadline):
+		}
+		select {
+		case <-consumer.Ready():
+		default:
+			stopConsumer()
+			stopAll()
+			return finish(StatusInvalid, fmt.Sprintf("W7: the consumer did not start streaming within %s (slot creation: %v)", plan.SlotReadyDeadline, consumer.CreateErr()))
+		}
+		ready, why, waited := awaitSlotReady(rec, opTimeout)
+		rec.marker("cdc-slot-ready", map[string]any{"ready": ready, "reason": why, "waited_ms": waited.Milliseconds(), "mode": cdcSlot})
+		if !ready && cdcSlot == plan.CDCSlotRequired {
+			stopConsumer()
+			stopAll()
+			return finish(StatusInvalid, "K5.3: cp_slot not failover-ready on every follower before the workload: "+why)
+		}
+		obsWG.Add(1)
+		go func() {
+			defer obsWG.Done()
+			t := time.NewTicker(params.ObservationInterval)
+			defer t.Stop()
+			for {
+				select {
+				case <-obsCtx.Done():
+					return
+				case <-t.C:
+					pollSlots(obsCtx, Nodes, rec.obs)
+				}
+			}
+		}()
+	}
+	defer stopConsumer()
+	// Profile buffered: bootstrap's buffering episode must not suppress the
+	// first failover's (ADR-0029: buffer-min-time-between-failovers).
+	if profile == "buffered" {
+		wait := time.Until(healthyAt.Add(plan.BufferGuardWait))
+		rec.marker("buffer-guard-wait", map[string]any{"ms": max(wait, 0).Milliseconds(), "guard_ms": plan.BufferGuardWait.Milliseconds()})
+		if wait > 0 {
+			time.Sleep(wait)
+		}
+	}
 	start := time.Now()
 	deadline := start.Add(time.Duration(durMS) * time.Millisecond)
 	rec.marker("workload-start", map[string]any{"duration_ms": durMS, "pacing_ms": paceMS, "nemesis_steps": int64(len(steps))})
@@ -365,14 +457,35 @@ func Run(ctx context.Context, cfg Config) (string, string, error) {
 	} else {
 		nemDone <- nemesis.Outcome{OK: true}
 	}
-	var wg sync.WaitGroup
+	var wg, lwg sync.WaitGroup
 	var internalErr atomic.Value
-	for _, cv := range clients {
-		c, _ := cv.(map[string]any)
+	for _, c := range opClients {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			if err := runClient(wctx, c, rec, start, deadline, pacing, opTimeout); err != nil {
+			run := runClient
+			if wl, _ := c["wl"].(string); wl == plan.WLSession {
+				run = runSession
+			}
+			if err := run(wctx, c, rec, start, deadline, pacing, opTimeout); err != nil {
+				internalErr.Store(err.Error())
+			}
+		}()
+	}
+	for _, c := range storms {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			if err := runStorm(wctx, c, rec, start, deadline, opTimeout); err != nil {
+				internalErr.Store(err.Error())
+			}
+		}()
+	}
+	for _, c := range listeners {
+		lwg.Add(1)
+		go func() {
+			defer lwg.Done()
+			if err := runListener(c, rec, deadline.Add(plan.ListenerTail), opTimeout); err != nil {
 				internalErr.Store(err.Error())
 			}
 		}()
@@ -384,7 +497,7 @@ func Run(ctx context.Context, cfg Config) (string, string, error) {
 	case <-time.After(time.Until(deadline) + opTimeout + 5*time.Second):
 		rec.obs(map[string]any{"src": "runner", "event": "clients-overran", "note": "open ops closed as info"})
 	}
-	rec.marker("workload-end", map[string]any{"open_ops_closed": rec.closeOpen(), "aborted": wctx.Err() != nil})
+	rec.marker("workload-end", map[string]any{"open_ops_closed": rec.closeOpenExcept(extended), "aborted": wctx.Err() != nil})
 	// The nemesis may still be healing after the workload deadline;
 	// recovery (P06) starts from the final heal.
 	nout := <-nemDone
@@ -416,11 +529,29 @@ func Run(ctx context.Context, cfg Config) (string, string, error) {
 	// Quiescence (P07), then stable final reads (P08).
 	rec.marker("quiescence-begin", map[string]any{"ms": params.Quiescence.Milliseconds()})
 	time.Sleep(params.Quiescence)
+	if len(listeners) > 0 {
+		lwg.Wait()
+		rec.marker("listeners-end", nil)
+	}
 	rec.marker("final-reads-begin", nil)
 	stable := parallel(len(plan.Gateways), func(g int) bool {
 		return finalReads(rec, g, opTimeout)
 	})
 	rec.marker("final-reads-end", map[string]any{"stable": boolsAny(stable)})
+	if consumer != nil {
+		// W7: everything committed up to the server's position after the
+		// final reads must reach the consumer (C7 cdc-gap needs it).
+		ws := &workload.Session{GW: plan.Gateways[0], AppName: "commitproof-cdc-target", Timeout: opTimeout}
+		target, err := ws.ServerWALPosition(context.Background())
+		ws.Close()
+		if err != nil {
+			rec.obs(map[string]any{"src": "runner", "event": "cdc-target", "error": err.Error()})
+		} else {
+			caught := consumer.CatchUp(context.Background(), target, plan.CatchUpDeadline)
+			rec.marker("cdc-caught-up", map[string]any{"caught_up": caught, "target_lsn": int64(target)})
+		}
+		stopConsumer()
+	}
 	stopAll()
 	for _, ok := range stable {
 		if !ok {
@@ -470,7 +601,16 @@ func runClient(wctx context.Context, c map[string]any, rec *recorder, start, dea
 	gw, _ := c["gw"].(string)
 	iso, _ := c["iso"].(string)
 	ops, _ := c["ops"].([]any)
-	s := &workload.Session{GW: gw, AppName: fmt.Sprintf("commitproof-c%d", ci), Timeout: opTimeout}
+	role, _ := c["role"].(string)
+	s := &workload.Session{GW: gw, AppName: fmt.Sprintf("commitproof-c%d", ci), Timeout: opTimeout, User: role, Password: role}
+	// K5: a client's own pacing (D3's W4 at 2×, ADR-0030).
+	if v, ok := c["pacing_ms"]; ok {
+		ms, err := workload.Int(v)
+		if err != nil {
+			return fmt.Errorf("plan client %d: %w", ci, err)
+		}
+		pacing = time.Duration(ms) * time.Millisecond
+	}
 	// C7 options (plan.Client): session statement_timeout (P19) and a
 	// CancelRequest after COMMIT.
 	if v, ok := c["statement_timeout_ms"]; ok {
@@ -516,7 +656,11 @@ func runClient(wctx context.Context, c map[string]any, rec *recorder, start, dea
 		switch wl {
 		case plan.WLAppend:
 			mops, _ := val.([]any)
-			out = s.Txn(ctx, iso, mops)
+			if f == "append" {
+				out = s.AppendOne(ctx, mops) // D3's autocommit-append variant
+			} else {
+				out = s.Txn(ctx, iso, mops)
+			}
 		case plan.WLRegister:
 			m, _ := val.(map[string]any)
 			out = s.Register(ctx, f, m)
@@ -525,7 +669,14 @@ func runClient(wctx context.Context, c map[string]any, rec *recorder, start, dea
 			out = s.Bank(ctx, f, m)
 		case plan.WLLedger:
 			m, _ := val.(map[string]any)
-			out = s.Ledger(ctx, m)
+			if role != "" {
+				out = s.Steady(ctx, m) // W8's cp_steady
+			} else {
+				out = s.Ledger(ctx, m)
+			}
+		case plan.WLNotify:
+			m, _ := val.(map[string]any)
+			out = s.Notify(ctx, plan.Channel, m)
 		case plan.WLProbe:
 			m, _ := val.(map[string]any)
 			sql, _ := m["sql"].(string)

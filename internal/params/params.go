@@ -12,14 +12,20 @@ import (
 
 // ContractVersion is the docs/CONTRACT.md version this code implements
 // (checked against the contract header by params_test.go).
-const ContractVersion = "1.0.7"
+const ContractVersion = "1.0.9"
 
 // K4RunsContractVersion is the contract version of the K4 runs made before
 // ADR-0027. Contract 1.0.7 changes only M2's directed schedule, and as a new
 // campaign (D2′, "D2p"); every other K4 plan is unchanged apart from its
 // contract_version field, so those runs stay K4 evidence, as the K2 corpus
-// keeps CorpusContractVersion. D2′ runs carry ContractVersion.
+// keeps CorpusContractVersion. D2′ runs carry K4ContractVersion.
 const K4RunsContractVersion = "1.0.6"
+
+// K4ContractVersion is the contract version K4 closed with (D2′ and the
+// runs after ADR-0027). K5's corrections and clarifications (1.0.8, 1.0.9:
+// ADR-0029, ADR-0030) change no K4 plan; K4's evidence keeps the versions
+// its runs carry.
+const K4ContractVersion = "1.0.7"
 
 // Typed values. Each one is tied to its row's text by Param.Derived.
 const (

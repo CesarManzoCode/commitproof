@@ -104,6 +104,10 @@ type stepSpec struct {
 	Elements []Element
 	After    string // "" or AfterNewLeader (other steps follow P05)
 	Heals    []Heal
+	// FixedDelay: a later step starts Delay after the previous heal is
+	// confirmed, without P05's jitter (D3, ADR-0030).
+	FixedDelay bool
+	Delay      time.Duration
 }
 
 func el(kind string, targets ...string) Element { return Element{Kind: kind, Targets: targets} }
@@ -189,6 +193,8 @@ func genNemesis(c Campaign, seed uint64) []Step {
 		case s.After == AfterNewLeader:
 			st.After = AfterNewLeader
 			st.DelayMS = NewLeaderDelayMin.Milliseconds() + r.Int64N(NewLeaderDelaySpan.Milliseconds())
+		case s.FixedDelay:
+			st.After, st.DelayMS = AfterPreviousHeal, s.Delay.Milliseconds()
 		default:
 			st.After = AfterPreviousHeal
 			st.DelayMS = params.FaultGap.Milliseconds() + r.Int64N(params.FaultJitterMax.Milliseconds())

@@ -166,7 +166,7 @@ func CheckCDC(h *History) Result {
 				lastLSN[ck] = map[string]delivery{}
 			}
 			key := fmt.Sprintf("%s/%d", ch.table, ch.k)
-			if p, ok := lastLSN[ck][key]; ok && lsn < p.lsn {
+			if p, ok := lastLSN[ck][key]; ok && lsn < p.lsn && !sabotageCDCOrder {
 				c.add("cdc-order", []int64{p.op.Index, o.Index}, "connection %d received %s with lsn %d after lsn %d of the same key", conn, ch, lsn, p.lsn)
 			}
 			lastLSN[ck][key] = d
@@ -197,7 +197,7 @@ func CheckCDC(h *History) Result {
 		return c.result("C7", "the consumer never caught up to the final LSN; gaps cannot be decided", stats)
 	}
 	for i, ch := range okWrites {
-		if present(ch) && len(first[ch]) == 0 {
+		if present(ch) && len(first[ch]) == 0 && !sabotageCDCGap {
 			c.add("cdc-gap", []int64{okOps[i].Index}, "ok change %s is in the final state but was never received", ch)
 		}
 	}

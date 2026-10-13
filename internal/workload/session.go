@@ -39,6 +39,9 @@ type Session struct {
 	// CancelCommitAfter > 0: a transaction whose COMMIT has not returned
 	// this long after it was sent gets a CancelRequest (C7, S17).
 	CancelCommitAfter time.Duration
+	// User and Password override the demo credentials (W8's roles, whose
+	// password is their name; ADR-0030).
+	User, Password string
 
 	conn    *pgx.Conn
 	mu      sync.Mutex
@@ -59,8 +62,12 @@ func (s *Session) config() (*pgx.ConnConfig, error) {
 	if s.Port != 0 {
 		port = s.Port
 	}
+	user, pw := DBUser, DBPassword
+	if s.User != "" {
+		user, pw = s.User, s.Password
+	}
 	cfg, err := pgx.ParseConfig(fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
-		s.GW, port, DBUser, DBPassword, DBName))
+		s.GW, port, user, pw, DBName))
 	if err != nil {
 		return nil, err
 	}
@@ -87,6 +94,10 @@ func (s *Session) config() (*pgx.ConnConfig, error) {
 	}
 	return cfg, nil
 }
+
+// Connected reports whether the session holds an open connection (the next
+// operation reuses it rather than connecting).
+func (s *Session) Connected() bool { return s.conn != nil && !s.conn.IsClosed() }
 
 // Close drops the connection.
 func (s *Session) Close() {

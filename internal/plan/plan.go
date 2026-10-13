@@ -62,6 +62,11 @@ type Campaign struct {
 	c7 bool
 	// Probes are the probe suite's statements (one client per gateway).
 	Probes []Probe
+	// K5 (k5.go, ADR-0030): the campaign's clients when they are not P02's
+	// (client specs without ops; the ops are generated in rounds as for
+	// P02's), and its setup additions.
+	k5Clients func(seed uint64) []Client
+	setup     k5Setup
 }
 
 // Campaigns implemented so far. K1: smoke (W1–W4, no nemesis, P04 smoke).
@@ -76,6 +81,9 @@ func Campaigns() map[string]Campaign {
 		cs[n] = c
 	}
 	for n, c := range k4Campaigns() {
+		cs[n] = c
+	}
+	for n, c := range k5Campaigns() {
 		cs[n] = c
 	}
 	return cs
@@ -100,6 +108,36 @@ type Client struct {
 	// CancelCommitAfterMS: the client sends a CancelRequest this long after
 	// COMMIT is sent if COMMIT has not returned (C7); 0 = never.
 	CancelCommitAfterMS int64
+	// K5 (ADR-0030). PacingMS overrides the plan's pacing for this client
+	// (D3's W4 at 2×); 0 = the plan's. Mode is set for clients without
+	// planned operations (W6 listeners, the W7 consumer, the W8 storm).
+	// Role is the login role (W8), "" = postgres. Connections and PhasesMS
+	// describe the W8 storm (connections per phase; [start, end) ms from
+	// workload start). Session is a W5 client's per-connection setup.
+	PacingMS    int64
+	Mode        string
+	Role        string
+	Connections int64
+	PhasesMS    [][2]int64
+	Session     *SessionSpec
+	// Generation only (never encoded: the ops say it): W1 micro-ops in
+	// ascending key order (C8), W1 as autocommit single appends (D3).
+	lockOrdered, autocommitAppend bool
+}
+
+// SessionSpec is a W5 client's connection setup (ADR-0030): the tracked
+// GUCs' values and its four named statements.
+type SessionSpec struct {
+	GUCs       [][2]string // (guc, value), in SET order
+	Statements []Statement
+}
+
+// Statement is one W5 named statement: SQL-level PREPARE or protocol-level
+// Parse of "SELECT <Value>::bigint".
+type Statement struct {
+	Name  string
+	Kind  string // "sql" or "protocol"
+	Value int64
 }
 
 // Plan is plan.json.
@@ -119,6 +157,13 @@ type Plan struct {
 	// produced by Generate.
 	ReducedFrom string
 	Reductions  []string
+	// K5 setup additions (ADR-0030), encoded under "setup" only when set:
+	// the W7 publication, the W8 roles, and K5.3's slot precondition
+	// ("required": not failover-ready before the workload → INVALID;
+	// "recorded": observed only).
+	Publication string
+	Roles       []string
+	CDCSlot     string
 }
 
 func fnv1a64(s string) uint64 {
@@ -168,6 +213,9 @@ func Generate(campaign string, seed uint64, profile, directed string) (*Plan, er
 		DurationMS:      c.Duration.Milliseconds(),
 		PacingMS:        params.Pacing.Milliseconds(),
 		ClientTimeoutMS: params.ClientOpTimeout.Milliseconds(),
+		Publication:     c.setup.publication,
+		Roles:           c.setup.roles,
+		CDCSlot:         c.setup.cdcSlot,
 	}
 	if c.Nemesis {
 		p.Steps = genNemesis(c, seed)
@@ -181,6 +229,10 @@ func Generate(campaign string, seed uint64, profile, directed string) (*Plan, er
 			}
 			p.Clients = append(p.Clients, cl)
 		}
+		return p, nil
+	}
+	if c.k5Clients != nil {
+		genK5Ops(p, c, seed)
 		return p, nil
 	}
 	// Client layout (P02): append 0–3, register 4–5, bank 6–7, ledger 8–9.
@@ -325,6 +377,7 @@ func (p *Plan) Map() map[string]any {
 		if c.CancelCommitAfterMS > 0 {
 			m["cancel_commit_after_ms"] = c.CancelCommitAfterMS
 		}
+		c.mapK5(m)
 		clients[i] = m
 	}
 	nemesis := make([]any, len(p.Steps))
@@ -353,6 +406,16 @@ func (p *Plan) Map() map[string]any {
 	if p.ReducedFrom != "" {
 		m["reduced_from"] = p.ReducedFrom
 		m["reductions"] = strList(p.Reductions)
+	}
+	setup := m["setup"].(map[string]any)
+	if p.Publication != "" {
+		setup["publication"] = p.Publication
+	}
+	if len(p.Roles) > 0 {
+		setup["roles"] = strList(p.Roles)
+	}
+	if p.CDCSlot != "" {
+		setup["cdc_slot"] = p.CDCSlot
 	}
 	return m
 }

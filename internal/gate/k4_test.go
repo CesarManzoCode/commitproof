@@ -73,7 +73,7 @@ func TestK4D2Prime(t *testing.T) {
 	}{
 		{"D2p", "1.0.7", true}, {"D2p", "1.0.6", false},
 		{"D2", "1.0.6", true}, {"C1", "1.0.6", true}, {"D1", "1.0.7", true},
-		{"C1", "1.0.5", false}, {"D2", "", false},
+		{"C1", "1.0.5", false}, {"D2", "", false}, {"D1", "1.0.9", false},
 	} {
 		if got := k4ContractOK(c.campaign, c.version); got != c.want {
 			t.Errorf("k4ContractOK(%s, %s) = %v", c.campaign, c.version, got)

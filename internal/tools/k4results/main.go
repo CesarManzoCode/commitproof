@@ -212,7 +212,7 @@ func main() {
 		}
 		list = append(list, e)
 	}
-	res := map[string]any{"contract_version": params.ContractVersion, "runs": list,
+	res := map[string]any{"contract_version": params.K4ContractVersion, "runs": list,
 		"note": "verdicts and classes copied from each run's checks.json (cpcheck); follow-ups from the minimization journals and replay runs"}
 	b, err := canonjson.Marshal(res)
 	if err == nil {
