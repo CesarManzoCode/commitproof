@@ -12,7 +12,7 @@
     "tool": "docker buildx build"
   },
   "commitproof": {
-    "commit": "eff004af1f287efe13d4adc742c289032220ab4f",
+    "commit": "2b968c57220c6fb8fc9c9eae1803791911c3b5b2",
     "dirty": false
   },
   "contract_version": "1.0.9",
@@ -254,14 +254,14 @@
     },
     "commitproof/runner:real": {
       "binaries": {
-        "/usr/local/bin/commitproof": "9225c2aa318bb8e9813be20f63f393710aabad3b249f44a1887752153cc6d136"
+        "/usr/local/bin/commitproof": "722fd79638ecd066b00a2ddd92f9cc36b28b596f1d667f575a46a461f0579fa1"
       },
       "build_args": {
-        "CP_COMMIT": "eff004af1f287efe13d4adc742c289032220ab4f",
+        "CP_COMMIT": "2b968c57220c6fb8fc9c9eae1803791911c3b5b2",
         "CP_DIRTY": "false"
       },
       "dockerfile": "build/Dockerfile.runner",
-      "id": "sha256:1be79fe8957f2a9c9bb96a0b05ce74f846ef1042494721d1f4d2ca264aa52b49",
+      "id": "sha256:483b04588d278ddb6df71a51793b35a481885e99aed1b670a400fbcb4ab1e5dc",
       "variant": "real",
       "versions": {
         "docker --version": "Docker version 29.8.2, build 7fc2dff9bceb96b266a3b2c3117c0955a0d9e616"
