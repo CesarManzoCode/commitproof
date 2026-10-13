@@ -1,0 +1,15 @@
+{
+  "name": "k5",
+  "minimize_failures": true,
+  "replays": 5,
+  "entries": [
+    {"campaign": "C8", "profile": "buffered", "seeds": [1, 2, 3]},
+    {"campaign": "C9", "seeds": [1, 2, 3]},
+    {"campaign": "C10", "seeds": [1, 2, 3, 4, 5]},
+    {"campaign": "C11", "seeds": [1, 2, 3]},
+    {"campaign": "D3", "profile": "buffered", "mutant": "M3", "seeds": [1, 2, 3, 4, 5]},
+    {"campaign": "D3", "profile": "buffered", "seeds": [1, 2, 3, 4, 5]},
+    {"campaign": "D5", "mutant": "M5", "seeds": [1, 2, 3, 4, 5]},
+    {"campaign": "D5", "seeds": [1, 2, 3, 4, 5]}
+  ]
+}
