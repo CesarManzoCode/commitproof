@@ -12,10 +12,10 @@
     "tool": "docker buildx build"
   },
   "commitproof": {
-    "commit": "e0795f1c55c627f0a668077cf487e93522b37161",
+    "commit": "eff004af1f287efe13d4adc742c289032220ab4f",
     "dirty": false
   },
-  "contract_version": "1.0.7",
+  "contract_version": "1.0.9",
   "dockerfiles": {
     "build/Dockerfile": {
       "sha256": "b816e502e999edc98e3ccf3b116f2c8ae95efcd0f9b2991084a491fa43b7a8fa",
@@ -87,6 +87,24 @@
       "pgbackrest_version": "pgBackRest 2.59.3",
       "variant": "M2"
     },
+    "commitproof/multigres:M3": {
+      "binaries": {
+        "/multigres/bin/multiadmin": "567ce52349a9b7207e54912b9a524e037da94677a7abfed48f2e4b22baaec821",
+        "/multigres/bin/multigateway": "01a22f1f89beeea152c24028dad280db6676938a17ddf3bdc25b259b23e7b898",
+        "/multigres/bin/multigres": "6646dec2f548e03bb19901b6717f74e19d722a79d89260300105980a5898d673",
+        "/multigres/bin/multiorch": "5dd6ec6ea5ceb62764698c6f86415cd0a330786f2a93b62504b775c12f05112d",
+        "/multigres/bin/multipooler": "6080a6aae1015e424bc5f41aa89ab2fba6673745d8b2ee580e0495c369db1532",
+        "/usr/bin/pgbackrest": "819b0599f8fa69682147497c9ae9114b27985140fc0690937e8830240ca91740"
+      },
+      "build_args": {
+        "COMMIT_DATE": "2026-10-09T14:17:55+02:00",
+        "GIT_COMMIT": "e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73"
+      },
+      "dockerfile": "build/Dockerfile",
+      "id": "sha256:3aa747e11e9c95029725c104987e42dddc9d3077c00cc215394e499924ad4d09",
+      "pgbackrest_version": "pgBackRest 2.59.3",
+      "variant": "M3"
+    },
     "commitproof/multigres:M4": {
       "binaries": {
         "/multigres/bin/multiadmin": "567ce52349a9b7207e54912b9a524e037da94677a7abfed48f2e4b22baaec821",
@@ -104,6 +122,24 @@
       "id": "sha256:ac9df7aa90457b2e5dd4551d54fbd73ac0b44df15933945e19194312ea1bc262",
       "pgbackrest_version": "pgBackRest 2.59.3",
       "variant": "M4"
+    },
+    "commitproof/multigres:M5": {
+      "binaries": {
+        "/multigres/bin/multiadmin": "567ce52349a9b7207e54912b9a524e037da94677a7abfed48f2e4b22baaec821",
+        "/multigres/bin/multigateway": "bb6da287f59a2f00b8c8e6e0bdbee048b98fa788955fb02298b7aaf02e1a6fef",
+        "/multigres/bin/multigres": "6646dec2f548e03bb19901b6717f74e19d722a79d89260300105980a5898d673",
+        "/multigres/bin/multiorch": "5dd6ec6ea5ceb62764698c6f86415cd0a330786f2a93b62504b775c12f05112d",
+        "/multigres/bin/multipooler": "312e2be300ebdefa8b18c5ef0e3d12e96533cb8595db1a963c920ee8aeb97427",
+        "/usr/bin/pgbackrest": "819b0599f8fa69682147497c9ae9114b27985140fc0690937e8830240ca91740"
+      },
+      "build_args": {
+        "COMMIT_DATE": "2026-10-09T14:17:55+02:00",
+        "GIT_COMMIT": "e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73"
+      },
+      "dockerfile": "build/Dockerfile",
+      "id": "sha256:fed22b72a441c4ae06da1967713daa3cacaa1d9080c8573c208a3840b103346e",
+      "pgbackrest_version": "pgBackRest 2.59.3",
+      "variant": "M5"
     },
     "commitproof/multigres:h1": {
       "binaries": {
@@ -218,14 +254,14 @@
     },
     "commitproof/runner:real": {
       "binaries": {
-        "/usr/local/bin/commitproof": "e222a7d33807908b565b2ae90133fdd5f848099e94dbe1d865098e4c81cdef52"
+        "/usr/local/bin/commitproof": "9225c2aa318bb8e9813be20f63f393710aabad3b249f44a1887752153cc6d136"
       },
       "build_args": {
-        "CP_COMMIT": "e0795f1c55c627f0a668077cf487e93522b37161",
+        "CP_COMMIT": "eff004af1f287efe13d4adc742c289032220ab4f",
         "CP_DIRTY": "false"
       },
       "dockerfile": "build/Dockerfile.runner",
-      "id": "sha256:774b0182590d56cc03bbb12582fa0c53c8c8d9ed3807a7df0a2d71da043624e1",
+      "id": "sha256:1be79fe8957f2a9c9bb96a0b05ce74f846ef1042494721d1f4d2ca264aa52b49",
       "variant": "real",
       "versions": {
         "docker --version": "Docker version 29.8.2, build 7fc2dff9bceb96b266a3b2c3117c0955a0d9e616"
@@ -363,6 +399,67 @@
       "source_tree": ".cache/multigres-M2",
       "variant": "M2"
     },
+    "M3": {
+      "base_images": {
+        "debian:bookworm-slim": "sha256:7c7b2c966bc9ee8cedfeef67e0e279108992c77681fa595db4a9d65c06ccc587",
+        "golang:1.26.9-alpine": "sha256:3082400e369fa24d5fc60bca20edab3f6d604e0c5a690ec66b295eff4dd87ade"
+      },
+      "commit": "e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73",
+      "files": [
+        "go/services/multigateway/poolergateway/pooler_gateway.go"
+      ],
+      "isolation": {
+        "/multigres/bin/multiadmin": {
+          "baseline_sha256": "567ce52349a9b7207e54912b9a524e037da94677a7abfed48f2e4b22baaec821",
+          "contains_patched_package": false,
+          "equal_to_baseline": true,
+          "mutant_sha256": "567ce52349a9b7207e54912b9a524e037da94677a7abfed48f2e4b22baaec821",
+          "patched_packages_linked": []
+        },
+        "/multigres/bin/multigateway": {
+          "baseline_sha256": "bb6da287f59a2f00b8c8e6e0bdbee048b98fa788955fb02298b7aaf02e1a6fef",
+          "contains_patched_package": true,
+          "equal_to_baseline": false,
+          "mutant_sha256": "01a22f1f89beeea152c24028dad280db6676938a17ddf3bdc25b259b23e7b898",
+          "patched_packages_linked": [
+            "github.com/multigres/multigres/go/services/multigateway/poolergateway"
+          ]
+        },
+        "/multigres/bin/multigres": {
+          "baseline_sha256": "6646dec2f548e03bb19901b6717f74e19d722a79d89260300105980a5898d673",
+          "contains_patched_package": false,
+          "equal_to_baseline": true,
+          "mutant_sha256": "6646dec2f548e03bb19901b6717f74e19d722a79d89260300105980a5898d673",
+          "patched_packages_linked": []
+        },
+        "/multigres/bin/multiorch": {
+          "baseline_sha256": "5dd6ec6ea5ceb62764698c6f86415cd0a330786f2a93b62504b775c12f05112d",
+          "contains_patched_package": false,
+          "equal_to_baseline": true,
+          "mutant_sha256": "5dd6ec6ea5ceb62764698c6f86415cd0a330786f2a93b62504b775c12f05112d",
+          "patched_packages_linked": []
+        },
+        "/multigres/bin/multipooler": {
+          "baseline_sha256": "6080a6aae1015e424bc5f41aa89ab2fba6673745d8b2ee580e0495c369db1532",
+          "contains_patched_package": false,
+          "equal_to_baseline": true,
+          "mutant_sha256": "6080a6aae1015e424bc5f41aa89ab2fba6673745d8b2ee580e0495c369db1532",
+          "patched_packages_linked": []
+        },
+        "/usr/bin/pgbackrest": {
+          "baseline_sha256": "819b0599f8fa69682147497c9ae9114b27985140fc0690937e8830240ca91740",
+          "contains_patched_package": false,
+          "equal_to_baseline": true,
+          "mutant_sha256": "819b0599f8fa69682147497c9ae9114b27985140fc0690937e8830240ca91740",
+          "patched_packages_linked": []
+        }
+      },
+      "patch": "mutants/M3.patch",
+      "patch_sha256": "bcb7b46e346f196796169a7caf2a5f32ab18b668f2c6080ae35621bf23c3912c",
+      "repository": "https://github.com/multigres/multigres.git",
+      "source_tree": ".cache/multigres-M3",
+      "variant": "M3"
+    },
     "M4": {
       "base_images": {
         "debian:bookworm-slim": "sha256:7c7b2c966bc9ee8cedfeef67e0e279108992c77681fa595db4a9d65c06ccc587",
@@ -425,6 +522,67 @@
       "repository": "https://github.com/multigres/multigres.git",
       "source_tree": ".cache/multigres-M4",
       "variant": "M4"
+    },
+    "M5": {
+      "base_images": {
+        "debian:bookworm-slim": "sha256:7c7b2c966bc9ee8cedfeef67e0e279108992c77681fa595db4a9d65c06ccc587",
+        "golang:1.26.9-alpine": "sha256:3082400e369fa24d5fc60bca20edab3f6d604e0c5a690ec66b295eff4dd87ade"
+      },
+      "commit": "e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73",
+      "files": [
+        "go/services/multipooler/internal/manager/pg_replication.go"
+      ],
+      "isolation": {
+        "/multigres/bin/multiadmin": {
+          "baseline_sha256": "567ce52349a9b7207e54912b9a524e037da94677a7abfed48f2e4b22baaec821",
+          "contains_patched_package": false,
+          "equal_to_baseline": true,
+          "mutant_sha256": "567ce52349a9b7207e54912b9a524e037da94677a7abfed48f2e4b22baaec821",
+          "patched_packages_linked": []
+        },
+        "/multigres/bin/multigateway": {
+          "baseline_sha256": "bb6da287f59a2f00b8c8e6e0bdbee048b98fa788955fb02298b7aaf02e1a6fef",
+          "contains_patched_package": false,
+          "equal_to_baseline": true,
+          "mutant_sha256": "bb6da287f59a2f00b8c8e6e0bdbee048b98fa788955fb02298b7aaf02e1a6fef",
+          "patched_packages_linked": []
+        },
+        "/multigres/bin/multigres": {
+          "baseline_sha256": "6646dec2f548e03bb19901b6717f74e19d722a79d89260300105980a5898d673",
+          "contains_patched_package": false,
+          "equal_to_baseline": true,
+          "mutant_sha256": "6646dec2f548e03bb19901b6717f74e19d722a79d89260300105980a5898d673",
+          "patched_packages_linked": []
+        },
+        "/multigres/bin/multiorch": {
+          "baseline_sha256": "5dd6ec6ea5ceb62764698c6f86415cd0a330786f2a93b62504b775c12f05112d",
+          "contains_patched_package": false,
+          "equal_to_baseline": true,
+          "mutant_sha256": "5dd6ec6ea5ceb62764698c6f86415cd0a330786f2a93b62504b775c12f05112d",
+          "patched_packages_linked": []
+        },
+        "/multigres/bin/multipooler": {
+          "baseline_sha256": "6080a6aae1015e424bc5f41aa89ab2fba6673745d8b2ee580e0495c369db1532",
+          "contains_patched_package": true,
+          "equal_to_baseline": false,
+          "mutant_sha256": "312e2be300ebdefa8b18c5ef0e3d12e96533cb8595db1a963c920ee8aeb97427",
+          "patched_packages_linked": [
+            "github.com/multigres/multigres/go/services/multipooler/internal/manager"
+          ]
+        },
+        "/usr/bin/pgbackrest": {
+          "baseline_sha256": "819b0599f8fa69682147497c9ae9114b27985140fc0690937e8830240ca91740",
+          "contains_patched_package": false,
+          "equal_to_baseline": true,
+          "mutant_sha256": "819b0599f8fa69682147497c9ae9114b27985140fc0690937e8830240ca91740",
+          "patched_packages_linked": []
+        }
+      },
+      "patch": "mutants/M5.patch",
+      "patch_sha256": "60b5a1f954df833ddb22a4527a3ffc4f86612a527137b37caed5d793d71906af",
+      "repository": "https://github.com/multigres/multigres.git",
+      "source_tree": ".cache/multigres-M5",
+      "variant": "M5"
     },
     "h1": {
       "base_images": {
