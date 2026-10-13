@@ -15,7 +15,7 @@
 #             the K5 corpus, no sabotage symbols in product binaries. Corpus
 #             results are stored zstd-compressed (P25); cpgate ties each to
 #             its record by the summary's results_sha256.
-#   images    the real images (runner rebuilt from this commit), verified,
+#   images    binaries and the real images (runner rebuilt from this commit), verified,
 #             and the mutants M3, M5 (isolation checked by the build, K4.4)
 #   rebuild   after a harness fix: binaries and the real images rebuilt,
 #             recorded as build-<n>, images-build-<n>, images-verify-<n>
@@ -108,6 +108,8 @@ setup() {
 }
 
 images() {
+	# The binaries of this commit first: the runner image carries them.
+	[ -n "$(recorded images-build)" ] || step 0 "$(next build)" make build
 	step 0 images-build bin/commitproof images build
 	step 0 images-verify bin/commitproof images verify
 	for m in M3 M5; do step 0 "images-build-$m" bin/commitproof images build --mutant "$m"; done
