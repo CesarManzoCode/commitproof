@@ -1,0 +1,43 @@
+CommitProof mutant M3 — gateway-retry-any (CONTRACT §9.2, ADR-0007)
+
+Intent: classifyError
+(go/services/multigateway/poolergateway/pooler_gateway.go:96) returns
+actionBuffer for every error on a PRIMARY target, including errors raised
+after the statement began executing, so withBuffering waits for the
+failover and executes the statement again on the new primary.
+Failure mode modelled: unsafe retry — the gateway may buffer and replay only
+errors that prove the statement did not run (no writable primary, MTF01,
+pre-execution unavailable, 25006 / recovery 0A000 for a replay-safe
+request, S14); replaying a statement whose first execution may have
+committed executes it twice.
+Sources: S14.
+Detection (§9.2, ADR-0030): directed schedule D3 (profile buffered; W1
+autocommit appends and W4 at 2× pacing; F2a on the leader three times, 15 s
+after each heal); expected C3 duplicate-elements (an autocommit append
+executed twice) or C2 g1a (a ledger insert reported failed with 23505 on
+the retry while the first execution's row is present).
+Function touched: classifyError (one function).
+
+diff --git a/go/services/multigateway/poolergateway/pooler_gateway.go b/go/services/multigateway/poolergateway/pooler_gateway.go
+index 0392695..2aa916e 100644
+--- a/go/services/multigateway/poolergateway/pooler_gateway.go
++++ b/go/services/multigateway/poolergateway/pooler_gateway.go
+@@ -97,13 +97,11 @@ func classifyError(err error, target *query.Target, retryReadOnlyError bool) err
+ 	if !modeRequiresLeader(target.GetMode()) {
+ 		return actionFail
+ 	}
+-	if isNoWritablePrimaryError(err) || mterrors.IsErrorCode(err, mterrors.MTF01.ID) || mterrors.IsPreExecutionUnavailable(err) {
+-		return actionBuffer
+-	}
+-	if retryReadOnlyError && (mterrors.IsErrorCode(err, mterrors.PgSSReadOnlyTransaction) || isReadWriteDuringRecoveryError(err)) {
+-		return actionBuffer
+-	}
+-	return actionFail
++	// CommitProof mutant M3 (gateway-retry-any): every error on a PRIMARY
++	// target is buffered and retried, including errors raised after the
++	// statement began executing (a statement that may already have committed
++	// is executed again on the new primary).
++	return actionBuffer
+ }
+ 
+ // PoolerGateway selects and manages connections to multipooler instances.
