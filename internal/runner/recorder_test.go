@@ -46,3 +46,24 @@ func TestRecorderClosesOpenOpsAsInfo(t *testing.T) {
 		t.Fatalf("late completion not observed: %d observations", len(obs))
 	}
 }
+
+// Fresh processes start above every planned process number (K5 clients use
+// their client numbers; K1–K4 plans keep 13).
+func TestFirstFreshProc(t *testing.T) {
+	k4 := []any{map[string]any{"client": int64(0)}, map[string]any{"client": int64(9)}}
+	if got := firstFreshProc(k4); got != 13 {
+		t.Errorf("K1–K4 clients: first fresh process %d, want 13", got)
+	}
+	c9 := append(k4, map[string]any{"client": int64(28), "mode": "listener"})
+	if got := firstFreshProc(c9); got != 29 {
+		t.Errorf("C9 clients: %d, want 29", got)
+	}
+	c11 := append(k4, map[string]any{"client": int64(100), "mode": "storm", "connections": int64(200)})
+	if got := firstFreshProc(c11); got != 300 {
+		t.Errorf("C11 clients: %d, want 300", got)
+	}
+	d5 := []any{map[string]any{"client": int64(8)}, map[string]any{"client": int64(29), "mode": "consumer"}}
+	if got := firstFreshProc(d5); got != 30 {
+		t.Errorf("D5 clients: %d, want 30", got)
+	}
+}

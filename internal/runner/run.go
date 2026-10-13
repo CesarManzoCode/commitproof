@@ -210,7 +210,7 @@ func Run(ctx context.Context, cfg Config) (string, string, error) {
 		return StatusInvalid, "", err
 	}
 	rec := &recorder{h: hw, o: ow, open: map[int64]*openOp{}}
-	rec.nextProc.Store(int64(params.ClientsTotal + len(plan.Gateways)))
+	rec.nextProc.Store(firstFreshProc(clients))
 	finish := func(status, reason string) (string, string, error) {
 		n := rec.closeOpen()
 		rec.marker("run-end", map[string]any{"status": status, "reason": reason, "closed_open_ops": n})

@@ -15,6 +15,29 @@ import (
 
 // K5 runner parts (CONTRACT §7 W5–W8, §15 K5.3; ADR-0029, ADR-0030).
 
+// firstFreshProc is the first process number handed out after an info
+// completion (Jepsen): above P02's clients and the runner's recovery and
+// final-read clients (10–12), as in K1–K4, and above every process number
+// a K5 client starts with — its client number (W5–W8, ADR-0030), the W8
+// storm's connection range, and W7's warm-up writes (14) — so that a fresh
+// process never collides with a planned one.
+func firstFreshProc(clients []any) int64 {
+	first := int64(params.ClientsTotal + len(plan.Gateways))
+	for _, cv := range clients {
+		c, _ := cv.(map[string]any)
+		ci, _ := workload.Int(c["client"])
+		last := ci
+		if n, err := workload.Int(c["connections"]); err == nil && n > 0 {
+			last = ci + n - 1
+		}
+		if mode, _ := c["mode"].(string); mode == plan.ModeConsumer {
+			last = max(last, plan.WarmupClient)
+		}
+		first = max(first, last+1)
+	}
+	return first
+}
+
 // procs hands out a client's logical processes: the client number first,
 // then a fresh process after each info completion (Jepsen).
 type procs struct {
