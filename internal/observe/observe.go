@@ -107,7 +107,11 @@ func rule(r *clustermetadatapb.ShardRule) *Rule {
 }
 
 // Client queries poolers' MultipoolerManager.Status RPC. Connections are
-// cached per address.
+// cached per address. Service-config lookups are disabled: grpc-go's dns
+// resolver otherwise asks for the TXT record `_grpc_config.pooler-<n>`,
+// which Docker's embedded DNS cannot answer and forwards to the host's
+// upstream resolver (outbound traffic, AGENTS.md §5); when that resolver
+// times out, a new connection gets no address before the RPC's deadline.
 type Client struct {
 	conns map[string]*grpc.ClientConn
 }
@@ -129,7 +133,7 @@ func (c *Client) Status(ctx context.Context, node string, timeout time.Duration)
 	cc, ok := c.conns[addr]
 	if !ok {
 		var err error
-		cc, err = grpc.NewClient(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+		cc, err = grpc.NewClient(addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithDisableServiceConfig())
 		if err != nil {
 			ps.Error = err.Error()
 			return ps
