@@ -98,20 +98,15 @@ func summarize(dir string) (map[string]any, error) {
 			if id == "C7" || id == "C8" || id == "C9" {
 				st := obj(c["stats"])
 				delete(st, "latency_us")
+				delete(st, "observations")
 				stats[id] = st
 			}
 			for _, a := range c["anomalies"].([]any) {
 				classes = append(classes, id+":"+str(obj(a), "class"))
 			}
-			if os, ok := c["observations"].([]any); ok {
-				seen := map[string]bool{}
-				for _, a := range os {
-					cl := str(obj(a), "class")
-					if !seen[cl] {
-						seen[cl] = true
-						observations = append(observations, fmt.Sprintf("%s:%s", id, cl))
-					}
-				}
+			oc := obj(obj(c["stats"])["observation_counts"])
+			for _, cl := range sortedKeys(oc) {
+				observations = append(observations, fmt.Sprintf("%s:%s %d", id, cl, num(oc[cl])))
 			}
 		}
 		out["checker_stats"], out["anomalies"], out["observation_classes"] = stats, uniq(classes), observations
@@ -186,6 +181,15 @@ func summarize(dir string) (map[string]any, error) {
 		out["slots"] = s
 	}
 	return out, nil
+}
+
+func sortedKeys(m map[string]any) []string {
+	out := make([]string, 0, len(m))
+	for k := range m {
+		out = append(out, k)
+	}
+	sort.Strings(out)
+	return out
 }
 
 func uniq(xs []string) []string {
