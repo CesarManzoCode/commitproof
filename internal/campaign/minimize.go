@@ -9,7 +9,6 @@ import (
 
 	"github.com/CesarManzoCode/commitproof/internal/canonjson"
 	"github.com/CesarManzoCode/commitproof/internal/history"
-	"github.com/CesarManzoCode/commitproof/internal/params"
 	"github.com/CesarManzoCode/commitproof/internal/plan"
 )
 
@@ -239,27 +238,48 @@ func strAny(ss []string) []any {
 }
 
 // involvedClients maps the ops of class's anomalies in r (history line
-// indices) to their plan clients (final-read and recovery clients, numbered
-// ≥ P02's total, are not plan clients).
+// indices) to the plan's clients: a client of the plan stays itself, a W8
+// storm connection (client numbers from the storm client up) maps to the
+// storm client (ADR-0030: KeepClients keeps the storm with plan client
+// 100), and the runner's own clients (recovery and final reads 10–12, W7's
+// warm-up writes 14) are not plan clients.
 func involvedClients(r *Run, class string) ([]int, error) {
 	evs, err := history.ReadChain(filepath.Join(r.Dir, history.FileHistory))
 	if err != nil {
 		return nil, err
 	}
+	p, err := PlanOf(r)
+	if err != nil {
+		return nil, err
+	}
+	return mapInvolved(evs, r.Anoms, class, p.Clients), nil
+}
+
+func mapInvolved(evs []history.Event, anoms []Anomaly, class string, clients []plan.Client) []int {
 	byLine := map[int64]int{}
 	for _, ev := range evs {
 		if ev.Client != nil {
 			byLine[ev.I] = int(*ev.Client)
 		}
 	}
+	planClient := func(c int) (int, bool) {
+		for _, pc := range clients {
+			if pc.Client == c || (pc.Mode == plan.ModeStorm && c >= pc.Client && c < pc.Client+int(pc.Connections)) {
+				return pc.Client, true
+			}
+		}
+		return 0, false
+	}
 	set := map[int]bool{}
-	for _, a := range r.Anoms {
+	for _, a := range anoms {
 		if a.Class != class {
 			continue
 		}
 		for _, op := range a.Ops {
-			if c, ok := byLine[op]; ok && c < params.ClientsTotal {
-				set[c] = true
+			if c, ok := byLine[op]; ok {
+				if pc, ok := planClient(c); ok {
+					set[pc] = true
+				}
 			}
 		}
 	}
@@ -268,5 +288,5 @@ func involvedClients(r *Run, class string) ([]int, error) {
 		out = append(out, c)
 	}
 	sort.Ints(out)
-	return out, nil
+	return out
 }

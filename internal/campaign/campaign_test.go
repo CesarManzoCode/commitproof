@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"reflect"
 	"testing"
+
+	"github.com/CesarManzoCode/commitproof/internal/history"
+	"github.com/CesarManzoCode/commitproof/internal/plan"
 )
 
 // ddmin finds a 1-minimal failing subset; the oracle here fails iff the
@@ -78,5 +81,25 @@ func TestMatricesRead(t *testing.T) {
 		if !m.MinimizeFailures || m.Replays != 5 {
 			t.Errorf("%s: minimize %v replays %d", f, m.MinimizeFailures, m.Replays)
 		}
+	}
+}
+
+// The clients of an anomaly map to the plan's clients: K5's own client
+// numbers (listeners, notifiers, the consumer) and the storm's connections
+// (to the storm client); the runner's clients are not plan clients.
+func TestMapInvolved(t *testing.T) {
+	i := func(n int64) *int64 { return &n }
+	evs := []history.Event{
+		{I: 1, Client: i(26)}, {I: 2, Client: i(23)}, {I: 3, Client: i(10)}, {I: 4, Client: i(157)},
+		{I: 5, Client: i(29)}, {I: 6, Client: i(14)}, {I: 7, Client: i(8)},
+	}
+	clients := []plan.Client{{Client: 8}, {Client: 23}, {Client: 26}, {Client: 29, Mode: plan.ModeConsumer},
+		{Client: 100, Mode: plan.ModeStorm, Connections: 200}}
+	anoms := []Anomaly{{Class: "notify-not-resumed", Ops: []int64{1, 2, 3}}, {Class: "x", Ops: []int64{4, 5, 6, 7}}}
+	if got := mapInvolved(evs, anoms, "notify-not-resumed", clients); !reflect.DeepEqual(got, []int{23, 26}) {
+		t.Errorf("notify-not-resumed clients %v, want [23 26]", got)
+	}
+	if got := mapInvolved(evs, anoms, "x", clients); !reflect.DeepEqual(got, []int{8, 29, 100}) {
+		t.Errorf("x clients %v, want [8 29 100]", got)
 	}
 }
