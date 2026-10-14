@@ -13,16 +13,17 @@
 # (200 MB, counted as bytes/10⁶ of the files under evidence/).
 #
 # Policy (third argument): adr0030 (default) as above; adr0032-option2 —
-# ADR-0032's option 2, used while the owner decides how K5 fits P25 — the
-# same, except that a C10 primary run that is not a real-build FAIL is a
-# stub. The budget check applies when <runs-dir> is under evidence/; a staged
-# copy elsewhere (for evaluating the gate on ADR-0030's storage) is not
-# evidence and is not counted.
-# usage: k5-store-runs.sh <runs-dir> <local-full-dir> [adr0030|adr0032-option2]
+# ADR-0032's option 2 — the same, except that a C10 primary run that is not
+# a real-build FAIL is a stub; stubs — every run a stub, the interim storage
+# while the owner decides ADR-0032 (only it fits P25). The budget check
+# applies when <runs-dir> is under evidence/; a staged copy elsewhere (for
+# evaluating the gate on ADR-0030's storage) is not evidence and is not
+# counted.
+# usage: k5-store-runs.sh <runs-dir> <local-full-dir> [adr0030|adr0032-option2|stubs]
 set -euo pipefail
 dir=${1:?runs directory} local=${2:?local directory for full archives of stubbed runs}
 policy=${3:-adr0030}
-case "$policy" in adr0030 | adr0032-option2) ;; *) echo "k5-store-runs: unknown policy $policy" >&2; exit 3 ;; esac
+case "$policy" in adr0030 | adr0032-option2 | stubs) ;; *) echo "k5-store-runs: unknown policy $policy" >&2; exit 3 ;; esac
 budget=200000000
 under_evidence=no
 case "$(realpath -m "$dir")/" in "$(realpath -m evidence)/"*) under_evidence=yes ;; esac
@@ -47,6 +48,7 @@ for d in "$dir"/*/; do
 		[ -n "$m" ] && full[$m]=1
 	fi
 done
+[ "$policy" = stubs ] && full=()
 # Archive into the stage; nothing in evidence changes until the budget check.
 out=()
 for d in "$dir"/*/; do
