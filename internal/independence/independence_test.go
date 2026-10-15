@@ -1,5 +1,5 @@
 // Package independence holds the binary-independence test of CONTRACT §5.3:
-// cpcheck, cpgate (and cpreport, from K6) must not depend on runner,
+// cpcheck, cpgate and cpreport must not depend on runner,
 // nemesis, cluster, workload or observation packages, nor on any Multigres
 // package. The verdict binaries read files; they never link the code that
 // drives or observes the system under test.
@@ -50,7 +50,7 @@ func deps(t *testing.T, pkg string) []string {
 }
 
 func TestVerdictBinariesAreIndependent(t *testing.T) {
-	for _, bin := range []string{"./cmd/cpcheck", "./cmd/cpgate"} {
+	for _, bin := range []string{"./cmd/cpcheck", "./cmd/cpgate", "./cmd/cpreport"} {
 		d := deps(t, bin)
 		if len(d) < 5 {
 			t.Fatalf("%s: implausible dependency list %v", bin, d)
@@ -62,6 +62,52 @@ func TestVerdictBinariesAreIndependent(t *testing.T) {
 				}
 			}
 		}
+	}
+}
+
+// cpreportAllowed is everything of this module cpreport may link: CONTRACT
+// §5.3's history, checker output types, stats and report, plus the utility
+// packages canonjson and params that cpgate also uses (ADR-0036). In
+// particular not the checkers themselves (internal/checker, Porcupine).
+var cpreportAllowed = map[string]bool{
+	module + "/cmd/cpreport":            true,
+	module + "/internal/report":         true,
+	module + "/internal/history":        true,
+	module + "/internal/checker/output": true,
+	module + "/internal/stats":          true,
+	module + "/internal/canonjson":      true,
+	module + "/internal/params":         true,
+}
+
+// outsideReportList returns the dependencies of d that cpreport may not link.
+func outsideReportList(d []string) []string {
+	var bad []string
+	for _, p := range d {
+		if strings.HasPrefix(p, module+"/") && !cpreportAllowed[p] || strings.HasPrefix(p, "github.com/anishathalye/porcupine") {
+			bad = append(bad, p)
+		}
+	}
+	return bad
+}
+
+func TestReportImportsOnlyItsList(t *testing.T) {
+	d := deps(t, "./cmd/cpreport")
+	n := 0
+	for _, p := range d {
+		if strings.HasPrefix(p, module+"/") {
+			n++
+		}
+	}
+	if n < 4 {
+		t.Fatalf("implausible dependency list of cpreport: %d module packages", n)
+	}
+	for _, p := range outsideReportList(d) {
+		t.Errorf("cpreport depends on %s (CONTRACT §5.3: history, checker output types, stats, report; ADR-0036)", p)
+	}
+	// Control: cpcheck links the checkers and Porcupine, so the same check
+	// flags it; the test could fail.
+	if len(outsideReportList(deps(t, "./cmd/cpcheck"))) == 0 {
+		t.Error("control: the allow-list check finds nothing outside the list in cpcheck; it would not notice a leak")
 	}
 }
 
@@ -100,7 +146,7 @@ func TestExpectationsIndependentOfCheckers(t *testing.T) {
 const sabotageMarker = "cpSabotageActive"
 
 // sabotageDirs may declare sabotage build tags; nowhere else may.
-var sabotageDirs = []string{filepath.Join("internal", "checker"), filepath.Join("internal", "nemesis")}
+var sabotageDirs = []string{filepath.Join("internal", "checker"), filepath.Join("internal", "nemesis"), filepath.Join("internal", "report")}
 
 func buildAndNM(t *testing.T, tags, pkg string) string {
 	t.Helper()
@@ -126,7 +172,7 @@ func buildAndNM(t *testing.T, tags, pkg string) string {
 // control builds cpcheck with one sabotage tag and requires the symbol, so
 // the check can fail.
 func TestProductBinariesHaveNoSabotage(t *testing.T) {
-	for _, bin := range []string{"./cmd/cpcheck", "./cmd/cpgate", "./cmd/commitproof"} {
+	for _, bin := range []string{"./cmd/cpcheck", "./cmd/cpgate", "./cmd/cpreport", "./cmd/commitproof"} {
 		if strings.Contains(buildAndNM(t, "", bin), sabotageMarker) {
 			t.Errorf("%s contains %s symbols", bin, sabotageMarker)
 		}
@@ -136,6 +182,9 @@ func TestProductBinariesHaveNoSabotage(t *testing.T) {
 	}
 	if !strings.Contains(buildAndNM(t, "cp_sabotage_inject_f1a", "./cmd/commitproof"), sabotageMarker+"_inject_f1a") {
 		t.Error("control: a cp_sabotage_inject_f1a build of commitproof lacks the marker; the check would not notice sabotage")
+	}
+	if !strings.Contains(buildAndNM(t, "cp_sabotage_report_nondeterminism", "./cmd/cpreport"), sabotageMarker+"_report_nondeterminism") {
+		t.Error("control: a cp_sabotage_report_nondeterminism build of cpreport lacks the marker; the check would not notice sabotage")
 	}
 	// No build-tag file outside the sabotage packages may name a sabotage tag.
 	inSabotageDir := func(p string) bool {
