@@ -10,21 +10,23 @@
 #     reads;
 #   - the C2 g1a / C3 anomalies cpcheck reported (checks.json);
 #   - multiorch's first appointment after the first kill (recruitment and
-#     promotion lines) and the killed leader pooler's restart lines.
+#     promotion lines) and the killed leader pooler's restart lines;
+#   - each gateway's buffering cycles (start, drain); a cycle that ends by
+#     "max failover duration" before the workload is bootstrap's (ADR-0029).
 # usage: k5-d3p-diagnosis.sh [<runs-dir>] [<full-dir>]
 set -euo pipefail
 shopt -s nullglob
 ev=${1:-evidence/K5/runs} full=${2:-runs/k5-full}
 tmp=$(mktemp -d runs/.k5-d3p-diag-XXXXXX)
 trap 'chmod -R u+w "$tmp" 2>/dev/null; rm -rf "$tmp"' EXIT
-ids=()
+declare -A ids=()
 for x in "$ev"/*-D3p-* "$full"/*-D3p-*; do
 	id=$(basename "$x")
 	id=${id%.checks.json} id=${id%.minimize.json} id=${id%.stub.tar.zst} id=${id%.tar.zst}
-	printf '%s\n' "${ids[@]}" | grep -qx "$id" || ids+=("$id")
+	ids[$id]=1
 done
 n=0
-for id in $(printf '%s\n' "${ids[@]}" | sort); do
+for id in $(printf '%s\n' "${!ids[@]}" | sort); do
 	if [ -d "$ev/$id" ]; then
 		d=$ev/$id
 	else
@@ -106,7 +108,12 @@ for l in open(sys.argv[1]):
 	} | awk '{print $2, $0}' | sort -k1,1 | cut -d' ' -f2- |
 		awk '/LeaderUnhealthy/ && /"outcome":"started"/ {go=1} go {print} /"outcome":"success"/ && go {exit}' |
 		sed -E 's/^([a-z0-9-]+) ([0-9T:.-]+)Z \{.*"msg":"([^"]*)"(.*)$/  \2 \1: \3 \4/' |
-		sed -E 's/,"(service_instance_id|cloud_availability_zone|service_version|multigres_[a-z]+|trace_id|span_id|pooler_name)":"[^"]*"//g' | cut -c1-240
+		sed -E 's/,"(service_instance_id|cloud_availability_zone|service_version|multigres_[a-z]+|trace_id|span_id|pooler_name)":"[^"]*"//g' | cut -c1-240 || true
+	# Every buffering cycle of each gateway.
+	for g in gw-z1 gw-z2 gw-z3; do
+		{ grep -hE '"msg":"(failover detected, starting buffering|stopping buffering, draining entries|max failover duration exceeded, stopping buffering|skipping buffering[^"]*)"' "$d/logs/$g.log" || true; } |
+			sed -E "s/^([0-9T:.-]+)Z .*\"msg\":\"([^\"]*)\".*/  \1 $g: \2/"
+	done
 	[ -d "$tmp/$id" ] && chmod -R u+w "$tmp/$id" && rm -rf "${tmp:?}/$id"
 	n=$((n + 1))
 done
