@@ -1,0 +1,1949 @@
+{
+  "analysis": "Design says (S40 'per-user pools that share fairly', S22; §3 G12): under a connection storm by one role another role with steady demand still obtains connections and completes operations, and overload alone does not trigger a failover. C8's rule (§10.9; kept literal by ADR-0030, LIM-25): fraction of ok cp_steady operations over each storm window ≥ 0.9, counting every storm window, also one a fault overlaps. System did: storm phase 1 (5.4–27.9 s) contained the plan's F2a on the leader (10.50 s inject, 14.21 s healed: PostgreSQL killed and restarted, leadership moved once, the only server change cp_steady saw, after the fault). 766 of 886 cp_steady operations completed ok (0.865 < 0.9) → fair-share-starvation. Every one of the 120 non-ok operations was invoked inside the F2a window (10.55–13.63 s): 114 refused at connect with 57P03, 4 refused at connect with 28P01 (password authentication failed, for a valid role, while PostgreSQL restarted), 2 info 57P01; outside that window the phase was 766 of 766 ok. Storm phase 2 (no fault) was 872 of 872 ok, and the fault-free runs (seeds 1 and 3) had 1 824 of 1 824 ok inside storms; p50/p99 latency inside storms 4.3–4.6 / 7.1–8.1 ms against 4.3–4.6 / 7.0–7.6 ms outside. Minimization (§12.2): the empty schedule PASSes (the storm alone does not starve cp_steady), the halved 45 s plan PASSes, the client-reduced plan PASSes; the original plan is the minimum and its replays FAIL with fair-share-starvation in 2 of 5 (INTERMITTENT): whether the outage's failures exceed 10 % of the storm window depends on how long PostgreSQL takes to restart. The anomaly is the unavailability window of the injected failover counted by G12's literal rule, not unfair pooling.",
+  "anomaly_class": "fair-share-starvation",
+  "checks_sha256": "f20fb1a6c64e2ce835a4d4a543f2d740b1cbb65a37808b202fdc9e9b4dbc315a",
+  "classes": [
+    "fair-share-starvation"
+  ],
+  "classification": {
+    "claim_level": "DESIGN",
+    "class": "PROTOCOL_DEVIATION",
+    "guarantee": "G12",
+    "known_status": "NEW",
+    "origin": "MULTIGRES",
+    "reproducibility": "INTERMITTENT",
+    "severity": "medium"
+  },
+  "classification_note": "Classified as §11.1 maps the guarantee: G12 → PROTOCOL_DEVIATION, severity medium (§11.2). The evidence (analysis) shows the injected failover's unavailability window counted by G12's literal rule (§10.9, ADR-0030, LIM-25), which in §11.1's terms would be a LIVENESS_OBSERVATION (severity info, finding id FND-C11-88fc04ee). Lowering the class or refining G12's rule would weaken a reported result, so it is left to the owner (closure: decision for review). The previous session's draft classified it LIVENESS_OBSERVATION; changed on resume, before any commit.",
+  "completion_review": [
+    {
+      "complete_t_ns": 10551943054,
+      "completion": "info",
+      "err": {
+        "class": "57",
+        "phase": "statement",
+        "sqlstate": "57P01"
+      },
+      "f": "insert",
+      "gw": "gw-z3",
+      "invoke_t_ns": 10549221597,
+      "op": 1400,
+      "row": 11,
+      "row_reason": "SQLSTATE 57P01 not listed (statement sent)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 10552542760,
+      "completion": "info",
+      "err": {
+        "class": "57",
+        "phase": "statement",
+        "sqlstate": "57P01"
+      },
+      "f": "insert",
+      "gw": "gw-z1",
+      "invoke_t_ns": 10549365274,
+      "op": 1401,
+      "row": 11,
+      "row_reason": "SQLSTATE 57P01 not listed (statement sent)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 10701974419,
+      "completion": "fail",
+      "err": {
+        "class": "28",
+        "phase": "connect",
+        "sqlstate": "28P01"
+      },
+      "f": "insert",
+      "gw": "gw-z3",
+      "invoke_t_ns": 10599845250,
+      "op": 1406,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (28P01 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 10702160413,
+      "completion": "fail",
+      "err": {
+        "class": "28",
+        "phase": "connect",
+        "sqlstate": "28P01"
+      },
+      "f": "insert",
+      "gw": "gw-z1",
+      "invoke_t_ns": 10599943272,
+      "op": 1407,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (28P01 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 10803813445,
+      "completion": "fail",
+      "err": {
+        "class": "28",
+        "phase": "connect",
+        "sqlstate": "28P01"
+      },
+      "f": "insert",
+      "gw": "gw-z1",
+      "invoke_t_ns": 10702205539,
+      "op": 1473,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (28P01 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 10804064932,
+      "completion": "fail",
+      "err": {
+        "class": "28",
+        "phase": "connect",
+        "sqlstate": "28P01"
+      },
+      "f": "insert",
+      "gw": "gw-z3",
+      "invoke_t_ns": 10702002507,
+      "op": 1471,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (28P01 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 10805514813,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z1",
+      "invoke_t_ns": 10803853731,
+      "op": 1475,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 10805589666,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z3",
+      "invoke_t_ns": 10804122357,
+      "op": 1477,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 10856506164,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z1",
+      "invoke_t_ns": 10854865240,
+      "op": 1480,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 10856573438,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z3",
+      "invoke_t_ns": 10854967341,
+      "op": 1481,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 10906821716,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z3",
+      "invoke_t_ns": 10904873620,
+      "op": 1484,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 10906884940,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z1",
+      "invoke_t_ns": 10904971881,
+      "op": 1485,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 10956938264,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z1",
+      "invoke_t_ns": 10955145724,
+      "op": 1488,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 10957000388,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z3",
+      "invoke_t_ns": 10955246635,
+      "op": 1489,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 11006815235,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z1",
+      "invoke_t_ns": 11005158023,
+      "op": 1492,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 11006878959,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z3",
+      "invoke_t_ns": 11005187450,
+      "op": 1493,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 11057778808,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z3",
+      "invoke_t_ns": 11056113377,
+      "op": 1496,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 11057843462,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z1",
+      "invoke_t_ns": 11056214198,
+      "op": 1497,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 11108835543,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z3",
+      "invoke_t_ns": 11107161473,
+      "op": 1501,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 11108927945,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z1",
+      "invoke_t_ns": 11107130616,
+      "op": 1500,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 11159230677,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z3",
+      "invoke_t_ns": 11157496052,
+      "op": 1504,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 11159294902,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z1",
+      "invoke_t_ns": 11157533519,
+      "op": 1505,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 11209840542,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z3",
+      "invoke_t_ns": 11208109847,
+      "op": 1509,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 11209943723,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z1",
+      "invoke_t_ns": 11208041373,
+      "op": 1508,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 11259654829,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z3",
+      "invoke_t_ns": 11258190629,
+      "op": 1513,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 11259732812,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z1",
+      "invoke_t_ns": 11258099727,
+      "op": 1512,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 11310522961,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z1",
+      "invoke_t_ns": 11308747459,
+      "op": 1517,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 11310591925,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z3",
+      "invoke_t_ns": 11308720801,
+      "op": 1516,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 11360794216,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z1",
+      "invoke_t_ns": 11358864838,
+      "op": 1520,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 11360879178,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z3",
+      "invoke_t_ns": 11358936172,
+      "op": 1521,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 11410873808,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z1",
+      "invoke_t_ns": 11409211567,
+      "op": 1525,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 11410934373,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z3",
+      "invoke_t_ns": 11409103636,
+      "op": 1524,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 11461045933,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z3",
+      "invoke_t_ns": 11459547706,
+      "op": 1591,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 11461101078,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z1",
+      "invoke_t_ns": 11459463814,
+      "op": 1590,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 11513116207,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z1",
+      "invoke_t_ns": 11510548437,
+      "op": 1595,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 11513351526,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z3",
+      "invoke_t_ns": 11510521799,
+      "op": 1594,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 11562259915,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z3",
+      "invoke_t_ns": 11560638869,
+      "op": 1599,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 11562284363,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z1",
+      "invoke_t_ns": 11560560906,
+      "op": 1598,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 11612960868,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z3",
+      "invoke_t_ns": 11611458681,
+      "op": 1602,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 11613028152,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z1",
+      "invoke_t_ns": 11611496658,
+      "op": 1603,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 11664057235,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z1",
+      "invoke_t_ns": 11662307261,
+      "op": 1606,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 11664108081,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z3",
+      "invoke_t_ns": 11662336659,
+      "op": 1607,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 11714070859,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z3",
+      "invoke_t_ns": 11712472792,
+      "op": 1610,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 11714125954,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z1",
+      "invoke_t_ns": 11712513178,
+      "op": 1611,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 11765160707,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z1",
+      "invoke_t_ns": 11763595237,
+      "op": 1615,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 11765238800,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z3",
+      "invoke_t_ns": 11763500465,
+      "op": 1614,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 11816308960,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z3",
+      "invoke_t_ns": 11814534528,
+      "op": 1618,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 11816387423,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z1",
+      "invoke_t_ns": 11814603102,
+      "op": 1619,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 11866095014,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z1",
+      "invoke_t_ns": 11864593268,
+      "op": 1622,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 11866118142,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z3",
+      "invoke_t_ns": 11864675371,
+      "op": 1623,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 11917377085,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z1",
+      "invoke_t_ns": 11915371834,
+      "op": 1627,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 11917402503,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z3",
+      "invoke_t_ns": 11915338057,
+      "op": 1626,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 11967096816,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z1",
+      "invoke_t_ns": 11965589410,
+      "op": 1630,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 11967160240,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z3",
+      "invoke_t_ns": 11965616258,
+      "op": 1631,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 12018173745,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z1",
+      "invoke_t_ns": 12016476446,
+      "op": 1635,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 12018247368,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z3",
+      "invoke_t_ns": 12016444879,
+      "op": 1634,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 12068087838,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z1",
+      "invoke_t_ns": 12066511848,
+      "op": 1639,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 12068149762,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z3",
+      "invoke_t_ns": 12066453893,
+      "op": 1638,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 12119277577,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z1",
+      "invoke_t_ns": 12117388515,
+      "op": 1642,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 12119344011,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z3",
+      "invoke_t_ns": 12117504075,
+      "op": 1643,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 12169286301,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z1",
+      "invoke_t_ns": 12167671155,
+      "op": 1647,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 12169341116,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z3",
+      "invoke_t_ns": 12167616950,
+      "op": 1646,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 12219764304,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z1",
+      "invoke_t_ns": 12217987722,
+      "op": 1650,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 12219864055,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z3",
+      "invoke_t_ns": 12218035468,
+      "op": 1651,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 12270343897,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z1",
+      "invoke_t_ns": 12268884837,
+      "op": 1717,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 12270401592,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z3",
+      "invoke_t_ns": 12268872279,
+      "op": 1716,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 12321042840,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z1",
+      "invoke_t_ns": 12319360620,
+      "op": 1720,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 12321065598,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z3",
+      "invoke_t_ns": 12319410086,
+      "op": 1721,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 12371850844,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z1",
+      "invoke_t_ns": 12370283673,
+      "op": 1725,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 12371876911,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z3",
+      "invoke_t_ns": 12370177673,
+      "op": 1724,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 12422690504,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z3",
+      "invoke_t_ns": 12421122094,
+      "op": 1729,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 12422748219,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z1",
+      "invoke_t_ns": 12421008724,
+      "op": 1728,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 12473684731,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z3",
+      "invoke_t_ns": 12471967554,
+      "op": 1732,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 12473752145,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z1",
+      "invoke_t_ns": 12472030568,
+      "op": 1733,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 12524862431,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z3",
+      "invoke_t_ns": 12523130435,
+      "op": 1737,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 12524950273,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z1",
+      "invoke_t_ns": 12523028524,
+      "op": 1736,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 12575532470,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z3",
+      "invoke_t_ns": 12573226085,
+      "op": 1740,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 12575700455,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z1",
+      "invoke_t_ns": 12573485072,
+      "op": 1741,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 12625971891,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z3",
+      "invoke_t_ns": 12624033854,
+      "op": 1745,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 12626061453,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z1",
+      "invoke_t_ns": 12623953041,
+      "op": 1744,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 12676370807,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z3",
+      "invoke_t_ns": 12674352406,
+      "op": 1748,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 12676407744,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z1",
+      "invoke_t_ns": 12674464736,
+      "op": 1749,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 12725893330,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z3",
+      "invoke_t_ns": 12724832865,
+      "op": 1753,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 12725989272,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z1",
+      "invoke_t_ns": 12724561169,
+      "op": 1752,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 12776418884,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z1",
+      "invoke_t_ns": 12775377897,
+      "op": 1757,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 12776502317,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z3",
+      "invoke_t_ns": 12775258848,
+      "op": 1756,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 12826249400,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z1",
+      "invoke_t_ns": 12825512896,
+      "op": 1760,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 12826313434,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z3",
+      "invoke_t_ns": 12825603788,
+      "op": 1761,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 12879649339,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z1",
+      "invoke_t_ns": 12877015533,
+      "op": 1889,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 12883384946,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z3",
+      "invoke_t_ns": 12876990495,
+      "op": 1888,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 12928860740,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z1",
+      "invoke_t_ns": 12927042821,
+      "op": 3359,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 12929555458,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z3",
+      "invoke_t_ns": 12926968618,
+      "op": 3358,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 12980419042,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z1",
+      "invoke_t_ns": 12977707523,
+      "op": 4721,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 12983916771,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z3",
+      "invoke_t_ns": 12979470596,
+      "op": 4749,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 13030470838,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z1",
+      "invoke_t_ns": 13027352356,
+      "op": 5845,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 13031166906,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z3",
+      "invoke_t_ns": 13025762257,
+      "op": 5817,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 13077855522,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z1",
+      "invoke_t_ns": 13075917144,
+      "op": 7101,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 13078058104,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z3",
+      "invoke_t_ns": 13077165773,
+      "op": 7140,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 13127439540,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z1",
+      "invoke_t_ns": 13126311110,
+      "op": 8625,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 13127775970,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z3",
+      "invoke_t_ns": 13126020266,
+      "op": 8620,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 13177436551,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z3",
+      "invoke_t_ns": 13176047104,
+      "op": 10327,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 13180127271,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z1",
+      "invoke_t_ns": 13177146287,
+      "op": 10379,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 13229067707,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z3",
+      "invoke_t_ns": 13226173414,
+      "op": 11750,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 13234840793,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z1",
+      "invoke_t_ns": 13228257859,
+      "op": 11796,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 13281592733,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z1",
+      "invoke_t_ns": 13276775331,
+      "op": 12931,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 13282109077,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z3",
+      "invoke_t_ns": 13276934067,
+      "op": 12934,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 13328421586,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z1",
+      "invoke_t_ns": 13327721948,
+      "op": 14268,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 13329550925,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z3",
+      "invoke_t_ns": 13326206663,
+      "op": 14215,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 13378542076,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z3",
+      "invoke_t_ns": 13377387149,
+      "op": 15944,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 13380167461,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z1",
+      "invoke_t_ns": 13377871416,
+      "op": 15962,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 13429965710,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z1",
+      "invoke_t_ns": 13429011665,
+      "op": 17790,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 13430095329,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z3",
+      "invoke_t_ns": 13427684243,
+      "op": 17765,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 13478875518,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z3",
+      "invoke_t_ns": 13477684274,
+      "op": 19287,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 13479956392,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z1",
+      "invoke_t_ns": 13477981318,
+      "op": 19303,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 13528297530,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z3",
+      "invoke_t_ns": 13526354783,
+      "op": 21040,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 13530454549,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z1",
+      "invoke_t_ns": 13527993157,
+      "op": 21101,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 13577744744,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z3",
+      "invoke_t_ns": 13576443480,
+      "op": 22860,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 13583029495,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z1",
+      "invoke_t_ns": 13578910001,
+      "op": 22926,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 13628313000,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z3",
+      "invoke_t_ns": 13626387451,
+      "op": 24728,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    },
+    {
+      "complete_t_ns": 13629679399,
+      "completion": "fail",
+      "err": {
+        "class": "57",
+        "phase": "connect",
+        "sqlstate": "57P03"
+      },
+      "f": "insert",
+      "gw": "gw-z1",
+      "invoke_t_ns": 13628069102,
+      "op": 24801,
+      "row": 10,
+      "row_reason": "connection refused before any statement was sent (57P03 at connect)",
+      "wl": "ledger"
+    }
+  ],
+  "finding_id": "FND-C11-17a344c1",
+  "harness_defect": false,
+  "harness_review": "§6.2 review of all 120 non-ok cp_steady completions in storm phase 1 (completion_review): 118 refused at connect (57P03 or 28P01 at connection startup, no statement sent: fail, row 10) and 2 with SQLSTATE 57P01 after the statement was sent (info, row 11); every ok is an acknowledged insert (row 1). The fault was confirmed and healed (nemesis events) and the run is valid. The checker applied §10.9 as written (ADR-0030 kept the literal rule; LIM-25); the classification is a triage judgement, not a checker change. Not a HARNESS_DEFECT.",
+  "known_status_reasoning": "Unavailability during a failover is documented behaviour (S48: promotion 'within seconds'); no alpha-known-gap issue in RESEARCH S50 concerns pool fairness. The 28P01 refusals during the restart are recorded as an observation (NOTES §9).",
+  "minimized_run": "20261013T232750Z-C11-2-real-1f5423ed",
+  "oracle": "not-applicable (no C3 anomaly)",
+  "origin_reasoning": "The non-ok operations are connection refusals by Multigres' gateway and pooler while the leader's PostgreSQL restarted (57P03 is PostgreSQL's 'starting up'; 28P01 is returned by the gateway's authentication for a valid role). Origin MULTIGRES for the refusals; nothing points to pool unfairness.",
+  "run_id": "20261013T232750Z-C11-2-real-1f5423ed",
+  "seal_root": "535406abf5f1a525c220924fbfd1c0597003f49eef2fd10560af668b1c932353"
+}

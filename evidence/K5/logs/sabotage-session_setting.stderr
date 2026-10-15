@@ -1,0 +1,3 @@
+MISMATCH w5k-setting-lost-01: [C8 valid true, expected false C8 anomalies [], expected [session-setting-lost] verdict PASS, expected FAIL]
+MISMATCH w5k-setting-lost-02: [C8 valid true, expected false C8 anomalies [], expected [session-setting-lost] verdict PASS, expected FAIL]
+MISMATCH w5k-setting-lost-03: [C8 valid true, expected false C8 anomalies [], expected [session-setting-lost] verdict PASS, expected FAIL]

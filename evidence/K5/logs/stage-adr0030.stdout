@@ -1,0 +1,1 @@
+{"command":"k5-stage-storage","policy":"adr0030","staged":"runs/.k5-staged-adr0030/K5","runs_not_stubs":0,"evidence_outside_k5_bytes":183082177,"k5_bytes":9322886,"evidence_bytes":192405063,"budget":200000000,"fits":true,"exit_code":0}

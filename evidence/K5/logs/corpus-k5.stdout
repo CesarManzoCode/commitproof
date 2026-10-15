@@ -1,0 +1,1 @@
+{"command":"corpus","dir":"testdata/corpus-k5","entries":157,"exit_code":0,"matched":157,"mismatched":[],"out":"evidence/K5/corpus","results_sha256":"36fe33512b16434e9069128293a2df9953257d97ddc3831acaafebda20e34958"}

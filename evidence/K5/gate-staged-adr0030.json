@@ -1,0 +1,117 @@
+{
+  "sprint": "K5",
+  "contract_version": "1.0.9",
+  "evidence": "runs/.k5-staged-adr0030/K5",
+  "result": "FAIL",
+  "criteria": [
+    {
+      "id": "K5.1",
+      "name": "Synthetic validation",
+      "result": "PASS",
+      "evidence": "corpus/, sabotage/, k2-corpus/",
+      "sha256": "",
+      "problems": [],
+      "details": [
+        "K5 corpus 157 entries; planted per class: session-setting-lost 3, prepared-statement-lost 5, notify-not-resumed 4, fair-share-starvation 3, overload-failover 3, planned-failover-error 4, cdc-gap 3, cdc-phantom 3, cdc-duplicate 3, cdc-order 3, notify-window-loss 7, planned-failover-unbuffered 4; clean valid per family: w5k 25, w6k 25, w7k 25, w8k 25, g8k 15",
+        "K2 corpus with the K5 checkers: 807 entries, 0 mismatches",
+        "buffer_guard: failing labels {planned-failover-unbuffered}",
+        "cdc_duplicate_bound: failing labels {cdc-duplicate}",
+        "cdc_gap: failing labels {cdc-gap}",
+        "cdc_order: failing labels {cdc-order}",
+        "cdc_phantom: failing labels {cdc-phantom}",
+        "fair_share: failing labels {fair-share-starvation}",
+        "notify_anchor: failing labels {notify-not-resumed,notify-reconnect-window}",
+        "notify_resume: failing labels {notify-not-resumed}",
+        "overload_failover: failing labels {overload-failover}",
+        "planned_failover: failing labels {planned-failover-error}",
+        "prepared_statement: failing labels {prepared-statement-lost}",
+        "session_setting: failing labels {session-setting-lost}",
+        "K5.1 records end 2026-10-13T22:11:24Z; first K5 run 20261013T225139Z-C8-1-real-27ef0b9a starts 2026-10-13T22:51:39Z"
+      ]
+    },
+    {
+      "id": "K5.2",
+      "name": "Campaign runs",
+      "result": "PASS",
+      "evidence": "results.json",
+      "sha256": "f5808d0cdf2eaabdf7d752168abdcad1bc915a975cc29d5a7799c731b5b5e547",
+      "problems": [],
+      "details": [
+        "C8 (buffered): seed 1 PASS[]; seed 2 PASS[]; seed 3 PASS[]",
+        "C9 (baseline): seed 1 FAIL[notify-not-resumed]; seed 2 FAIL[notify-not-resumed]; seed 3 FAIL[notify-not-resumed]",
+        "C10 (baseline): seed 1 PASS[]; seed 2 PASS[]; seed 3 PASS[]; seed 4 PASS[]; seed 5 PASS[]",
+        "C11 (baseline): seed 1 PASS[]; seed 2 FAIL[fair-share-starvation]; seed 3 PASS[]"
+      ]
+    },
+    {
+      "id": "K5.3",
+      "name": "CDC slot failover precondition",
+      "result": "PASS",
+      "evidence": "runs/ (C10 observations)",
+      "sha256": "",
+      "problems": [],
+      "details": [
+        "20261013T231132Z-C10-1-real-4e2010a8: ready at 15.6 s, first fault at 25.7 s (marker waited 15208 ms)",
+        "20261013T231500Z-C10-2-real-01af5fe0: ready at 14.6 s, first fault at 24.7 s (marker waited 14148 ms)",
+        "20261013T231736Z-C10-3-real-018e2dd9: ready at 33.1 s, first fault at 43.3 s (marker waited 32705 ms)",
+        "20261013T232032Z-C10-4-real-0370610b: ready at 10.3 s, first fault at 20.5 s (marker waited 9857 ms)",
+        "20261013T232303Z-C10-5-real-ed9c988d: ready at 10.4 s, first fault at 20.5 s (marker waited 9813 ms)",
+        "5 C10 runs read in full (0 INVALID), 0 stubs (derived runs; LIM-30)"
+      ]
+    },
+    {
+      "id": "K5.4",
+      "name": "Mutant detection",
+      "result": "FAIL",
+      "evidence": "runs/, images.lock.json, mutants/",
+      "sha256": "",
+      "problems": [
+        "M3 via D3: 2/5 runs FAIL with [[C3 duplicate-elements] [C2 g1a]], need 4"
+      ],
+      "details": [
+        "M3 via D3 (buffered): UNDETECTED 2/5 with [[C3 duplicate-elements] [C2 g1a]]; mutant [PASS[] FAIL[g1a] PASS[] FAIL[g1a] PASS[]]; real [PASS[] PASS[] PASS[] PASS[] PASS[]]",
+        "M5 via D5 (baseline): DETECTED 5/5 with [[C7 cdc-phantom]]; mutant [FAIL[cdc-phantom] FAIL[cdc-phantom] FAIL[cdc-phantom] FAIL[cdc-phantom] FAIL[cdc-phantom]]; real [PASS[] PASS[] PASS[] PASS[] PASS[]]",
+        "M3 isolation: 1 binary(ies) linking [go/services/multigateway/poolergateway/pooler_gateway.go] differ; the others equal the real build",
+        "M5 isolation: 1 binary(ies) linking [go/services/multipooler/internal/manager/pg_replication.go] differ; the others equal the real build"
+      ]
+    },
+    {
+      "id": "K5.5",
+      "name": "Minimize/replay/triage",
+      "result": "PASS",
+      "evidence": "runs/ (*.minimize.json, replays), triage/",
+      "sha256": "",
+      "problems": [],
+      "details": [
+        "11 FAIL runs minimized and replayed",
+        "20261013T230136Z-C9-1-real-21458975 → 20261014T004127Z-C9-1-real-e8381b69 (notify-not-resumed, 3 reductions) replays [FAIL FAIL FAIL FAIL PASS]: 4/5 with notify-not-resumed → REPRODUCED",
+        "20261013T230136Z-C9-1-real-21458975: FND-C9-40b6f05a PROTOCOL_DEVIATION G10 REPRODUCED medium",
+        "20261013T230358Z-C9-2-real-b0861f34 → 20261014T010524Z-C9-2-real-b8b35825 (notify-not-resumed, 4 reductions) replays [FAIL FAIL FAIL FAIL FAIL]: 5/5 with notify-not-resumed → REPRODUCED",
+        "20261013T230358Z-C9-2-real-b0861f34: FND-C9-2fe9a9fc PROTOCOL_DEVIATION G10 REPRODUCED medium",
+        "20261013T230909Z-C9-3-real-bb8a276f → 20261014T012149Z-C9-3-real-52de89e0 (notify-not-resumed, 3 reductions) replays [PASS PASS FAIL PASS PASS]: 1/5 with notify-not-resumed → INTERMITTENT",
+        "20261013T230909Z-C9-3-real-bb8a276f: FND-C9-90da5532 PROTOCOL_DEVIATION G10 INTERMITTENT medium",
+        "20261013T232750Z-C11-2-real-1f5423ed → 20261013T232750Z-C11-2-real-1f5423ed (fair-share-starvation, 0 reductions) replays [PASS FAIL PASS FAIL PASS]: 2/5 with fair-share-starvation → INTERMITTENT",
+        "20261013T232750Z-C11-2-real-1f5423ed: FND-C11-17a344c1 PROTOCOL_DEVIATION G12 INTERMITTENT medium",
+        "20261013T233549Z-D3-2-M3-ad08cd75 → 20261014T020756Z-D3-2-M3-c877bac8 (g1a, 1 reductions) replays [PASS PASS FAIL PASS FAIL]: 2/5 with g1a → INTERMITTENT",
+        "20261013T234245Z-D3-4-M3-6b74e887 → 20261013T234245Z-D3-4-M3-6b74e887 (g1a, 0 reductions) replays [PASS PASS PASS PASS PASS]: 0/5 with g1a → NOT_REPRODUCED",
+        "20261014T000625Z-D5-1-M5-ad688688 → 20261014T033002Z-D5-1-M5-af21930b (cdc-phantom, 3 reductions) replays [FAIL FAIL FAIL FAIL FAIL]: 5/5 with cdc-phantom → REPRODUCED",
+        "20261014T000854Z-D5-2-M5-aca068c8 → 20261014T035023Z-D5-2-M5-ac2559f5 (cdc-phantom, 2 reductions) replays [PASS FAIL FAIL PASS FAIL]: 3/5 with cdc-phantom → REPRODUCED",
+        "20261014T001126Z-D5-3-M5-d95fb90a → 20261014T042135Z-D5-3-M5-48de96e0 (cdc-phantom, 3 reductions) replays [PASS PASS PASS PASS PASS]: 0/5 with cdc-phantom → NOT_REPRODUCED",
+        "20261014T001355Z-D5-4-M5-c5f146f4 → 20261014T232452Z-D5-4-M5-aa2a5fbd (cdc-phantom, 2 reductions) replays [PASS PASS FAIL FAIL FAIL]: 3/5 with cdc-phantom → REPRODUCED",
+        "20261014T001628Z-D5-5-M5-e9fd481e → 20261014T234830Z-D5-5-M5-d365585c (cdc-phantom, 2 reductions) replays [FAIL PASS PASS FAIL PASS]: 2/5 with cdc-phantom → INTERMITTENT",
+        "4 real-build FAIL runs, 4 triage records"
+      ]
+    },
+    {
+      "id": "K5.6",
+      "name": "CI-equivalent",
+      "result": "PASS",
+      "evidence": "commands.jsonl",
+      "sha256": "72d1c5d675913f71f9623afb8d1a8d00b1eda9a44de84c2e20e640c27f89876c",
+      "problems": [],
+      "details": [
+        "ci-2: argv [\"make\" \"ci-unit\" \"ci-checkers\" \"ci-cluster-smoke\" \"ci-nemesis-smoke\" \"ci-mutant-smoke\"] exit 0; earlier attempts [ci exit 0]"
+      ]
+    }
+  ]
+}

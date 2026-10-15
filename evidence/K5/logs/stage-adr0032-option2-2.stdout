@@ -1,0 +1,8 @@
+{"run":"20261013T230136Z-C9-1-real-21458975","stored":"adr0032-option2","bytes":1807228}
+{"run":"20261013T230358Z-C9-2-real-b0861f34","stored":"adr0032-option2","bytes":1871499}
+{"run":"20261013T230909Z-C9-3-real-bb8a276f","stored":"adr0032-option2","bytes":1947160}
+{"run":"20261013T232750Z-C11-2-real-1f5423ed","stored":"adr0032-option2","bytes":3450920}
+{"run":"20261014T004127Z-C9-1-real-e8381b69","stored":"adr0032-option2","bytes":611286}
+{"run":"20261014T010524Z-C9-2-real-b8b35825","stored":"adr0032-option2","bytes":292289}
+{"run":"20261014T012149Z-C9-3-real-52de89e0","stored":"adr0032-option2","bytes":492329}
+{"command":"k5-stage-storage","policy":"adr0032-option2","staged":"runs/.k5-staged-adr0032-option2/K5","runs_not_stubs":7,"evidence_outside_k5_bytes":183082177,"k5_bytes":19396309,"evidence_bytes":202478486,"budget":200000000,"fits":false,"exit_code":0}

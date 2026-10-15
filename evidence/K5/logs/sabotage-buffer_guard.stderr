@@ -1,0 +1,4 @@
+MISMATCH g8k-unbuffered-01: [C9 valid false, expected true C9 anomalies [planned-failover-error], expected [] C9 observations [], expected [planned-failover-unbuffered] verdict FAIL, expected PASS]
+MISMATCH g8k-unbuffered-02: [C9 valid false, expected true C9 anomalies [planned-failover-error], expected [] C9 observations [], expected [planned-failover-unbuffered] verdict FAIL, expected PASS]
+MISMATCH g8k-unbuffered-03: [C9 valid false, expected true C9 anomalies [planned-failover-error], expected [] C9 observations [], expected [planned-failover-unbuffered] verdict FAIL, expected PASS]
+MISMATCH g8k-unbuffered-04: [C9 valid false, expected true C9 anomalies [planned-failover-error], expected [] C9 observations [], expected [planned-failover-unbuffered] verdict FAIL, expected PASS]

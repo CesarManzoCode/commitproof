@@ -1,0 +1,7 @@
+verbose: Linting all workflow files in repository: /repo
+verbose: Detected project: /repo
+verbose: Collected 1 YAML files
+verbose: Linting .github/workflows/ci.yml
+verbose: Using project at /repo
+verbose: Found 0 parse errors in 0 ms for .github/workflows/ci.yml
+verbose: Found total 0 errors in 60 ms for .github/workflows/ci.yml

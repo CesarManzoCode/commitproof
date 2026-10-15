@@ -1,0 +1,4 @@
+MISMATCH w6k-not-resumed-after-second-04: [C8 valid true, expected false C8 anomalies [], expected [notify-not-resumed] verdict PASS, expected FAIL]
+MISMATCH w6k-not-resumed-never-01: [C8 valid true, expected false C8 anomalies [], expected [notify-not-resumed] verdict PASS, expected FAIL]
+MISMATCH w6k-not-resumed-never-02: [C8 valid true, expected false C8 anomalies [], expected [notify-not-resumed] verdict PASS, expected FAIL]
+MISMATCH w6k-not-resumed-one-03: [C8 valid true, expected false C8 anomalies [], expected [notify-not-resumed] verdict PASS, expected FAIL]

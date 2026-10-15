@@ -1,0 +1,13 @@
+{"run":"20261013T230136Z-C9-1-real-21458975","stored":"partial","bytes":1616013}
+{"run":"20261013T230358Z-C9-2-real-b0861f34","stored":"partial","bytes":1658035}
+{"run":"20261013T230909Z-C9-3-real-bb8a276f","stored":"partial","bytes":1688641}
+{"run":"20261013T231132Z-C10-1-real-4e2010a8","stored":"partial","bytes":1630698}
+{"run":"20261013T231500Z-C10-2-real-01af5fe0","stored":"partial","bytes":1699028}
+{"run":"20261013T231736Z-C10-3-real-018e2dd9","stored":"partial","bytes":1795007}
+{"run":"20261013T232032Z-C10-4-real-0370610b","stored":"partial","bytes":1725068}
+{"run":"20261013T232303Z-C10-5-real-ed9c988d","stored":"partial","bytes":1745821}
+{"run":"20261013T232750Z-C11-2-real-1f5423ed","stored":"partial","bytes":2289770}
+{"run":"20261014T004127Z-C9-1-real-e8381b69","stored":"partial","bytes":490862}
+{"run":"20261014T010524Z-C9-2-real-b8b35825","stored":"partial","bytes":239484}
+{"run":"20261014T012149Z-C9-3-real-52de89e0","stored":"partial","bytes":425592}
+{"command":"k5-stage-storage","policy":"partial","staged":"runs/.k5-staged-partial/K5","runs_not_stubs":12,"evidence_outside_k5_bytes":183082177,"k5_bytes":25516089,"evidence_bytes":208598266,"budget":200000000,"fits":false,"exit_code":0}

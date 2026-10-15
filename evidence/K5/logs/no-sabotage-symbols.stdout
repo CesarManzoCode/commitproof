@@ -1,0 +1,4 @@
+=== RUN   TestProductBinariesHaveNoSabotage
+--- PASS: TestProductBinariesHaveNoSabotage (2.34s)
+PASS
+ok  	github.com/CesarManzoCode/commitproof/internal/independence	2.342s

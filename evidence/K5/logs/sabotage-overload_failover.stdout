@@ -1,0 +1,1 @@
+{"command":"corpus","dir":"testdata/corpus-k5","entries":157,"exit_code":1,"matched":154,"mismatched":["w8k-failover-01","w8k-failover-02","w8k-failover-03"],"out":"evidence/K5/sabotage/overload_failover","results_sha256":"788c2df37cb7005563915b5bed067f4eac16a4c0bb0897de5a9c3624f8ebbd88","sabotage":["overload_failover"]}

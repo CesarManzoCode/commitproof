@@ -1,0 +1,1 @@
+{"command":"corpus","dir":"testdata/corpus-k5","entries":157,"exit_code":1,"matched":153,"mismatched":["g8k-autocommit-fail-02","g8k-autocommit-info-01","g8k-explicit-deadlock-04","g8k-explicit-info-03"],"out":"evidence/K5/sabotage/planned_failover","results_sha256":"c0a3e5e2ad8f8398979cb07be25d9817daa8d5dcff23c9cc1a05960d13cf1459","sabotage":["planned_failover"]}

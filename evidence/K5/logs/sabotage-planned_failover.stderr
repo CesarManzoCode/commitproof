@@ -1,0 +1,4 @@
+MISMATCH g8k-autocommit-fail-02: [C9 valid true, expected false C9 anomalies [], expected [planned-failover-error] verdict PASS, expected FAIL]
+MISMATCH g8k-autocommit-info-01: [C9 valid true, expected false C9 anomalies [], expected [planned-failover-error] verdict PASS, expected FAIL]
+MISMATCH g8k-explicit-deadlock-04: [C9 valid true, expected false C9 anomalies [], expected [planned-failover-error] verdict PASS, expected FAIL]
+MISMATCH g8k-explicit-info-03: [C9 valid true, expected false C9 anomalies [], expected [planned-failover-error] verdict PASS, expected FAIL]

@@ -1,0 +1,41 @@
+CommitProof mutant M5 — standby-slots-cleared (CONTRACT §9.2, ADR-0007)
+
+Intent: setSynchronizedStandbySlots
+(go/services/multipooler/internal/manager/pg_replication.go:600) always
+writes synchronized_standby_slots = '' instead of the committed cohort's
+physical slots.
+Failure mode modelled: logical decoding runs ahead of the cohort — with
+slot-based replication the primary lists the cohort's physical slots in
+synchronized_standby_slots so that a logical consumer never receives a
+change the standbys do not have (S13); without it, a consumer can receive
+a transaction that a failover to a standby then discards (a phantom
+change; S12's goal "no loss of data during a failover" presupposes the
+gating).
+Sources: S13, S12.
+Detection (§9.2, ADR-0030): directed schedule D5 (W7 consumer, W4 load;
+F1b with A = the followers' nodes for 20 s, then F2a and F2b on the leader;
+F1b healed first, the old leader's pooler 30 s later, then its
+PostgreSQL); expected C7 cdc-phantom.
+Function touched: setSynchronizedStandbySlots (one function).
+
+diff --git a/go/services/multipooler/internal/manager/pg_replication.go b/go/services/multipooler/internal/manager/pg_replication.go
+index 1bd0238..dc53579 100644
+--- a/go/services/multipooler/internal/manager/pg_replication.go
++++ b/go/services/multipooler/internal/manager/pg_replication.go
+@@ -601,12 +601,11 @@ func (pm *MultipoolerManager) setSynchronizedStandbySlots(ctx context.Context, c
+ 	if !pm.slotBasedReplicationEnabled() {
+ 		return nil
+ 	}
+-	slots, err := pm.followerPhysicalSlotNames(cohort)
+-	if err != nil {
+-		return err
+-	}
++	// CommitProof mutant M5 (standby-slots-cleared): the cohort's physical
++	// slots are not listed; synchronized_standby_slots is always written
++	// empty, so logical decoding no longer waits for the cohort.
+ 	if err := pm.alterSystemSetOptions(ctx, []postgresOption{
+-		{name: "synchronized_standby_slots", value: strings.Join(slots, ",")},
++		{name: "synchronized_standby_slots", value: ""},
+ 	}); err != nil {
+ 		return err
+ 	}

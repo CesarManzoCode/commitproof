@@ -1,0 +1,1 @@
+{"command":"corpus","dir":"testdata/corpus-k5","entries":157,"exit_code":1,"matched":154,"mismatched":["w7k-order-01","w7k-order-02","w7k-order-03"],"out":"evidence/K5/sabotage/cdc_order","results_sha256":"26accc4c7d5b83bdd3702d9ff4ea4e7d41102282470b8ed560919d997fc73c4f","sabotage":["cdc_order"]}

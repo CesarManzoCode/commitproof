@@ -1,0 +1,7 @@
+MISMATCH w6k-not-resumed-after-second-04: [C8 observations [], expected [notify-window-loss]]
+MISMATCH w6k-not-resumed-never-01: [C8 observations [], expected [notify-window-loss]]
+MISMATCH w6k-not-resumed-never-02: [C8 observations [], expected [notify-window-loss]]
+MISMATCH w6k-reconnect-window-01: [C8 valid false, expected true C8 anomalies [notify-not-resumed], expected [] C8 observations [], expected [notify-window-loss] verdict FAIL, expected PASS]
+MISMATCH w6k-reconnect-window-02: [C8 valid false, expected true C8 anomalies [notify-not-resumed], expected [] C8 observations [], expected [notify-window-loss] verdict FAIL, expected PASS]
+MISMATCH w6k-reconnect-window-03: [C8 valid false, expected true C8 anomalies [notify-not-resumed], expected [] C8 observations [], expected [notify-window-loss] verdict FAIL, expected PASS]
+MISMATCH w6k-reconnect-window-04: [C8 valid false, expected true C8 anomalies [notify-not-resumed], expected [] C8 observations [], expected [notify-window-loss] verdict FAIL, expected PASS]

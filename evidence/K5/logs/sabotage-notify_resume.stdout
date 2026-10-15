@@ -1,0 +1,1 @@
+{"command":"corpus","dir":"testdata/corpus-k5","entries":157,"exit_code":1,"matched":153,"mismatched":["w6k-not-resumed-after-second-04","w6k-not-resumed-never-01","w6k-not-resumed-never-02","w6k-not-resumed-one-03"],"out":"evidence/K5/sabotage/notify_resume","results_sha256":"221eb41e532b301b697a9d58fec6734b749a8c97baf22646b8047c7292d922f7","sabotage":["notify_resume"]}
