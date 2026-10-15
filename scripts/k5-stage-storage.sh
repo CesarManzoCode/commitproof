@@ -31,14 +31,17 @@ trap 'chmod -R u+w "$tmp" 2>/dev/null; rm -rf "$tmp"' EXIT
 man() { # run id → its manifest.json (from the committed stub)
 	zstd -dc "$dst/runs/$1.stub.tar.zst" | tar -xOf - "$1/manifest.json"
 }
-field() { sed -n "s/.*\"$2\":\"\\([^\"]*\\)\".*/\\1/p"; }
+field() { sed -n "s/.*\"$1\":\"\\([^\"]*\\)\".*/\\1/p"; } # key; manifest on stdin
 declare -A set=()
 for s in "$dst"/runs/*.stub.tar.zst; do
 	id=$(basename "$s" .stub.tar.zst)
 	m=$(man "$id")
+	camp=$(field campaign <<<"$m")
+	mut=$(field mutant <<<"$m")
+	[ -n "$camp" ] && [ -n "$mut" ] || { echo "k5-stage-storage: $id: no campaign or mutant in its manifest" >&2; exit 2; }
 	grep -q '"replay_of"\|"candidate_of"' <<<"$m" && continue
-	[ "$(field campaign <<<"$m")" = C10 ] && [ "$policy" != adr0032-option2 ] && set[$id]=1
-	if [ "$(field mutant <<<"$m")" = real ] && grep -q '"verdict":"FAIL"' "$dst/runs/$id.checks.json"; then
+	[ "$camp" = C10 ] && [ "$policy" != adr0032-option2 ] && set[$id]=1
+	if [ "$mut" = real ] && grep -q '"verdict":"FAIL"' "$dst/runs/$id.checks.json"; then
 		set[$id]=1
 		j="$dst/runs/$id.minimize.json"
 		[ -f "$j" ] || { echo "k5-stage-storage: real-build FAIL $id has no minimization journal" >&2; exit 2; }
@@ -46,6 +49,8 @@ for s in "$dst"/runs/*.stub.tar.zst; do
 		[ -n "$mr" ] && set[$mr]=1
 	fi
 done
+# Fail closed: every policy keeps at least the real-build failures in full.
+[ "${#set[@]}" -gt 0 ] || { echo "k5-stage-storage: no run selected for $policy" >&2; exit 2; }
 for id in $(printf '%s\n' "${!set[@]}" | sort); do
 	a="$full/$id.tar.zst"
 	[ -f "$a" ] || { echo "k5-stage-storage: no full archive $a" >&2; exit 2; }
