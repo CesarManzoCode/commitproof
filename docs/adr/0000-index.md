@@ -37,5 +37,6 @@
 | [0033](0033-d3-prime-followers-acks-delayed.md) | D3′: the leader is killed while every commit waits for its delayed standby acknowledgement (amendment of §9.2 D3) | Accepted by the owner (K5, contract 1.0.10) |
 | [0034](0034-p25-raised-to-250-mb.md) | P25 raised to 250 MB; K5 stored as ADR-0030 prescribes (owner decision on ADR-0032) | Accepted by the owner (K5, contract 1.1.0) |
 | [0035](0035-g12-fault-windows-proposed.md) | G12's ok fraction excludes operations invoked inside fault windows (clarification of §10.9) | Proposed (K5) — not applied; for the owner after K5 |
+| [0036](0036-k6-report-definitions.md) | K6 report: the reference run, the failover metrics, the campaign statistics and the gate's cross-check, fixed before any K6 render | Accepted (K6, contract 1.1.1) |
 
 New ADRs continue the numbering. Each ADR: Context, Decision, Alternatives rejected, Consequences, Sources.

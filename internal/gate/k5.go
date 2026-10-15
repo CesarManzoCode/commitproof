@@ -69,11 +69,11 @@ const (
 	k5MinCleanPerFamily = 15
 )
 
-// k5ContractOK: a K5 run carries the current contract version, or the
+// k5ContractOK: a K5 run carries the version K5 closed with, or the
 // version of the K5 runs made before ADR-0033 unless it is a D3′ run
 // (contracts 1.0.10 and 1.1.0 added D3′ and changed P25, no other K5 plan).
 func k5ContractOK(campaign, version string) bool {
-	return version == params.ContractVersion || version == params.K5RunsContractVersion && campaign != k5D3Prime
+	return version == params.K5ContractVersion || version == params.K5RunsContractVersion && campaign != k5D3Prime
 }
 
 func (e *Evidence) k5() *k4Index { return e.runIndex("k5", k5ContractOK) }

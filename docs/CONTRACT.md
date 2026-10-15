@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Contract version | **1.1.0** (K0; K1 corrections: ADR-0019, ADR-0020, ADR-0021; K3 corrections: ADR-0022, ADR-0023; K4 clarifications and corrections: ADR-0024, ADR-0025, ADR-0026; K4 amendment approved by the owner: ADR-0027; K5 corrections and clarifications: ADR-0029, ADR-0030; K5 amendment approved by the owner: ADR-0033; K5 change approved by the owner: ADR-0034, P25) |
+| Contract version | **1.1.1** (K0; K1 corrections: ADR-0019, ADR-0020, ADR-0021; K3 corrections: ADR-0022, ADR-0023; K4 clarifications and corrections: ADR-0024, ADR-0025, ADR-0026; K4 amendment approved by the owner: ADR-0027; K5 corrections and clarifications: ADR-0029, ADR-0030; K5 amendment approved by the owner: ADR-0033; K5 change approved by the owner: ADR-0034, P25; K6 clarifications: ADR-0036) |
 | Date | 2026-10-09 |
 | Owner | César Manzo (GitHub `CesarManzoCode`) |
 | System under test | Multigres, `github.com/multigres/multigres` @ `e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73` |
@@ -175,7 +175,7 @@ The derivation of every flag from S03 is recorded in `deploy/DERIVATION.md` (cre
 | `commitproof` | build/lock images, cluster lifecycle, plan generation, workload clients, nemesis, observations, minimization driver, replay driver, campaign driver | anything |
 | `cpcheck` | read sealed run directories; verify seals; run checkers; write `checks.json` | `history`, `checker` packages, Porcupine |
 | `cpgate` | evaluate sprint gates from evidence directories; run negative controls on evidence copies | `history`, `gate`, `stats` packages |
-| `cpreport` | render the static report from sealed runs | `history`, `checker` output types, `stats`, `report` |
+| `cpreport` | render the static report from sealed runs | `history`, `checker` output types, `stats`, `report` (and the utility packages `canonjson`, `params`, as `cpgate`; ADR-0036) |
 
 Independence rule (enforced by a test that runs `go list -deps` per binary): `cpcheck`, `cpgate` and `cpreport` MUST NOT depend on runner, nemesis, cluster, workload or observation packages, and MUST NOT import any Multigres package. The verdict on a run is produced by `cpcheck` from the sealed history alone; the gate verdict is produced by `cpgate` from files on disk alone. Neither ever trusts a status reported by `commitproof` itself.
 
@@ -226,7 +226,7 @@ cpcheck check <run-dir> [--elle-oracle]                      # writes <run-dir>.
 cpcheck corpus <dir>                                         # K2 synthetic corpus
 quorumxcheck                                                 # §10.8 (separate binary; imports Multigres consensus package)
 cpgate K<n> --evidence evidence/K<n> [--negative-controls]
-cpreport render <run-dir|campaign-dir> --out <dir>
+cpreport render <run-dir|campaign-dir> --out <dir>           # a run dir may be given as its §13 archive <run-id>.tar.zst (ADR-0036)
 ```
 
 `commitproof cluster up` with a prerequisite missing (Docker unreachable, `/dev/fuse` absent, `sch_netem` unavailable, image lock mismatch) exits 3 with the missing item named. Nothing is skipped silently.
@@ -461,7 +461,7 @@ Inputs: W7 stream events (each change carries table, key, commit LSN — the tra
 
 ### 10.10 C9 availability (observation + G8)
 
-Computes unavailability windows per gateway (first failed/unknown op after a fault to first `ok` after heal), latency percentiles per phase, error class counts. G8 check: in C8 (profile `buffered`, F6), any `fail`/`info` on single autocommit statements within a judged switchover window is `planned-failover-error`; explicit transactions may fail only with `40001`. A switchover window (F6 inject to healed) is judged if its injection is at least 60 s (`--buffer-min-time-between-failovers`, S14) after `max(end, start + 20 s)` (`--buffer-max-failover-duration`) of every earlier fault window of the run; the same errors in the other F6 windows are the observation `planned-failover-unbuffered` (documented timing guard, ADR-0029).
+Computes unavailability windows per gateway (first failed/unknown op after a fault to first `ok` after heal: by completion times, from the fault's injection, the `ok` op completing at or after the heal's confirmation; final reads excluded — ADR-0036), latency percentiles per phase, error class counts. K6's per-fault metrics (phases, percentiles, rule changes) are defined by ADR-0036. G8 check: in C8 (profile `buffered`, F6), any `fail`/`info` on single autocommit statements within a judged switchover window is `planned-failover-error`; explicit transactions may fail only with `40001`. A switchover window (F6 inject to healed) is judged if its injection is at least 60 s (`--buffer-min-time-between-failovers`, S14) after `max(end, start + 20 s)` (`--buffer-max-failover-duration`) of every earlier fault window of the run; the same errors in the other F6 windows are the observation `planned-failover-unbuffered` (documented timing guard, ADR-0029).
 
 ### 10.12 P probe checker (G7)
 
@@ -516,7 +516,7 @@ Delta debugging over the plan: first over nemesis steps (remove faults while the
 
 ### 12.3 Campaign statistics (by `cpgate`/`cpreport`)
 
-For a matrix cell with N valid runs and k FAIL runs of a given anomaly class:
+For a matrix cell with N valid runs and k FAIL runs of a given anomaly class (cells, exposure items and the integer arithmetic of the bounds: ADR-0036):
 - report k/N and the Wilson 95% interval for the per-run violation probability;
 - if k = 0: report the one-sided 95% upper bound `1 − 0.05^(1/N)` (for N = 10: 0.259) and the exact exposure: total operations, total `ok` writes, number of confirmed faults by kind, total fault-time;
 - a clean statement MUST take the form: *"In N valid runs of campaign C (profile p, Multigres e3cbdbb), exposing W ok writes to F confirmed faults of kinds {…}, no violation of {checkers} was observed; at 95% confidence the per-run violation probability under this exact schedule distribution is below X. Not tested: {list from LIMITATIONS}."*
@@ -738,6 +738,8 @@ Clients, fault counts, holds and order per run, the directed schedules' timing, 
 **Deliverables.** `cpreport render`; single-file HTML with inline SVG (no external fetches, no JavaScript dependencies from CDNs; any script inline and deterministic); per-campaign summary page; reference run committed under `evidence/K6/reference-run/`; `make ci-report`; `evidence/K6/`.
 
 **Determinism rules.** No generation timestamps, hostnames or absolute paths in output; maps iterated in sorted order; floating-point values rendered from integer arithmetic with fixed decimal places; SVG coordinates integers.
+
+The reference run, the report's inputs and fail-closed behaviour, the event elements K6.3 counts, observed rules and leader changes, and the per-fault metrics K6.5 cross-checks are fixed by ADR-0036 (before any K6 render). No real K4 run holds both F2a and F1c; the reference is K4's C2 seed 3 (three F1c, one failover).
 
 **Gate K6:**
 
