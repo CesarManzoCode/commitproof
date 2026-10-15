@@ -94,3 +94,19 @@ jobs:
         run: sudo modprobe -a nf_tables nft_compat sch_netem fuse
       - name: make ci-mutant-smoke
         run: make ci-mutant-smoke
+
+  ci-report:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: "1.26.9"
+          cache: false
+      # Renders the committed K6 reference run and compares the bytes with
+      # the committed example report (no Docker, no network beyond Go).
+      - name: make ci-report
+        run: make ci-report
