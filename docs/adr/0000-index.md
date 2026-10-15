@@ -33,5 +33,6 @@
 | [0029](0029-k5-contract-defects.md) | Three contract defects found before any K5 run: the buffer timing guard (G8), the LSN that W7 confirms (G11), W8's roles under S03's pg_hba (G12) | Accepted (K5, contract 1.0.8) |
 | [0030](0030-k5-schedules-fixed-before-runs.md) | K5 schedules, workload details, C8 completions, the slot precondition and evidence storage, fixed before any K5 run | Accepted (K5, contract 1.0.9) |
 | [0031](0031-d3-commits-in-flight-proposed.md) | D3′: hold commits in synchronous replication when the leader is killed (amendment of §9.2 D3 for M3) | Proposed (K5) — not applied; owner decision |
+| [0032](0032-k5-storage-exceeds-p25-proposed.md) | K5's runs do not fit P25 under ADR-0030's storage: measurements and options | Proposed (K5) — not applied; owner decision |
 
 New ADRs continue the numbering. Each ADR: Context, Decision, Alternatives rejected, Consequences, Sources.
