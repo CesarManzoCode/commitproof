@@ -1,0 +1,79 @@
+{
+  "sprint": "K6",
+  "contract_version": "1.1.1",
+  "evidence": "evidence/K6",
+  "result": "PASS",
+  "criteria": [
+    {
+      "id": "K6.1",
+      "name": "Byte reproducibility",
+      "result": "PASS",
+      "evidence": "report/20261011T231036Z-C2-3-real-f4505b54.html",
+      "sha256": "35dc3e484d12349a16546967d953001065287c0f015c5ac0a878c1c67118c94c",
+      "problems": [],
+      "details": [
+        "render-1 sha256 35dc3e484d12349a16546967d953001065287c0f015c5ac0a878c1c67118c94c",
+        "render-2 sha256 35dc3e484d12349a16546967d953001065287c0f015c5ac0a878c1c67118c94c",
+        "render-3 sha256 35dc3e484d12349a16546967d953001065287c0f015c5ac0a878c1c67118c94c",
+        "example sha256 35dc3e484d12349a16546967d953001065287c0f015c5ac0a878c1c67118c94c; sabotaged build: 3 distinct outputs of 3"
+      ]
+    },
+    {
+      "id": "K6.2",
+      "name": "Forced rebuild",
+      "result": "PASS",
+      "evidence": "commands.jsonl",
+      "sha256": "1a912f494c8366b198ef494d03dd41cb09ae85b3249c956dab86cb72b1867235",
+      "problems": [],
+      "details": [
+        "fresh-clone (argv [\"scripts/k6-fresh-clone.sh\" \"evidence/K6/reference-run/20261011T231036Z-C2-3-real-f4505b54.tar.zst\"]) of 2927f461a06965fd83d381ea29e5b2bcb4c21174: render sha256 35dc3e484d12349a16546967d953001065287c0f015c5ac0a878c1c67118c94c"
+      ]
+    },
+    {
+      "id": "K6.3",
+      "name": "Completeness",
+      "result": "PASS",
+      "evidence": "report/20261011T231036Z-C2-3-real-f4505b54.html",
+      "sha256": "35dc3e484d12349a16546967d953001065287c0f015c5ac0a878c1c67118c94c",
+      "problems": [],
+      "details": [
+        "7862 history events in 3946 elements (0 missing, 0 twice); 12 fault phases; 3 rules, 1 leader changes; 4 anomalies linked"
+      ]
+    },
+    {
+      "id": "K6.4",
+      "name": "Seal enforcement",
+      "result": "PASS",
+      "evidence": "commands.jsonl",
+      "sha256": "1a912f494c8366b198ef494d03dd41cb09ae85b3249c956dab86cb72b1867235",
+      "problems": [],
+      "details": [
+        "control (none): exit 0, out_exists true, files 1",
+        "dir (history.jsonl byte 1059310 xor 1): exit 2, out_exists false, files 0",
+        "archive (history.jsonl byte 1059310 xor 1, re-archived): exit 2, out_exists false, files 0"
+      ]
+    },
+    {
+      "id": "K6.5",
+      "name": "Failover metrics",
+      "result": "PASS",
+      "evidence": "report/20261011T231036Z-C2-3-real-f4505b54.html",
+      "sha256": "35dc3e484d12349a16546967d953001065287c0f015c5ac0a878c1c67118c94c",
+      "problems": [],
+      "details": [
+        "3 faults compared field by field (windows, gaps, non-ok counts per gateway; n, p50, p95, p99 per phase; rule and leader changes)"
+      ]
+    },
+    {
+      "id": "K6.6",
+      "name": "CI-equivalent",
+      "result": "PASS",
+      "evidence": "commands.jsonl",
+      "sha256": "1a912f494c8366b198ef494d03dd41cb09ae85b3249c956dab86cb72b1867235",
+      "problems": [],
+      "details": [
+        "ci: argv [\"make\" \"ci-unit\" \"ci-checkers\" \"ci-cluster-smoke\" \"ci-nemesis-smoke\" \"ci-mutant-smoke\" \"ci-report\"] exit 0; earlier attempts []"
+      ]
+    }
+  ]
+}

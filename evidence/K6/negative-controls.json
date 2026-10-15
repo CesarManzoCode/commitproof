@@ -1,0 +1,70 @@
+[
+  {
+    "criterion": "K6.1",
+    "sabotage": "checker-level: the three render records replaced by the three renders of a cpreport built with cp_sabotage_report_nondeterminism (records' hashes updated)",
+    "failed": [
+      "K6.1"
+    ],
+    "failed_only_target": true,
+    "target_problems": [
+      "the 3 renders produced 3 different outputs",
+      "the committed example report/20261011T231036Z-C2-3-real-f4505b54.html (sha256 \"35dc3e484d12349a16546967d953001065287c0f015c5ac0a878c1c67118c94c\") is not the renders' output"
+    ]
+  },
+  {
+    "criterion": "K6.2",
+    "sabotage": "the fresh-clone render's recorded sha256 altered (record hash updated)",
+    "failed": [
+      "K6.2"
+    ],
+    "failed_only_target": true,
+    "target_problems": [
+      "fresh-clone render sha256 05dc3e484d12349a16546967d953001065287c0f015c5ac0a878c1c67118c94c, the K6.1 output 35dc3e484d12349a16546967d953001065287c0f015c5ac0a878c1c67118c94c"
+    ]
+  },
+  {
+    "criterion": "K6.3",
+    "sabotage": "one operation's completion index removed from the example report's elements; every recorded render and fresh-clone hash rewritten to the forged file's, so only K6.3's own reading can tell",
+    "failed": [
+      "K6.3"
+    ],
+    "failed_only_target": true,
+    "target_problems": [
+      "element e4 holds the invoke event alone",
+      "history event i=17 is in no element of the report"
+    ]
+  },
+  {
+    "criterion": "K6.4",
+    "sabotage": "the seal-enforcement record rewritten as if the tampered run had rendered (exit 0, output written)",
+    "failed": [
+      "K6.4"
+    ],
+    "failed_only_target": true,
+    "target_problems": [
+      "case dir: cpreport exit 0, output dir exists true, 1 files — want exit 2 and nothing written"
+    ]
+  },
+  {
+    "criterion": "K6.5",
+    "sabotage": "the first gap_ns of the example report's data block increased by 1 ns; every recorded render and fresh-clone hash rewritten to the forged file's",
+    "failed": [
+      "K6.5"
+    ],
+    "failed_only_target": true,
+    "target_problems": [
+      "fault f0.gateways.gw-z1.gap_ns: report 19951812936, recomputed 19951812935"
+    ]
+  },
+  {
+    "criterion": "K6.6",
+    "sabotage": "replace the recorded exit code of the latest `make ci-unit ci-checkers ci-cluster-smoke ci-nemesis-smoke ci-mutant-smoke ci-report` with 1",
+    "failed": [
+      "K6.6"
+    ],
+    "failed_only_target": true,
+    "target_problems": [
+      "ci exited 1"
+    ]
+  }
+]

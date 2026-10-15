@@ -1,0 +1,69 @@
+sprint: K6
+status: DONE
+contract_version: "1.1.1"   # ADR-0036 (PATCH, clarification), committed before any K6 evidence render
+commits:
+  - {sha: "bf9461f", message: "docs(contract): K6 report definitions fixed before any render (ADR-0036)"}
+  - {sha: "ac0abf1", message: "refactor(history): the run archive reader moves to history (gate keeps its name)"}
+  - {sha: "a0606b1", message: "feat(checker): checks.json reader types for readers that do not link the checkers"}
+  - {sha: "aa6bc12", message: "feat(stats): Wilson 95 % interval and zero-failure bound in integer arithmetic"}
+  - {sha: "9b364d4", message: "feat(report): cpreport render — run incident report and campaign summary"}
+  - {sha: "1fee779", message: "feat(gate): cpgate K6 with an independent recomputation of the report's metrics"}
+  - {sha: "a04af20", message: "test(independence): cpreport's allow-list (§5.3) and its sabotage marker"}
+  - {sha: "264744e", message: "ci(k6): make ci-report, its workflow job, and the K6 evidence scripts"}
+  - {sha: "e3b7785", message: "docs(limitations): LIM-40 — no /metrics scrapes in any recorded run (P23)"}  # the dry run (runs/.k6-dry, outside evidence) ran on this commit
+  - {sha: "2927f46", message: "fix(report): node charts draw no line across time without observations"}  # every recorded K6 render, the fresh clone and CI ran on this clean tree
+  - {sha: "303094c", message: "build(images): lock the images of the K6 CI build (2927f46)"}
+  - {sha: "(the commit that adds this file)", message: "test(gate): K6 evidence — DONE (report byte-identical ×3 and from a fresh clone)"}
+gate:
+  command: "cpgate K6 --evidence evidence/K6 --negative-controls"
+  exit_code: 0   # record cpgate-k6 (2026-10-15 23:40:41–23:40:44Z), stdout sha256 7a37134223253ffb93e6f8a798c63db9c0a48983067ea10e6b12547a876bd5e7; gate.json sha256 560a299f3d7ce4aa63b11250d3f102615da661305a2f2c32173bac9b51197b1c
+  criteria:
+    - {id: "K6.1", result: PASS, evidence: "evidence/K6/report/20261011T231036Z-C2-3-real-f4505b54.html + records render-1..3, sabotage-build, sabotage-render-1..3", sha256: "35dc3e484d12349a16546967d953001065287c0f015c5ac0a878c1c67118c94c"}  # three renders identical to each other and to the committed example; the sabotaged build's three renders: 3 distinct hashes
+    - {id: "K6.2", result: PASS, evidence: "evidence/K6/commands.jsonl record fresh-clone (logs/fresh-clone.stdout)", sha256: "1a912f494c8366b198ef494d03dd41cb09ae85b3249c956dab86cb72b1867235"}  # git clone of 2927f46, go clean -cache -modcache (isolated caches, 0 files after), go1.26.9 build, render sha256 35dc3e48…c94c
+    - {id: "K6.3", result: PASS, evidence: "evidence/K6/report/20261011T231036Z-C2-3-real-f4505b54.html vs evidence/K6/reference-run/", sha256: "35dc3e484d12349a16546967d953001065287c0f015c5ac0a878c1c67118c94c"}  # 7 862 events in 3 946 elements, each exactly once; 12 fault phases; 3 rules, 1 leader change; 4 anomalies, every op linked
+    - {id: "K6.4", result: PASS, evidence: "evidence/K6/commands.jsonl record seal-enforcement (logs/seal-enforcement.stdout)", sha256: "1a912f494c8366b198ef494d03dd41cb09ae85b3249c956dab86cb72b1867235"}  # tampered directory and re-archived copy: exit 2, nothing written; control renders
+    - {id: "K6.5", result: PASS, evidence: "evidence/K6/report/20261011T231036Z-C2-3-real-f4505b54.html data block vs cpgate's recomputation from evidence/K6/reference-run/", sha256: "35dc3e484d12349a16546967d953001065287c0f015c5ac0a878c1c67118c94c"}  # 3 faults, every field equal
+    - {id: "K6.6", result: PASS, evidence: "evidence/K6/commands.jsonl record ci (+ lint-workflow); logs/ci.stdout", sha256: "1a912f494c8366b198ef494d03dd41cb09ae85b3249c956dab86cb72b1867235"}  # make ci-unit ci-checkers ci-cluster-smoke ci-nemesis-smoke ci-mutant-smoke ci-report exit 0 on 2927f46, first attempt
+  negative_controls:   # evidence/K6/negative-controls.json, sha256 01fe4d783be28b6b5b410238c254a07d62892268df0da5fa0d2ce9d200729ebe; negative_controls_ok: true
+    - {criterion: "K6.1", sabotage: "checker-level: the three render records replaced by the three renders of a cpreport built with cp_sabotage_report_nondeterminism (records' hashes updated)", failed_only_target: true}
+    - {criterion: "K6.2", sabotage: "the fresh-clone render's recorded sha256 altered (record hash updated)", failed_only_target: true}
+    - {criterion: "K6.3", sabotage: "one operation's completion index removed from the example report's elements; every recorded render and fresh-clone hash rewritten to the forged file's, so only K6.3's own reading can tell", failed_only_target: true}
+    - {criterion: "K6.4", sabotage: "the seal-enforcement record rewritten as if the tampered run had rendered (exit 0, output written)", failed_only_target: true}
+    - {criterion: "K6.5", sabotage: "the first gap_ns of the example report's data block increased by 1 ns; every recorded render and fresh-clone hash rewritten to the forged file's", failed_only_target: true}
+    - {criterion: "K6.6", sabotage: "replace the recorded exit code of the latest `make ci-unit ci-checkers ci-cluster-smoke ci-nemesis-smoke ci-mutant-smoke ci-report` with 1", failed_only_target: true}
+demonstrated:   # no claims.yaml yet (K7); each line names its artifact in evidence/K6/NOTES.md
+  - "cpreport renders a static, self-contained incident report (inline CSS and SVG, a JSON data block, no executable script, no external reference) of the real K4 failover run 20261011T231036Z-C2-3-real-f4505b54 byte-identically three times (sha256 35dc3e48…c94c) and from a fresh clone of 2927f46 built with emptied Go caches (NOTES §1, §5)."
+  - "K6.1 can fail: a build that iterates maps unsorted renders three different outputs (NOTES §5)."
+  - "A run whose seal does not verify is refused (exit 2) and nothing is written, as a directory and as a re-archived copy (K6.4, NOTES §1)."
+  - "Every one of the reference run's 7 862 history events is in exactly one element of the page; every fault phase, observed rule, leader change and checker anomaly is present, each anomaly op linked to its operation (K6.3)."
+  - "Every per-fault metric of the page (§10.10 windows, longest ok gaps, non-ok counts per gateway; ok-latency n/p50/p95/p99 before, during, after; rule and leader changes) equals cpgate's independent computation from the raw history and observations (K6.5); the windows also agree with cpcheck C9's own statistics (NOTES §4.2)."
+  - "What the reference report shows (observations explain, never judge): F1c on leader n1 → rule 2.0 led by n2 first observed 25.7 s after injection; F1c on n2 → no failover, 18 ok operations from 55.9 s to the end of the workload, none after 86.3 s; the four K4 anomalies at 30.7–41.6 s inside the first fault (NOTES §4.2)."
+  - "A per-campaign summary page with §12.3 statistics in integer arithmetic (Wilson 95 %, zero-failure bound; N = 10 → 0.259 unit-tested), rendered for K4's 220 verified runs (NOTES §3, §7)."
+  - "All CI targets including the new ci-report exit 0 locally on the clean 2927f46 (record ci, K6.6)."
+not_demonstrated:
+  - "/metrics timelines (P23): no recorded run holds a /metrics scrape; the report renders the observations runs hold (LIM-40, NOTES §6)."
+  - "A reference run holding both F2a and F1c: no real K4 run has both (ADR-0036, NOTES §4.1)."
+  - "Unavailability windows that measure the system alone: a window ends at the first ok operation issued after the heal, which after the workload is the runner's recovery write (NOTES §6)."
+  - "The cause of the reference run's ~41 s of write unavailability under F1c on n2 (hypothesis only, NOTES §4.2)."
+  - "Per-gateway latency percentiles (pooled per phase by ADR-0036)."
+  - "Any statistical statement (§12.3) about Multigres: the K4 campaign page is a format example with N = 3–5 per cell (K7)."
+  - "The report and ci-report on a remote CI runner (LIM-16)."
+findings: []   # K6 renders existing runs and adds no finding; the reference run's anomalies are K4's FND-C2-2a534585. Its measured write unavailability is an observation (§3), not triaged here.
+adrs_added:
+  - "ADR-0036: K6 report — the reference run, the failover metrics, the campaign statistics and the gate's cross-check, fixed before any K6 render (contract 1.1.1)"
+deviations_from_prompt:
+  - "Reference run: K4 C2 seed 3 (three F1c, one failover), without an F2a. The prompt asks for a real K4 failover run with at least one F2a and one F1c; no real K4 run has both (every real K4 archive's plan listed: F1c only in D1 ×5 and C2 seed 3; F2a only in C1, C4, C5, C6, C7, D2, D2′). CONTRACT §15 K6 requires a real K4 failover, and the contract wins (AGENTS.md §1). K5's C10 runs hold F2a and F1c but are K5 runs; one was rendered in development only (ADR-0036)."
+  - "K6.2's `go clean -cache -modcache` ran on the fresh clone's own GOCACHE and GOMODCACHE (inside its temporary directory), not on the owner's global Go caches: cleaning those would delete data outside the repository (AGENTS.md §3). Both caches held 0 files after the clean; the go1.26.9 toolchain and the modules were downloaded again (PREREQUISITES §5)."
+  - "\"Metrics from observations\": the report renders the metrics the sealed observations hold (pooler role and reachability, WAL position, status-probe latency, CDC slot readiness, client errors). No run holds a /metrics scrape (P23), so no Prometheus metric timeline exists to render (LIM-40)."
+  - "Before ADR-0036 the reference run's history and observations were inspected with ad-hoc scripts (outside evidence) to choose the reference and the window definition; ADR-0036 records the alternatives and was committed before any recorded render (NOTES §2)."
+  - "cpreport also accepts a run as its §13 archive <run-id>.tar.zst, and imports the utility packages canonjson and params besides §5.3's list, as cpgate does (ADR-0036; enforced by an allow-list test with a control)."
+  - "Contract raised to 1.1.1 by ADR-0036 (clarification of §5.3, §10.10, §12.3, §15 K6); cpgate K5 now pins D3′'s runs to 1.1.0 (params.K5ContractVersion), and the recorded precondition (k6-precondition) shows K1–K5 still PASS with K6's binaries."
+pending_user_actions:
+  - "Decide LIM-40 before K7: add /metrics scraping (P23) to the observer, or amend §5.4/P23. No K1–K6 run has a scrape."
+  - "Decide ADR-0035 (G12 fault-window clarification, from K5); still not applied."
+  - "Note for later sprints: any change to the report format changes the example's bytes; make ci-report then fails until the example is re-rendered by a recorded render and the change explained."
+  - "The reference run's ~41 s of write unavailability under its second F1c is a measurement (§3); whether K7 triages such windows as LIVENESS_OBSERVATION findings is open (§11.1)."
+  - "Keep runs/k4-full/ and runs/k5-full/ (the only full copies of the K4/K5 stub runs, LIM-30, LIM-37)."
+  - "Evidence budget: evidence/ holds 217.01 MB of P25 = 250 MB; about 33 MB remain for K7."
+  - "Push and enable Actions when you choose (LIM-16; the workflow gained a ci-report job); nothing was pushed."
+next_sprint_ready: true
