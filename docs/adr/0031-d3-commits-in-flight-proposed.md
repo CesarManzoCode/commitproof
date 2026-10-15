@@ -1,6 +1,8 @@
 # ADR-0031 — D3′: hold commits in synchronous replication when the leader is killed (proposed amendment of CONTRACT §9.2 D3)
 
-Status: **Proposed (K5) — not applied.** K5 stops BLOCKED on K5.4: M3 via D3 FAILs with an expected class in 2 of 5 runs (P14 needs 4). Changing a directed schedule after seeing mutant results needs the owner (CONTRACT §9.1, §15 K5 rejection conditions, §18; ADR-0007); the contract, D3, the checkers and every threshold are unchanged. This ADR records the investigation and one proposal; the owner decides.
+Status: **Approved by the owner as D3′ on 2026-10-14; accepted with another composition by ADR-0033.** Before any D3′ run, the composition proposed below (F1b, then F2a) was found unable to reach M3's defect at the pinned commit, with either heal order: a follower without the in-flight rows is elected, or recruitment backs off past the clients' P01 deadline (ADR-0033, Context). D3′ holds the commits with F7 on both followers instead. The text below is the proposal as written; it is kept unchanged.
+
+Original status: **Proposed (K5) — not applied.** K5 stops BLOCKED on K5.4: M3 via D3 FAILs with an expected class in 2 of 5 runs (P14 needs 4). Changing a directed schedule after seeing mutant results needs the owner (CONTRACT §9.1, §15 K5 rejection conditions, §18; ADR-0007); the contract, D3, the checkers and every threshold are unchanged. This ADR records the investigation and one proposal; the owner decides.
 
 ## Context (what the K5 runs show)
 
