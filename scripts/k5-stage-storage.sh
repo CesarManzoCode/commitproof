@@ -13,7 +13,8 @@
 # evaluable). The staged copy gets its own results.json (k5results records
 # each run's storage form). Prints one JSON line per run stored differently
 # from a stub and a summary with the bytes evidence/ would hold in git: the
-# tracked files outside evidence/K5 plus the staged copy. The copy lives
+# tracked files outside evidence/K5 plus the staged copy, against P25
+# (250 MB, ADR-0034). The copy lives
 # outside evidence/ and is not evidence.
 # usage: k5-stage-storage.sh adr0030|adr0032-option2|partial <out-dir> [<full-dir>]
 set -euo pipefail
@@ -72,4 +73,4 @@ if [ "$policy" != partial ]; then
 fi
 others=$(git ls-files -z evidence | grep -zv '^evidence/K5/' | xargs -0 stat -c %s | awk '{s+=$1} END {print s+0}')
 k5=$(find "$dst" -type f -printf '%s\n' | awk '{s+=$1} END {print s+0}')
-echo "{\"command\":\"k5-stage-storage\",\"policy\":\"$policy\",\"staged\":\"$dst\",\"runs_not_stubs\":${#set[@]},\"evidence_outside_k5_bytes\":$others,\"k5_bytes\":$k5,\"evidence_bytes\":$((others + k5)),\"budget\":200000000,\"fits\":$([ $((others + k5)) -le 200000000 ] && echo true || echo false),\"exit_code\":0}"
+echo "{\"command\":\"k5-stage-storage\",\"policy\":\"$policy\",\"staged\":\"$dst\",\"runs_not_stubs\":${#set[@]},\"evidence_outside_k5_bytes\":$others,\"k5_bytes\":$k5,\"evidence_bytes\":$((others + k5)),\"budget\":250000000,\"fits\":$([ $((others + k5)) -le 250000000 ] && echo true || echo false),\"exit_code\":0}"

@@ -1,0 +1,9 @@
+{
+  "name": "k5-d3p",
+  "minimize_failures": true,
+  "replays": 5,
+  "entries": [
+    {"campaign": "D3p", "profile": "buffered", "mutant": "M3", "seeds": [1, 2, 3, 4, 5]},
+    {"campaign": "D3p", "profile": "buffered", "seeds": [1, 2, 3, 4, 5]}
+  ]
+}
