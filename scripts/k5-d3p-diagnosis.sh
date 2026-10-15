@@ -9,6 +9,9 @@
 #     completion, SQLSTATE and whether the element or row is in the final
 #     reads;
 #   - the C2 g1a / C3 anomalies cpcheck reported (checks.json);
+#   - elements present more than once in the final reads of cp.append (an
+#     append executed twice; no checker judges final reads for duplicates,
+#     §10.3, LIM-22);
 #   - multiorch's first appointment after the first kill (recruitment and
 #     promotion lines) and the killed leader pooler's restart lines;
 #   - each gateway's buffering cycles (start, drain); a cycle that ends by
@@ -50,7 +53,7 @@ for e in ev:
         f = e["fault"]
         x = faults.setdefault(f["id"], {"kind": f["kind"], "targets": f.get("targets"), "t": {}})
         x["t"].setdefault(f["phase"], e["t"])
-led, app = set(), collections.defaultdict(set)
+led, app, dup = set(), collections.defaultdict(set), set()
 for e in ev:
     if e["type"] == "ok" and e.get("f") == "final-read":
         if e["wl"] == "ledger":
@@ -58,6 +61,7 @@ for e in ev:
         elif e["wl"] == "append":
             for k, vals in e["value"]:
                 app[int(k)].update(vals)
+                dup.update((int(k), v) for v, c in collections.Counter(vals).items() if c > 1)
 inv, ops = {}, []
 for e in ev:
     if e["type"] == "invoke":
@@ -80,6 +84,7 @@ for k, (t, _, _) in enumerate(kills):
     c = [x for x in f7 if x[0] <= t]
     if len(c) >= 2:
         both.append((max(y[0] for y in c[-2:]), t))
+print(json.dumps({"final_reads_duplicated_elements": sorted(dup)}, sort_keys=True))
 print(json.dumps({"ok_latency_both_F7_holding": lat(lambda t: any(a <= t < b for a, b in both)),
                   "ok_latency_outside_faults": lat(lambda t: not any(a is not None and a <= t <= (b or a) for a, b in wins))}, sort_keys=True))
 for t, fid, tg in kills:
