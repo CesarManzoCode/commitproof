@@ -80,3 +80,34 @@ func TestK4D2Prime(t *testing.T) {
 		}
 	}
 }
+
+// ADR-0033: M3 is judged on D3′ with §9.2's two classes; K5 runs of
+// contract 1.0.9 stay evidence except as D3′ runs, which D3′ postdates;
+// buffering stays confined to C8, D3′ and the superseded D3.
+func TestK5D3Prime(t *testing.T) {
+	d := k5Directed["M3"]
+	if d.Campaign != "D3p" || d.Profile != "buffered" || len(d.Expected) != 2 ||
+		d.Expected[0] != [2]string{"C3", "duplicate-elements"} || d.Expected[1] != [2]string{"C2", "g1a"} {
+		t.Errorf("M3 directed %+v", d)
+	}
+	for _, c := range []struct {
+		campaign, version string
+		want              bool
+	}{
+		{"D3p", "1.1.0", true}, {"D3p", "1.0.9", false}, {"D3p", "1.0.10", false},
+		{"D3", "1.0.9", true}, {"C10", "1.0.9", true}, {"D5", "1.1.0", true},
+		{"C9", "1.0.8", false}, {"D3", "", false}, {"C8", "1.0.10", false},
+	} {
+		if got := k5ContractOK(c.campaign, c.version); got != c.want {
+			t.Errorf("k5ContractOK(%s, %s) = %v", c.campaign, c.version, got)
+		}
+	}
+	for c, want := range map[string]bool{"C8": true, "D3": true, "D3p": true, "C9": false, "C10": false, "C11": false, "D5": false} {
+		if k5Buffered[c] != want {
+			t.Errorf("k5Buffered[%s] = %v", c, k5Buffered[c])
+		}
+	}
+	if k4TargetClass(&k4Run{Manifest: map[string]any{"campaign": "D3p"}, Classes: []string{"lost-write", "g1a"}}) != "g1a" {
+		t.Error("D3′ target class")
+	}
+}

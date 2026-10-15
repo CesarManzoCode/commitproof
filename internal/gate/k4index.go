@@ -304,14 +304,15 @@ func (ix *k4Index) cell(campaign, profile, mutant, seed string) (*k4Run, []*k4Ru
 	return valid[0], all, []string{fmt.Sprintf("%s: %d valid runs (the campaign runs a cell until one is valid)", name, len(valid))}
 }
 
-// k4TargetClass is ADR-0024's and ADR-0030's target class (the same rule as
+// k4TargetClass is ADR-0024's, ADR-0030's and ADR-0033's target class (the same rule as
 // internal/campaign.TargetClass, restated here: cpgate imports neither the
 // campaign driver nor the plan generator, CONTRACT §5.3).
 func k4TargetClass(r *k4Run) string {
 	expected := map[string][]string{"D1": {"lost-write"}, "D2": {"lost-write"}, k4D2Prime: {"lost-write"}, "DH1": {"lost-write"},
 		"claims": {"p1-not-rejected"},
-		// ADR-0030: D3 → duplicate-elements, else g1a; D5 → cdc-phantom.
-		"D3": {"duplicate-elements", "g1a"}, "D5": {"cdc-phantom"}}
+		// ADR-0030: D3 → duplicate-elements, else g1a; D5 → cdc-phantom;
+		// ADR-0033: D3′ as D3.
+		"D3": {"duplicate-elements", "g1a"}, k5D3Prime: {"duplicate-elements", "g1a"}, "D5": {"cdc-phantom"}}
 	for _, c := range expected[r.campaign()] {
 		if r.has(c) {
 			return c

@@ -34,8 +34,17 @@ var (
 	K5DirectedSeed = []string{"1", "2", "3", "4", "5"}
 	K5Mutants      = []string{"M3", "M5"}
 	// k5Buffered: the only campaigns that may run profile buffered (§15 K5
-	// rejection condition; §5.5).
-	k5Buffered = map[string]bool{"C8": true, "D3": true}
+	// rejection condition; §5.5): C8, D3′ and the superseded D3.
+	k5Buffered = map[string]bool{"C8": true, k5SupersededD3: true, k5D3Prime: true}
+)
+
+// D3′ (ADR-0033) is M3's directed schedule; the original D3 is superseded
+// and its runs stay recorded (contract 1.0.9). The predictions were
+// committed before any D3′ run, as a file of the evidence.
+const (
+	k5D3Prime        = "D3p"
+	k5SupersededD3   = "D3"
+	k5D3PPredictions = "predictions-D3p.md"
 )
 
 // k5Directed: mutant → directed campaign, profile and the expected
@@ -44,7 +53,7 @@ var k5Directed = map[string]struct {
 	Campaign, Profile string
 	Expected          [][2]string
 }{
-	"M3": {"D3", "buffered", [][2]string{{"C3", "duplicate-elements"}, {"C2", "g1a"}}},
+	"M3": {k5D3Prime, "buffered", [][2]string{{"C3", "duplicate-elements"}, {"C2", "g1a"}}},
 	"M5": {"D5", "baseline", [][2]string{{"C7", "cdc-phantom"}}},
 }
 
@@ -60,7 +69,12 @@ const (
 	k5MinCleanPerFamily = 15
 )
 
-func k5ContractOK(_, version string) bool { return version == params.ContractVersion }
+// k5ContractOK: a K5 run carries the current contract version, or the
+// version of the K5 runs made before ADR-0033 unless it is a D3′ run
+// (contracts 1.0.10 and 1.1.0 added D3′ and changed P25, no other K5 plan).
+func k5ContractOK(campaign, version string) bool {
+	return version == params.ContractVersion || version == params.K5RunsContractVersion && campaign != k5D3Prime
+}
 
 func (e *Evidence) k5() *k4Index { return e.runIndex("k5", k5ContractOK) }
 
@@ -77,7 +91,7 @@ func K5() []Criterion {
 			Sabotage: "rewrite the cdc-slot observations before the first fault of one C10 run as not synced (run re-chained and re-sealed; its seal root updated in checks.json, results.json and any triage record)",
 			Apply:    sabotageK53},
 		{ID: "K5.4", Name: "Mutant detection", Eval: evalK54,
-			Sabotage: "rewrite the checks.json of M3's D3 runs for seeds 1 and 2 as PASS (seal roots kept)",
+			Sabotage: "rewrite the checks.json of M3's D3′ runs for seeds 1 and 2 as PASS (seal roots kept)",
 			Apply:    sabotageK54},
 		{ID: "K5.5", Name: "Minimize/replay/triage", Eval: evalK55,
 			Sabotage: "delete the last replay of the minimized run of the first FAIL run of M3 (archive and checks.json)",
@@ -347,10 +361,11 @@ func evalK52(e *Evidence) (string, []string, []string) {
 		}
 		details = append(details, fmt.Sprintf("%s (%s): %s", c.Campaign, c.Profile, strings.Join(vs, "; ")))
 	}
-	// Buffering only in C8 and D3; C8 and D3 only buffered (§15 K5).
+	// Buffering only in C8 and D3′ (and the superseded D3), always there
+	// (§15 K5).
 	for _, r := range ix.Runs {
 		if (r.profile() == "buffered") != k5Buffered[r.campaign()] {
-			p = append(p, fmt.Sprintf("%s: campaign %s on profile %s (buffering is enabled in C8 and D3 only, and always there)", r.ID, r.campaign(), r.profile()))
+			p = append(p, fmt.Sprintf("%s: campaign %s on profile %s (buffering is enabled in C8 and D3′/D3 only, and always there)", r.ID, r.campaign(), r.profile()))
 		}
 		if r.profile() != str(r.Plan, "profile") {
 			p = append(p, fmt.Sprintf("%s: manifest profile %s, plan %s", r.ID, r.profile(), str(r.Plan, "profile")))
@@ -709,6 +724,28 @@ func evalK54(e *Evidence) (string, []string, []string) {
 		}
 		details = append(details, fmt.Sprintf("%s via %s (%s): %s %d/5 with %v; mutant %v; real %v", m, d.Campaign, d.Profile, outcome, hits, d.Expected, mv, rv))
 	}
+	// D3′'s predictions are part of the evidence (ADR-0033: committed before
+	// any D3′ run).
+	if st, err := os.Stat(filepath.Join(e.Dir, k5D3PPredictions)); err != nil || st.Size() == 0 {
+		p = append(p, k5D3PPredictions+": missing or empty (ADR-0033)")
+	}
+	// The superseded D3 (ADR-0033): its runs stay recorded, unedited, and
+	// are checked like any run; they no longer decide M3's detection.
+	sup := map[string][]string{}
+	for _, s := range K5DirectedSeed {
+		for _, b := range []string{"M3", "real"} {
+			r, all, pp := ix.cell(k5SupersededD3, "buffered", b, s)
+			p = append(p, pp...)
+			for _, a := range all {
+				p = append(p, runOK(a, true)...)
+				p = append(p, checkResult(res, a)...)
+			}
+			if r != nil {
+				sup[b] = append(sup[b], fmt.Sprintf("%s%v", r.Verdict, r.Classes))
+			}
+		}
+	}
+	details = append(details, fmt.Sprintf("superseded %s (ADR-0033, recorded): mutant M3 %v; real %v", k5SupersededD3, sup["M3"], sup["real"]))
 	// Isolation as K4.4: the mutant images differ from the real build only
 	// in binaries that link a patched package.
 	pp, dd := k5Isolation(e, ix)
@@ -783,9 +820,9 @@ func sabotageK54(dir string) error {
 	defer e.Close()
 	ix := e.k5()
 	for _, s := range []string{"1", "2"} {
-		r, _, _ := ix.cell("D3", "buffered", "M3", s)
+		r, _, _ := ix.cell(k5D3Prime, "buffered", "M3", s)
 		if r == nil {
-			return fmt.Errorf("no M3 D3 run for seed %s", s)
+			return fmt.Errorf("no M3 D3′ run for seed %s", s)
 		}
 		cp := filepath.Join(dir, "runs", r.ID+".checks.json")
 		if err := editJSONCanonical(cp, func(m map[string]any) {
@@ -872,8 +909,15 @@ func sabotageK55(dir string) error {
 	e := LoadEvidence(dir)
 	defer e.Close()
 	ix := e.k5()
-	for _, s := range K5DirectedSeed {
-		r, _, _ := ix.cell("D3", "buffered", "M3", s)
+	// The first FAIL run of M3 on D3′, else on the superseded D3.
+	var cells [][2]string
+	for _, c := range []string{k5D3Prime, k5SupersededD3} {
+		for _, s := range K5DirectedSeed {
+			cells = append(cells, [2]string{c, s})
+		}
+	}
+	for _, cs := range cells {
+		r, _, _ := ix.cell(cs[0], "buffered", "M3", cs[1])
 		if r == nil || r.Verdict != "FAIL" {
 			continue
 		}
