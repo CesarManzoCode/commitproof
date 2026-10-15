@@ -352,22 +352,41 @@ func (m *Model) nodeChart(w io.Writer, nodes []string, y0, width int64, title st
 	fmt.Fprintf(w, "<line class=\"axis\" x1=\"%d\" y1=\"%d\" x2=\"%d\" y2=\"%d\"/>\n", leftW, base, width-rightPad, base)
 	span := hi - lo
 	for ni, n := range nodes {
+		// One polyline per run of observations with a value, broken where the
+		// node had none (probe error) or none for more than 2 s: no line is
+		// drawn across time without data.
+		var runs [][]string
 		var pts []string
+		last := int64(-1)
+		flush := func() {
+			if len(pts) > 0 {
+				runs = append(runs, pts)
+			}
+			pts = nil
+		}
 		for _, o := range m.Nodes[n] {
 			v := value(o)
 			if v < 0 {
+				flush()
 				continue
 			}
+			if last >= 0 && o.T-last > 2_000_000_000 {
+				flush()
+			}
+			last = o.T
 			yy := base - (chartH-4)/2
 			if span > 0 {
 				yy = base - (v-lo)*(chartH-4)/span
 			}
 			pts = append(pts, fmt.Sprintf("%d,%d", px(o.T), yy))
 		}
-		if len(pts) == 0 {
+		flush()
+		if len(runs) == 0 {
 			continue
 		}
-		fmt.Fprintf(w, "<polyline class=\"series\" stroke=\"%s\" points=\"%s\"><title>%s %s</title></polyline><text x=\"%d\" y=\"%d\" fill=\"%s\">%s</text>\n",
-			palette[ni%len(palette)], strings.Join(pts, " "), esc(n), esc(title), leftW-60, y0+36+int64(ni)*10, palette[ni%len(palette)], esc(n))
+		for _, r := range runs {
+			fmt.Fprintf(w, "<polyline class=\"series\" stroke=\"%s\" points=\"%s\"><title>%s %s</title></polyline>\n", palette[ni%len(palette)], strings.Join(r, " "), esc(n), esc(title))
+		}
+		fmt.Fprintf(w, "<text x=\"%d\" y=\"%d\" fill=\"%s\">%s</text>\n", leftW-60, y0+36+int64(ni)*10, palette[ni%len(palette)], esc(n))
 	}
 }
