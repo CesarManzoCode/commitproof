@@ -9,8 +9,9 @@ import (
 	"github.com/CesarManzoCode/commitproof/internal/params"
 )
 
-// K5 schedules (CONTRACT §15 K5 campaign table, §9.2 D3/D5, §7 W5–W8;
-// clients, shapes and timing fixed by ADR-0030 before any K5 run).
+// K5 schedules (CONTRACT §15 K5 campaign table, §9.2 D3′/D5, §7 W5–W8;
+// clients, shapes and timing fixed by ADR-0030 before any K5 run; D3′ by
+// ADR-0033 before any D3′ run).
 
 // K5 workload names (history field wl, CONTRACT §6.1).
 const (
@@ -151,14 +152,13 @@ func k5Campaigns() map[string]Campaign {
 			return append(w4Clients(0, RoleSteady), Client{Client: StormClient0, WL: WLOverload, Mode: ModeStorm, Role: RoleStorm,
 				Connections: StormPerPhase, PhasesMS: append([][2]int64{}, StormPhases...)})
 		}, k5Setup{roles: []string{RoleSteady, RoleStorm}}),
-		"D3": camp("D3", "buffered", d3Shape, func(uint64) []Client {
-			return append(w1Clients("", false, true), w4Clients(d3W4PacingMS, "")...)
-		}, k5Setup{}),
+		"D3":  camp("D3", "buffered", d3Shape, d3Clients, k5Setup{}),
+		"D3p": camp("D3p", "buffered", d3pShape, d3Clients, k5Setup{}),
 		"D5": camp("D5", "baseline", d5Shape, func(uint64) []Client {
 			return append(w4Clients(0, ""), consumer())
 		}, cdc(CDCSlotRecorded)),
 	}
-	for _, d := range []string{"D3", "D5"} {
+	for _, d := range []string{"D3", "D3p", "D5"} {
 		c := cs[d]
 		c.Directed = d
 		cs[d] = c
@@ -208,11 +208,37 @@ func c11Shape(_ *rand.Rand, seed uint64) []stepSpec {
 	return []stepSpec{{Duration: 0, Elements: []Element{el("F2a", "leader")}}}
 }
 
-// D3 (§9.2): F2a on the leader three times; the first at t = 10 s, each
-// later one 15 s after the previous heal is confirmed (no jitter).
+// d3Clients are D3's and D3′'s: W1 autocommit appends at P03 and W4 at
+// 2× pacing (ADR-0030).
+func d3Clients(uint64) []Client {
+	return append(w1Clients("", false, true), w4Clients(d3W4PacingMS, "")...)
+}
+
+// D3 (contract ≤ 1.0.9, ADR-0030), superseded by D3′ (ADR-0033) and kept
+// for the superseded matrix campaigns/k5.json: F2a on the leader three
+// times; the first at t = 10 s, each later one 15 s after the previous heal
+// is confirmed (no jitter).
 func d3Shape(_ *rand.Rand, _ uint64) []stepSpec {
 	kill := func() stepSpec {
 		return stepSpec{Duration: 0, Elements: []Element{el("F2a", "leader")}, FixedDelay: true, Delay: d3Gap}
+	}
+	return []stepSpec{kill(), kill(), kill()}
+}
+
+// D3′ (§9.2, ADR-0033; campaign "D3p"): D3's three steps and gaps, each
+// step F7 on both followers, then F2a on the leader as soon as the second
+// F7 is confirmed, so that every commit waits for its delayed standby
+// acknowledgement, its WAL already on both followers, when the leader
+// dies. Heals: both F7s at once, then F2a (PostgreSQL restarted by its
+// pooler).
+func d3pShape(_ *rand.Rand, _ uint64) []stepSpec {
+	kill := func() stepSpec {
+		return stepSpec{
+			Duration:   0,
+			Elements:   []Element{el("F7", "base-follower:0"), el("F7", "base-follower:1"), el("F2a", "leader")},
+			Heals:      []Heal{{Element: 0}, {Element: 1}, {Element: 2}},
+			FixedDelay: true, Delay: d3Gap,
+		}
 	}
 	return []stepSpec{kill(), kill(), kill()}
 }

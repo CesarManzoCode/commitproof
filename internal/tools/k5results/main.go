@@ -103,9 +103,9 @@ func has(r *run, c string) bool {
 	return false
 }
 
-// target is ADR-0024's and ADR-0030's target class.
+// target is ADR-0024's, ADR-0030's and ADR-0033's target class.
 func target(r *run) string {
-	exp := map[string][]string{"D3": {"duplicate-elements", "g1a"}, "D5": {"cdc-phantom"}}
+	exp := map[string][]string{"D3": {"duplicate-elements", "g1a"}, "D3p": {"duplicate-elements", "g1a"}, "D5": {"cdc-phantom"}}
 	for _, c := range exp[str(r.man, "campaign")] {
 		if has(r, c) {
 			return c

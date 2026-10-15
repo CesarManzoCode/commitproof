@@ -61,6 +61,8 @@ func TestTargetClass(t *testing.T) {
 		{"D3", []string{"g1a", "duplicate-elements"}, "duplicate-elements"},
 		{"D3", []string{"lost-write", "g1a"}, "g1a"},
 		{"D3", []string{"lost-write"}, "lost-write"},
+		{"D3p", []string{"g1a", "duplicate-elements"}, "duplicate-elements"},
+		{"D3p", []string{"lost-write", "g1a"}, "g1a"},
 		{"D5", []string{"cdc-gap", "cdc-phantom"}, "cdc-phantom"},
 		{"C10", []string{"incompatible-order", "cdc-gap"}, "incompatible-order"},
 	} {

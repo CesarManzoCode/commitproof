@@ -12,7 +12,7 @@ import (
 
 // ContractVersion is the docs/CONTRACT.md version this code implements
 // (checked against the contract header by params_test.go).
-const ContractVersion = "1.0.9"
+const ContractVersion = "1.1.0"
 
 // K4RunsContractVersion is the contract version of the K4 runs made before
 // ADR-0027. Contract 1.0.7 changes only M2's directed schedule, and as a new
@@ -26,6 +26,13 @@ const K4RunsContractVersion = "1.0.6"
 // ADR-0029, ADR-0030) change no K4 plan; K4's evidence keeps the versions
 // its runs carry.
 const K4ContractVersion = "1.0.7"
+
+// K5RunsContractVersion is the contract version of the K5 runs made before
+// ADR-0033. Contract 1.0.10 changes only M3's directed schedule, and as a
+// new campaign (D3′, "D3p"); contract 1.1.0 changes only P25 (ADR-0034).
+// Every other K5 plan is unchanged apart from its contract_version field,
+// so those runs stay K5 evidence; D3′ runs carry ContractVersion.
+const K5RunsContractVersion = "1.0.9"
 
 // Typed values. Each one is tied to its row's text by Param.Derived.
 const (
@@ -88,7 +95,7 @@ const (
 	BankInitialBalance    = 100
 	MetricsScrapeInterval = 1 * time.Second  // P23
 	ObservationInterval   = 1 * time.Second  // P24
-	EvidenceBudgetMB      = 200              // P25
+	EvidenceBudgetMB      = 250              // P25 (ADR-0034)
 	DockerSubnet          = "10.77.0.0/24"   // P26
 	FaultConfirmDeadline  = 15 * time.Second // P27
 	HealConfirmDeadline   = 30 * time.Second // P28
@@ -160,7 +167,7 @@ func Table() []Param {
 			[]string{s(MetricsScrapeInterval) + " ("}},
 		{"P24", "Observation interval", "1 s",
 			[]string{s(ObservationInterval)}},
-		{"P25", "Evidence size budget in git", "≤ 200 MB total under `evidence/`",
+		{"P25", "Evidence size budget in git", "≤ 250 MB total under `evidence/`",
 			[]string{fmt.Sprintf("≤ %d MB", EvidenceBudgetMB)}},
 		{"P26", "Docker subnet", "10.77.0.0/24",
 			[]string{DockerSubnet}},

@@ -7,7 +7,7 @@ import (
 	"github.com/CesarManzoCode/commitproof/internal/params"
 )
 
-var k5Profiles = map[string]string{"C8": "buffered", "C9": "baseline", "C10": "baseline", "C11": "baseline", "D3": "buffered", "D5": "baseline"}
+var k5Profiles = map[string]string{"C8": "buffered", "C9": "baseline", "C10": "baseline", "C11": "baseline", "D3": "buffered", "D3p": "buffered", "D5": "baseline"}
 
 func TestK5CampaignsDeterministicAndRoundTrip(t *testing.T) {
 	for c, prof := range k5Profiles {
@@ -35,7 +35,7 @@ func TestK5CampaignsDeterministicAndRoundTrip(t *testing.T) {
 		}
 		other := map[string]string{"buffered": "baseline", "baseline": "buffered"}[prof]
 		if _, err := Generate(c, 1, other, ""); err == nil {
-			t.Errorf("%s accepted profile %s (§15 K5: %s only; buffering only in C8 and D3)", c, other, prof)
+			t.Errorf("%s accepted profile %s (§15 K5: %s only; buffering only in C8 and D3′/D3)", c, other, prof)
 		}
 	}
 }
@@ -48,6 +48,7 @@ func TestK5Clients(t *testing.T) {
 		"C10": {0, 1, 2, 3, 8, 9, 29},
 		"C11": {8, 9, 100},
 		"D3":  {0, 1, 2, 3, 8, 9},
+		"D3p": {0, 1, 2, 3, 8, 9},
 		"D5":  {8, 9, 29},
 	}
 	for c, nums := range want {
@@ -143,6 +144,24 @@ func TestK5Shapes(t *testing.T) {
 			if kinds(s) != "F2a" || (i > 0 && (s.After != AfterPreviousHeal || s.DelayMS != 15000)) {
 				t.Fatalf("D3 step %d: %+v", i, s)
 			}
+		}
+		// D3′ (ADR-0033): three steps, D3's gaps; F7 on both followers,
+		// then F2a(leader) without a hold; heals: both F7s, then F2a.
+		d3p := mkplan(t, "D3p", seed, "buffered")
+		if len(d3p.Steps) != 3 {
+			t.Fatalf("D3′: %d steps", len(d3p.Steps))
+		}
+		for i, s := range d3p.Steps {
+			es := s.Elements
+			if kinds(s) != "F7+F7+F2a" || s.DurationMS != 0 || (i > 0 && (s.After != AfterPreviousHeal || s.DelayMS != 15000)) ||
+				es[0].Targets[0] != "base-follower:0" || es[1].Targets[0] != "base-follower:1" || es[2].Targets[0] != "leader" ||
+				es[0].HoldMS != 0 || es[1].HoldMS != 0 || len(s.Heals) != 3 ||
+				s.Heals[0] != (Heal{Element: 0}) || s.Heals[1] != (Heal{Element: 1}) || s.Heals[2] != (Heal{Element: 2}) {
+				t.Fatalf("D3′ step %d: %+v", i, s)
+			}
+		}
+		if i := d3p.Steps[0]; i.After != AfterWorkloadStart || i.DelayMS != params.FirstFaultAt.Milliseconds() {
+			t.Fatalf("D3′ first step: %+v", i)
 		}
 		d5 := mkplan(t, "D5", seed, "baseline")
 		if len(d5.Steps) != 1 || kinds(d5.Steps[0]) != "F1b+F2a+F2b" || d5.Steps[0].Elements[0].HoldMS != 20000 ||
