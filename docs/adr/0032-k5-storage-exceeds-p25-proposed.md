@@ -1,6 +1,8 @@
 # ADR-0032 — K5's runs do not fit P25 under ADR-0030's storage (proposed; owner decision)
 
-Status: **Proposed (K5) — not applied.** K5 stops BLOCKED (with K5.4, ADR-0031). The contract's evidence policy cannot be met as written: the runs that CONTRACT §13 and ADR-0030 require in git **in full** (and that cpgate K5.3 and K5.5 read in full) do not fit in what P25 leaves. Meeting one requirement means relaxing the other — raising P25 (a P-value, §5.7), or committing cited runs as stubs (gate criteria then cannot re-read them from git) — and either is a relaxation that needs the owner (§18). The contract, P25, ADR-0030 and the gate are unchanged. This ADR gives the measurements and the options; the owner decides.
+Status: **Decided by the owner on 2026-10-14: option 1, P25 raised to 250 MB, applied by ADR-0034** (after lossless compression was measured and found insufficient). The text below is the proposal as written; it is kept unchanged.
+
+Original status: **Proposed (K5) — not applied.** K5 stops BLOCKED (with K5.4, ADR-0031). The contract's evidence policy cannot be met as written: the runs that CONTRACT §13 and ADR-0030 require in git **in full** (and that cpgate K5.3 and K5.5 read in full) do not fit in what P25 leaves. Meeting one requirement means relaxing the other — raising P25 (a P-value, §5.7), or committing cited runs as stubs (gate criteria then cannot re-read them from git) — and either is a relaxation that needs the owner (§18). The contract, P25, ADR-0030 and the gate are unchanged. This ADR gives the measurements and the options; the owner decides.
 
 ## Context (measurements)
 

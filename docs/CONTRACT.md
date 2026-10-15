@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Contract version | **1.0.10** (K0; K1 corrections: ADR-0019, ADR-0020, ADR-0021; K3 corrections: ADR-0022, ADR-0023; K4 clarifications and corrections: ADR-0024, ADR-0025, ADR-0026; K4 amendment approved by the owner: ADR-0027; K5 corrections and clarifications: ADR-0029, ADR-0030; K5 amendment approved by the owner: ADR-0033) |
+| Contract version | **1.1.0** (K0; K1 corrections: ADR-0019, ADR-0020, ADR-0021; K3 corrections: ADR-0022, ADR-0023; K4 clarifications and corrections: ADR-0024, ADR-0025, ADR-0026; K4 amendment approved by the owner: ADR-0027; K5 corrections and clarifications: ADR-0029, ADR-0030; K5 amendment approved by the owner: ADR-0033; K5 change approved by the owner: ADR-0034, P25) |
 | Date | 2026-10-09 |
 | Owner | César Manzo (GitHub `CesarManzoCode`) |
 | System under test | Multigres, `github.com/multigres/multigres` @ `e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73` |
@@ -261,7 +261,7 @@ All numbers used by gates live here. Implementations read them from one Go const
 | P22 | Bank | 5 accounts × 100 | — |
 | P23 | Metrics scrape interval | 1 s (`/metrics` on HTTP ports 15000, 16000, 17000) | — |
 | P24 | Observation interval | 1 s | — |
-| P25 | Evidence size budget in git | ≤ 200 MB total under `evidence/` | — |
+| P25 | Evidence size budget in git | ≤ 250 MB total under `evidence/` | — |
 | P26 | Docker subnet | 10.77.0.0/24 | configurable via `CP_SUBNET`; gates use the default |
 | P27 | Fault confirmation deadline | 15 s after the inject command returns | — |
 | P28 | Heal confirmation deadline | 30 s | — |

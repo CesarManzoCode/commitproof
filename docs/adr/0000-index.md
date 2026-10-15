@@ -33,7 +33,8 @@
 | [0029](0029-k5-contract-defects.md) | Three contract defects found before any K5 run: the buffer timing guard (G8), the LSN that W7 confirms (G11), W8's roles under S03's pg_hba (G12) | Accepted (K5, contract 1.0.8) |
 | [0030](0030-k5-schedules-fixed-before-runs.md) | K5 schedules, workload details, C8 completions, the slot precondition and evidence storage, fixed before any K5 run | Accepted (K5, contract 1.0.9) |
 | [0031](0031-d3-commits-in-flight-proposed.md) | D3′: hold commits in synchronous replication when the leader is killed (amendment of §9.2 D3 for M3) | Approved by the owner (K5); accepted with another composition by ADR-0033 |
-| [0032](0032-k5-storage-exceeds-p25-proposed.md) | K5's runs do not fit P25 under ADR-0030's storage: measurements and options | Proposed (K5) — not applied; owner decision |
+| [0032](0032-k5-storage-exceeds-p25-proposed.md) | K5's runs do not fit P25 under ADR-0030's storage: measurements and options | Decided by the owner (K5): option 1, applied by ADR-0034 |
 | [0033](0033-d3-prime-followers-acks-delayed.md) | D3′: the leader is killed while every commit waits for its delayed standby acknowledgement (amendment of §9.2 D3) | Accepted by the owner (K5, contract 1.0.10) |
+| [0034](0034-p25-raised-to-250-mb.md) | P25 raised to 250 MB; K5 stored as ADR-0030 prescribes (owner decision on ADR-0032) | Accepted by the owner (K5, contract 1.1.0) |
 
 New ADRs continue the numbering. Each ADR: Context, Decision, Alternatives rejected, Consequences, Sources.
