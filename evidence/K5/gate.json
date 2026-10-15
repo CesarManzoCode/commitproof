@@ -1,8 +1,8 @@
 {
   "sprint": "K5",
-  "contract_version": "1.0.9",
+  "contract_version": "1.1.0",
   "evidence": "evidence/K5",
-  "result": "FAIL",
+  "result": "PASS",
   "criteria": [
     {
       "id": "K5.1",
@@ -34,7 +34,7 @@
       "name": "Campaign runs",
       "result": "PASS",
       "evidence": "results.json",
-      "sha256": "1cf757d5b7ff0e6cb44de1db9c5033e95e714008d81cb9189c625a8bff1f13c7",
+      "sha256": "b7bd026fbe9f9ee06de5801b54d9853b74a1738456feb54d4b2aa42055797528",
       "problems": [],
       "details": [
         "C8 (buffered): seed 1 PASS[]; seed 2 PASS[]; seed 3 PASS[]",
@@ -46,33 +46,30 @@
     {
       "id": "K5.3",
       "name": "CDC slot failover precondition",
-      "result": "FAIL",
+      "result": "PASS",
       "evidence": "runs/ (C10 observations)",
       "sha256": "",
-      "problems": [
-        "20261013T231132Z-C10-1-real-4e2010a8: a C10 primary run committed as a stub; K5.3 reads its observations",
-        "20261013T231500Z-C10-2-real-01af5fe0: a C10 primary run committed as a stub; K5.3 reads its observations",
-        "20261013T231736Z-C10-3-real-018e2dd9: a C10 primary run committed as a stub; K5.3 reads its observations",
-        "20261013T232032Z-C10-4-real-0370610b: a C10 primary run committed as a stub; K5.3 reads its observations",
-        "20261013T232303Z-C10-5-real-ed9c988d: a C10 primary run committed as a stub; K5.3 reads its observations",
-        "no C10 run committed in full"
-      ],
+      "problems": [],
       "details": [
-        "0 C10 runs read in full (0 INVALID), 5 stubs (derived runs; LIM-30)"
+        "20261013T231132Z-C10-1-real-4e2010a8: ready at 15.6 s, first fault at 25.7 s (marker waited 15208 ms)",
+        "20261013T231500Z-C10-2-real-01af5fe0: ready at 14.6 s, first fault at 24.7 s (marker waited 14148 ms)",
+        "20261013T231736Z-C10-3-real-018e2dd9: ready at 33.1 s, first fault at 43.3 s (marker waited 32705 ms)",
+        "20261013T232032Z-C10-4-real-0370610b: ready at 10.3 s, first fault at 20.5 s (marker waited 9857 ms)",
+        "20261013T232303Z-C10-5-real-ed9c988d: ready at 10.4 s, first fault at 20.5 s (marker waited 9813 ms)",
+        "5 C10 runs read in full (0 INVALID), 0 stubs (derived runs; LIM-30)"
       ]
     },
     {
       "id": "K5.4",
       "name": "Mutant detection",
-      "result": "FAIL",
+      "result": "PASS",
       "evidence": "runs/, images.lock.json, mutants/",
       "sha256": "",
-      "problems": [
-        "M3 via D3: 2/5 runs FAIL with [[C3 duplicate-elements] [C2 g1a]], need 4"
-      ],
+      "problems": [],
       "details": [
-        "M3 via D3 (buffered): UNDETECTED 2/5 with [[C3 duplicate-elements] [C2 g1a]]; mutant [PASS[] FAIL[g1a] PASS[] FAIL[g1a] PASS[]]; real [PASS[] PASS[] PASS[] PASS[] PASS[]]",
+        "M3 via D3p (buffered): DETECTED 4/5 with [[C3 duplicate-elements] [C2 g1a]]; mutant [FAIL[g1a] FAIL[g1a] PASS[] FAIL[g1a] FAIL[g1a]]; real [PASS[] PASS[] PASS[] PASS[] PASS[]]",
         "M5 via D5 (baseline): DETECTED 5/5 with [[C7 cdc-phantom]]; mutant [FAIL[cdc-phantom] FAIL[cdc-phantom] FAIL[cdc-phantom] FAIL[cdc-phantom] FAIL[cdc-phantom]]; real [PASS[] PASS[] PASS[] PASS[] PASS[]]",
+        "superseded D3 (ADR-0033, recorded): mutant M3 [PASS[] FAIL[g1a] PASS[] FAIL[g1a] PASS[]]; real [PASS[] PASS[] PASS[] PASS[] PASS[]]",
         "M3 isolation: 1 binary(ies) linking [go/services/multigateway/poolergateway/pooler_gateway.go] differ; the others equal the real build",
         "M5 isolation: 1 binary(ies) linking [go/services/multipooler/internal/manager/pg_replication.go] differ; the others equal the real build"
       ]
@@ -80,33 +77,20 @@
     {
       "id": "K5.5",
       "name": "Minimize/replay/triage",
-      "result": "FAIL",
+      "result": "PASS",
       "evidence": "runs/ (*.minimize.json, replays), triage/",
       "sha256": "",
-      "problems": [
-        "20261013T230136Z-C9-1-real-21458975: committed as a stub; this criterion needs the full run",
-        "20261014T004127Z-C9-1-real-e8381b69: committed as a stub; this criterion needs the full run",
-        "20261013T230358Z-C9-2-real-b0861f34: committed as a stub; this criterion needs the full run",
-        "20261014T010524Z-C9-2-real-b8b35825: committed as a stub; this criterion needs the full run",
-        "20261013T230909Z-C9-3-real-bb8a276f: committed as a stub; this criterion needs the full run",
-        "20261014T012149Z-C9-3-real-52de89e0: committed as a stub; this criterion needs the full run",
-        "20261013T232750Z-C11-2-real-1f5423ed: committed as a stub; this criterion needs the full run",
-        "20261013T232750Z-C11-2-real-1f5423ed: committed as a stub; this criterion needs the full run",
-        "triage 20261013T230136Z-C9-1-real-21458975: history: open /tmp/cpgate-stub-2510738367/20261013T230136Z-C9-1-real-21458975/history.jsonl: open /tmp/cpgate-stub-2510738367/20261013T230136Z-C9-1-real-21458975/history.jsonl: no such file or directory",
-        "triage 20261013T230358Z-C9-2-real-b0861f34: history: open /tmp/cpgate-stub-3125978218/20261013T230358Z-C9-2-real-b0861f34/history.jsonl: open /tmp/cpgate-stub-3125978218/20261013T230358Z-C9-2-real-b0861f34/history.jsonl: no such file or directory",
-        "triage 20261013T230909Z-C9-3-real-bb8a276f: history: open /tmp/cpgate-stub-116123387/20261013T230909Z-C9-3-real-bb8a276f/history.jsonl: open /tmp/cpgate-stub-116123387/20261013T230909Z-C9-3-real-bb8a276f/history.jsonl: no such file or directory",
-        "triage 20261013T232750Z-C11-2-real-1f5423ed: history: open /tmp/cpgate-stub-1604017093/20261013T232750Z-C11-2-real-1f5423ed/history.jsonl: open /tmp/cpgate-stub-1604017093/20261013T232750Z-C11-2-real-1f5423ed/history.jsonl: no such file or directory"
-      ],
+      "problems": [],
       "details": [
-        "",
-        "",
-        "",
-        "",
-        "11 FAIL runs minimized and replayed",
+        "15 FAIL runs minimized and replayed",
         "20261013T230136Z-C9-1-real-21458975 → 20261014T004127Z-C9-1-real-e8381b69 (notify-not-resumed, 3 reductions) replays [FAIL FAIL FAIL FAIL PASS]: 4/5 with notify-not-resumed → REPRODUCED",
+        "20261013T230136Z-C9-1-real-21458975: FND-C9-40b6f05a PROTOCOL_DEVIATION G10 REPRODUCED medium",
         "20261013T230358Z-C9-2-real-b0861f34 → 20261014T010524Z-C9-2-real-b8b35825 (notify-not-resumed, 4 reductions) replays [FAIL FAIL FAIL FAIL FAIL]: 5/5 with notify-not-resumed → REPRODUCED",
+        "20261013T230358Z-C9-2-real-b0861f34: FND-C9-2fe9a9fc PROTOCOL_DEVIATION G10 REPRODUCED medium",
         "20261013T230909Z-C9-3-real-bb8a276f → 20261014T012149Z-C9-3-real-52de89e0 (notify-not-resumed, 3 reductions) replays [PASS PASS FAIL PASS PASS]: 1/5 with notify-not-resumed → INTERMITTENT",
+        "20261013T230909Z-C9-3-real-bb8a276f: FND-C9-90da5532 PROTOCOL_DEVIATION G10 INTERMITTENT medium",
         "20261013T232750Z-C11-2-real-1f5423ed → 20261013T232750Z-C11-2-real-1f5423ed (fair-share-starvation, 0 reductions) replays [PASS FAIL PASS FAIL PASS]: 2/5 with fair-share-starvation → INTERMITTENT",
+        "20261013T232750Z-C11-2-real-1f5423ed: FND-C11-17a344c1 PROTOCOL_DEVIATION G12 INTERMITTENT medium",
         "20261013T233549Z-D3-2-M3-ad08cd75 → 20261014T020756Z-D3-2-M3-c877bac8 (g1a, 1 reductions) replays [PASS PASS FAIL PASS FAIL]: 2/5 with g1a → INTERMITTENT",
         "20261013T234245Z-D3-4-M3-6b74e887 → 20261013T234245Z-D3-4-M3-6b74e887 (g1a, 0 reductions) replays [PASS PASS PASS PASS PASS]: 0/5 with g1a → NOT_REPRODUCED",
         "20261014T000625Z-D5-1-M5-ad688688 → 20261014T033002Z-D5-1-M5-af21930b (cdc-phantom, 3 reductions) replays [FAIL FAIL FAIL FAIL FAIL]: 5/5 with cdc-phantom → REPRODUCED",
@@ -114,6 +98,10 @@
         "20261014T001126Z-D5-3-M5-d95fb90a → 20261014T042135Z-D5-3-M5-48de96e0 (cdc-phantom, 3 reductions) replays [PASS PASS PASS PASS PASS]: 0/5 with cdc-phantom → NOT_REPRODUCED",
         "20261014T001355Z-D5-4-M5-c5f146f4 → 20261014T232452Z-D5-4-M5-aa2a5fbd (cdc-phantom, 2 reductions) replays [PASS PASS FAIL FAIL FAIL]: 3/5 with cdc-phantom → REPRODUCED",
         "20261014T001628Z-D5-5-M5-e9fd481e → 20261014T234830Z-D5-5-M5-d365585c (cdc-phantom, 2 reductions) replays [FAIL PASS PASS FAIL PASS]: 2/5 with cdc-phantom → INTERMITTENT",
+        "20261015T015122Z-D3p-1-M3-84dccb5a → 20261015T024129Z-D3p-1-M3-6d77285f (g1a, 4 reductions) replays [FAIL FAIL FAIL FAIL FAIL]: 5/5 with g1a → REPRODUCED",
+        "20261015T015445Z-D3p-2-M3-f75f6098 → 20261015T031126Z-D3p-2-M3-e6d69f18 (g1a, 4 reductions) replays [FAIL FAIL FAIL FAIL FAIL]: 5/5 with g1a → REPRODUCED",
+        "20261015T020135Z-D3p-4-M3-c83b3282 → 20261015T034122Z-D3p-4-M3-8bf2b453 (g1a, 4 reductions) replays [FAIL PASS FAIL FAIL FAIL]: 4/5 with g1a → REPRODUCED",
+        "20261015T020452Z-D3p-5-M3-87fb0b83 → 20261015T041113Z-D3p-5-M3-3c258252 (g1a, 4 reductions) replays [FAIL FAIL FAIL FAIL FAIL]: 5/5 with g1a → REPRODUCED",
         "4 real-build FAIL runs, 4 triage records"
       ]
     },
@@ -122,10 +110,10 @@
       "name": "CI-equivalent",
       "result": "PASS",
       "evidence": "commands.jsonl",
-      "sha256": "2d4f753ad2a432b9d9a1b9c0d6cda1b8f36c393b744723a6e79213fc04434166",
+      "sha256": "28d52eab58e4579626664bd18e00d0eee6576109576b627e731ea96c4557bf83",
       "problems": [],
       "details": [
-        "ci-2: argv [\"make\" \"ci-unit\" \"ci-checkers\" \"ci-cluster-smoke\" \"ci-nemesis-smoke\" \"ci-mutant-smoke\"] exit 0; earlier attempts [ci exit 0]"
+        "ci-5: argv [\"make\" \"ci-unit\" \"ci-checkers\" \"ci-cluster-smoke\" \"ci-nemesis-smoke\" \"ci-mutant-smoke\"] exit 0; earlier attempts [ci exit 0 ci-2 exit 0 ci-3 exit 0]"
       ]
     }
   ]

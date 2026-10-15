@@ -3,12 +3,9 @@
     "criterion": "K5.1",
     "sabotage": "drop the reported cdc-order of planted entry w7k-order-01 from the K5 corpus results (the recorded results hash updated)",
     "failed": [
-      "K5.1",
-      "K5.3",
-      "K5.4",
-      "K5.5"
+      "K5.1"
     ],
-    "failed_only_target": false,
+    "failed_only_target": true,
     "target_problems": [
       "w7k-order-01: C7 valid true, expected false; C7 anomalies {}, expected {cdc-order}",
       "class cdc-order: 2 matching planted histories, want ≥ 3"
@@ -18,75 +15,57 @@
     "criterion": "K5.2",
     "sabotage": "flip the verdict of the first C9 run in results.json",
     "failed": [
-      "K5.2",
-      "K5.3",
-      "K5.4",
-      "K5.5"
+      "K5.2"
     ],
-    "failed_only_target": false,
+    "failed_only_target": true,
     "target_problems": [
-      "results.json entry of 20261013T230136Z-C9-1-real-21458975 (PASS notify-not-resumed seal 9ccee731 stub true) differs from the run (FAIL notify-not-resumed seal 9ccee731 stub true)"
+      "results.json entry of 20261013T230136Z-C9-1-real-21458975 (PASS notify-not-resumed seal 9ccee731 stub false) differs from the run (FAIL notify-not-resumed seal 9ccee731 stub false)"
     ]
   },
   {
     "criterion": "K5.3",
     "sabotage": "rewrite the cdc-slot observations before the first fault of one C10 run as not synced (run re-chained and re-sealed; its seal root updated in checks.json, results.json and any triage record)",
-    "failed": [],
-    "failed_only_target": false,
-    "error": "sabotage: no full, valid C10 primary run",
-    "target_problems": []
+    "failed": [
+      "K5.3"
+    ],
+    "failed_only_target": true,
+    "target_problems": [
+      "20261013T231132Z-C10-1-real-4e2010a8: counted as PASS but the slot is not failover-ready on every follower before the first fault (recomputed false, marker true)"
+    ]
   },
   {
     "criterion": "K5.4",
-    "sabotage": "rewrite the checks.json of M3's D3 runs for seeds 1 and 2 as PASS (seal roots kept)",
+    "sabotage": "rewrite the checks.json of M3's D3′ runs for seeds 1 and 2 as PASS (seal roots kept)",
     "failed": [
-      "K5.3",
-      "K5.4",
-      "K5.5"
+      "K5.4"
     ],
-    "failed_only_target": false,
+    "failed_only_target": true,
     "target_problems": [
-      "results.json entry of 20261013T233549Z-D3-2-M3-ad08cd75 (FAIL g1a seal f36ace2d stub true) differs from the run (PASS  seal f36ace2d stub true)",
-      "M3 via D3: 1/5 runs FAIL with [[C3 duplicate-elements] [C2 g1a]], need 4"
+      "results.json entry of 20261015T015122Z-D3p-1-M3-84dccb5a (FAIL g1a seal 1d00da75 stub true) differs from the run (PASS  seal 1d00da75 stub true)",
+      "results.json entry of 20261015T015445Z-D3p-2-M3-f75f6098 (FAIL g1a seal 7adddfd3 stub true) differs from the run (PASS  seal 7adddfd3 stub true)",
+      "M3 via D3p: 2/5 runs FAIL with [[C3 duplicate-elements] [C2 g1a]], need 4"
     ]
   },
   {
     "criterion": "K5.5",
     "sabotage": "delete the last replay of the minimized run of the first FAIL run of M3 (archive and checks.json)",
     "failed": [
-      "K5.3",
-      "K5.4",
       "K5.5"
     ],
-    "failed_only_target": false,
+    "failed_only_target": true,
     "target_problems": [
-      "20261013T230136Z-C9-1-real-21458975: committed as a stub; this criterion needs the full run",
-      "20261014T004127Z-C9-1-real-e8381b69: committed as a stub; this criterion needs the full run",
-      "20261013T230358Z-C9-2-real-b0861f34: committed as a stub; this criterion needs the full run",
-      "20261014T010524Z-C9-2-real-b8b35825: committed as a stub; this criterion needs the full run",
-      "20261013T230909Z-C9-3-real-bb8a276f: committed as a stub; this criterion needs the full run",
-      "20261014T012149Z-C9-3-real-52de89e0: committed as a stub; this criterion needs the full run",
-      "20261013T232750Z-C11-2-real-1f5423ed: committed as a stub; this criterion needs the full run",
-      "20261013T232750Z-C11-2-real-1f5423ed: committed as a stub; this criterion needs the full run",
-      "20261013T233549Z-D3-2-M3-ad08cd75: replay 5 of 20261014T020756Z-D3-2-M3-c877bac8 missing or INVALID",
-      "triage 20261013T230136Z-C9-1-real-21458975: history: open /tmp/cpgate-stub-3539742853/20261013T230136Z-C9-1-real-21458975/history.jsonl: open /tmp/cpgate-stub-3539742853/20261013T230136Z-C9-1-real-21458975/history.jsonl: no such file or directory",
-      "triage 20261013T230358Z-C9-2-real-b0861f34: history: open /tmp/cpgate-stub-27485501/20261013T230358Z-C9-2-real-b0861f34/history.jsonl: open /tmp/cpgate-stub-27485501/20261013T230358Z-C9-2-real-b0861f34/history.jsonl: no such file or directory",
-      "triage 20261013T230909Z-C9-3-real-bb8a276f: history: open /tmp/cpgate-stub-416756489/20261013T230909Z-C9-3-real-bb8a276f/history.jsonl: open /tmp/cpgate-stub-416756489/20261013T230909Z-C9-3-real-bb8a276f/history.jsonl: no such file or directory",
-      "triage 20261013T232750Z-C11-2-real-1f5423ed: history: open /tmp/cpgate-stub-1537134571/20261013T232750Z-C11-2-real-1f5423ed/history.jsonl: open /tmp/cpgate-stub-1537134571/20261013T232750Z-C11-2-real-1f5423ed/history.jsonl: no such file or directory"
+      "20261015T015122Z-D3p-1-M3-84dccb5a: replay 5 of 20261015T024129Z-D3p-1-M3-6d77285f missing or INVALID"
     ]
   },
   {
     "criterion": "K5.6",
     "sabotage": "replace the recorded exit code of the latest `make ci-unit ci-checkers ci-cluster-smoke ci-nemesis-smoke ci-mutant-smoke` with 1",
     "failed": [
-      "K5.3",
-      "K5.4",
-      "K5.5",
       "K5.6"
     ],
-    "failed_only_target": false,
+    "failed_only_target": true,
     "target_problems": [
-      "ci-2 exited 1"
+      "ci-5 exited 1"
     ]
   }
 ]

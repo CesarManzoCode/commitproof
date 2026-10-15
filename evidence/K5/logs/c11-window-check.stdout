@@ -1,0 +1,4 @@
+{"archive":"runs/k5-full/20261013T232750Z-C11-2-real-1f5423ed.tar.zst","archive_sha256":"e2a2233613c0b2c49fcdd44d29f30f6e6e037b3927e11315112689e76c889a23"}
+{"fault_windows": {"f0": {"from_s": 10.122, "kind": "F2a", "to_s": 13.836}}}
+{"from_s": 5.0, "non_ok": 120, "non_ok_invoked_inside_a_fault_window": 120, "non_ok_invoked_s": [10.171, 13.25], "of_those_completed_inside_it": 120, "ok": 766, "ok_fraction": 0.8646, "ok_fraction_outside_fault_windows": 1.0, "ok_of_those": 744, "ops_invoked_outside_fault_windows": 744, "steady_ops": 886, "storm_window": 1, "to_s": 27.489}
+{"from_s": 45.001, "non_ok": 0, "non_ok_invoked_inside_a_fault_window": 0, "non_ok_invoked_s": null, "of_those_completed_inside_it": 0, "ok": 872, "ok_fraction": 1.0, "ok_fraction_outside_fault_windows": 1.0, "ok_of_those": 872, "ops_invoked_outside_fault_windows": 872, "steady_ops": 872, "storm_window": 2, "to_s": 67.054}

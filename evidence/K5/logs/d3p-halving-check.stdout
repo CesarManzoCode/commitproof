@@ -1,0 +1,12 @@
+{"duration_ms": 45000, "first_F2a_s": 11.834, "halvings": 1, "last_workload_invoke_s": 44.975, "run": "20261015T023440Z-D3p-1-M3-11c8d2eb", "verdict": "FAIL", "workload_ops_in_flight_at_first_F2a": 6}
+{"duration_ms": 22500, "first_F2a_s": 11.839, "halvings": 2, "last_workload_invoke_s": 22.491, "run": "20261015T023721Z-D3p-1-M3-e36d737f", "verdict": "FAIL", "workload_ops_in_flight_at_first_F2a": 6}
+{"duration_ms": 11250, "first_F2a_s": 11.839, "halvings": 3, "last_workload_invoke_s": 11.25, "run": "20261015T023929Z-D3p-1-M3-dac6f12b", "verdict": "PASS", "workload_ops_in_flight_at_first_F2a": 0}
+{"duration_ms": 45000, "first_F2a_s": 11.837, "halvings": 1, "last_workload_invoke_s": 44.976, "run": "20261015T030440Z-D3p-2-M3-cf732c77", "verdict": "FAIL", "workload_ops_in_flight_at_first_F2a": 6}
+{"duration_ms": 22500, "first_F2a_s": 11.837, "halvings": 2, "last_workload_invoke_s": 22.497, "run": "20261015T030711Z-D3p-2-M3-3598d7c3", "verdict": "FAIL", "workload_ops_in_flight_at_first_F2a": 6}
+{"duration_ms": 11250, "first_F2a_s": 11.83, "halvings": 3, "last_workload_invoke_s": 11.244, "run": "20261015T030922Z-D3p-2-M3-3f224301", "verdict": "PASS", "workload_ops_in_flight_at_first_F2a": 0}
+{"duration_ms": 45000, "first_F2a_s": 11.835, "halvings": 1, "last_workload_invoke_s": 44.985, "run": "20261015T033435Z-D3p-4-M3-940a96d3", "verdict": "FAIL", "workload_ops_in_flight_at_first_F2a": 6}
+{"duration_ms": 22500, "first_F2a_s": 11.843, "halvings": 2, "last_workload_invoke_s": 22.499, "run": "20261015T033706Z-D3p-4-M3-cd323f34", "verdict": "FAIL", "workload_ops_in_flight_at_first_F2a": 6}
+{"duration_ms": 11250, "first_F2a_s": 11.844, "halvings": 3, "last_workload_invoke_s": 11.246, "run": "20261015T033915Z-D3p-4-M3-44619730", "verdict": "PASS", "workload_ops_in_flight_at_first_F2a": 0}
+{"duration_ms": 45000, "first_F2a_s": 11.839, "halvings": 1, "last_workload_invoke_s": 44.995, "run": "20261015T040430Z-D3p-5-M3-87fd4296", "verdict": "FAIL", "workload_ops_in_flight_at_first_F2a": 6}
+{"duration_ms": 22500, "first_F2a_s": 11.83, "halvings": 2, "last_workload_invoke_s": 22.492, "run": "20261015T040702Z-D3p-5-M3-29b8238f", "verdict": "FAIL", "workload_ops_in_flight_at_first_F2a": 6}
+{"duration_ms": 11250, "first_F2a_s": 11.837, "halvings": 3, "last_workload_invoke_s": 11.242, "run": "20261015T040910Z-D3p-5-M3-885ee0cf", "verdict": "PASS", "workload_ops_in_flight_at_first_F2a": 0}

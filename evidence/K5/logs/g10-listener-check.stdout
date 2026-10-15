@@ -1,0 +1,263 @@
+== 1. listener sessions in every C9 run (42 runs)
+{"first_fault_s": 10.444, "kind": "primary", "listeners": {"26": [{"listen": "ok", "received": 600, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 101}], "27": [{"listen": "ok", "received": 600, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 101}], "28": [{"listen": "ok", "received": 600, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 101}]}, "run": "20261013T230136Z-C9-1-real-21458975"}
+{"first_fault_s": 10.478, "kind": "primary", "listeners": {"26": [{"listen": "ok", "received": 605, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 101}], "27": [{"listen": "ok", "received": 605, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 101}], "28": [{"listen": "ok", "received": 605, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 101}]}, "run": "20261013T230358Z-C9-2-real-b0861f34"}
+{"first_fault_s": 10.435, "kind": "primary", "listeners": {"26": [{"listen": "ok", "received": 600, "received_after_first_fault": 0, "waits_failed": 1, "waits_ok": 52}], "27": [{"listen": "ok", "received": 600, "received_after_first_fault": 0, "waits_failed": 1, "waits_ok": 52}], "28": [{"listen": "ok", "received": 600, "received_after_first_fault": 0, "waits_failed": 1, "waits_ok": 52}]}, "run": "20261013T230625Z-C9-3-real-bb8a276f"}
+{"first_fault_s": 10.434, "kind": "primary", "listeners": {"26": [{"listen": "ok", "received": 600, "received_after_first_fault": 0, "waits_failed": 1, "waits_ok": 46}], "27": [{"listen": "ok", "received": 600, "received_after_first_fault": 0, "waits_failed": 1, "waits_ok": 46}], "28": [{"listen": "ok", "received": 600, "received_after_first_fault": 0, "waits_failed": 1, "waits_ok": 46}]}, "run": "20261013T230750Z-C9-3-real-bb8a276f"}
+{"first_fault_s": 10.43, "kind": "primary", "listeners": {"26": [{"listen": "ok", "received": 600, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 101}], "27": [{"listen": "ok", "received": 600, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 101}], "28": [{"listen": "ok", "received": 600, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 101}]}, "run": "20261013T230909Z-C9-3-real-bb8a276f"}
+{"first_fault_s": null, "kind": "candidate", "listeners": {"26": [{"listen": "ok", "received": 5336, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 101}], "27": [{"listen": "ok", "received": 5336, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 101}], "28": [{"listen": "ok", "received": 5336, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 101}]}, "run": "20261014T003250Z-C9-1-real-2b8cb3cc"}
+{"first_fault_s": 10.452, "kind": "candidate", "listeners": {"26": [{"listen": "ok", "received": 599, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 101}], "27": [{"listen": "ok", "received": 599, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 101}], "28": [{"listen": "ok", "received": 599, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 101}]}, "run": "20261014T003507Z-C9-1-real-73d0c875"}
+{"first_fault_s": 10.457, "kind": "candidate", "listeners": {"26": [{"listen": "ok", "received": 600, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 101}], "27": [{"listen": "ok", "received": 600, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 101}], "28": [{"listen": "ok", "received": 600, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 101}]}, "run": "20261014T003733Z-C9-1-real-e422ce5b"}
+{"first_fault_s": 10.462, "kind": "candidate", "listeners": {"26": [{"listen": "ok", "received": 600, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 56}], "27": [{"listen": "ok", "received": 600, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 56}], "28": [{"listen": "ok", "received": 600, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 56}]}, "run": "20261014T003955Z-C9-1-real-ff3360ed"}
+{"first_fault_s": 10.464, "kind": "candidate", "listeners": {"26": [{"listen": "ok", "received": 600, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 34}], "27": [{"listen": "ok", "received": 600, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 34}], "28": [{"listen": "ok", "received": 600, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 34}]}, "run": "20261014T004127Z-C9-1-real-e8381b69"}
+{"first_fault_s": 10.461, "kind": "candidate", "listeners": {"26": [{"listen": "ok", "received": 600, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 23}], "27": [{"listen": "ok", "received": 600, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 23}], "28": [{"listen": "ok", "received": 600, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 23}]}, "run": "20261014T004248Z-C9-1-real-c795a643"}
+{"first_fault_s": 10.455, "kind": "candidate", "listeners": {}, "run": "20261014T004408Z-C9-1-real-9e37cb24"}
+{"first_fault_s": 10.457, "kind": "replay", "listeners": {"26": [{"listen": "ok", "received": 599, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 34}], "27": [{"listen": "ok", "received": 599, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 34}], "28": [{"listen": "ok", "received": 599, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 34}]}, "run": "20261014T004528Z-C9-1-real-e8381b69"}
+{"first_fault_s": 10.486, "kind": "replay", "listeners": {"26": [{"listen": "ok", "received": 600, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 34}], "27": [{"listen": "ok", "received": 599, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 34}], "28": [{"listen": "ok", "received": 600, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 34}]}, "run": "20261014T004650Z-C9-1-real-e8381b69"}
+{"first_fault_s": 10.475, "kind": "replay", "listeners": {"26": [{"listen": "ok", "received": 600, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 34}], "27": [{"listen": "ok", "received": 600, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 34}], "28": [{"listen": "ok", "received": 600, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 34}]}, "run": "20261014T004805Z-C9-1-real-e8381b69"}
+{"first_fault_s": 10.448, "kind": "replay", "listeners": {"26": [{"listen": "ok", "received": 600, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 34}], "27": [{"listen": "ok", "received": 600, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 34}], "28": [{"listen": "ok", "received": 600, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 34}]}, "run": "20261014T004922Z-C9-1-real-e8381b69"}
+{"first_fault_s": 10.463, "kind": "replay", "listeners": {"26": [{"listen": "ok", "received": 600, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 34}], "27": [{"listen": "ok", "received": 600, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 34}], "28": [{"listen": "ok", "received": 600, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 34}]}, "run": "20261014T005039Z-C9-1-real-e8381b69"}
+{"first_fault_s": null, "kind": "candidate", "listeners": {"26": [{"listen": "ok", "received": 5339, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 101}], "27": [{"listen": "ok", "received": 5339, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 101}], "28": [{"listen": "ok", "received": 5339, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 101}]}, "run": "20261014T005149Z-C9-2-real-92ce7a8a"}
+{"first_fault_s": 10.48, "kind": "candidate", "listeners": {"28": [{"listen": "ok", "received": 399, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 34}]}, "run": "20261014T005455Z-C9-1-real-b44524e8"}
+{"first_fault_s": 10.483, "kind": "candidate", "listeners": {"26": [{"listen": "ok", "received": 603, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 101}], "27": [{"listen": "ok", "received": 603, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 101}], "28": [{"listen": "ok", "received": 603, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 101}]}, "run": "20261014T005615Z-C9-2-real-895c7b97"}
+{"first_fault_s": 10.521, "kind": "candidate", "listeners": {"26": [{"listen": "ok", "received": 606, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 101}], "27": [{"listen": "ok", "received": 606, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 101}], "28": [{"listen": "ok", "received": 606, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 101}]}, "run": "20261014T005842Z-C9-2-real-2e3e0658"}
+{"first_fault_s": 10.493, "kind": "candidate", "listeners": {"26": [{"listen": "ok", "received": 603, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 56}], "27": [{"listen": "ok", "received": 603, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 56}], "28": [{"listen": "ok", "received": 603, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 56}]}, "run": "20261014T010112Z-C9-2-real-dc0a42a5"}
+{"first_fault_s": 10.501, "kind": "candidate", "listeners": {"26": [{"listen": "ok", "received": 603, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 34}], "27": [{"listen": "ok", "received": 603, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 34}], "28": [{"listen": "ok", "received": 603, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 34}]}, "run": "20261014T010256Z-C9-2-real-a076c4ad"}
+{"first_fault_s": 10.506, "kind": "candidate", "listeners": {"26": [{"listen": "ok", "received": 606, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 23}], "27": [{"listen": "ok", "received": 606, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 23}], "28": [{"listen": "ok", "received": 606, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 23}]}, "run": "20261014T010416Z-C9-2-real-bd7be537"}
+{"first_fault_s": 10.512, "kind": "candidate", "listeners": {"26": [{"listen": "ok", "received": 603, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 34}], "27": [{"listen": "ok", "received": 603, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 34}], "28": [{"listen": "ok", "received": 603, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 34}]}, "run": "20261014T010524Z-C9-2-real-b8b35825"}
+{"first_fault_s": 10.51, "kind": "replay", "listeners": {"26": [{"listen": "ok", "received": 606, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 34}], "27": [{"listen": "ok", "received": 606, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 34}], "28": [{"listen": "ok", "received": 606, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 34}]}, "run": "20261014T010643Z-C9-2-real-b8b35825"}
+{"first_fault_s": 10.504, "kind": "replay", "listeners": {"26": [{"listen": "ok", "received": 602, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 34}], "27": [{"listen": "ok", "received": 602, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 34}], "28": [{"listen": "ok", "received": 602, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 34}]}, "run": "20261014T010802Z-C9-2-real-b8b35825"}
+{"first_fault_s": 10.509, "kind": "replay", "listeners": {"26": [{"listen": "ok", "received": 605, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 34}], "27": [{"listen": "ok", "received": 605, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 34}], "28": [{"listen": "ok", "received": 605, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 34}]}, "run": "20261014T010921Z-C9-2-real-b8b35825"}
+{"first_fault_s": 10.505, "kind": "replay", "listeners": {"26": [{"listen": "ok", "received": 603, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 34}], "27": [{"listen": "ok", "received": 603, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 34}], "28": [{"listen": "ok", "received": 603, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 34}]}, "run": "20261014T011040Z-C9-2-real-b8b35825"}
+{"first_fault_s": 10.51, "kind": "replay", "listeners": {"26": [{"listen": "ok", "received": 604, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 34}], "27": [{"listen": "ok", "received": 604, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 34}], "28": [{"listen": "ok", "received": 604, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 34}]}, "run": "20261014T011158Z-C9-2-real-b8b35825"}
+{"first_fault_s": null, "kind": "candidate", "listeners": {"26": [{"listen": "ok", "received": 5337, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 101}], "27": [{"listen": "ok", "received": 5337, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 101}], "28": [{"listen": "ok", "received": 5337, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 101}]}, "run": "20261014T011318Z-C9-3-real-cdfaf1c0"}
+{"first_fault_s": 10.485, "kind": "candidate", "listeners": {"26": [{"listen": "ok", "received": 599, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 101}], "27": [{"listen": "ok", "received": 599, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 101}], "28": [{"listen": "ok", "received": 599, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 101}]}, "run": "20261014T011535Z-C9-3-real-f3b05098"}
+{"first_fault_s": 10.478, "kind": "candidate", "listeners": {"26": [{"listen": "ok", "received": 599, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 101}], "27": [{"listen": "ok", "received": 599, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 101}], "28": [{"listen": "ok", "received": 599, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 101}]}, "run": "20261014T011754Z-C9-3-real-b4005998"}
+{"first_fault_s": 10.454, "kind": "candidate", "listeners": {"26": [{"listen": "ok", "received": 600, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 56}], "27": [{"listen": "ok", "received": 600, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 56}], "28": [{"listen": "ok", "received": 600, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 56}]}, "run": "20261014T012012Z-C9-3-real-be2b02c7"}
+{"first_fault_s": 10.462, "kind": "candidate", "listeners": {"26": [{"listen": "ok", "received": 599, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 34}], "27": [{"listen": "ok", "received": 599, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 34}], "28": [{"listen": "ok", "received": 599, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 34}]}, "run": "20261014T012149Z-C9-3-real-52de89e0"}
+{"first_fault_s": 10.475, "kind": "candidate", "listeners": {"26": [{"listen": "ok", "received": 600, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 23}], "27": [{"listen": "ok", "received": 600, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 23}], "28": [{"listen": "ok", "received": 600, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 23}]}, "run": "20261014T012300Z-C9-3-real-f7b83192"}
+{"first_fault_s": 10.444, "kind": "candidate", "listeners": {"26": [{"listen": "ok", "received": 600, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 34}], "27": [{"listen": "ok", "received": 600, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 34}], "28": [{"listen": "ok", "received": 600, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 34}]}, "run": "20261014T012432Z-C9-3-real-92402490"}
+{"first_fault_s": 10.451, "kind": "replay", "listeners": {"26": [{"listen": "ok", "received": 600, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 34}], "27": [{"listen": "ok", "received": 600, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 34}], "28": [{"listen": "ok", "received": 600, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 34}]}, "run": "20261014T012559Z-C9-3-real-52de89e0"}
+{"first_fault_s": 10.488, "kind": "replay", "listeners": {"26": [{"listen": "ok", "received": 600, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 34}], "27": [{"listen": "ok", "received": 600, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 34}], "28": [{"listen": "ok", "received": 600, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 34}]}, "run": "20261014T012726Z-C9-3-real-52de89e0"}
+{"first_fault_s": 10.451, "kind": "replay", "listeners": {"26": [{"listen": "ok", "received": 600, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 34}], "27": [{"listen": "ok", "received": 600, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 34}], "28": [{"listen": "ok", "received": 600, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 34}]}, "run": "20261014T012859Z-C9-3-real-52de89e0"}
+{"first_fault_s": 10.44, "kind": "replay", "listeners": {"26": [{"listen": "ok", "received": 600, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 34}], "27": [{"listen": "ok", "received": 600, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 34}], "28": [{"listen": "ok", "received": 600, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 34}]}, "run": "20261014T013010Z-C9-3-real-52de89e0"}
+{"first_fault_s": 10.437, "kind": "replay", "listeners": {"26": [{"listen": "ok", "received": 600, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 34}], "27": [{"listen": "ok", "received": 600, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 34}], "28": [{"listen": "ok", "received": 600, "received_after_first_fault": 0, "waits_failed": 0, "waits_ok": 34}]}, "run": "20261014T013141Z-C9-3-real-52de89e0"}
+{"summary": {"failed_waits_after_first_fault": 6, "fault_free_runs": 3, "received_after_first_fault": 0, "received_in_fault_free_runs": 48036, "reconnects": 0, "runs": 42, "runs_with_faults": 39, "sessions": 121}}
+== 2. the listener's reconnect path (unit test)
+=== RUN   TestListenerRelistensAfterReconnect
+--- PASS: TestListenerRelistensAfterReconnect (0.80s)
+PASS
+ok  	github.com/CesarManzoCode/commitproof/internal/workload	0.806s
+== 3. code
+-- internal/runner/k5.go:181-222
+// runListener is a W6 listener: LISTEN on every (re)connect, then
+// contiguous waits until end (the workload deadline + ListenerTail).
+func runListener(c map[string]any, rec *recorder, end time.Time, opTimeout time.Duration) error {
+	ci, _ := workload.Int(c["client"])
+	gw, _ := c["gw"].(string)
+	l := &workload.Listener{GW: gw, Timeout: opTimeout}
+	defer l.Close()
+	p := &procs{rec: rec, proc: ci}
+	conn := ci * 1000
+	ctx := context.Background()
+	for time.Now().Before(end) {
+		if !l.Connected() {
+			conn++
+			out, err := p.op(ci, gw, plan.WLNotify, "listen", map[string]any{"conn": conn}, "", func() workload.Outcome {
+				out := l.Listen(ctx, plan.Channel)
+				if out.Type == workload.OK {
+					out.Value = map[string]any{"conn": conn}
+				}
+				return out
+			})
+			if err != nil {
+				return err
+			}
+			if out.Type != workload.OK {
+				time.Sleep(500 * time.Millisecond)
+			}
+			continue
+		}
+		d := min(plan.ListenerWait, time.Until(end))
+		if d <= 0 {
+			break
+		}
+		if _, err := p.op(ci, gw, plan.WLNotify, "wait", map[string]any{"conn": conn}, "", func() workload.Outcome {
+			out := l.Wait(ctx, d)
+			if out.Type == workload.OK {
+				out.Value = map[string]any{"conn": conn, "payloads": out.Value}
+			}
+			return out
+		}); err != nil {
+			return err
+		}
+	}
+-- internal/workload/k5.go:226-296
+// Listen connects and runs `LISTEN <channel>`.
+func (l *Listener) Listen(ctx context.Context, channel string) Outcome {
+	l.Close()
+	s := &Session{GW: l.GW, Timeout: l.Timeout, Port: l.Port, AppName: "commitproof-listener"}
+	ctx, cancel := context.WithTimeout(ctx, l.Timeout)
+	defer cancel()
+	a := Attempt{Autocommit: true, At: PhaseConnect}
+	cfg, err := s.config()
+	if err == nil {
+		cfg.OnNotification = func(_ *pgconn.PgConn, n *pgconn.Notification) {
+			l.mu.Lock()
+			l.pending = append(l.pending, n.Payload)
+			l.mu.Unlock()
+		}
+		l.conn, err = pgx.ConnectConfig(ctx, cfg)
+	}
+	if err == nil {
+		a.At = PhaseStatement
+		if _, err = l.conn.Exec(ctx, "LISTEN "+channel, pgx.QueryExecModeSimpleProtocol); err == nil {
+			a.StatementExecuted = true
+		}
+	}
+	if err != nil {
+		fill(&a, err, ctx)
+		l.Close()
+	}
+	return finishAttempt(a, nil)
+}
+
+// Wait blocks for d and returns the notification payloads received
+// (integers; another payload is reported as an error).
+func (l *Listener) Wait(ctx context.Context, d time.Duration) Outcome {
+	a := Attempt{Autocommit: true, At: PhaseStatement}
+	if !l.Connected() {
+		fill(&a, errors.New("listener not connected"), ctx)
+		a.At, a.Transport = PhaseConnect, true
+		return finishAttempt(a, nil)
+	}
+	wctx, cancel := context.WithTimeout(ctx, d)
+	defer cancel()
+	var err error
+	for {
+		err = l.conn.PgConn().WaitForNotification(wctx)
+		if err != nil {
+			break
+		}
+	}
+	if wctx.Err() != nil && ctx.Err() == nil && !l.conn.IsClosed() {
+		err = nil // the wait's own deadline: a normal end
+	}
+	l.mu.Lock()
+	got := l.pending
+	l.pending = nil
+	l.mu.Unlock()
+	if err != nil {
+		fill(&a, err, ctx)
+		l.Close()
+		return finishAttempt(a, nil)
+	}
+	ids := []any{}
+	for _, p := range got {
+		n, perr := strconv.ParseInt(p, 10, 64)
+		if perr != nil {
+			fill(&a, fmt.Errorf("unexpected notification payload %q", p), ctx)
+			return finishAttempt(a, nil)
+		}
+		ids = append(ids, n)
+	}
+	a.StatementExecuted = true
+	return finishAttempt(a, ids)
+}
+-- .cache/multigres/go/services/multigateway/poolergateway/notification_adapter.go:138-175
+func (s *notificationSession) update(subscribe, unsubscribe []string, unsubscribeAll bool) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if err := s.ensureStreamLocked(); err != nil {
+		return err
+	}
+	if err := s.sendAndWaitLocked(&multipoolerpb.NotificationStreamRequest{
+		SubscribeChannels:   subscribe,
+		UnsubscribeChannels: unsubscribe,
+		UnsubscribeAll:      unsubscribeAll,
+	}); err != nil {
+		// One reconnect/retry covers stale streams after pooler failover or a
+		// transient stream error without adding a second buffering layer.
+		if restartErr := s.restartLocked(); restartErr != nil {
+			return fmt.Errorf("%w; reconnect failed: %w", err, restartErr)
+		}
+		if err = s.sendAndWaitLocked(&multipoolerpb.NotificationStreamRequest{
+			SubscribeChannels:   subscribe,
+			UnsubscribeChannels: unsubscribe,
+			UnsubscribeAll:      unsubscribeAll,
+		}); err != nil {
+			return err
+		}
+	}
+
+	if unsubscribeAll {
+		clear(s.active)
+	}
+	for _, ch := range unsubscribe {
+		delete(s.active, ch)
+	}
+	for _, ch := range subscribe {
+		s.active[ch] = true
+	}
+	return nil
+}
+
+-- .cache/multigres/go/services/multigateway/poolergateway/notification_adapter.go:188-228
+	s.cancel = nil
+	s.stream = nil
+}
+
+func (s *notificationSession) ensureStreamLocked() error {
+	if s.stream != nil {
+		return nil
+	}
+	return s.startLocked()
+}
+
+func (s *notificationSession) restartLocked() error {
+	if s.cancel != nil {
+		s.cancel()
+	}
+	s.cancel = nil
+	s.stream = nil
+	return s.startLocked()
+}
+
+func (s *notificationSession) startLocked() error {
+	client := s.manager.getClient()
+	if client == nil {
+		return errNoClient
+	}
+	ctx, cancel := context.WithCancel(context.Background()) //nolint:gocritic // Session-owned notification stream; no request context available.
+	stream, err := client.NotificationStream(ctx)
+	if err != nil {
+		cancel()
+		return err
+	}
+	s.cancel = cancel
+	s.stream = stream
+	s.ready = make(chan struct{}, 16)
+	s.errs = make(chan error, 1)
+	go s.recvLoop(ctx, stream, s.ready, s.errs)
+
+	if len(s.active) == 0 {
+		return nil
+	}
+	channels := make([]string, 0, len(s.active))
+-- .cache/multigres/go/services/multigateway/poolergateway/notification_adapter.go:255-270
+func (s *notificationSession) recvLoop(
+	ctx context.Context,
+	stream multipoolerpb.MultipoolerService_NotificationStreamClient,
+	ready chan<- struct{},
+	errs chan<- error,
+) {
+	for {
+		resp, err := stream.Recv()
+		if err != nil {
+			if ctx.Err() != nil || errors.Is(err, io.EOF) {
+				return
+			}
+			select {
+			case errs <- err:
+			default:
+			}

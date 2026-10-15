@@ -1,0 +1,2881 @@
+[
+  {
+    "decided_rules_observed": [
+      "1.0",
+      "2.0",
+      "3.0",
+      "4.0"
+    ],
+    "faults": [
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 1204,
+            "non_ok_completions": 1
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 1273,
+            "non_ok_completions": 0
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 1218,
+            "non_ok_completions": 1
+          }
+        },
+        "confirmed_after_inject_ms": 584,
+        "heal_to_healed_ms": 124,
+        "healed_after_inject_ms": 1924,
+        "id": "f0.0",
+        "inject_s": 10.124,
+        "kind": "F7",
+        "leader_at_inject": "n1",
+        "observed_leader_before": "n1@1.0",
+        "rule_at_inject": "1.0",
+        "rules_first_seen_until_next_fault": null,
+        "targets": [
+          "n2"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 1204,
+            "non_ok_completions": 1
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 1273,
+            "non_ok_completions": 0
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 1218,
+            "non_ok_completions": 1
+          }
+        },
+        "confirmed_after_inject_ms": 587,
+        "heal_to_healed_ms": 127,
+        "healed_after_inject_ms": 1197,
+        "id": "f0.1",
+        "inject_s": 10.978,
+        "kind": "F7",
+        "leader_at_inject": "n1",
+        "observed_leader_before": "n1@1.0",
+        "rule_at_inject": "1.0",
+        "rules_first_seen_until_next_fault": null,
+        "targets": [
+          "n3"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 1204,
+            "non_ok_completions": 1
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 1273,
+            "non_ok_completions": 0
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 1218,
+            "non_ok_completions": 1
+          }
+        },
+        "confirmed_after_inject_ms": 90,
+        "heal_to_healed_ms": 1282,
+        "healed_after_inject_ms": 1624,
+        "id": "f0.2",
+        "inject_s": 11.834,
+        "kind": "F2a",
+        "leader_at_inject": "n1",
+        "new_leader_after_inject_ms": 1263,
+        "new_leader_observed": "n2@2.0",
+        "observed_leader_before": "n1@1.0",
+        "restarted_by_itself": true,
+        "rule_at_inject": "1.0",
+        "rules_first_seen_until_next_fault": [
+          "2.0"
+        ],
+        "targets": [
+          "n1"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 3140,
+            "non_ok_completions": 16
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 3161,
+            "non_ok_completions": 5
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 3145,
+            "non_ok_completions": 11
+          }
+        },
+        "confirmed_after_inject_ms": 584,
+        "heal_to_healed_ms": 121,
+        "healed_after_inject_ms": 1927,
+        "id": "f1.0",
+        "inject_s": 28.578,
+        "kind": "F7",
+        "leader_at_inject": "n2",
+        "observed_leader_before": "n2@2.0",
+        "rule_at_inject": "2.0",
+        "rules_first_seen_until_next_fault": null,
+        "targets": [
+          "n1"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 3140,
+            "non_ok_completions": 16
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 3161,
+            "non_ok_completions": 5
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 3145,
+            "non_ok_completions": 11
+          }
+        },
+        "confirmed_after_inject_ms": 586,
+        "heal_to_healed_ms": 118,
+        "healed_after_inject_ms": 1190,
+        "id": "f1.1",
+        "inject_s": 29.433,
+        "kind": "F7",
+        "leader_at_inject": "n2",
+        "observed_leader_before": "n2@2.0",
+        "rule_at_inject": "2.0",
+        "rules_first_seen_until_next_fault": null,
+        "targets": [
+          "n3"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 3140,
+            "non_ok_completions": 16
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 3161,
+            "non_ok_completions": 5
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 3145,
+            "non_ok_completions": 11
+          }
+        },
+        "confirmed_after_inject_ms": 89,
+        "heal_to_healed_ms": 3512,
+        "healed_after_inject_ms": 3843,
+        "id": "f1.2",
+        "inject_s": 30.294,
+        "kind": "F2a",
+        "leader_at_inject": "n2",
+        "new_leader_after_inject_ms": 3802,
+        "new_leader_observed": "n3@3.0",
+        "observed_leader_before": "n2@2.0",
+        "restarted_by_itself": true,
+        "rule_at_inject": "2.0",
+        "rules_first_seen_until_next_fault": [
+          "3.0"
+        ],
+        "targets": [
+          "n2"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 2454,
+            "non_ok_completions": 9
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 2459,
+            "non_ok_completions": 3
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 2465,
+            "non_ok_completions": 6
+          }
+        },
+        "confirmed_after_inject_ms": 585,
+        "heal_to_healed_ms": 120,
+        "healed_after_inject_ms": 1940,
+        "id": "f2.0",
+        "inject_s": 49.285,
+        "kind": "F7",
+        "leader_at_inject": "n3",
+        "observed_leader_before": "n3@3.0",
+        "rule_at_inject": "3.0",
+        "rules_first_seen_until_next_fault": null,
+        "targets": [
+          "n1"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 2454,
+            "non_ok_completions": 9
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 2459,
+            "non_ok_completions": 3
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 2465,
+            "non_ok_completions": 6
+          }
+        },
+        "confirmed_after_inject_ms": 588,
+        "heal_to_healed_ms": 122,
+        "healed_after_inject_ms": 1202,
+        "id": "f2.1",
+        "inject_s": 50.146,
+        "kind": "F7",
+        "leader_at_inject": "n3",
+        "observed_leader_before": "n3@3.0",
+        "rule_at_inject": "3.0",
+        "rules_first_seen_until_next_fault": null,
+        "targets": [
+          "n2"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 2454,
+            "non_ok_completions": 9
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 2459,
+            "non_ok_completions": 3
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 2465,
+            "non_ok_completions": 6
+          }
+        },
+        "confirmed_after_inject_ms": 95,
+        "heal_to_healed_ms": 3402,
+        "healed_after_inject_ms": 3741,
+        "id": "f2.2",
+        "inject_s": 51.009,
+        "kind": "F2a",
+        "leader_at_inject": "n3",
+        "new_leader_after_inject_ms": 3068,
+        "new_leader_observed": "n2@4.0",
+        "observed_leader_before": "n3@3.0",
+        "restarted_by_itself": true,
+        "rule_at_inject": "3.0",
+        "rules_first_seen_until_next_fault": [
+          "4.0"
+        ],
+        "targets": [
+          "n3"
+        ]
+      }
+    ],
+    "run_id": "20261015T015122Z-D3p-1-M3-84dccb5a",
+    "seal_root": "1d00da75495e946c75dd2998c43501de1e4f6c30e5a846bc4621f8c729ed573b"
+  },
+  {
+    "decided_rules_observed": [
+      "1.0",
+      "2.0",
+      "4.0"
+    ],
+    "faults": [
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 1648,
+            "non_ok_completions": 1
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 1705,
+            "non_ok_completions": 1
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 1703,
+            "non_ok_completions": 2
+          }
+        },
+        "confirmed_after_inject_ms": 589,
+        "heal_to_healed_ms": 135,
+        "healed_after_inject_ms": 1975,
+        "id": "f0.0",
+        "inject_s": 10.144,
+        "kind": "F7",
+        "leader_at_inject": "n1",
+        "observed_leader_before": "n1@1.0",
+        "rule_at_inject": "1.0",
+        "rules_first_seen_until_next_fault": null,
+        "targets": [
+          "n2"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 1648,
+            "non_ok_completions": 1
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 1705,
+            "non_ok_completions": 1
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 1703,
+            "non_ok_completions": 2
+          }
+        },
+        "confirmed_after_inject_ms": 602,
+        "heal_to_healed_ms": 126,
+        "healed_after_inject_ms": 1230,
+        "id": "f0.1",
+        "inject_s": 11.017,
+        "kind": "F7",
+        "leader_at_inject": "n1",
+        "observed_leader_before": "n1@1.0",
+        "rule_at_inject": "1.0",
+        "rules_first_seen_until_next_fault": null,
+        "targets": [
+          "n3"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 1648,
+            "non_ok_completions": 1
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 1705,
+            "non_ok_completions": 1
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 1703,
+            "non_ok_completions": 2
+          }
+        },
+        "confirmed_after_inject_ms": 91,
+        "heal_to_healed_ms": 5666,
+        "healed_after_inject_ms": 6020,
+        "id": "f0.2",
+        "inject_s": 11.893,
+        "kind": "F2a",
+        "leader_at_inject": "n1",
+        "new_leader_after_inject_ms": 2185,
+        "new_leader_observed": "n3@2.0",
+        "observed_leader_before": "n1@1.0",
+        "restarted_by_itself": true,
+        "rule_at_inject": "1.0",
+        "rules_first_seen_until_next_fault": [
+          "2.0"
+        ],
+        "targets": [
+          "n1"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 10196,
+            "non_ok_completions": 651
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 10194,
+            "non_ok_completions": 164
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 10200,
+            "non_ok_completions": 487
+          }
+        },
+        "confirmed_after_inject_ms": 591,
+        "heal_to_healed_ms": 122,
+        "healed_after_inject_ms": 1920,
+        "id": "f1.0",
+        "inject_s": 33.035,
+        "kind": "F7",
+        "leader_at_inject": "n3",
+        "observed_leader_before": "n3@2.0",
+        "rule_at_inject": "2.0",
+        "rules_first_seen_until_next_fault": null,
+        "targets": [
+          "n1"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 10322,
+            "non_ok_completions": 662
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 10321,
+            "non_ok_completions": 167
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 10326,
+            "non_ok_completions": 495
+          }
+        },
+        "confirmed_after_inject_ms": 584,
+        "heal_to_healed_ms": 126,
+        "healed_after_inject_ms": 1191,
+        "id": "f1.1",
+        "inject_s": 33.89,
+        "kind": "F7",
+        "leader_at_inject": "n3",
+        "observed_leader_before": "n3@2.0",
+        "rule_at_inject": "2.0",
+        "rules_first_seen_until_next_fault": null,
+        "targets": [
+          "n2"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 12685,
+            "non_ok_completions": 849
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 12684,
+            "non_ok_completions": 214
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 12689,
+            "non_ok_completions": 635
+          }
+        },
+        "confirmed_after_inject_ms": 88,
+        "heal_to_healed_ms": 2362,
+        "healed_after_inject_ms": 2700,
+        "id": "f1.2",
+        "inject_s": 34.744,
+        "kind": "F2a",
+        "leader_at_inject": "n3",
+        "new_leader_after_inject_ms": 526,
+        "new_leader_observed": "n3@2.0",
+        "observed_leader_before": "n1@1.0",
+        "restarted_by_itself": true,
+        "rule_at_inject": "2.0",
+        "rules_first_seen_until_next_fault": null,
+        "targets": [
+          "n3"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 12903,
+            "non_ok_completions": 1017
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 12903,
+            "non_ok_completions": 255
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 12903,
+            "non_ok_completions": 762
+          }
+        },
+        "confirmed_after_inject_ms": 584,
+        "heal_to_healed_ms": 123,
+        "healed_after_inject_ms": 1903,
+        "id": "f2.0",
+        "inject_s": 52.564,
+        "kind": "F7",
+        "leader_at_inject": "n3",
+        "observed_leader_before": "n3@2.0",
+        "rule_at_inject": "2.0",
+        "rules_first_seen_until_next_fault": null,
+        "targets": [
+          "n1"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 12179,
+            "non_ok_completions": 958
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 12179,
+            "non_ok_completions": 240
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 12179,
+            "non_ok_completions": 718
+          }
+        },
+        "confirmed_after_inject_ms": 582,
+        "heal_to_healed_ms": 120,
+        "healed_after_inject_ms": 1179,
+        "id": "f2.1",
+        "inject_s": 53.408,
+        "kind": "F7",
+        "leader_at_inject": "n3",
+        "new_leader_after_inject_ms": 668,
+        "new_leader_observed": "n3@2.0",
+        "observed_leader_before": "n1@1.0",
+        "rule_at_inject": "2.0",
+        "rules_first_seen_until_next_fault": null,
+        "targets": [
+          "n2"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 16902,
+            "non_ok_completions": 1331
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 16902,
+            "non_ok_completions": 334
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 16902,
+            "non_ok_completions": 997
+          }
+        },
+        "confirmed_after_inject_ms": 85,
+        "heal_to_healed_ms": 5573,
+        "healed_after_inject_ms": 5902,
+        "id": "f2.2",
+        "inject_s": 54.258,
+        "kind": "F2a",
+        "leader_at_inject": "n3",
+        "new_leader_after_inject_ms": 1011,
+        "new_leader_observed": "n3@2.0",
+        "observed_leader_before": "n1@1.0",
+        "restarted_by_itself": true,
+        "rule_at_inject": "2.0",
+        "rules_first_seen_until_next_fault": [
+          "4.0"
+        ],
+        "targets": [
+          "n3"
+        ]
+      }
+    ],
+    "run_id": "20261015T015445Z-D3p-2-M3-f75f6098",
+    "seal_root": "7adddfd358e7e33204c3d779ead65d57145bd8a24b5bf9cd54bc60ed312f19cb"
+  },
+  {
+    "decided_rules_observed": [
+      "1.0",
+      "2.0",
+      "3.0",
+      "4.0"
+    ],
+    "faults": [
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 5190,
+            "non_ok_completions": 1
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 5201,
+            "non_ok_completions": 1
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 5234,
+            "non_ok_completions": 1
+          }
+        },
+        "confirmed_after_inject_ms": 584,
+        "heal_to_healed_ms": 126,
+        "healed_after_inject_ms": 1938,
+        "id": "f0.0",
+        "inject_s": 10.128,
+        "kind": "F7",
+        "leader_at_inject": "n1",
+        "observed_leader_before": "n1@1.0",
+        "rule_at_inject": "1.0",
+        "rules_first_seen_until_next_fault": null,
+        "targets": [
+          "n2"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 5190,
+            "non_ok_completions": 1
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 5201,
+            "non_ok_completions": 1
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 5234,
+            "non_ok_completions": 1
+          }
+        },
+        "confirmed_after_inject_ms": 592,
+        "heal_to_healed_ms": 125,
+        "healed_after_inject_ms": 1205,
+        "id": "f0.1",
+        "inject_s": 10.986,
+        "kind": "F7",
+        "leader_at_inject": "n1",
+        "observed_leader_before": "n1@1.0",
+        "rule_at_inject": "1.0",
+        "rules_first_seen_until_next_fault": null,
+        "targets": [
+          "n3"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 5190,
+            "non_ok_completions": 1
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 5201,
+            "non_ok_completions": 1
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 5234,
+            "non_ok_completions": 1
+          }
+        },
+        "confirmed_after_inject_ms": 89,
+        "heal_to_healed_ms": 5658,
+        "healed_after_inject_ms": 6000,
+        "id": "f0.2",
+        "inject_s": 11.85,
+        "kind": "F2a",
+        "leader_at_inject": "n1",
+        "new_leader_after_inject_ms": 5251,
+        "new_leader_observed": "n2@2.0",
+        "observed_leader_before": "n1@1.0",
+        "restarted_by_itself": true,
+        "rule_at_inject": "1.0",
+        "rules_first_seen_until_next_fault": [
+          "2.0"
+        ],
+        "targets": [
+          "n1"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 6861,
+            "non_ok_completions": 359
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 6865,
+            "non_ok_completions": 91
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 6848,
+            "non_ok_completions": 268
+          }
+        },
+        "confirmed_after_inject_ms": 587,
+        "heal_to_healed_ms": 117,
+        "healed_after_inject_ms": 1919,
+        "id": "f1.0",
+        "inject_s": 32.969,
+        "kind": "F7",
+        "leader_at_inject": "n2",
+        "observed_leader_before": "n2@2.0",
+        "rule_at_inject": "2.0",
+        "rules_first_seen_until_next_fault": null,
+        "targets": [
+          "n1"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 6861,
+            "non_ok_completions": 359
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 6865,
+            "non_ok_completions": 91
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 6848,
+            "non_ok_completions": 268
+          }
+        },
+        "confirmed_after_inject_ms": 585,
+        "heal_to_healed_ms": 120,
+        "healed_after_inject_ms": 1183,
+        "id": "f1.1",
+        "inject_s": 33.825,
+        "kind": "F7",
+        "leader_at_inject": "n2",
+        "observed_leader_before": "n2@2.0",
+        "rule_at_inject": "2.0",
+        "rules_first_seen_until_next_fault": null,
+        "targets": [
+          "n3"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 6861,
+            "non_ok_completions": 359
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 6865,
+            "non_ok_completions": 91
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 6848,
+            "non_ok_completions": 268
+          }
+        },
+        "confirmed_after_inject_ms": 87,
+        "heal_to_healed_ms": 2916,
+        "healed_after_inject_ms": 3241,
+        "id": "f1.2",
+        "inject_s": 34.683,
+        "kind": "F2a",
+        "leader_at_inject": "n2",
+        "new_leader_after_inject_ms": 7399,
+        "new_leader_observed": "n3@3.0",
+        "observed_leader_before": "n2@2.0",
+        "restarted_by_itself": true,
+        "rule_at_inject": "2.0",
+        "rules_first_seen_until_next_fault": [
+          "3.0"
+        ],
+        "targets": [
+          "n2"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 1869,
+            "non_ok_completions": 6
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 1876,
+            "non_ok_completions": 2
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 1863,
+            "non_ok_completions": 4
+          }
+        },
+        "confirmed_after_inject_ms": 592,
+        "heal_to_healed_ms": 120,
+        "healed_after_inject_ms": 1938,
+        "id": "f2.0",
+        "inject_s": 53.044,
+        "kind": "F7",
+        "leader_at_inject": "n3",
+        "observed_leader_before": "n3@3.0",
+        "rule_at_inject": "3.0",
+        "rules_first_seen_until_next_fault": null,
+        "targets": [
+          "n1"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 1869,
+            "non_ok_completions": 6
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 1876,
+            "non_ok_completions": 2
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 1863,
+            "non_ok_completions": 4
+          }
+        },
+        "confirmed_after_inject_ms": 587,
+        "heal_to_healed_ms": 127,
+        "healed_after_inject_ms": 1196,
+        "id": "f2.1",
+        "inject_s": 53.913,
+        "kind": "F7",
+        "leader_at_inject": "n3",
+        "observed_leader_before": "n3@3.0",
+        "rule_at_inject": "3.0",
+        "rules_first_seen_until_next_fault": null,
+        "targets": [
+          "n2"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 1869,
+            "non_ok_completions": 6
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 1876,
+            "non_ok_completions": 2
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 1863,
+            "non_ok_completions": 4
+          }
+        },
+        "confirmed_after_inject_ms": 90,
+        "heal_to_healed_ms": 4495,
+        "healed_after_inject_ms": 4833,
+        "id": "f2.2",
+        "inject_s": 54.772,
+        "kind": "F2a",
+        "leader_at_inject": "n3",
+        "new_leader_after_inject_ms": 2307,
+        "new_leader_observed": "n1@4.0",
+        "observed_leader_before": "n3@3.0",
+        "restarted_by_itself": true,
+        "rule_at_inject": "3.0",
+        "rules_first_seen_until_next_fault": [
+          "4.0"
+        ],
+        "targets": [
+          "n3"
+        ]
+      }
+    ],
+    "run_id": "20261015T015811Z-D3p-3-M3-bc177144",
+    "seal_root": "3293a67788d675a1fd426151d9d49d4d657db9bf276fdaa6b517a847b972ce55"
+  },
+  {
+    "decided_rules_observed": [
+      "1.0",
+      "2.0",
+      "3.0",
+      "4.0"
+    ],
+    "faults": [
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 3185,
+            "non_ok_completions": 32
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 3191,
+            "non_ok_completions": 9
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 3187,
+            "non_ok_completions": 24
+          }
+        },
+        "confirmed_after_inject_ms": 585,
+        "heal_to_healed_ms": 125,
+        "healed_after_inject_ms": 1924,
+        "id": "f0.0",
+        "inject_s": 10.129,
+        "kind": "F7",
+        "leader_at_inject": "n1",
+        "observed_leader_before": "n1@1.0",
+        "rule_at_inject": "1.0",
+        "rules_first_seen_until_next_fault": null,
+        "targets": [
+          "n2"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 3185,
+            "non_ok_completions": 32
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 3191,
+            "non_ok_completions": 9
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 3187,
+            "non_ok_completions": 24
+          }
+        },
+        "confirmed_after_inject_ms": 586,
+        "heal_to_healed_ms": 121,
+        "healed_after_inject_ms": 1192,
+        "id": "f0.1",
+        "inject_s": 10.982,
+        "kind": "F7",
+        "leader_at_inject": "n1",
+        "observed_leader_before": "n1@1.0",
+        "rule_at_inject": "1.0",
+        "rules_first_seen_until_next_fault": null,
+        "targets": [
+          "n3"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 3185,
+            "non_ok_completions": 32
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 3191,
+            "non_ok_completions": 9
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 3187,
+            "non_ok_completions": 24
+          }
+        },
+        "confirmed_after_inject_ms": 90,
+        "heal_to_healed_ms": 3462,
+        "healed_after_inject_ms": 3800,
+        "id": "f0.2",
+        "inject_s": 11.837,
+        "kind": "F2a",
+        "leader_at_inject": "n1",
+        "new_leader_after_inject_ms": 3259,
+        "new_leader_observed": "n3@2.0",
+        "observed_leader_before": "n1@1.0",
+        "restarted_by_itself": true,
+        "rule_at_inject": "1.0",
+        "rules_first_seen_until_next_fault": [
+          "2.0"
+        ],
+        "targets": [
+          "n1"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 7477,
+            "non_ok_completions": 236
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 7473,
+            "non_ok_completions": 61
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 7470,
+            "non_ok_completions": 176
+          }
+        },
+        "confirmed_after_inject_ms": 586,
+        "heal_to_healed_ms": 120,
+        "healed_after_inject_ms": 1917,
+        "id": "f1.0",
+        "inject_s": 30.756,
+        "kind": "F7",
+        "leader_at_inject": "n3",
+        "observed_leader_before": "n3@2.0",
+        "rule_at_inject": "2.0",
+        "rules_first_seen_until_next_fault": null,
+        "targets": [
+          "n1"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 7477,
+            "non_ok_completions": 236
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 7473,
+            "non_ok_completions": 61
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 7470,
+            "non_ok_completions": 176
+          }
+        },
+        "confirmed_after_inject_ms": 584,
+        "heal_to_healed_ms": 124,
+        "healed_after_inject_ms": 1188,
+        "id": "f1.1",
+        "inject_s": 31.61,
+        "kind": "F7",
+        "leader_at_inject": "n3",
+        "observed_leader_before": "n3@2.0",
+        "rule_at_inject": "2.0",
+        "rules_first_seen_until_next_fault": null,
+        "targets": [
+          "n2"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 7477,
+            "non_ok_completions": 236
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 7473,
+            "non_ok_completions": 61
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 7470,
+            "non_ok_completions": 176
+          }
+        },
+        "confirmed_after_inject_ms": 88,
+        "heal_to_healed_ms": 5095,
+        "healed_after_inject_ms": 5427,
+        "id": "f1.2",
+        "inject_s": 32.465,
+        "kind": "F2a",
+        "leader_at_inject": "n3",
+        "new_leader_after_inject_ms": 7612,
+        "new_leader_observed": "n2@3.0",
+        "observed_leader_before": "n3@2.0",
+        "restarted_by_itself": true,
+        "rule_at_inject": "2.0",
+        "rules_first_seen_until_next_fault": [
+          "3.0"
+        ],
+        "targets": [
+          "n3"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 2883,
+            "non_ok_completions": 194
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 2915,
+            "non_ok_completions": 49
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 2884,
+            "non_ok_completions": 145
+          }
+        },
+        "confirmed_after_inject_ms": 593,
+        "heal_to_healed_ms": 122,
+        "healed_after_inject_ms": 1937,
+        "id": "f2.0",
+        "inject_s": 53.014,
+        "kind": "F7",
+        "leader_at_inject": "n2",
+        "observed_leader_before": "n2@3.0",
+        "rule_at_inject": "3.0",
+        "rules_first_seen_until_next_fault": null,
+        "targets": [
+          "n1"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 2883,
+            "non_ok_completions": 194
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 2915,
+            "non_ok_completions": 49
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 2884,
+            "non_ok_completions": 145
+          }
+        },
+        "confirmed_after_inject_ms": 584,
+        "heal_to_healed_ms": 138,
+        "healed_after_inject_ms": 1212,
+        "id": "f2.1",
+        "inject_s": 53.878,
+        "kind": "F7",
+        "leader_at_inject": "n2",
+        "observed_leader_before": "n2@3.0",
+        "rule_at_inject": "3.0",
+        "rules_first_seen_until_next_fault": null,
+        "targets": [
+          "n3"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 2883,
+            "non_ok_completions": 194
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 2915,
+            "non_ok_completions": 49
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 2884,
+            "non_ok_completions": 145
+          }
+        },
+        "confirmed_after_inject_ms": 90,
+        "heal_to_healed_ms": 734,
+        "healed_after_inject_ms": 1086,
+        "id": "f2.2",
+        "inject_s": 54.739,
+        "kind": "F2a",
+        "leader_at_inject": "n2",
+        "new_leader_after_inject_ms": 3340,
+        "new_leader_observed": "n3@4.0",
+        "observed_leader_before": "n2@3.0",
+        "restarted_by_itself": true,
+        "rule_at_inject": "3.0",
+        "rules_first_seen_until_next_fault": [
+          "4.0"
+        ],
+        "targets": [
+          "n2"
+        ]
+      }
+    ],
+    "run_id": "20261015T020135Z-D3p-4-M3-c83b3282",
+    "seal_root": "13a8ceca7022952d07da26e9dee527b1430e4924b7b8c19f2461e92c996fe1ee"
+  },
+  {
+    "decided_rules_observed": [
+      "1.0",
+      "2.0",
+      "3.0",
+      "4.0"
+    ],
+    "faults": [
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 4242,
+            "non_ok_completions": 1
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 4302,
+            "non_ok_completions": 0
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 4239,
+            "non_ok_completions": 1
+          }
+        },
+        "confirmed_after_inject_ms": 587,
+        "heal_to_healed_ms": 124,
+        "healed_after_inject_ms": 1928,
+        "id": "f0.0",
+        "inject_s": 10.125,
+        "kind": "F7",
+        "leader_at_inject": "n1",
+        "observed_leader_before": "n1@1.0",
+        "rule_at_inject": "1.0",
+        "rules_first_seen_until_next_fault": null,
+        "targets": [
+          "n2"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 4242,
+            "non_ok_completions": 1
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 4302,
+            "non_ok_completions": 0
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 4239,
+            "non_ok_completions": 1
+          }
+        },
+        "confirmed_after_inject_ms": 588,
+        "heal_to_healed_ms": 121,
+        "healed_after_inject_ms": 1194,
+        "id": "f0.1",
+        "inject_s": 10.981,
+        "kind": "F7",
+        "leader_at_inject": "n1",
+        "observed_leader_before": "n1@1.0",
+        "rule_at_inject": "1.0",
+        "rules_first_seen_until_next_fault": null,
+        "targets": [
+          "n3"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 4242,
+            "non_ok_completions": 1
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 4302,
+            "non_ok_completions": 0
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 4239,
+            "non_ok_completions": 1
+          }
+        },
+        "confirmed_after_inject_ms": 90,
+        "heal_to_healed_ms": 3401,
+        "healed_after_inject_ms": 3738,
+        "id": "f0.2",
+        "inject_s": 11.838,
+        "kind": "F2a",
+        "leader_at_inject": "n1",
+        "new_leader_after_inject_ms": 4252,
+        "new_leader_observed": "n3@2.0",
+        "observed_leader_before": "n1@1.0",
+        "restarted_by_itself": true,
+        "rule_at_inject": "1.0",
+        "rules_first_seen_until_next_fault": [
+          "2.0"
+        ],
+        "targets": [
+          "n1"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 6531,
+            "non_ok_completions": 164
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 6563,
+            "non_ok_completions": 43
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 6534,
+            "non_ok_completions": 121
+          }
+        },
+        "confirmed_after_inject_ms": 585,
+        "heal_to_healed_ms": 120,
+        "healed_after_inject_ms": 1921,
+        "id": "f1.0",
+        "inject_s": 30.696,
+        "kind": "F7",
+        "leader_at_inject": "n3",
+        "observed_leader_before": "n3@2.0",
+        "rule_at_inject": "2.0",
+        "rules_first_seen_until_next_fault": null,
+        "targets": [
+          "n1"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 6531,
+            "non_ok_completions": 164
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 6563,
+            "non_ok_completions": 43
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 6534,
+            "non_ok_completions": 121
+          }
+        },
+        "confirmed_after_inject_ms": 587,
+        "heal_to_healed_ms": 120,
+        "healed_after_inject_ms": 1189,
+        "id": "f1.1",
+        "inject_s": 31.548,
+        "kind": "F7",
+        "leader_at_inject": "n3",
+        "observed_leader_before": "n3@2.0",
+        "rule_at_inject": "2.0",
+        "rules_first_seen_until_next_fault": null,
+        "targets": [
+          "n2"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 6531,
+            "non_ok_completions": 164
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 6563,
+            "non_ok_completions": 43
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 6534,
+            "non_ok_completions": 121
+          }
+        },
+        "confirmed_after_inject_ms": 89,
+        "heal_to_healed_ms": 5092,
+        "healed_after_inject_ms": 5423,
+        "id": "f1.2",
+        "inject_s": 32.407,
+        "kind": "F2a",
+        "leader_at_inject": "n3",
+        "new_leader_after_inject_ms": 6690,
+        "new_leader_observed": "n2@3.0",
+        "observed_leader_before": "n3@2.0",
+        "restarted_by_itself": true,
+        "rule_at_inject": "2.0",
+        "rules_first_seen_until_next_fault": [
+          "3.0"
+        ],
+        "targets": [
+          "n3"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 1437,
+            "non_ok_completions": 6
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 1433,
+            "non_ok_completions": 2
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 1459,
+            "non_ok_completions": 4
+          }
+        },
+        "confirmed_after_inject_ms": 587,
+        "heal_to_healed_ms": 120,
+        "healed_after_inject_ms": 1919,
+        "id": "f2.0",
+        "inject_s": 52.949,
+        "kind": "F7",
+        "leader_at_inject": "n2",
+        "observed_leader_before": "n2@3.0",
+        "rule_at_inject": "3.0",
+        "rules_first_seen_until_next_fault": null,
+        "targets": [
+          "n1"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 1437,
+            "non_ok_completions": 6
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 1433,
+            "non_ok_completions": 2
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 1459,
+            "non_ok_completions": 4
+          }
+        },
+        "confirmed_after_inject_ms": 584,
+        "heal_to_healed_ms": 123,
+        "healed_after_inject_ms": 1187,
+        "id": "f2.1",
+        "inject_s": 53.805,
+        "kind": "F7",
+        "leader_at_inject": "n2",
+        "observed_leader_before": "n2@3.0",
+        "rule_at_inject": "3.0",
+        "rules_first_seen_until_next_fault": null,
+        "targets": [
+          "n3"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 1437,
+            "non_ok_completions": 6
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 1433,
+            "non_ok_completions": 2
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 1459,
+            "non_ok_completions": 4
+          }
+        },
+        "confirmed_after_inject_ms": 88,
+        "heal_to_healed_ms": 5107,
+        "healed_after_inject_ms": 5439,
+        "id": "f2.2",
+        "inject_s": 54.66,
+        "kind": "F2a",
+        "leader_at_inject": "n2",
+        "new_leader_after_inject_ms": 2420,
+        "new_leader_observed": "n1@4.0",
+        "observed_leader_before": "n2@3.0",
+        "restarted_by_itself": true,
+        "rule_at_inject": "3.0",
+        "rules_first_seen_until_next_fault": [
+          "4.0"
+        ],
+        "targets": [
+          "n2"
+        ]
+      }
+    ],
+    "run_id": "20261015T020452Z-D3p-5-M3-87fb0b83",
+    "seal_root": "fc9eab66a2e859f7dea5430784b4931fa2dbdbd4add3960932d6b4cb4f29bb12"
+  },
+  {
+    "decided_rules_observed": [
+      "1.0",
+      "2.0",
+      "4.0",
+      "6.0"
+    ],
+    "faults": [
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 5216,
+            "non_ok_completions": 17
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 5247,
+            "non_ok_completions": 5
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 5220,
+            "non_ok_completions": 12
+          }
+        },
+        "confirmed_after_inject_ms": 584,
+        "heal_to_healed_ms": 121,
+        "healed_after_inject_ms": 1920,
+        "id": "f0.0",
+        "inject_s": 10.126,
+        "kind": "F7",
+        "leader_at_inject": "n1",
+        "observed_leader_before": "n1@1.0",
+        "rule_at_inject": "1.0",
+        "rules_first_seen_until_next_fault": null,
+        "targets": [
+          "n2"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 5216,
+            "non_ok_completions": 17
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 5247,
+            "non_ok_completions": 5
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 5220,
+            "non_ok_completions": 12
+          }
+        },
+        "confirmed_after_inject_ms": 587,
+        "heal_to_healed_ms": 122,
+        "healed_after_inject_ms": 1191,
+        "id": "f0.1",
+        "inject_s": 10.977,
+        "kind": "F7",
+        "leader_at_inject": "n1",
+        "observed_leader_before": "n1@1.0",
+        "rule_at_inject": "1.0",
+        "rules_first_seen_until_next_fault": null,
+        "targets": [
+          "n3"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 5216,
+            "non_ok_completions": 17
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 5247,
+            "non_ok_completions": 5
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 5220,
+            "non_ok_completions": 12
+          }
+        },
+        "confirmed_after_inject_ms": 89,
+        "heal_to_healed_ms": 5658,
+        "healed_after_inject_ms": 5992,
+        "id": "f0.2",
+        "inject_s": 11.834,
+        "kind": "F2a",
+        "leader_at_inject": "n1",
+        "new_leader_after_inject_ms": 5265,
+        "new_leader_observed": "n3@2.0",
+        "observed_leader_before": "n1@1.0",
+        "restarted_by_itself": true,
+        "rule_at_inject": "1.0",
+        "rules_first_seen_until_next_fault": [
+          "2.0"
+        ],
+        "targets": [
+          "n1"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 10179,
+            "non_ok_completions": 653
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 10176,
+            "non_ok_completions": 131
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 10177,
+            "non_ok_completions": 386
+          }
+        },
+        "confirmed_after_inject_ms": 585,
+        "heal_to_healed_ms": 120,
+        "healed_after_inject_ms": 1923,
+        "id": "f1.0",
+        "inject_s": 32.945,
+        "kind": "F7",
+        "leader_at_inject": "n3",
+        "observed_leader_before": "n3@2.0",
+        "rule_at_inject": "2.0",
+        "rules_first_seen_until_next_fault": null,
+        "targets": [
+          "n1"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 10300,
+            "non_ok_completions": 663
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 10296,
+            "non_ok_completions": 134
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 10297,
+            "non_ok_completions": 394
+          }
+        },
+        "confirmed_after_inject_ms": 585,
+        "heal_to_healed_ms": 120,
+        "healed_after_inject_ms": 1185,
+        "id": "f1.1",
+        "inject_s": 33.802,
+        "kind": "F7",
+        "leader_at_inject": "n3",
+        "observed_leader_before": "n3@2.0",
+        "rule_at_inject": "2.0",
+        "rules_first_seen_until_next_fault": null,
+        "targets": [
+          "n2"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 12939,
+            "non_ok_completions": 869
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 12935,
+            "non_ok_completions": 185
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 12935,
+            "non_ok_completions": 547
+          }
+        },
+        "confirmed_after_inject_ms": 89,
+        "heal_to_healed_ms": 3937,
+        "healed_after_inject_ms": 4268,
+        "id": "f1.2",
+        "inject_s": 34.658,
+        "kind": "F2a",
+        "leader_at_inject": "n3",
+        "new_leader_after_inject_ms": 13429,
+        "new_leader_observed": "n1@4.0",
+        "observed_leader_before": "n3@2.0",
+        "restarted_by_itself": true,
+        "rule_at_inject": "2.0",
+        "rules_first_seen_until_next_fault": [
+          "4.0"
+        ],
+        "targets": [
+          "n3"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 10212,
+            "non_ok_completions": 609
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 10273,
+            "non_ok_completions": 154
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 10211,
+            "non_ok_completions": 455
+          }
+        },
+        "confirmed_after_inject_ms": 590,
+        "heal_to_healed_ms": 120,
+        "healed_after_inject_ms": 1925,
+        "id": "f2.0",
+        "inject_s": 54.046,
+        "kind": "F7",
+        "leader_at_inject": "n1",
+        "observed_leader_before": "n1@4.0",
+        "rule_at_inject": "4.0",
+        "rules_first_seen_until_next_fault": null,
+        "targets": [
+          "n2"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 10345,
+            "non_ok_completions": 620
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 10406,
+            "non_ok_completions": 157
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 10343,
+            "non_ok_completions": 463
+          }
+        },
+        "confirmed_after_inject_ms": 583,
+        "heal_to_healed_ms": 132,
+        "healed_after_inject_ms": 1199,
+        "id": "f2.1",
+        "inject_s": 54.906,
+        "kind": "F7",
+        "leader_at_inject": "n1",
+        "observed_leader_before": "n1@4.0",
+        "rule_at_inject": "4.0",
+        "rules_first_seen_until_next_fault": null,
+        "targets": [
+          "n3"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 13246,
+            "non_ok_completions": 848
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 13307,
+            "non_ok_completions": 214
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 13245,
+            "non_ok_completions": 634
+          }
+        },
+        "confirmed_after_inject_ms": 90,
+        "heal_to_healed_ms": 2901,
+        "healed_after_inject_ms": 3245,
+        "id": "f2.2",
+        "inject_s": 55.76,
+        "kind": "F2a",
+        "leader_at_inject": "n1",
+        "new_leader_after_inject_ms": 15323,
+        "new_leader_observed": "n2@6.0",
+        "observed_leader_before": "n1@4.0",
+        "restarted_by_itself": true,
+        "rule_at_inject": "4.0",
+        "rules_first_seen_until_next_fault": [
+          "6.0"
+        ],
+        "targets": [
+          "n1"
+        ]
+      }
+    ],
+    "run_id": "20261015T020809Z-D3p-1-real-84dccb5a",
+    "seal_root": "861c4906d711d3ab613b6841ab49e5ea101c864195d863663adb735136486dc4"
+  },
+  {
+    "decided_rules_observed": [
+      "1.0",
+      "2.0",
+      "3.0",
+      "4.0"
+    ],
+    "faults": [
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 6307,
+            "non_ok_completions": 3
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 6306,
+            "non_ok_completions": 1
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 6316,
+            "non_ok_completions": 2
+          }
+        },
+        "confirmed_after_inject_ms": 584,
+        "heal_to_healed_ms": 122,
+        "healed_after_inject_ms": 1921,
+        "id": "f0.0",
+        "inject_s": 10.125,
+        "kind": "F7",
+        "leader_at_inject": "n1",
+        "observed_leader_before": "n1@1.0",
+        "rule_at_inject": "1.0",
+        "rules_first_seen_until_next_fault": null,
+        "targets": [
+          "n2"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 6307,
+            "non_ok_completions": 3
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 6306,
+            "non_ok_completions": 1
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 6316,
+            "non_ok_completions": 2
+          }
+        },
+        "confirmed_after_inject_ms": 585,
+        "heal_to_healed_ms": 121,
+        "healed_after_inject_ms": 1188,
+        "id": "f0.1",
+        "inject_s": 10.98,
+        "kind": "F7",
+        "leader_at_inject": "n1",
+        "observed_leader_before": "n1@1.0",
+        "rule_at_inject": "1.0",
+        "rules_first_seen_until_next_fault": null,
+        "targets": [
+          "n3"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 6307,
+            "non_ok_completions": 3
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 6306,
+            "non_ok_completions": 1
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 6316,
+            "non_ok_completions": 2
+          }
+        },
+        "confirmed_after_inject_ms": 87,
+        "heal_to_healed_ms": 5646,
+        "healed_after_inject_ms": 5977,
+        "id": "f0.2",
+        "inject_s": 11.837,
+        "kind": "F2a",
+        "leader_at_inject": "n1",
+        "new_leader_after_inject_ms": 7242,
+        "new_leader_observed": "n3@2.0",
+        "observed_leader_before": "n1@1.0",
+        "restarted_by_itself": true,
+        "rule_at_inject": "1.0",
+        "rules_first_seen_until_next_fault": [
+          "2.0"
+        ],
+        "targets": [
+          "n1"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 2063,
+            "non_ok_completions": 9
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 2078,
+            "non_ok_completions": 3
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 2060,
+            "non_ok_completions": 6
+          }
+        },
+        "confirmed_after_inject_ms": 585,
+        "heal_to_healed_ms": 119,
+        "healed_after_inject_ms": 1918,
+        "id": "f1.0",
+        "inject_s": 32.933,
+        "kind": "F7",
+        "leader_at_inject": "n3",
+        "observed_leader_before": "n3@2.0",
+        "rule_at_inject": "2.0",
+        "rules_first_seen_until_next_fault": null,
+        "targets": [
+          "n1"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 2063,
+            "non_ok_completions": 9
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 2078,
+            "non_ok_completions": 3
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 2060,
+            "non_ok_completions": 6
+          }
+        },
+        "confirmed_after_inject_ms": 585,
+        "heal_to_healed_ms": 119,
+        "healed_after_inject_ms": 1182,
+        "id": "f1.1",
+        "inject_s": 33.788,
+        "kind": "F7",
+        "leader_at_inject": "n3",
+        "observed_leader_before": "n3@2.0",
+        "rule_at_inject": "2.0",
+        "rules_first_seen_until_next_fault": null,
+        "targets": [
+          "n2"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 2063,
+            "non_ok_completions": 9
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 2078,
+            "non_ok_completions": 3
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 2060,
+            "non_ok_completions": 6
+          }
+        },
+        "confirmed_after_inject_ms": 88,
+        "heal_to_healed_ms": 4514,
+        "healed_after_inject_ms": 4842,
+        "id": "f1.2",
+        "inject_s": 34.643,
+        "kind": "F2a",
+        "leader_at_inject": "n3",
+        "new_leader_after_inject_ms": 2435,
+        "new_leader_observed": "n2@3.0",
+        "observed_leader_before": "n3@2.0",
+        "restarted_by_itself": true,
+        "rule_at_inject": "2.0",
+        "rules_first_seen_until_next_fault": [
+          "3.0"
+        ],
+        "targets": [
+          "n3"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 1240,
+            "non_ok_completions": 6
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 1273,
+            "non_ok_completions": 2
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 1239,
+            "non_ok_completions": 4
+          }
+        },
+        "confirmed_after_inject_ms": 585,
+        "heal_to_healed_ms": 123,
+        "healed_after_inject_ms": 1925,
+        "id": "f2.0",
+        "inject_s": 54.605,
+        "kind": "F7",
+        "leader_at_inject": "n2",
+        "observed_leader_before": "n2@3.0",
+        "rule_at_inject": "3.0",
+        "rules_first_seen_until_next_fault": null,
+        "targets": [
+          "n1"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 1240,
+            "non_ok_completions": 6
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 1273,
+            "non_ok_completions": 2
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 1239,
+            "non_ok_completions": 4
+          }
+        },
+        "confirmed_after_inject_ms": 583,
+        "heal_to_healed_ms": 121,
+        "healed_after_inject_ms": 1190,
+        "id": "f2.1",
+        "inject_s": 55.462,
+        "kind": "F7",
+        "leader_at_inject": "n2",
+        "observed_leader_before": "n2@3.0",
+        "rule_at_inject": "3.0",
+        "rules_first_seen_until_next_fault": null,
+        "targets": [
+          "n3"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 1240,
+            "non_ok_completions": 6
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 1273,
+            "non_ok_completions": 2
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 1239,
+            "non_ok_completions": 4
+          }
+        },
+        "confirmed_after_inject_ms": 88,
+        "heal_to_healed_ms": 1820,
+        "healed_after_inject_ms": 2153,
+        "id": "f2.2",
+        "inject_s": 56.318,
+        "kind": "F2a",
+        "leader_at_inject": "n2",
+        "new_leader_after_inject_ms": 1761,
+        "new_leader_observed": "n3@4.0",
+        "observed_leader_before": "n2@3.0",
+        "restarted_by_itself": true,
+        "rule_at_inject": "3.0",
+        "rules_first_seen_until_next_fault": [
+          "4.0"
+        ],
+        "targets": [
+          "n2"
+        ]
+      }
+    ],
+    "run_id": "20261015T021130Z-D3p-2-real-f75f6098",
+    "seal_root": "38eda79417a766497747ada47194bc8dec31506fb764fdaee7baaca732521a9b"
+  },
+  {
+    "decided_rules_observed": [
+      "1.0",
+      "2.0",
+      "4.0",
+      "5.0"
+    ],
+    "faults": [
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 1967,
+            "non_ok_completions": 3
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 1967,
+            "non_ok_completions": 1
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 1975,
+            "non_ok_completions": 3
+          }
+        },
+        "confirmed_after_inject_ms": 583,
+        "heal_to_healed_ms": 124,
+        "healed_after_inject_ms": 1927,
+        "id": "f0.0",
+        "inject_s": 10.126,
+        "kind": "F7",
+        "leader_at_inject": "n2",
+        "observed_leader_before": "n2@1.0",
+        "rule_at_inject": "1.0",
+        "rules_first_seen_until_next_fault": null,
+        "targets": [
+          "n1"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 1967,
+            "non_ok_completions": 3
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 1967,
+            "non_ok_completions": 1
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 1975,
+            "non_ok_completions": 3
+          }
+        },
+        "confirmed_after_inject_ms": 589,
+        "heal_to_healed_ms": 123,
+        "healed_after_inject_ms": 1201,
+        "id": "f0.1",
+        "inject_s": 10.976,
+        "kind": "F7",
+        "leader_at_inject": "n2",
+        "observed_leader_before": "n2@1.0",
+        "rule_at_inject": "1.0",
+        "rules_first_seen_until_next_fault": null,
+        "targets": [
+          "n3"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 1967,
+            "non_ok_completions": 3
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 1967,
+            "non_ok_completions": 1
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 1975,
+            "non_ok_completions": 3
+          }
+        },
+        "confirmed_after_inject_ms": 89,
+        "heal_to_healed_ms": 1864,
+        "healed_after_inject_ms": 2202,
+        "id": "f0.2",
+        "inject_s": 11.839,
+        "kind": "F2a",
+        "leader_at_inject": "n2",
+        "new_leader_after_inject_ms": 2242,
+        "new_leader_observed": "n1@2.0",
+        "observed_leader_before": "n2@1.0",
+        "restarted_by_itself": true,
+        "rule_at_inject": "1.0",
+        "rules_first_seen_until_next_fault": [
+          "2.0"
+        ],
+        "targets": [
+          "n2"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 10195,
+            "non_ok_completions": 550
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 10255,
+            "non_ok_completions": 140
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 10192,
+            "non_ok_completions": 410
+          }
+        },
+        "confirmed_after_inject_ms": 585,
+        "heal_to_healed_ms": 124,
+        "healed_after_inject_ms": 1932,
+        "id": "f1.0",
+        "inject_s": 29.163,
+        "kind": "F7",
+        "leader_at_inject": "n1",
+        "observed_leader_before": "n1@2.0",
+        "rule_at_inject": "2.0",
+        "rules_first_seen_until_next_fault": null,
+        "targets": [
+          "n2"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 10313,
+            "non_ok_completions": 559
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 10372,
+            "non_ok_completions": 142
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 10309,
+            "non_ok_completions": 417
+          }
+        },
+        "confirmed_after_inject_ms": 591,
+        "heal_to_healed_ms": 117,
+        "healed_after_inject_ms": 1194,
+        "id": "f1.1",
+        "inject_s": 30.018,
+        "kind": "F7",
+        "leader_at_inject": "n1",
+        "observed_leader_before": "n1@2.0",
+        "rule_at_inject": "2.0",
+        "rules_first_seen_until_next_fault": null,
+        "targets": [
+          "n3"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 14310,
+            "non_ok_completions": 873
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 14370,
+            "non_ok_completions": 221
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 14307,
+            "non_ok_completions": 652
+          }
+        },
+        "confirmed_after_inject_ms": 89,
+        "heal_to_healed_ms": 3997,
+        "healed_after_inject_ms": 4329,
+        "id": "f1.2",
+        "inject_s": 30.881,
+        "kind": "F2a",
+        "leader_at_inject": "n1",
+        "new_leader_after_inject_ms": 15200,
+        "new_leader_observed": "n3@4.0",
+        "observed_leader_before": "n1@2.0",
+        "restarted_by_itself": true,
+        "rule_at_inject": "2.0",
+        "rules_first_seen_until_next_fault": [
+          "4.0"
+        ],
+        "targets": [
+          "n1"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 1761,
+            "non_ok_completions": 65
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 1778,
+            "non_ok_completions": 17
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 1759,
+            "non_ok_completions": 48
+          }
+        },
+        "confirmed_after_inject_ms": 585,
+        "heal_to_healed_ms": 119,
+        "healed_after_inject_ms": 1926,
+        "id": "f2.0",
+        "inject_s": 50.331,
+        "kind": "F7",
+        "leader_at_inject": "n3",
+        "observed_leader_before": "n3@4.0",
+        "rule_at_inject": "4.0",
+        "rules_first_seen_until_next_fault": null,
+        "targets": [
+          "n1"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 1761,
+            "non_ok_completions": 65
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 1778,
+            "non_ok_completions": 17
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 1759,
+            "non_ok_completions": 48
+          }
+        },
+        "confirmed_after_inject_ms": 584,
+        "heal_to_healed_ms": 120,
+        "healed_after_inject_ms": 1192,
+        "id": "f2.1",
+        "inject_s": 51.186,
+        "kind": "F7",
+        "leader_at_inject": "n3",
+        "observed_leader_before": "n3@4.0",
+        "rule_at_inject": "4.0",
+        "rules_first_seen_until_next_fault": null,
+        "targets": [
+          "n2"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 1761,
+            "non_ok_completions": 65
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 1778,
+            "non_ok_completions": 17
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 1759,
+            "non_ok_completions": 48
+          }
+        },
+        "confirmed_after_inject_ms": 92,
+        "heal_to_healed_ms": 1208,
+        "healed_after_inject_ms": 1541,
+        "id": "f2.2",
+        "inject_s": 52.045,
+        "kind": "F2a",
+        "leader_at_inject": "n3",
+        "new_leader_after_inject_ms": 2033,
+        "new_leader_observed": "n1@5.0",
+        "observed_leader_before": "n3@4.0",
+        "restarted_by_itself": true,
+        "rule_at_inject": "4.0",
+        "rules_first_seen_until_next_fault": [
+          "5.0"
+        ],
+        "targets": [
+          "n3"
+        ]
+      }
+    ],
+    "run_id": "20261015T021446Z-D3p-3-real-bc177144",
+    "seal_root": "b5bbff99e4145beb84d96efbbabf59798465eb6194f17c94f5070c80131b5548"
+  },
+  {
+    "decided_rules_observed": [
+      "1.0",
+      "2.0",
+      "3.0",
+      "4.0"
+    ],
+    "faults": [
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 1561,
+            "non_ok_completions": 4
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 1564,
+            "non_ok_completions": 3
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 1558,
+            "non_ok_completions": 3
+          }
+        },
+        "confirmed_after_inject_ms": 584,
+        "heal_to_healed_ms": 126,
+        "healed_after_inject_ms": 1930,
+        "id": "f0.0",
+        "inject_s": 10.124,
+        "kind": "F7",
+        "leader_at_inject": "n2",
+        "observed_leader_before": "n2@1.0",
+        "rule_at_inject": "1.0",
+        "rules_first_seen_until_next_fault": null,
+        "targets": [
+          "n1"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 1561,
+            "non_ok_completions": 4
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 1564,
+            "non_ok_completions": 3
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 1558,
+            "non_ok_completions": 3
+          }
+        },
+        "confirmed_after_inject_ms": 588,
+        "heal_to_healed_ms": 123,
+        "healed_after_inject_ms": 1198,
+        "id": "f0.1",
+        "inject_s": 10.979,
+        "kind": "F7",
+        "leader_at_inject": "n2",
+        "observed_leader_before": "n2@1.0",
+        "rule_at_inject": "1.0",
+        "rules_first_seen_until_next_fault": null,
+        "targets": [
+          "n3"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 1561,
+            "non_ok_completions": 4
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 1564,
+            "non_ok_completions": 3
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 1558,
+            "non_ok_completions": 3
+          }
+        },
+        "confirmed_after_inject_ms": 89,
+        "heal_to_healed_ms": 5106,
+        "healed_after_inject_ms": 5446,
+        "id": "f0.2",
+        "inject_s": 11.838,
+        "kind": "F2a",
+        "leader_at_inject": "n2",
+        "new_leader_after_inject_ms": 2237,
+        "new_leader_observed": "n3@2.0",
+        "observed_leader_before": "n2@1.0",
+        "restarted_by_itself": true,
+        "rule_at_inject": "1.0",
+        "rules_first_seen_until_next_fault": [
+          "2.0"
+        ],
+        "targets": [
+          "n2"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 6498,
+            "non_ok_completions": 240
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 6564,
+            "non_ok_completions": 62
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 6500,
+            "non_ok_completions": 178
+          }
+        },
+        "confirmed_after_inject_ms": 586,
+        "heal_to_healed_ms": 123,
+        "healed_after_inject_ms": 1924,
+        "id": "f1.0",
+        "inject_s": 32.403,
+        "kind": "F7",
+        "leader_at_inject": "n3",
+        "observed_leader_before": "n3@2.0",
+        "rule_at_inject": "2.0",
+        "rules_first_seen_until_next_fault": null,
+        "targets": [
+          "n1"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 6498,
+            "non_ok_completions": 240
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 6564,
+            "non_ok_completions": 62
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 6500,
+            "non_ok_completions": 178
+          }
+        },
+        "confirmed_after_inject_ms": 587,
+        "heal_to_healed_ms": 121,
+        "healed_after_inject_ms": 1192,
+        "id": "f1.1",
+        "inject_s": 33.257,
+        "kind": "F7",
+        "leader_at_inject": "n3",
+        "observed_leader_before": "n3@2.0",
+        "rule_at_inject": "2.0",
+        "rules_first_seen_until_next_fault": null,
+        "targets": [
+          "n2"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 6498,
+            "non_ok_completions": 240
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 6564,
+            "non_ok_completions": 62
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 6500,
+            "non_ok_completions": 178
+          }
+        },
+        "confirmed_after_inject_ms": 89,
+        "heal_to_healed_ms": 3944,
+        "healed_after_inject_ms": 4278,
+        "id": "f1.2",
+        "inject_s": 34.115,
+        "kind": "F2a",
+        "leader_at_inject": "n3",
+        "new_leader_after_inject_ms": 6964,
+        "new_leader_observed": "n1@3.0",
+        "observed_leader_before": "n3@2.0",
+        "restarted_by_itself": true,
+        "rule_at_inject": "2.0",
+        "rules_first_seen_until_next_fault": [
+          "3.0"
+        ],
+        "targets": [
+          "n3"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 6619,
+            "non_ok_completions": 209
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 6688,
+            "non_ok_completions": 54
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 6612,
+            "non_ok_completions": 162
+          }
+        },
+        "confirmed_after_inject_ms": 584,
+        "heal_to_healed_ms": 120,
+        "healed_after_inject_ms": 1917,
+        "id": "f2.0",
+        "inject_s": 53.511,
+        "kind": "F7",
+        "leader_at_inject": "n1",
+        "observed_leader_before": "n1@3.0",
+        "rule_at_inject": "3.0",
+        "rules_first_seen_until_next_fault": null,
+        "targets": [
+          "n2"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 6619,
+            "non_ok_completions": 209
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 6688,
+            "non_ok_completions": 54
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 6612,
+            "non_ok_completions": 162
+          }
+        },
+        "confirmed_after_inject_ms": 583,
+        "heal_to_healed_ms": 118,
+        "healed_after_inject_ms": 1182,
+        "id": "f2.1",
+        "inject_s": 54.364,
+        "kind": "F7",
+        "leader_at_inject": "n1",
+        "observed_leader_before": "n1@3.0",
+        "rule_at_inject": "3.0",
+        "rules_first_seen_until_next_fault": null,
+        "targets": [
+          "n3"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 6619,
+            "non_ok_completions": 209
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 6688,
+            "non_ok_completions": 54
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 6612,
+            "non_ok_completions": 162
+          }
+        },
+        "confirmed_after_inject_ms": 89,
+        "heal_to_healed_ms": 4556,
+        "healed_after_inject_ms": 4885,
+        "id": "f2.2",
+        "inject_s": 55.218,
+        "kind": "F2a",
+        "leader_at_inject": "n1",
+        "new_leader_after_inject_ms": 6860,
+        "new_leader_observed": "n2@4.0",
+        "observed_leader_before": "n1@3.0",
+        "restarted_by_itself": true,
+        "rule_at_inject": "3.0",
+        "rules_first_seen_until_next_fault": [
+          "4.0"
+        ],
+        "targets": [
+          "n1"
+        ]
+      }
+    ],
+    "run_id": "20261015T021802Z-D3p-4-real-c83b3282",
+    "seal_root": "f523ed60842aa32eb9945f2d7a4ae7a1ce7dcc3681e75ff8e7a323fb89d6c92b"
+  },
+  {
+    "decided_rules_observed": [
+      "1.0",
+      "2.0",
+      "4.0",
+      "6.0"
+    ],
+    "faults": [
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 1423,
+            "non_ok_completions": 3
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 1428,
+            "non_ok_completions": 2
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 1420,
+            "non_ok_completions": 2
+          }
+        },
+        "confirmed_after_inject_ms": 584,
+        "heal_to_healed_ms": 123,
+        "healed_after_inject_ms": 1921,
+        "id": "f0.0",
+        "inject_s": 10.124,
+        "kind": "F7",
+        "leader_at_inject": "n1",
+        "observed_leader_before": "n1@1.0",
+        "rule_at_inject": "1.0",
+        "rules_first_seen_until_next_fault": null,
+        "targets": [
+          "n2"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 1423,
+            "non_ok_completions": 3
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 1428,
+            "non_ok_completions": 2
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 1420,
+            "non_ok_completions": 2
+          }
+        },
+        "confirmed_after_inject_ms": 587,
+        "heal_to_healed_ms": 123,
+        "healed_after_inject_ms": 1191,
+        "id": "f0.1",
+        "inject_s": 10.977,
+        "kind": "F7",
+        "leader_at_inject": "n1",
+        "observed_leader_before": "n1@1.0",
+        "rule_at_inject": "1.0",
+        "rules_first_seen_until_next_fault": null,
+        "targets": [
+          "n3"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 1423,
+            "non_ok_completions": 3
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 1428,
+            "non_ok_completions": 2
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 1420,
+            "non_ok_completions": 2
+          }
+        },
+        "confirmed_after_inject_ms": 89,
+        "heal_to_healed_ms": 682,
+        "healed_after_inject_ms": 1018,
+        "id": "f0.2",
+        "inject_s": 11.833,
+        "kind": "F2a",
+        "leader_at_inject": "n1",
+        "new_leader_after_inject_ms": 2252,
+        "new_leader_observed": "n2@2.0",
+        "observed_leader_before": "n1@1.0",
+        "restarted_by_itself": true,
+        "rule_at_inject": "1.0",
+        "rules_first_seen_until_next_fault": [
+          "2.0"
+        ],
+        "targets": [
+          "n1"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 10174,
+            "non_ok_completions": 594
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 10176,
+            "non_ok_completions": 150
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 10178,
+            "non_ok_completions": 443
+          }
+        },
+        "confirmed_after_inject_ms": 587,
+        "heal_to_healed_ms": 122,
+        "healed_after_inject_ms": 1923,
+        "id": "f1.0",
+        "inject_s": 27.968,
+        "kind": "F7",
+        "leader_at_inject": "n2",
+        "observed_leader_before": "n2@2.0",
+        "rule_at_inject": "2.0",
+        "rules_first_seen_until_next_fault": null,
+        "targets": [
+          "n1"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 10294,
+            "non_ok_completions": 602
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 10296,
+            "non_ok_completions": 152
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 10298,
+            "non_ok_completions": 449
+          }
+        },
+        "confirmed_after_inject_ms": 586,
+        "heal_to_healed_ms": 119,
+        "healed_after_inject_ms": 1187,
+        "id": "f1.1",
+        "inject_s": 28.823,
+        "kind": "F7",
+        "leader_at_inject": "n2",
+        "observed_leader_before": "n2@2.0",
+        "rule_at_inject": "2.0",
+        "rules_first_seen_until_next_fault": null,
+        "targets": [
+          "n3"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 13141,
+            "non_ok_completions": 825
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 13143,
+            "non_ok_completions": 208
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 13145,
+            "non_ok_completions": 616
+          }
+        },
+        "confirmed_after_inject_ms": 88,
+        "heal_to_healed_ms": 2846,
+        "healed_after_inject_ms": 3177,
+        "id": "f1.2",
+        "inject_s": 29.681,
+        "kind": "F2a",
+        "leader_at_inject": "n2",
+        "new_leader_after_inject_ms": 14407,
+        "new_leader_observed": "n3@4.0",
+        "observed_leader_before": "n2@2.0",
+        "restarted_by_itself": true,
+        "rule_at_inject": "2.0",
+        "rules_first_seen_until_next_fault": [
+          "4.0"
+        ],
+        "targets": [
+          "n2"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 10203,
+            "non_ok_completions": 471
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 10211,
+            "non_ok_completions": 120
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 10201,
+            "non_ok_completions": 351
+          }
+        },
+        "confirmed_after_inject_ms": 587,
+        "heal_to_healed_ms": 119,
+        "healed_after_inject_ms": 1918,
+        "id": "f2.0",
+        "inject_s": 47.974,
+        "kind": "F7",
+        "leader_at_inject": "n3",
+        "observed_leader_before": "n3@4.0",
+        "rule_at_inject": "4.0",
+        "rules_first_seen_until_next_fault": null,
+        "targets": [
+          "n1"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 10334,
+            "non_ok_completions": 482
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 10342,
+            "non_ok_completions": 123
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 10331,
+            "non_ok_completions": 359
+          }
+        },
+        "confirmed_after_inject_ms": 584,
+        "heal_to_healed_ms": 130,
+        "healed_after_inject_ms": 1193,
+        "id": "f2.1",
+        "inject_s": 48.83,
+        "kind": "F7",
+        "leader_at_inject": "n3",
+        "observed_leader_before": "n3@4.0",
+        "rule_at_inject": "4.0",
+        "rules_first_seen_until_next_fault": null,
+        "targets": [
+          "n2"
+        ]
+      },
+      {
+        "clients": {
+          "gw-z1": {
+            "longest_ok_gap_ms": 13999,
+            "non_ok_completions": 769
+          },
+          "gw-z2": {
+            "longest_ok_gap_ms": 14030,
+            "non_ok_completions": 195
+          },
+          "gw-z3": {
+            "longest_ok_gap_ms": 13995,
+            "non_ok_completions": 574
+          }
+        },
+        "confirmed_after_inject_ms": 88,
+        "heal_to_healed_ms": 4483,
+        "healed_after_inject_ms": 4822,
+        "id": "f2.2",
+        "inject_s": 49.685,
+        "kind": "F2a",
+        "leader_at_inject": "n3",
+        "new_leader_after_inject_ms": 485,
+        "new_leader_observed": "n3@4.0",
+        "observed_leader_before": "n2@2.0",
+        "restarted_by_itself": true,
+        "rule_at_inject": "4.0",
+        "rules_first_seen_until_next_fault": [
+          "6.0"
+        ],
+        "targets": [
+          "n3"
+        ]
+      }
+    ],
+    "run_id": "20261015T022122Z-D3p-5-real-87fb0b83",
+    "seal_root": "8f10c38a833cb44e701cbecce121f717a1a263c07cefb7898793dcbb984351d3"
+  }
+]

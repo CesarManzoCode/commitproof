@@ -1,0 +1,1226 @@
+== 20261013T233223Z-D3-1-M3-44f0b044
+  inject f0 on n2 at t=70317838551 ns
+  inject f1 on n3 at t=88387151768 ns
+  inject f2 on n1 at t=108650249614 ns
+  2026-10-13T23:32:48.495063288 orch-z2: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":1,"reason":"ShardInit"}
+  2026-10-13T23:32:48.495522388 pooler-n3: recruit received ,"revoked_below_term":1,"coordinator_id":"sgqllscs"}
+  2026-10-13T23:32:48.495532637 pooler-n2: recruit received ,"revoked_below_term":1,"coordinator_id":"sgqllscs"}
+  2026-10-13T23:32:48.729353379 orch-z2: recruited pooler ,"pooler":"n3","lsn":"0/4000000"}
+  2026-10-13T23:32:48.730368692 orch-z2: recruited pooler ,"pooler":"n2","lsn":"0/4000000"}
+  2026-10-13T23:32:48.788465952 orch-z2: promote succeeded ,"pooler":"n3","is_leader":false}
+  2026-10-13T23:32:49.190920287 orch-z2: promote succeeded ,"pooler":"n2","is_leader":true}
+  2026-10-13T23:32:49.231748198 pooler-n1: recruit received ,"revoked_below_term":1,"coordinator_id":"sgqllscs"}
+  2026-10-13T23:32:49.464911069 orch-z2: recruited pooler ,"pooler":"n1","lsn":"0/4000000"}
+  2026-10-13T23:32:49.512728829 orch-z2: promote succeeded ,"pooler":"n1","is_leader":false}
+  2026-10-13T23:32:49.512744918 orch-z2: primary.promotion ,"event_type":"primary.promotion","outcome":"success","proposed_term":1,"reason":"ShardInit","new_primary":"n2","recruit_ms":235,"promote_ms":782}
+  2026-10-13T23:34:02.717192008 orch-z3: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:34:02.762363883 orch-z3: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-13T23:34:02.762425369 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":2,"reason":"LeaderUnhealthy"}
+  2026-10-13T23:34:02.762696722 pooler-n2: recruit received ,"revoked_below_term":2,"coordinator_id":"d5gx5cn5"}
+  2026-10-13T23:34:02.762733210 pooler-n3: recruit received ,"revoked_below_term":2,"coordinator_id":"d5gx5cn5"}
+  2026-10-13T23:34:02.762758269 pooler-n1: recruit received ,"revoked_below_term":2,"coordinator_id":"d5gx5cn5"}
+  2026-10-13T23:34:02.762939307 orch-z3: recruit failed ,"pooler":"n2","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-13T23:34:02.889362830 orch-z3: recruited pooler ,"pooler":"n1","lsn":"0/40DCF90"}
+  2026-10-13T23:34:02.889376339 orch-z3: recruited pooler ,"pooler":"n3","lsn":"0/40DCF90"}
+  2026-10-13T23:34:02.937425698 orch-z3: promote succeeded ,"pooler":"n1","is_leader":false}
+  2026-10-13T23:34:03.432064648 orch-z3: promote succeeded ,"pooler":"n3","is_leader":true}
+  2026-10-13T23:34:03.432077377 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"success","proposed_term":2,"reason":"LeaderUnhealthy","new_primary":"n3","recruit_ms":126,"promote_ms":542}
+  2026-10-13T23:34:03.432089906 orch-z3: appoint leader action completed successfully ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:34:03.500909998 pooler-n2: MonitorPostgres: PostgreSQL initialized but not running, starting PostgreSQL }
+  2026-10-13T23:34:04.572215023 pooler-n2: MonitorPostgres: Postgres started successfully }
+  2026-10-13T23:34:08.586410413 pooler-n2: SetPrimary: stale primary, restarting as standby ,"new_leader":"n3","incoming_position":"2.0","postgres_mode":"in_recovery"}
+  2026-10-13T23:34:22.707484274 orch-z3: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:34:22.752731647 orch-z3: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-13T23:34:22.752772864 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":3,"reason":"LeaderUnhealthy"}
+  2026-10-13T23:34:22.752999711 pooler-n3: recruit received ,"revoked_below_term":3,"coordinator_id":"d5gx5cn5"}
+  2026-10-13T23:34:22.753024789 pooler-n2: recruit received ,"revoked_below_term":3,"coordinator_id":"d5gx5cn5"}
+  2026-10-13T23:34:22.753035349 pooler-n1: recruit received ,"revoked_below_term":3,"coordinator_id":"d5gx5cn5"}
+  2026-10-13T23:34:22.753216488 orch-z3: recruit failed ,"pooler":"n3","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-13T23:34:22.878806027 orch-z3: recruited pooler ,"pooler":"n1","lsn":"0/41D2B00"}
+  2026-10-13T23:34:22.882341755 orch-z3: recruited pooler ,"pooler":"n2","lsn":"0/41D2B00"}
+  2026-10-13T23:34:22.923318055 orch-z3: promote succeeded ,"pooler":"n2","is_leader":false}
+  2026-10-13T23:34:23.423772211 orch-z3: promote succeeded ,"pooler":"n1","is_leader":true}
+  2026-10-13T23:34:23.423787320 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"success","proposed_term":3,"reason":"LeaderUnhealthy","new_primary":"n1","recruit_ms":129,"promote_ms":541}
+  2026-10-13T23:34:23.423803309 orch-z3: appoint leader action completed successfully ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:34:23.629251955 pooler-n3: MonitorPostgres: PostgreSQL initialized but not running, starting PostgreSQL }
+  2026-10-13T23:34:24.692693334 pooler-n3: MonitorPostgres: Postgres started successfully }
+  2026-10-13T23:34:25.258451234 pooler-n3: SetPrimary: stale primary, restarting as standby ,"new_leader":"n1","incoming_position":"3.0","postgres_mode":"in_recovery"}
+  2026-10-13T23:34:39.926617177 pooler-n1: MonitorPostgres: PostgreSQL initialized but not running, starting PostgreSQL }
+  2026-10-13T23:34:40.401558937 orch-z1: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:34:40.404577808 orch-z3: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:34:40.454566828 orch-z2: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:34:40.503908825 orch-z1: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-13T23:34:40.503910225 orch-z3: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-13T23:34:40.503935683 orch-z1: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":4,"reason":"LeaderUnhealthy"}
+  2026-10-13T23:34:40.503957192 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":4,"reason":"LeaderUnhealthy"}
+  2026-10-13T23:34:40.504284033 pooler-n2: recruit received ,"revoked_below_term":4,"coordinator_id":"zzcmsfsq"}
+  2026-10-13T23:34:40.504290502 pooler-n3: recruit received ,"revoked_below_term":4,"coordinator_id":"zzcmsfsq"}
+  2026-10-13T23:34:40.630232468 pooler-n3: recruit received ,"revoked_below_term":4,"coordinator_id":"d5gx5cn5"}
+  2026-10-13T23:34:40.630512011 orch-z1: recruited pooler ,"pooler":"n3","lsn":"0/42F5878"}
+  2026-10-13T23:34:40.630678781 orch-z3: recruit failed ,"pooler":"n3","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 4 from coordinator zone1_zzcmsfsq, requested by zone3_d5gx5cn5"}
+  2026-10-13T23:34:40.631217340 pooler-n2: recruit received ,"revoked_below_term":4,"coordinator_id":"d5gx5cn5"}
+  2026-10-13T23:34:40.631341892 orch-z1: recruited pooler ,"pooler":"n2","lsn":"0/42F5878"}
+  2026-10-13T23:34:40.631752108 orch-z3: recruit failed ,"pooler":"n2","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 4 from coordinator zone1_zzcmsfsq, requested by zone3_d5gx5cn5"}
+  2026-10-13T23:34:40.679769233 orch-z1: promote succeeded ,"pooler":"n2","is_leader":false}
+  2026-10-13T23:34:40.989615383 pooler-n1: MonitorPostgres: Postgres started successfully }
+  2026-10-13T23:34:40.994603099 pooler-n1: recruit received ,"revoked_below_term":4,"coordinator_id":"zzcmsfsq"}
+  2026-10-13T23:34:41.177062968 orch-z1: promote succeeded ,"pooler":"n3","is_leader":true}
+  2026-10-13T23:34:41.227488084 pooler-n1: recruit received ,"revoked_below_term":4,"coordinator_id":"d5gx5cn5"}
+  2026-10-13T23:34:41.227756568 orch-z1: recruited pooler ,"pooler":"n1","lsn":"0/42F5A50"}
+  2026-10-13T23:34:41.228025582 orch-z3: recruit failed ,"pooler":"n1","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 4 from coordinator zone1_zzcmsfsq, requested by zone3_d5gx5cn5"}
+  2026-10-13T23:34:41.228039071 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"failed","proposed_term":4,"reason":"LeaderUnhealthy","recruit_ms":724,"error":"recruitment failed: no nodes responded to recruit"}
+  2026-10-13T23:34:41.228854753 orch-z1: primary.promotion ,"event_type":"primary.promotion","outcome":"success","proposed_term":4,"reason":"LeaderUnhealthy","new_primary":"n3","recruit_ms":127,"promote_ms":597}
+  2026-10-13T23:34:41.228906330 orch-z1: appoint leader action completed successfully ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:34:45.147164498 pooler-n1: SetPrimary: stale primary, restarting as standby ,"new_leader":"n3","incoming_position":"4.0","postgres_mode":"in_recovery"}
+  2026-10-13T23:35:22.886080374 pooler-n1: MonitorPostgres: PostgreSQL initialized but not running, starting PostgreSQL }
+  2026-10-13T23:35:22.929991439 pooler-n1: MonitorPostgres: Postgres started successfully }
+== 20261013T233549Z-D3-2-M3-ad08cd75
+  inject f0 on n1 at t=70307595833 ns
+  inject f1 on n3 at t=87886754131 ns
+  inject f2 on n3 at t=108126774028 ns
+  2026-10-13T23:36:14.139818577 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":1,"reason":"ShardInit"}
+  2026-10-13T23:36:14.140253343 pooler-n1: recruit received ,"revoked_below_term":1,"coordinator_id":"2h58wnfv"}
+  2026-10-13T23:36:14.140253353 pooler-n3: recruit received ,"revoked_below_term":1,"coordinator_id":"2h58wnfv"}
+  2026-10-13T23:36:14.370617855 orch-z3: recruited pooler ,"pooler":"n3","lsn":"0/4000000"}
+  2026-10-13T23:36:14.374063699 orch-z3: recruited pooler ,"pooler":"n1","lsn":"0/4000000"}
+  2026-10-13T23:36:14.432869486 orch-z3: promote succeeded ,"pooler":"n3","is_leader":false}
+  2026-10-13T23:36:15.158946191 pooler-n2: recruit received ,"revoked_below_term":1,"coordinator_id":"2h58wnfv"}
+  2026-10-13T23:36:15.209987153 orch-z3: promote succeeded ,"pooler":"n1","is_leader":true}
+  2026-10-13T23:36:15.525950922 orch-z3: recruited pooler ,"pooler":"n2","lsn":"0/4000000"}
+  2026-10-13T23:36:15.577225551 orch-z3: promote succeeded ,"pooler":"n2","is_leader":false}
+  2026-10-13T23:36:15.577240750 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"success","proposed_term":1,"reason":"ShardInit","new_primary":"n1","recruit_ms":233,"promote_ms":1203}
+  2026-10-13T23:37:28.682550173 orch-z3: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:37:28.726409811 orch-z3: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-13T23:37:28.726465548 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":2,"reason":"LeaderUnhealthy"}
+  2026-10-13T23:37:28.726665768 pooler-n1: recruit received ,"revoked_below_term":2,"coordinator_id":"2h58wnfv"}
+  2026-10-13T23:37:28.726710555 pooler-n2: recruit received ,"revoked_below_term":2,"coordinator_id":"2h58wnfv"}
+  2026-10-13T23:37:28.726729055 pooler-n3: recruit received ,"revoked_below_term":2,"coordinator_id":"2h58wnfv"}
+  2026-10-13T23:37:28.726872987 orch-z3: recruit failed ,"pooler":"n1","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-13T23:37:28.852104634 orch-z3: recruited pooler ,"pooler":"n3","lsn":"0/40D97E8"}
+  2026-10-13T23:37:28.853193858 orch-z3: recruited pooler ,"pooler":"n2","lsn":"0/40D97E8"}
+  2026-10-13T23:37:28.902282248 orch-z3: promote succeeded ,"pooler":"n2","is_leader":false}
+  2026-10-13T23:37:29.040012047 pooler-n1: MonitorPostgres: PostgreSQL initialized but not running, starting PostgreSQL }
+  2026-10-13T23:37:29.413867477 orch-z3: promote succeeded ,"pooler":"n3","is_leader":true}
+  2026-10-13T23:37:29.413886346 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"success","proposed_term":2,"reason":"LeaderUnhealthy","new_primary":"n3","recruit_ms":126,"promote_ms":560}
+  2026-10-13T23:37:29.415583249 orch-z3: appoint leader action completed successfully ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:37:30.104849507 pooler-n1: MonitorPostgres: Postgres started successfully }
+  2026-10-13T23:37:34.579740674 pooler-n1: SetPrimary: stale primary, restarting as standby ,"new_leader":"n3","incoming_position":"2.0","postgres_mode":"in_recovery"}
+  2026-10-13T23:37:49.612342620 pooler-n3: MonitorPostgres: PostgreSQL initialized but not running, starting PostgreSQL }
+  2026-10-13T23:37:50.669096216 pooler-n3: MonitorPostgres: Postgres started successfully }
+  2026-10-13T23:37:55.727927717 pooler-n3: MonitorPostgres: rule names us leader but postgres is a standby; resigning ,"position":"2.0"}
+  2026-10-13T23:38:05.803710511 pooler-n3: MonitorPostgres: PostgreSQL initialized but not running, starting PostgreSQL }
+  2026-10-13T23:38:06.862935765 pooler-n3: MonitorPostgres: Postgres started successfully }
+  2026-10-13T23:38:07.624558743 orch-z3: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:38:07.626847530 orch-z2: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:38:07.629368215 orch-z1: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:38:07.679151063 orch-z3: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-13T23:38:07.679151193 orch-z2: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-13T23:38:07.679184882 orch-z2: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":3,"reason":"LeaderResigned"}
+  2026-10-13T23:38:07.679187482 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":3,"reason":"LeaderResigned"}
+  2026-10-13T23:38:07.679536064 pooler-n1: recruit received ,"revoked_below_term":3,"coordinator_id":"2h58wnfv"}
+  2026-10-13T23:38:07.679537444 pooler-n3: recruit received ,"revoked_below_term":3,"coordinator_id":"nrrgg4kh"}
+  2026-10-13T23:38:07.679537944 pooler-n2: recruit received ,"revoked_below_term":3,"coordinator_id":"2h58wnfv"}
+  2026-10-13T23:38:07.680524635 pooler-n1: recruit received ,"revoked_below_term":3,"coordinator_id":"nrrgg4kh"}
+  2026-10-13T23:38:07.680701506 orch-z3: recruit failed ,"pooler":"n1","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-13T23:38:07.681124615 orch-z1: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-13T23:38:07.681166773 orch-z1: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":3,"reason":"LeaderResigned"}
+  2026-10-13T23:38:07.681423271 pooler-n1: recruit received ,"revoked_below_term":3,"coordinator_id":"45gxbt8l"}
+  2026-10-13T23:38:07.681588052 orch-z2: recruit failed ,"pooler":"n1","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-13T23:38:07.682232160 orch-z1: recruit failed ,"pooler":"n1","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-13T23:38:07.806937750 pooler-n2: recruit received ,"revoked_below_term":3,"coordinator_id":"nrrgg4kh"}
+  2026-10-13T23:38:07.807172018 orch-z3: recruited pooler ,"pooler":"n2","lsn":"0/41D52A0"}
+  2026-10-13T23:38:07.807258744 pooler-n2: recruit received ,"revoked_below_term":3,"coordinator_id":"45gxbt8l"}
+  2026-10-13T23:38:07.807588788 orch-z2: recruit failed ,"pooler":"n2","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 3 from coordinator zone3_2h58wnfv, requested by zone2_nrrgg4kh"}
+  2026-10-13T23:38:07.807736760 orch-z1: recruit failed ,"pooler":"n2","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 3 from coordinator zone3_2h58wnfv, requested by zone1_45gxbt8l"}
+  2026-10-13T23:38:07.906748535 pooler-n3: recruit received ,"revoked_below_term":3,"coordinator_id":"2h58wnfv"}
+  2026-10-13T23:38:07.907023902 orch-z2: recruited pooler ,"pooler":"n3","lsn":"0/41D52A0"}
+  2026-10-13T23:38:07.907045131 pooler-n3: recruit received ,"revoked_below_term":3,"coordinator_id":"45gxbt8l"}
+  2026-10-13T23:38:07.907076989 orch-z2: primary.promotion ,"event_type":"primary.promotion","outcome":"failed","proposed_term":3,"reason":"LeaderResigned","recruit_ms":227,"error":"recruitment failed: insufficient outgoing cohort recruitment: majority not sat
+  2026-10-13T23:38:07.907264680 orch-z3: recruit failed ,"pooler":"n3","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 3 from coordinator zone2_nrrgg4kh, requested by zone3_2h58wnfv"}
+  2026-10-13T23:38:07.907293179 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"failed","proposed_term":3,"reason":"LeaderResigned","recruit_ms":228,"error":"recruitment failed: insufficient outgoing cohort recruitment: majority not sat
+  2026-10-13T23:38:07.907450701 orch-z1: recruit failed ,"pooler":"n3","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 3 from coordinator zone2_nrrgg4kh, requested by zone1_45gxbt8l"}
+  2026-10-13T23:38:07.907465880 orch-z1: primary.promotion ,"event_type":"primary.promotion","outcome":"failed","proposed_term":3,"reason":"LeaderResigned","recruit_ms":226,"error":"recruitment failed: no nodes responded to recruit"}
+  2026-10-13T23:38:08.408112023 orch-z3: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:38:08.408319183 orch-z2: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:38:08.460007799 orch-z3: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-13T23:38:08.460008039 orch-z2: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-13T23:38:08.460037197 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":3,"reason":"LeaderResigned"}
+  2026-10-13T23:38:08.460049467 orch-z2: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":3,"reason":"LeaderResigned"}
+  2026-10-13T23:38:08.460311244 pooler-n1: recruit received ,"revoked_below_term":3,"coordinator_id":"2h58wnfv"}
+  2026-10-13T23:38:08.460329373 pooler-n2: recruit received ,"revoked_below_term":3,"coordinator_id":"nrrgg4kh"}
+  2026-10-13T23:38:08.460333093 pooler-n3: recruit received ,"revoked_below_term":3,"coordinator_id":"2h58wnfv"}
+  2026-10-13T23:38:08.460560971 pooler-n3: recruit received ,"revoked_below_term":3,"coordinator_id":"nrrgg4kh"}
+  2026-10-13T23:38:08.460681965 pooler-n2: recruit received ,"revoked_below_term":3,"coordinator_id":"2h58wnfv"}
+  2026-10-13T23:38:08.460700924 orch-z3: recruit failed ,"pooler":"n3","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 3 from coordinator zone2_nrrgg4kh, requested by zone3_2h58wnfv"}
+  2026-10-13T23:38:08.460803869 orch-z2: recruit failed ,"pooler":"n2","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 3 from coordinator zone3_2h58wnfv, requested by zone2_nrrgg4kh"}
+  2026-10-13T23:38:08.460878056 orch-z2: recruit failed ,"pooler":"n3","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: coordinator zone2_nrrgg4kh reused term 3 with a different coordinator_initiated_at"}
+  2026-10-13T23:38:08.461030768 orch-z3: recruit failed ,"pooler":"n2","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: coordinator zone3_2h58wnfv reused term 3 with a different coordinator_initiated_at"}
+  2026-10-13T23:38:08.461243788 pooler-n1: recruit received ,"revoked_below_term":3,"coordinator_id":"nrrgg4kh"}
+  2026-10-13T23:38:08.461323334 orch-z3: recruit failed ,"pooler":"n1","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-13T23:38:08.461336703 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"failed","proposed_term":3,"reason":"LeaderResigned","recruit_ms":1,"error":"recruitment failed: no nodes responded to recruit"}
+  2026-10-13T23:38:08.462090396 orch-z2: recruit failed ,"pooler":"n1","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-13T23:38:08.462098535 orch-z2: primary.promotion ,"event_type":"primary.promotion","outcome":"failed","proposed_term":3,"reason":"LeaderResigned","recruit_ms":2,"error":"recruitment failed: no nodes responded to recruit"}
+  2026-10-13T23:38:12.175663617 pooler-n1: MonitorPostgres: PostgreSQL initialized but not running, starting PostgreSQL }
+  2026-10-13T23:38:12.218741347 pooler-n1: MonitorPostgres: Postgres started successfully }
+  2026-10-13T23:38:19.423749802 orch-z1: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:38:19.477272579 orch-z2: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:38:19.477357145 orch-z3: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:38:19.477574264 orch-z1: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-13T23:38:19.477623162 orch-z1: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":4,"reason":"LeaderResigned"}
+  2026-10-13T23:38:19.477889179 pooler-n3: recruit received ,"revoked_below_term":4,"coordinator_id":"45gxbt8l"}
+  2026-10-13T23:38:19.477908678 pooler-n2: recruit received ,"revoked_below_term":4,"coordinator_id":"45gxbt8l"}
+  2026-10-13T23:38:19.531648124 orch-z3: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-13T23:38:19.531683422 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":4,"reason":"LeaderResigned"}
+  2026-10-13T23:38:19.532115881 orch-z2: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-13T23:38:19.532156699 orch-z2: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":4,"reason":"LeaderResigned"}
+  2026-10-13T23:38:19.609302662 pooler-n2: recruit received ,"revoked_below_term":4,"coordinator_id":"2h58wnfv"}
+  2026-10-13T23:38:19.609606767 orch-z1: recruited pooler ,"pooler":"n2","lsn":"0/41D52A0"}
+  2026-10-13T23:38:19.609640186 pooler-n2: recruit received ,"revoked_below_term":4,"coordinator_id":"nrrgg4kh"}
+  2026-10-13T23:38:19.609870515 orch-z3: recruit failed ,"pooler":"n2","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 4 from coordinator zone1_45gxbt8l, requested by zone3_2h58wnfv"}
+  2026-10-13T23:38:19.610094504 orch-z2: recruit failed ,"pooler":"n2","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 4 from coordinator zone1_45gxbt8l, requested by zone2_nrrgg4kh"}
+  2026-10-13T23:38:19.709093943 pooler-n3: recruit received ,"revoked_below_term":4,"coordinator_id":"2h58wnfv"}
+  2026-10-13T23:38:19.709327721 orch-z1: recruited pooler ,"pooler":"n3","lsn":"0/41D52A0"}
+  2026-10-13T23:38:19.709429736 pooler-n3: recruit received ,"revoked_below_term":4,"coordinator_id":"nrrgg4kh"}
+  2026-10-13T23:38:19.709647916 orch-z3: recruit failed ,"pooler":"n3","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 4 from coordinator zone1_45gxbt8l, requested by zone3_2h58wnfv"}
+  2026-10-13T23:38:19.709935092 orch-z2: recruit failed ,"pooler":"n3","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 4 from coordinator zone1_45gxbt8l, requested by zone2_nrrgg4kh"}
+  2026-10-13T23:38:26.338555219 pooler-n3: SetPrimary: stale primary, restarting as standby ,"new_leader":"n2","incoming_position":"2.0 proposal=4.0","postgres_mode":"in_recovery"}
+  2026-10-13T23:38:26.961866826 orch-z1: promote succeeded ,"pooler":"n2","is_leader":true}
+  2026-10-13T23:38:42.176159442 pooler-n1: recruit received ,"revoked_below_term":4,"coordinator_id":"45gxbt8l"}
+  2026-10-13T23:38:42.177358734 pooler-n1: recruit received ,"revoked_below_term":4,"coordinator_id":"2h58wnfv"}
+  2026-10-13T23:38:42.177635270 orch-z1: recruit failed ,"pooler":"n1","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-13T23:38:42.178393424 pooler-n1: recruit received ,"revoked_below_term":4,"coordinator_id":"nrrgg4kh"}
+  2026-10-13T23:38:42.178623692 orch-z3: recruit failed ,"pooler":"n1","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-13T23:38:42.178642912 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"failed","proposed_term":4,"reason":"LeaderResigned","recruit_ms":22646,"error":"recruitment failed: no nodes responded to recruit"}
+  2026-10-13T23:38:42.179504100 orch-z2: recruit failed ,"pooler":"n1","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-13T23:38:42.179521619 orch-z2: primary.promotion ,"event_type":"primary.promotion","outcome":"failed","proposed_term":4,"reason":"LeaderResigned","recruit_ms":22647,"error":"recruitment failed: no nodes responded to recruit"}
+  2026-10-13T23:38:42.181230826 orch-z1: primary.promotion ,"event_type":"primary.promotion","outcome":"success","proposed_term":4,"reason":"LeaderResigned","new_primary":"n2","recruit_ms":231,"promote_ms":22471}
+  2026-10-13T23:38:42.181241136 orch-z1: appoint leader action completed successfully ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:38:47.269089251 pooler-n1: MonitorPostgres: Postgres started successfully }
+== 20261013T233915Z-D3-3-M3-c422c7a4
+  inject f0 on n1 at t=70312811529 ns
+  inject f1 on n2 at t=91122659729 ns
+  inject f2 on n3 at t=109770909747 ns
+  2026-10-13T23:39:41.908293731 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":1,"reason":"ShardInit"}
+  2026-10-13T23:39:41.908721962 pooler-n1: recruit received ,"revoked_below_term":1,"coordinator_id":"2xcqpfbd"}
+  2026-10-13T23:39:41.908723471 pooler-n3: recruit received ,"revoked_below_term":1,"coordinator_id":"2xcqpfbd"}
+  2026-10-13T23:39:42.140904704 orch-z3: recruited pooler ,"pooler":"n3","lsn":"0/4000000"}
+  2026-10-13T23:39:42.142228033 orch-z3: recruited pooler ,"pooler":"n1","lsn":"0/4000000"}
+  2026-10-13T23:39:42.210484142 orch-z3: promote succeeded ,"pooler":"n3","is_leader":false}
+  2026-10-13T23:39:42.951681215 orch-z3: promote succeeded ,"pooler":"n1","is_leader":true}
+  2026-10-13T23:39:44.826386919 pooler-n2: recruit received ,"revoked_below_term":1,"coordinator_id":"2xcqpfbd"}
+  2026-10-13T23:39:45.288205125 orch-z3: recruited pooler ,"pooler":"n2","lsn":"0/4000000"}
+  2026-10-13T23:39:45.338885915 orch-z3: promote succeeded ,"pooler":"n2","is_leader":false}
+  2026-10-13T23:39:45.338903175 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"success","proposed_term":1,"reason":"ShardInit","new_primary":"n1","recruit_ms":233,"promote_ms":3196}
+  2026-10-13T23:40:59.942625381 orch-z3: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:40:59.988167416 orch-z3: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-13T23:40:59.988240642 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":2,"reason":"LeaderUnhealthy"}
+  2026-10-13T23:40:59.988513400 pooler-n2: recruit received ,"revoked_below_term":2,"coordinator_id":"2xcqpfbd"}
+  2026-10-13T23:40:59.988547789 pooler-n3: recruit received ,"revoked_below_term":2,"coordinator_id":"2xcqpfbd"}
+  2026-10-13T23:40:59.988634445 pooler-n1: recruit received ,"revoked_below_term":2,"coordinator_id":"2xcqpfbd"}
+  2026-10-13T23:40:59.988836276 orch-z3: recruit failed ,"pooler":"n1","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-13T23:41:00.040866194 orch-z1: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:41:00.087521060 orch-z1: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-13T23:41:00.087609397 orch-z1: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":2,"reason":"LeaderUnhealthy"}
+  2026-10-13T23:41:00.087874945 pooler-n1: recruit received ,"revoked_below_term":2,"coordinator_id":"wf7pjwsr"}
+  2026-10-13T23:41:00.088114774 orch-z1: recruit failed ,"pooler":"n1","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-13T23:41:00.115931104 pooler-n3: recruit received ,"revoked_below_term":2,"coordinator_id":"wf7pjwsr"}
+  2026-10-13T23:41:00.116143355 orch-z3: recruited pooler ,"pooler":"n3","lsn":"0/40D92C8"}
+  2026-10-13T23:41:00.116538537 orch-z1: recruit failed ,"pooler":"n3","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 2 from coordinator zone3_2xcqpfbd, requested by zone1_wf7pjwsr"}
+  2026-10-13T23:41:00.123865783 pooler-n2: recruit received ,"revoked_below_term":2,"coordinator_id":"wf7pjwsr"}
+  2026-10-13T23:41:00.124030865 orch-z3: recruited pooler ,"pooler":"n2","lsn":"0/40D92C8"}
+  2026-10-13T23:41:00.124510024 orch-z1: recruit failed ,"pooler":"n2","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 2 from coordinator zone3_2xcqpfbd, requested by zone1_wf7pjwsr"}
+  2026-10-13T23:41:00.124537773 orch-z1: primary.promotion ,"event_type":"primary.promotion","outcome":"failed","proposed_term":2,"reason":"LeaderUnhealthy","recruit_ms":36,"error":"recruitment failed: no nodes responded to recruit"}
+  2026-10-13T23:41:00.169201517 orch-z3: promote succeeded ,"pooler":"n3","is_leader":false}
+  2026-10-13T23:41:00.743834697 orch-z3: promote succeeded ,"pooler":"n2","is_leader":true}
+  2026-10-13T23:41:00.743865416 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"success","proposed_term":2,"reason":"LeaderUnhealthy","new_primary":"n2","recruit_ms":135,"promote_ms":619}
+  2026-10-13T23:41:00.743873355 orch-z3: appoint leader action completed successfully ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:41:02.190332125 pooler-n1: MonitorPostgres: PostgreSQL initialized but not running, starting PostgreSQL }
+  2026-10-13T23:41:03.251914846 pooler-n1: MonitorPostgres: Postgres started successfully }
+  2026-10-13T23:41:03.258120892 pooler-n1: SetPrimary: stale primary, restarting as standby ,"new_leader":"n2","incoming_position":"2.0","postgres_mode":"in_recovery"}
+  2026-10-13T23:41:18.914494626 orch-z1: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:41:18.916451981 orch-z3: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:41:18.960740652 orch-z1: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-13T23:41:18.960741622 orch-z3: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-13T23:41:18.960781400 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":3,"reason":"LeaderUnhealthy"}
+  2026-10-13T23:41:18.960786690 orch-z1: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":3,"reason":"LeaderUnhealthy"}
+  2026-10-13T23:41:18.961113836 pooler-n3: recruit received ,"revoked_below_term":3,"coordinator_id":"2xcqpfbd"}
+  2026-10-13T23:41:18.961116335 pooler-n1: recruit received ,"revoked_below_term":3,"coordinator_id":"2xcqpfbd"}
+  2026-10-13T23:41:18.961117855 pooler-n2: recruit received ,"revoked_below_term":3,"coordinator_id":"wf7pjwsr"}
+  2026-10-13T23:41:18.961131865 pooler-n2: recruit received ,"revoked_below_term":3,"coordinator_id":"2xcqpfbd"}
+  2026-10-13T23:41:18.961200682 orch-z1: recruit failed ,"pooler":"n2","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-13T23:41:18.961297558 orch-z3: recruit failed ,"pooler":"n2","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-13T23:41:19.088440865 pooler-n3: recruit received ,"revoked_below_term":3,"coordinator_id":"wf7pjwsr"}
+  2026-10-13T23:41:19.088665165 orch-z3: recruited pooler ,"pooler":"n3","lsn":"0/41E9098"}
+  2026-10-13T23:41:19.088819018 orch-z1: recruit failed ,"pooler":"n3","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 3 from coordinator zone3_2xcqpfbd, requested by zone1_wf7pjwsr"}
+  2026-10-13T23:41:19.089434341 pooler-n1: recruit received ,"revoked_below_term":3,"coordinator_id":"wf7pjwsr"}
+  2026-10-13T23:41:19.089560216 orch-z3: recruited pooler ,"pooler":"n1","lsn":"0/41E9098"}
+  2026-10-13T23:41:19.089879572 orch-z1: recruit failed ,"pooler":"n1","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 3 from coordinator zone3_2xcqpfbd, requested by zone1_wf7pjwsr"}
+  2026-10-13T23:41:19.089899331 orch-z1: primary.promotion ,"event_type":"primary.promotion","outcome":"failed","proposed_term":3,"reason":"LeaderUnhealthy","recruit_ms":129,"error":"recruitment failed: no nodes responded to recruit"}
+  2026-10-13T23:41:19.142337707 orch-z3: promote succeeded ,"pooler":"n1","is_leader":false}
+  2026-10-13T23:41:19.164742227 orch-z2: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:41:19.227831017 orch-z2: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-13T23:41:19.720147999 orch-z3: promote succeeded ,"pooler":"n3","is_leader":true}
+  2026-10-13T23:41:19.720163488 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"success","proposed_term":3,"reason":"LeaderUnhealthy","new_primary":"n3","recruit_ms":128,"promote_ms":630}
+  2026-10-13T23:41:19.720171998 orch-z3: appoint leader action completed successfully ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:41:20.924104422 pooler-n2: MonitorPostgres: PostgreSQL initialized but not running, starting PostgreSQL }
+  2026-10-13T23:41:21.985114627 pooler-n2: MonitorPostgres: Postgres started successfully }
+  2026-10-13T23:41:22.550786043 pooler-n2: SetPrimary: stale primary, restarting as standby ,"new_leader":"n3","incoming_position":"3.0","postgres_mode":"in_recovery"}
+  2026-10-13T23:41:37.426667188 pooler-n3: MonitorPostgres: PostgreSQL initialized but not running, starting PostgreSQL }
+  2026-10-13T23:41:38.489746590 pooler-n3: MonitorPostgres: Postgres started successfully }
+  2026-10-13T23:41:43.547169825 pooler-n3: MonitorPostgres: rule names us leader but postgres is a standby; resigning ,"position":"3.0"}
+  2026-10-13T23:41:55.225665518 pooler-n2: MonitorPostgres: Postgres started successfully }
+  2026-10-13T23:41:55.640240236 orch-z3: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:41:55.642157814 orch-z1: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:41:55.644017814 orch-z2: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:41:55.695478958 orch-z3: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-13T23:41:55.695480288 orch-z1: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-13T23:41:55.695509976 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":4,"reason":"LeaderResigned"}
+  2026-10-13T23:41:55.695516636 orch-z1: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":4,"reason":"LeaderResigned"}
+  2026-10-13T23:41:55.695780905 pooler-n1: recruit received ,"revoked_below_term":4,"coordinator_id":"2xcqpfbd"}
+  2026-10-13T23:41:55.695795444 pooler-n3: recruit received ,"revoked_below_term":4,"coordinator_id":"2xcqpfbd"}
+  2026-10-13T23:41:55.695984826 orch-z2: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-13T23:41:55.696027904 orch-z2: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":4,"reason":"LeaderResigned"}
+  2026-10-13T23:41:56.101648838 pooler-n1: recruit received ,"revoked_below_term":4,"coordinator_id":"wf7pjwsr"}
+  2026-10-13T23:41:56.101904088 orch-z3: recruited pooler ,"pooler":"n1","lsn":"0/430EF30"}
+  2026-10-13T23:41:56.102057521 pooler-n1: recruit received ,"revoked_below_term":4,"coordinator_id":"4762grgw"}
+  2026-10-13T23:41:56.102256602 orch-z1: recruit failed ,"pooler":"n1","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 4 from coordinator zone3_2xcqpfbd, requested by zone1_wf7pjwsr"}
+  2026-10-13T23:41:56.102586508 orch-z2: recruit failed ,"pooler":"n1","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 4 from coordinator zone3_2xcqpfbd, requested by zone2_4762grgw"}
+  2026-10-13T23:41:56.171012536 pooler-n3: recruit received ,"revoked_below_term":4,"coordinator_id":"wf7pjwsr"}
+  2026-10-13T23:41:56.171288885 orch-z3: recruited pooler ,"pooler":"n3","lsn":"0/430EF30"}
+  2026-10-13T23:41:56.171558513 pooler-n3: recruit received ,"revoked_below_term":4,"coordinator_id":"4762grgw"}
+  2026-10-13T23:41:56.171816282 orch-z1: recruit failed ,"pooler":"n3","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 4 from coordinator zone3_2xcqpfbd, requested by zone1_wf7pjwsr"}
+  2026-10-13T23:41:56.172134068 orch-z2: recruit failed ,"pooler":"n3","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 4 from coordinator zone3_2xcqpfbd, requested by zone2_4762grgw"}
+  2026-10-13T23:42:02.830061599 pooler-n3: SetPrimary: stale primary, restarting as standby ,"new_leader":"n1","incoming_position":"3.0 proposal=4.0","postgres_mode":"in_recovery"}
+  2026-10-13T23:42:03.461697666 orch-z3: promote succeeded ,"pooler":"n1","is_leader":true}
+  2026-10-13T23:42:25.180693845 pooler-n2: recruit received ,"revoked_below_term":4,"coordinator_id":"wf7pjwsr"}
+  2026-10-13T23:42:25.181853086 pooler-n2: recruit received ,"revoked_below_term":4,"coordinator_id":"2xcqpfbd"}
+  2026-10-13T23:42:25.182117745 orch-z1: recruit failed ,"pooler":"n2","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-13T23:42:25.182134524 orch-z1: primary.promotion ,"event_type":"primary.promotion","outcome":"failed","proposed_term":4,"reason":"LeaderResigned","recruit_ms":29486,"error":"recruitment failed: no nodes responded to recruit"}
+  2026-10-13T23:42:25.182866723 pooler-n2: recruit received ,"revoked_below_term":4,"coordinator_id":"4762grgw"}
+  2026-10-13T23:42:25.183146111 orch-z3: recruit failed ,"pooler":"n2","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-13T23:42:25.184053083 orch-z2: recruit failed ,"pooler":"n2","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-13T23:42:25.184070433 orch-z2: primary.promotion ,"event_type":"primary.promotion","outcome":"failed","proposed_term":4,"reason":"LeaderResigned","recruit_ms":29488,"error":"recruitment failed: no nodes responded to recruit"}
+  2026-10-13T23:42:25.185760481 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"success","proposed_term":4,"reason":"LeaderResigned","new_primary":"n1","recruit_ms":475,"promote_ms":29014}
+  2026-10-13T23:42:25.185766501 orch-z3: appoint leader action completed successfully ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:42:30.273876308 pooler-n2: MonitorPostgres: Postgres started successfully }
+== 20261013T234245Z-D3-4-M3-6b74e887
+  inject f0 on n2 at t=70313681901 ns
+  inject f1 on n1 at t=87934872607 ns
+  inject f2 on n1 at t=104982067136 ns
+  2026-10-13T23:43:09.767352144 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":1,"reason":"ShardInit"}
+  2026-10-13T23:43:09.767782867 pooler-n2: recruit received ,"revoked_below_term":1,"coordinator_id":"zcv2wvbm"}
+  2026-10-13T23:43:09.997744102 orch-z3: recruited pooler ,"pooler":"n2","lsn":"0/4000000"}
+  2026-10-13T23:43:10.564311775 pooler-n3: recruit received ,"revoked_below_term":1,"coordinator_id":"zcv2wvbm"}
+  2026-10-13T23:43:10.793878772 orch-z3: recruited pooler ,"pooler":"n3","lsn":"0/4000000"}
+  2026-10-13T23:43:10.847151775 orch-z3: promote succeeded ,"pooler":"n3","is_leader":false}
+  2026-10-13T23:43:11.254412882 pooler-n1: recruit received ,"revoked_below_term":1,"coordinator_id":"zcv2wvbm"}
+  2026-10-13T23:43:11.444884943 orch-z3: promote succeeded ,"pooler":"n2","is_leader":true}
+  2026-10-13T23:43:11.685779628 orch-z3: recruited pooler ,"pooler":"n1","lsn":"0/4000000"}
+  2026-10-13T23:43:11.736641272 orch-z3: promote succeeded ,"pooler":"n1","is_leader":false}
+  2026-10-13T23:43:11.736657101 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"success","proposed_term":1,"reason":"ShardInit","new_primary":"n2","recruit_ms":1026,"promote_ms":942}
+  2026-10-13T23:44:24.443121333 orch-z2: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:44:24.485557412 orch-z2: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-13T23:44:24.485629310 orch-z2: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":2,"reason":"LeaderUnhealthy"}
+  2026-10-13T23:44:24.485861930 pooler-n2: recruit received ,"revoked_below_term":2,"coordinator_id":"bcn6v7t4"}
+  2026-10-13T23:44:24.485930828 pooler-n3: recruit received ,"revoked_below_term":2,"coordinator_id":"bcn6v7t4"}
+  2026-10-13T23:44:24.485949077 pooler-n1: recruit received ,"revoked_below_term":2,"coordinator_id":"bcn6v7t4"}
+  2026-10-13T23:44:24.486105041 orch-z2: recruit failed ,"pooler":"n2","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-13T23:44:24.616893613 orch-z2: recruited pooler ,"pooler":"n1","lsn":"0/40D8E00"}
+  2026-10-13T23:44:24.617706320 orch-z2: recruited pooler ,"pooler":"n3","lsn":"0/40D8E00"}
+  2026-10-13T23:44:24.670888912 orch-z2: promote succeeded ,"pooler":"n3","is_leader":false}
+  2026-10-13T23:44:24.804113057 pooler-n2: MonitorPostgres: PostgreSQL initialized but not running, starting PostgreSQL }
+  2026-10-13T23:44:25.167795557 orch-z2: promote succeeded ,"pooler":"n1","is_leader":true}
+  2026-10-13T23:44:25.167855515 orch-z2: primary.promotion ,"event_type":"primary.promotion","outcome":"success","proposed_term":2,"reason":"LeaderUnhealthy","new_primary":"n1","recruit_ms":132,"promote_ms":549}
+  2026-10-13T23:44:25.167874034 orch-z2: appoint leader action completed successfully ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:44:25.869427469 pooler-n2: MonitorPostgres: Postgres started successfully }
+  2026-10-13T23:44:26.990201645 pooler-n2: SetPrimary: stale primary, restarting as standby ,"new_leader":"n1","incoming_position":"2.0","postgres_mode":"in_recovery"}
+  2026-10-13T23:44:41.827514346 pooler-n1: MonitorPostgres: PostgreSQL initialized but not running, starting PostgreSQL }
+  2026-10-13T23:44:42.886715674 pooler-n1: MonitorPostgres: Postgres started successfully }
+  2026-10-13T23:44:47.944368863 pooler-n1: MonitorPostgres: rule names us leader but postgres is a standby; resigning ,"position":"2.0"}
+  2026-10-13T23:44:59.617337273 pooler-n2: MonitorPostgres: Postgres started successfully }
+  2026-10-13T23:45:00.025875978 orch-z2: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:45:00.028901780 orch-z1: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:45:00.030272286 orch-z3: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:45:00.071995860 orch-z2: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-13T23:45:00.072050348 orch-z2: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":3,"reason":"LeaderResigned"}
+  2026-10-13T23:45:00.072276529 pooler-n1: recruit received ,"revoked_below_term":3,"coordinator_id":"bcn6v7t4"}
+  2026-10-13T23:45:00.072388594 pooler-n3: recruit received ,"revoked_below_term":3,"coordinator_id":"bcn6v7t4"}
+  2026-10-13T23:45:00.072504850 orch-z2: recruit failed ,"pooler":"n1","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-13T23:45:00.073264080 orch-z1: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-13T23:45:00.073275130 orch-z3: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-13T23:45:00.073328958 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":3,"reason":"LeaderResigned"}
+  2026-10-13T23:45:00.073778070 pooler-n1: recruit received ,"revoked_below_term":3,"coordinator_id":"zcv2wvbm"}
+  2026-10-13T23:45:00.073805699 orch-z1: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":3,"reason":"LeaderResigned"}
+  2026-10-13T23:45:00.073861377 pooler-n1: recruit received ,"revoked_below_term":3,"coordinator_id":"4vzxnzqr"}
+  2026-10-13T23:45:00.073874496 orch-z3: recruit failed ,"pooler":"n1","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-13T23:45:00.074132736 orch-z1: recruit failed ,"pooler":"n1","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-13T23:45:00.198834767 pooler-n3: recruit received ,"revoked_below_term":3,"coordinator_id":"zcv2wvbm"}
+  2026-10-13T23:45:00.199206832 orch-z2: recruited pooler ,"pooler":"n3","lsn":"0/41D57C0"}
+  2026-10-13T23:45:00.199243291 pooler-n3: recruit received ,"revoked_below_term":3,"coordinator_id":"4vzxnzqr"}
+  2026-10-13T23:45:00.199774690 orch-z3: recruit failed ,"pooler":"n3","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 3 from coordinator zone2_bcn6v7t4, requested by zone3_zcv2wvbm"}
+  2026-10-13T23:45:00.200063138 orch-z1: recruit failed ,"pooler":"n3","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 3 from coordinator zone2_bcn6v7t4, requested by zone1_4vzxnzqr"}
+  2026-10-13T23:45:03.050854841 pooler-n1: MonitorPostgres: PostgreSQL initialized but not running, starting PostgreSQL }
+  2026-10-13T23:45:04.109854852 pooler-n1: MonitorPostgres: Postgres started successfully }
+  2026-10-13T23:45:29.571367706 pooler-n2: recruit received ,"revoked_below_term":3,"coordinator_id":"bcn6v7t4"}
+  2026-10-13T23:45:29.572575030 pooler-n2: recruit received ,"revoked_below_term":3,"coordinator_id":"zcv2wvbm"}
+  2026-10-13T23:45:29.572907547 orch-z2: recruit failed ,"pooler":"n2","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-13T23:45:29.572927326 orch-z2: primary.promotion ,"event_type":"primary.promotion","outcome":"failed","proposed_term":3,"reason":"LeaderResigned","recruit_ms":29500,"error":"recruitment failed: insufficient outgoing cohort recruitment: majority not s
+  2026-10-13T23:45:29.573858010 pooler-n2: recruit received ,"revoked_below_term":3,"coordinator_id":"4vzxnzqr"}
+  2026-10-13T23:45:29.574099091 orch-z3: recruit failed ,"pooler":"n2","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-13T23:45:29.574113180 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"failed","proposed_term":3,"reason":"LeaderResigned","recruit_ms":29500,"error":"recruitment failed: no nodes responded to recruit"}
+  2026-10-13T23:45:29.575442898 orch-z1: recruit failed ,"pooler":"n2","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-13T23:45:29.575460698 orch-z1: primary.promotion ,"event_type":"primary.promotion","outcome":"failed","proposed_term":3,"reason":"LeaderResigned","recruit_ms":29501,"error":"recruitment failed: no nodes responded to recruit"}
+  2026-10-13T23:45:30.073921425 orch-z2: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:45:30.074682585 orch-z3: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:45:30.076660789 orch-z1: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:45:30.130370269 orch-z3: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-13T23:45:30.130382118 orch-z1: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-13T23:45:30.130383538 orch-z2: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-13T23:45:30.130386638 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":4,"reason":"LeaderResigned"}
+  2026-10-13T23:45:30.130397988 orch-z1: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":4,"reason":"LeaderResigned"}
+  2026-10-13T23:45:30.130401428 orch-z2: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":4,"reason":"LeaderResigned"}
+  2026-10-13T23:45:30.130741884 pooler-n1: recruit received ,"revoked_below_term":4,"coordinator_id":"bcn6v7t4"}
+  2026-10-13T23:45:30.130774563 pooler-n3: recruit received ,"revoked_below_term":4,"coordinator_id":"bcn6v7t4"}
+  2026-10-13T23:45:30.130832231 pooler-n2: recruit received ,"revoked_below_term":4,"coordinator_id":"zcv2wvbm"}
+  2026-10-13T23:45:30.131806353 pooler-n2: recruit received ,"revoked_below_term":4,"coordinator_id":"bcn6v7t4"}
+  2026-10-13T23:45:30.131956498 orch-z3: recruit failed ,"pooler":"n2","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-13T23:45:30.132711128 pooler-n2: recruit received ,"revoked_below_term":4,"coordinator_id":"4vzxnzqr"}
+  2026-10-13T23:45:30.132852843 orch-z2: recruit failed ,"pooler":"n2","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-13T23:45:30.133627122 orch-z1: recruit failed ,"pooler":"n2","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-13T23:45:30.254290689 pooler-n3: recruit received ,"revoked_below_term":4,"coordinator_id":"zcv2wvbm"}
+  2026-10-13T23:45:30.254489161 orch-z2: recruited pooler ,"pooler":"n3","lsn":"0/41D57C0"}
+  2026-10-13T23:45:30.254523160 pooler-n3: recruit received ,"revoked_below_term":4,"coordinator_id":"4vzxnzqr"}
+  2026-10-13T23:45:30.254724652 orch-z3: recruit failed ,"pooler":"n3","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 4 from coordinator zone2_bcn6v7t4, requested by zone3_zcv2wvbm"}
+  2026-10-13T23:45:30.254878766 orch-z1: recruit failed ,"pooler":"n3","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 4 from coordinator zone2_bcn6v7t4, requested by zone1_4vzxnzqr"}
+  2026-10-13T23:45:30.354551836 pooler-n1: recruit received ,"revoked_below_term":4,"coordinator_id":"4vzxnzqr"}
+  2026-10-13T23:45:30.354834435 orch-z2: recruited pooler ,"pooler":"n1","lsn":"0/41D57C0"}
+  2026-10-13T23:45:30.354878453 pooler-n1: recruit received ,"revoked_below_term":4,"coordinator_id":"zcv2wvbm"}
+  2026-10-13T23:45:30.355107065 orch-z1: recruit failed ,"pooler":"n1","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 4 from coordinator zone2_bcn6v7t4, requested by zone1_4vzxnzqr"}
+  2026-10-13T23:45:30.355125514 orch-z1: primary.promotion ,"event_type":"primary.promotion","outcome":"failed","proposed_term":4,"reason":"LeaderResigned","recruit_ms":224,"error":"recruitment failed: no nodes responded to recruit"}
+  2026-10-13T23:45:30.355392714 orch-z3: recruit failed ,"pooler":"n1","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 4 from coordinator zone2_bcn6v7t4, requested by zone3_zcv2wvbm"}
+  2026-10-13T23:45:30.355420772 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"failed","proposed_term":4,"reason":"LeaderResigned","recruit_ms":225,"error":"recruitment failed: no nodes responded to recruit"}
+  2026-10-13T23:45:31.140743276 pooler-n1: SetPrimary: stale primary, restarting as standby ,"new_leader":"n3","incoming_position":"2.0 proposal=4.0","postgres_mode":"in_recovery"}
+  2026-10-13T23:45:31.762629810 orch-z2: promote succeeded ,"pooler":"n3","is_leader":true}
+  2026-10-13T23:45:31.762648990 orch-z2: primary.promotion ,"event_type":"primary.promotion","outcome":"success","proposed_term":4,"reason":"LeaderResigned","new_primary":"n3","recruit_ms":224,"promote_ms":1407}
+  2026-10-13T23:45:31.762702588 orch-z2: appoint leader action completed successfully ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:45:34.669858942 pooler-n2: MonitorPostgres: Postgres started successfully }
+== 20261013T234606Z-D3-5-M3-457577b2
+  inject f0 on n2 at t=70316809124 ns
+  inject f1 on n3 at t=87928766253 ns
+  inject f2 on n1 at t=106608872532 ns
+  2026-10-13T23:46:30.601137479 orch-z1: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":1,"reason":"ShardInit"}
+  2026-10-13T23:46:30.602514997 pooler-n2: recruit received ,"revoked_below_term":1,"coordinator_id":"29pthv69"}
+  2026-10-13T23:46:30.602887633 pooler-n3: recruit received ,"revoked_below_term":1,"coordinator_id":"29pthv69"}
+  2026-10-13T23:46:30.840178920 orch-z1: recruited pooler ,"pooler":"n3","lsn":"0/4000000"}
+  2026-10-13T23:46:30.844689099 orch-z1: recruited pooler ,"pooler":"n2","lsn":"0/4000000"}
+  2026-10-13T23:46:30.913813793 orch-z1: promote succeeded ,"pooler":"n3","is_leader":false}
+  2026-10-13T23:46:31.306278150 orch-z1: promote succeeded ,"pooler":"n2","is_leader":true}
+  2026-10-13T23:46:32.220684821 pooler-n1: recruit received ,"revoked_below_term":1,"coordinator_id":"29pthv69"}
+  2026-10-13T23:46:32.554797083 orch-z1: recruited pooler ,"pooler":"n1","lsn":"0/4000000"}
+  2026-10-13T23:46:32.602969580 orch-z1: promote succeeded ,"pooler":"n1","is_leader":false}
+  2026-10-13T23:46:32.602995629 orch-z1: primary.promotion ,"event_type":"primary.promotion","outcome":"success","proposed_term":1,"reason":"ShardInit","new_primary":"n2","recruit_ms":243,"promote_ms":1758}
+  2026-10-13T23:47:45.801884665 orch-z3: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:47:45.846299726 orch-z3: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-13T23:47:45.846407582 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":2,"reason":"LeaderUnhealthy"}
+  2026-10-13T23:47:45.846657123 pooler-n2: recruit received ,"revoked_below_term":2,"coordinator_id":"jnbwt8w8"}
+  2026-10-13T23:47:45.846697802 pooler-n1: recruit received ,"revoked_below_term":2,"coordinator_id":"jnbwt8w8"}
+  2026-10-13T23:47:45.846732400 pooler-n3: recruit received ,"revoked_below_term":2,"coordinator_id":"jnbwt8w8"}
+  2026-10-13T23:47:45.846860926 orch-z3: recruit failed ,"pooler":"n2","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-13T23:47:45.977387990 orch-z3: recruited pooler ,"pooler":"n1","lsn":"0/40DCF58"}
+  2026-10-13T23:47:45.978171001 orch-z3: recruited pooler ,"pooler":"n3","lsn":"0/40DCF58"}
+  2026-10-13T23:47:45.979658046 pooler-n2: MonitorPostgres: PostgreSQL initialized but not running, starting PostgreSQL }
+  2026-10-13T23:47:46.031131628 orch-z3: promote succeeded ,"pooler":"n1","is_leader":false}
+  2026-10-13T23:47:46.533611795 orch-z3: promote succeeded ,"pooler":"n3","is_leader":true}
+  2026-10-13T23:47:47.042701309 pooler-n2: MonitorPostgres: Postgres started successfully }
+  2026-10-13T23:47:47.049622074 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"success","proposed_term":2,"reason":"LeaderUnhealthy","new_primary":"n3","recruit_ms":131,"promote_ms":1071}
+  2026-10-13T23:47:47.049631723 orch-z3: appoint leader action completed successfully ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:47:49.844431049 pooler-n2: SetPrimary: stale primary, restarting as standby ,"new_leader":"n3","incoming_position":"2.0","postgres_mode":"in_recovery"}
+  2026-10-13T23:48:04.495138955 orch-z2: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:48:04.495570129 orch-z3: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:48:04.495888648 orch-z1: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:48:04.538816263 orch-z3: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-13T23:48:04.538824013 orch-z2: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-13T23:48:04.538827353 orch-z1: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-13T23:48:04.538864082 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":3,"reason":"LeaderUnhealthy"}
+  2026-10-13T23:48:04.538875601 orch-z2: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":3,"reason":"LeaderUnhealthy"}
+  2026-10-13T23:48:04.538885391 orch-z1: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":3,"reason":"LeaderUnhealthy"}
+  2026-10-13T23:48:04.539188150 pooler-n2: recruit received ,"revoked_below_term":3,"coordinator_id":"29pthv69"}
+  2026-10-13T23:48:04.539189770 pooler-n1: recruit received ,"revoked_below_term":3,"coordinator_id":"29pthv69"}
+  2026-10-13T23:48:04.539220548 pooler-n3: recruit received ,"revoked_below_term":3,"coordinator_id":"29pthv69"}
+  2026-10-13T23:48:04.539231778 pooler-n3: recruit received ,"revoked_below_term":3,"coordinator_id":"jnbwt8w8"}
+  2026-10-13T23:48:04.539303655 pooler-n3: recruit received ,"revoked_below_term":3,"coordinator_id":"kfp4fhdh"}
+  2026-10-13T23:48:04.539328605 orch-z1: recruit failed ,"pooler":"n3","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-13T23:48:04.539446320 orch-z3: recruit failed ,"pooler":"n3","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-13T23:48:04.539486349 orch-z2: recruit failed ,"pooler":"n3","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-13T23:48:04.669920655 pooler-n1: recruit received ,"revoked_below_term":3,"coordinator_id":"kfp4fhdh"}
+  2026-10-13T23:48:04.670162177 orch-z1: recruited pooler ,"pooler":"n1","lsn":"0/41E1660"}
+  2026-10-13T23:48:04.670176116 pooler-n1: recruit received ,"revoked_below_term":3,"coordinator_id":"jnbwt8w8"}
+  2026-10-13T23:48:04.670509754 orch-z2: recruit failed ,"pooler":"n1","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 3 from coordinator zone1_29pthv69, requested by zone2_kfp4fhdh"}
+  2026-10-13T23:48:04.670605540 orch-z3: recruit failed ,"pooler":"n1","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 3 from coordinator zone1_29pthv69, requested by zone3_jnbwt8w8"}
+  2026-10-13T23:48:04.671552306 pooler-n2: recruit received ,"revoked_below_term":3,"coordinator_id":"kfp4fhdh"}
+  2026-10-13T23:48:04.671679591 orch-z1: recruited pooler ,"pooler":"n2","lsn":"0/41E1660"}
+  2026-10-13T23:48:04.671813806 pooler-n2: recruit received ,"revoked_below_term":3,"coordinator_id":"jnbwt8w8"}
+  2026-10-13T23:48:04.672003599 orch-z2: recruit failed ,"pooler":"n2","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 3 from coordinator zone1_29pthv69, requested by zone2_kfp4fhdh"}
+  2026-10-13T23:48:04.672016989 orch-z2: primary.promotion ,"event_type":"primary.promotion","outcome":"failed","proposed_term":3,"reason":"LeaderUnhealthy","recruit_ms":133,"error":"recruitment failed: no nodes responded to recruit"}
+  2026-10-13T23:48:04.672227601 orch-z3: recruit failed ,"pooler":"n2","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 3 from coordinator zone1_29pthv69, requested by zone3_jnbwt8w8"}
+  2026-10-13T23:48:04.672240761 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"failed","proposed_term":3,"reason":"LeaderUnhealthy","recruit_ms":133,"error":"recruitment failed: no nodes responded to recruit"}
+  2026-10-13T23:48:04.681256970 pooler-n3: MonitorPostgres: PostgreSQL initialized but not running, starting PostgreSQL }
+  2026-10-13T23:48:04.726927905 orch-z1: promote succeeded ,"pooler":"n2","is_leader":false}
+  2026-10-13T23:48:05.304691620 orch-z1: promote succeeded ,"pooler":"n1","is_leader":true}
+  2026-10-13T23:48:05.743572320 pooler-n3: MonitorPostgres: Postgres started successfully }
+  2026-10-13T23:48:05.749927687 orch-z1: primary.promotion ,"event_type":"primary.promotion","outcome":"success","proposed_term":3,"reason":"LeaderUnhealthy","new_primary":"n1","recruit_ms":132,"promote_ms":1078}
+  2026-10-13T23:48:05.749935757 orch-z1: appoint leader action completed successfully ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:48:07.976523051 pooler-n3: SetPrimary: stale primary, restarting as standby ,"new_leader":"n1","incoming_position":"3.0","postgres_mode":"in_recovery"}
+  2026-10-13T23:48:21.630812424 orch-z3: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:48:21.631264627 orch-z2: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:48:21.675894070 orch-z2: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-13T23:48:21.675911529 orch-z3: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-13T23:48:21.675955778 orch-z2: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":4,"reason":"LeaderUnhealthy"}
+  2026-10-13T23:48:21.675958918 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":4,"reason":"LeaderUnhealthy"}
+  2026-10-13T23:48:21.676186249 pooler-n1: recruit received ,"revoked_below_term":4,"coordinator_id":"jnbwt8w8"}
+  2026-10-13T23:48:21.676266656 pooler-n2: recruit received ,"revoked_below_term":4,"coordinator_id":"kfp4fhdh"}
+  2026-10-13T23:48:21.676295945 pooler-n3: recruit received ,"revoked_below_term":4,"coordinator_id":"kfp4fhdh"}
+  2026-10-13T23:48:21.676326964 pooler-n1: recruit received ,"revoked_below_term":4,"coordinator_id":"kfp4fhdh"}
+  2026-10-13T23:48:21.676394302 orch-z3: recruit failed ,"pooler":"n1","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-13T23:48:21.676463509 orch-z2: recruit failed ,"pooler":"n1","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-13T23:48:21.807700282 pooler-n2: recruit received ,"revoked_below_term":4,"coordinator_id":"jnbwt8w8"}
+  2026-10-13T23:48:21.807981711 orch-z2: recruited pooler ,"pooler":"n2","lsn":"0/42FC600"}
+  2026-10-13T23:48:21.808240112 orch-z3: recruit failed ,"pooler":"n2","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 4 from coordinator zone2_kfp4fhdh, requested by zone3_jnbwt8w8"}
+  2026-10-13T23:48:21.808703025 pooler-n3: recruit received ,"revoked_below_term":4,"coordinator_id":"jnbwt8w8"}
+  2026-10-13T23:48:21.808834340 orch-z2: recruited pooler ,"pooler":"n3","lsn":"0/42FC600"}
+  2026-10-13T23:48:21.809158778 orch-z3: recruit failed ,"pooler":"n3","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 4 from coordinator zone2_kfp4fhdh, requested by zone3_jnbwt8w8"}
+  2026-10-13T23:48:21.809173218 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"failed","proposed_term":4,"reason":"LeaderUnhealthy","recruit_ms":133,"error":"recruitment failed: no nodes responded to recruit"}
+  2026-10-13T23:48:21.856784361 orch-z2: promote succeeded ,"pooler":"n3","is_leader":false}
+  2026-10-13T23:48:22.355520621 orch-z2: promote succeeded ,"pooler":"n2","is_leader":true}
+  2026-10-13T23:48:22.355536830 orch-z2: primary.promotion ,"event_type":"primary.promotion","outcome":"success","proposed_term":4,"reason":"LeaderUnhealthy","new_primary":"n2","recruit_ms":132,"promote_ms":546}
+  2026-10-13T23:48:22.355564839 orch-z2: appoint leader action completed successfully ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:48:22.907504309 pooler-n1: MonitorPostgres: PostgreSQL initialized but not running, starting PostgreSQL }
+  2026-10-13T23:48:23.967842060 pooler-n1: MonitorPostgres: Postgres started successfully }
+  2026-10-13T23:48:27.794413977 pooler-n1: SetPrimary: stale primary, restarting as standby ,"new_leader":"n2","incoming_position":"4.0","postgres_mode":"in_recovery"}
+  2026-10-13T23:49:05.534801156 pooler-n1: MonitorPostgres: PostgreSQL initialized but not running, starting PostgreSQL }
+  2026-10-13T23:49:05.578122506 pooler-n1: MonitorPostgres: Postgres started successfully }
+== 20261013T234932Z-D3-1-real-44f0b044
+  inject f0 on n2 at t=70309015103 ns
+  inject f1 on n3 at t=87827997318 ns
+  inject f2 on n2 at t=108174501710 ns
+  2026-10-13T23:49:57.765132638 orch-z1: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":1,"reason":"ShardInit"}
+  2026-10-13T23:49:57.765520364 pooler-n2: recruit received ,"revoked_below_term":1,"coordinator_id":"hcj8777r"}
+  2026-10-13T23:49:57.765520514 pooler-n3: recruit received ,"revoked_below_term":1,"coordinator_id":"hcj8777r"}
+  2026-10-13T23:49:57.994760344 orch-z1: recruited pooler ,"pooler":"n2","lsn":"0/4000000"}
+  2026-10-13T23:49:57.995652292 orch-z1: recruited pooler ,"pooler":"n3","lsn":"0/4000000"}
+  2026-10-13T23:49:58.053872795 orch-z1: promote succeeded ,"pooler":"n3","is_leader":false}
+  2026-10-13T23:49:58.458201110 orch-z1: promote succeeded ,"pooler":"n2","is_leader":true}
+  2026-10-13T23:49:59.231113663 pooler-n1: recruit received ,"revoked_below_term":1,"coordinator_id":"hcj8777r"}
+  2026-10-13T23:49:59.558348628 orch-z1: recruited pooler ,"pooler":"n1","lsn":"0/4000000"}
+  2026-10-13T23:49:59.604984743 orch-z1: promote succeeded ,"pooler":"n1","is_leader":false}
+  2026-10-13T23:49:59.605001112 orch-z1: primary.promotion ,"event_type":"primary.promotion","outcome":"success","proposed_term":1,"reason":"ShardInit","new_primary":"n2","recruit_ms":230,"promote_ms":1609}
+  2026-10-13T23:51:12.622708525 pooler-n2: MonitorPostgres: PostgreSQL initialized but not running, starting PostgreSQL }
+  2026-10-13T23:51:12.708802363 orch-z1: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:51:12.760833778 orch-z1: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-13T23:51:12.760921035 orch-z1: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":2,"reason":"LeaderUnhealthy"}
+  2026-10-13T23:51:12.761217925 pooler-n1: recruit received ,"revoked_below_term":2,"coordinator_id":"hcj8777r"}
+  2026-10-13T23:51:12.761268553 pooler-n3: recruit received ,"revoked_below_term":2,"coordinator_id":"hcj8777r"}
+  2026-10-13T23:51:12.888131590 orch-z1: recruited pooler ,"pooler":"n1","lsn":"0/40D86B8"}
+  2026-10-13T23:51:12.889875939 orch-z1: recruited pooler ,"pooler":"n3","lsn":"0/40D86B8"}
+  2026-10-13T23:51:12.937273436 orch-z1: promote succeeded ,"pooler":"n1","is_leader":false}
+  2026-10-13T23:51:13.686333081 pooler-n2: MonitorPostgres: Postgres started successfully }
+  2026-10-13T23:51:13.690124709 pooler-n2: recruit received ,"revoked_below_term":2,"coordinator_id":"hcj8777r"}
+  2026-10-13T23:51:13.920797507 orch-z1: recruited pooler ,"pooler":"n2","lsn":"0/40D86B8"}
+  2026-10-13T23:51:13.922717090 pooler-n2: SetPrimary: stale primary, restarting as standby ,"new_leader":"n3","incoming_position":"1.0 proposal=2.0","postgres_mode":"in_recovery"}
+  2026-10-13T23:51:13.970652389 orch-z1: promote succeeded ,"pooler":"n3","is_leader":true}
+  2026-10-13T23:51:13.970667549 orch-z1: primary.promotion ,"event_type":"primary.promotion","outcome":"success","proposed_term":2,"reason":"LeaderUnhealthy","new_primary":"n3","recruit_ms":129,"promote_ms":1080}
+  2026-10-13T23:51:13.970676328 orch-z1: appoint leader action completed successfully ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:51:31.941205629 orch-z3: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:51:31.985533779 orch-z3: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-13T23:51:31.985632736 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":3,"reason":"LeaderUnhealthy"}
+  2026-10-13T23:51:31.985856478 pooler-n3: recruit received ,"revoked_below_term":3,"coordinator_id":"thpfxr45"}
+  2026-10-13T23:51:31.985905926 pooler-n1: recruit received ,"revoked_below_term":3,"coordinator_id":"thpfxr45"}
+  2026-10-13T23:51:31.985922536 pooler-n2: recruit received ,"revoked_below_term":3,"coordinator_id":"thpfxr45"}
+  2026-10-13T23:51:31.986066621 orch-z3: recruit failed ,"pooler":"n3","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-13T23:51:32.113534446 orch-z3: recruited pooler ,"pooler":"n1","lsn":"0/41BA960"}
+  2026-10-13T23:51:32.115116671 orch-z3: recruited pooler ,"pooler":"n2","lsn":"0/41BA960"}
+  2026-10-13T23:51:32.161098065 orch-z3: promote succeeded ,"pooler":"n1","is_leader":false}
+  2026-10-13T23:51:32.776088405 orch-z3: promote succeeded ,"pooler":"n2","is_leader":true}
+  2026-10-13T23:51:32.776113234 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"success","proposed_term":3,"reason":"LeaderUnhealthy","new_primary":"n2","recruit_ms":129,"promote_ms":660}
+  2026-10-13T23:51:32.776177142 orch-z3: appoint leader action completed successfully ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:51:32.826309262 pooler-n3: MonitorPostgres: PostgreSQL initialized but not running, starting PostgreSQL }
+  2026-10-13T23:51:33.900700941 pooler-n3: MonitorPostgres: Postgres started successfully }
+  2026-10-13T23:51:33.906488361 pooler-n3: SetPrimary: stale primary, restarting as standby ,"new_leader":"n2","incoming_position":"3.0","postgres_mode":"in_recovery"}
+  2026-10-13T23:51:48.917173245 pooler-n2: MonitorPostgres: PostgreSQL initialized but not running, starting PostgreSQL }
+  2026-10-13T23:51:49.061020559 orch-z3: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:51:49.063244073 orch-z1: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:51:49.112743100 orch-z3: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-13T23:51:49.112827477 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":4,"reason":"LeaderUnhealthy"}
+  2026-10-13T23:51:49.112903265 orch-z1: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-13T23:51:49.112968493 orch-z1: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":4,"reason":"LeaderUnhealthy"}
+  2026-10-13T23:51:49.113166506 pooler-n1: recruit received ,"revoked_below_term":4,"coordinator_id":"thpfxr45"}
+  2026-10-13T23:51:49.113180205 pooler-n3: recruit received ,"revoked_below_term":4,"coordinator_id":"thpfxr45"}
+  2026-10-13T23:51:49.235725097 pooler-n1: recruit received ,"revoked_below_term":4,"coordinator_id":"hcj8777r"}
+  2026-10-13T23:51:49.235980598 orch-z3: recruited pooler ,"pooler":"n1","lsn":"0/42C33C0"}
+  2026-10-13T23:51:49.236355845 orch-z1: recruit failed ,"pooler":"n1","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 4 from coordinator zone3_thpfxr45, requested by zone1_hcj8777r"}
+  2026-10-13T23:51:49.238418494 pooler-n3: recruit received ,"revoked_below_term":4,"coordinator_id":"hcj8777r"}
+  2026-10-13T23:51:49.238559289 orch-z3: recruited pooler ,"pooler":"n3","lsn":"0/42C33C0"}
+  2026-10-13T23:51:49.238870958 orch-z1: recruit failed ,"pooler":"n3","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 4 from coordinator zone3_thpfxr45, requested by zone1_hcj8777r"}
+  2026-10-13T23:51:49.287203546 orch-z3: promote succeeded ,"pooler":"n1","is_leader":false}
+  2026-10-13T23:51:49.789319969 orch-z3: promote succeeded ,"pooler":"n3","is_leader":true}
+  2026-10-13T23:51:49.979245810 pooler-n2: MonitorPostgres: Postgres started successfully }
+  2026-10-13T23:51:49.983325659 pooler-n2: recruit received ,"revoked_below_term":4,"coordinator_id":"thpfxr45"}
+  2026-10-13T23:51:50.207815906 pooler-n2: recruit received ,"revoked_below_term":4,"coordinator_id":"hcj8777r"}
+  2026-10-13T23:51:50.208032239 orch-z3: recruited pooler ,"pooler":"n2","lsn":"0/42C33C0"}
+  2026-10-13T23:51:50.208316159 orch-z1: recruit failed ,"pooler":"n2","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 4 from coordinator zone3_thpfxr45, requested by zone1_hcj8777r"}
+  2026-10-13T23:51:50.208338968 orch-z1: primary.promotion ,"event_type":"primary.promotion","outcome":"failed","proposed_term":4,"reason":"LeaderUnhealthy","recruit_ms":1095,"error":"recruitment failed: no nodes responded to recruit"}
+  2026-10-13T23:51:50.208938557 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"success","proposed_term":4,"reason":"LeaderUnhealthy","new_primary":"n3","recruit_ms":125,"promote_ms":970}
+  2026-10-13T23:51:50.208959576 orch-z3: appoint leader action completed successfully ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:51:54.136531359 pooler-n2: SetPrimary: stale primary, restarting as standby ,"new_leader":"n3","incoming_position":"4.0","postgres_mode":"in_recovery"}
+== 20261013T235250Z-D3-2-real-ad08cd75
+  inject f0 on n1 at t=70312768240 ns
+  inject f1 on n2 at t=88461902069 ns
+  inject f2 on n3 at t=108169696184 ns
+  2026-10-13T23:53:16.327717430 orch-z2: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":1,"reason":"ShardInit"}
+  2026-10-13T23:53:16.328115997 pooler-n2: recruit received ,"revoked_below_term":1,"coordinator_id":"4ccsqpn4"}
+  2026-10-13T23:53:16.328144836 pooler-n1: recruit received ,"revoked_below_term":1,"coordinator_id":"4ccsqpn4"}
+  2026-10-13T23:53:16.557602855 orch-z2: recruited pooler ,"pooler":"n2","lsn":"0/4000000"}
+  2026-10-13T23:53:16.558473525 orch-z2: recruited pooler ,"pooler":"n1","lsn":"0/4000000"}
+  2026-10-13T23:53:16.616133225 orch-z2: promote succeeded ,"pooler":"n2","is_leader":false}
+  2026-10-13T23:53:17.287146284 orch-z2: promote succeeded ,"pooler":"n1","is_leader":true}
+  2026-10-13T23:53:17.445890399 pooler-n3: recruit received ,"revoked_below_term":1,"coordinator_id":"4ccsqpn4"}
+  2026-10-13T23:53:17.779885296 orch-z2: recruited pooler ,"pooler":"n3","lsn":"0/4000000"}
+  2026-10-13T23:53:17.826591368 orch-z2: promote succeeded ,"pooler":"n3","is_leader":false}
+  2026-10-13T23:53:17.826607378 orch-z2: primary.promotion ,"event_type":"primary.promotion","outcome":"success","proposed_term":1,"reason":"ShardInit","new_primary":"n1","recruit_ms":230,"promote_ms":1268}
+  2026-10-13T23:54:30.519428831 orch-z1: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:54:30.561285266 orch-z1: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-13T23:54:30.561350064 orch-z1: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":2,"reason":"LeaderUnhealthy"}
+  2026-10-13T23:54:30.561568626 pooler-n1: recruit received ,"revoked_below_term":2,"coordinator_id":"qxdqr2lr"}
+  2026-10-13T23:54:30.561628604 pooler-n3: recruit received ,"revoked_below_term":2,"coordinator_id":"qxdqr2lr"}
+  2026-10-13T23:54:30.561646954 pooler-n2: recruit received ,"revoked_below_term":2,"coordinator_id":"qxdqr2lr"}
+  2026-10-13T23:54:30.561742950 orch-z1: recruit failed ,"pooler":"n1","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-13T23:54:30.690873936 orch-z1: recruited pooler ,"pooler":"n3","lsn":"0/40DA000"}
+  2026-10-13T23:54:30.691761026 orch-z1: recruited pooler ,"pooler":"n2","lsn":"0/40DA000"}
+  2026-10-13T23:54:30.747716758 orch-z1: promote succeeded ,"pooler":"n3","is_leader":false}
+  2026-10-13T23:54:31.239597977 orch-z1: promote succeeded ,"pooler":"n2","is_leader":true}
+  2026-10-13T23:54:31.239613557 orch-z1: primary.promotion ,"event_type":"primary.promotion","outcome":"success","proposed_term":2,"reason":"LeaderUnhealthy","new_primary":"n2","recruit_ms":130,"promote_ms":547}
+  2026-10-13T23:54:31.239620817 orch-z1: appoint leader action completed successfully ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:54:31.585367242 pooler-n1: MonitorPostgres: PostgreSQL initialized but not running, starting PostgreSQL }
+  2026-10-13T23:54:32.655796429 pooler-n1: MonitorPostgres: Postgres started successfully }
+  2026-10-13T23:54:32.662052000 pooler-n1: SetPrimary: stale primary, restarting as standby ,"new_leader":"n2","incoming_position":"2.0","postgres_mode":"in_recovery"}
+  2026-10-13T23:54:51.730802231 pooler-n2: MonitorPostgres: PostgreSQL initialized but not running, starting PostgreSQL }
+  2026-10-13T23:54:52.789745446 pooler-n2: MonitorPostgres: Postgres started successfully }
+  2026-10-13T23:54:53.258616183 orch-z3: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:54:53.312378845 orch-z3: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-13T23:54:53.312417163 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":3,"reason":"LeaderUnhealthy"}
+  2026-10-13T23:54:53.312667015 pooler-n2: recruit received ,"revoked_below_term":3,"coordinator_id":"mqz69z4g"}
+  2026-10-13T23:54:53.312700754 pooler-n1: recruit received ,"revoked_below_term":3,"coordinator_id":"mqz69z4g"}
+  2026-10-13T23:54:53.312744882 pooler-n3: recruit received ,"revoked_below_term":3,"coordinator_id":"mqz69z4g"}
+  2026-10-13T23:54:53.418178336 orch-z1: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:54:53.439553311 orch-z3: recruited pooler ,"pooler":"n3","lsn":"0/41DF758"}
+  2026-10-13T23:54:53.440437091 orch-z3: recruited pooler ,"pooler":"n1","lsn":"0/41DF758"}
+  2026-10-13T23:54:53.483348316 orch-z1: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-13T23:54:53.483366275 orch-z1: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":3,"reason":"LeaderUnhealthy"}
+  2026-10-13T23:54:53.495378624 pooler-n1: recruit received ,"revoked_below_term":3,"coordinator_id":"qxdqr2lr"}
+  2026-10-13T23:54:53.495855028 orch-z3: promote succeeded ,"pooler":"n1","is_leader":false}
+  2026-10-13T23:54:53.496180267 orch-z1: recruit failed ,"pooler":"n1","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 3 from coordinator zone3_mqz69z4g, requested by zone1_qxdqr2lr"}
+  2026-10-13T23:54:53.540357070 orch-z3: recruited pooler ,"pooler":"n2","lsn":"0/41DF758"}
+  2026-10-13T23:54:53.542302895 pooler-n2: recruit received ,"revoked_below_term":3,"coordinator_id":"qxdqr2lr"}
+  2026-10-13T23:54:53.542750610 orch-z1: recruit failed ,"pooler":"n2","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 3 from coordinator zone3_mqz69z4g, requested by zone1_qxdqr2lr"}
+  2026-10-13T23:54:53.988638876 pooler-n3: recruit received ,"revoked_below_term":3,"coordinator_id":"qxdqr2lr"}
+  2026-10-13T23:54:53.988976875 orch-z3: promote succeeded ,"pooler":"n3","is_leader":true}
+  2026-10-13T23:54:53.988994214 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"success","proposed_term":3,"reason":"LeaderUnhealthy","new_primary":"n3","recruit_ms":128,"promote_ms":548}
+  2026-10-13T23:54:53.989004264 orch-z3: appoint leader action completed successfully ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:54:53.989502627 orch-z1: recruit failed ,"pooler":"n3","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: recorded position 3.0 is not revoked by outgoing_rule 2.0 / revoked_below_term 3"}
+  2026-10-13T23:54:53.989521186 orch-z1: primary.promotion ,"event_type":"primary.promotion","outcome":"failed","proposed_term":3,"reason":"LeaderUnhealthy","recruit_ms":506,"error":"recruitment failed: no nodes responded to recruit"}
+  2026-10-13T23:54:58.201083449 pooler-n2: SetPrimary: stale primary, restarting as standby ,"new_leader":"n3","incoming_position":"3.0","postgres_mode":"in_recovery"}
+  2026-10-13T23:55:08.129957706 pooler-n3: MonitorPostgres: PostgreSQL initialized but not running, starting PostgreSQL }
+  2026-10-13T23:55:08.482992735 orch-z2: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:55:08.533162741 orch-z2: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-13T23:55:08.533218169 orch-z2: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":4,"reason":"LeaderUnhealthy"}
+  2026-10-13T23:55:08.533506299 pooler-n1: recruit received ,"revoked_below_term":4,"coordinator_id":"4ccsqpn4"}
+  2026-10-13T23:55:08.533506459 pooler-n2: recruit received ,"revoked_below_term":4,"coordinator_id":"4ccsqpn4"}
+  2026-10-13T23:55:08.626785087 orch-z3: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:55:08.628881507 orch-z1: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:55:08.662240753 orch-z2: recruited pooler ,"pooler":"n2","lsn":"0/42C1B50"}
+  2026-10-13T23:55:08.665374809 orch-z2: recruited pooler ,"pooler":"n1","lsn":"0/42C1B50"}
+  2026-10-13T23:55:08.715569004 orch-z2: promote succeeded ,"pooler":"n1","is_leader":false}
+  2026-10-13T23:55:09.188836162 pooler-n3: MonitorPostgres: Postgres started successfully }
+  2026-10-13T23:55:09.193145937 pooler-n3: recruit received ,"revoked_below_term":4,"coordinator_id":"4ccsqpn4"}
+  2026-10-13T23:55:09.408249160 orch-z2: promote succeeded ,"pooler":"n2","is_leader":true}
+  2026-10-13T23:55:09.429385035 orch-z2: recruited pooler ,"pooler":"n3","lsn":"0/42C1B50"}
+  2026-10-13T23:55:09.435177942 orch-z2: primary.promotion ,"event_type":"primary.promotion","outcome":"success","proposed_term":4,"reason":"LeaderUnhealthy","new_primary":"n2","recruit_ms":132,"promote_ms":769}
+  2026-10-13T23:55:09.435186302 orch-z2: appoint leader action completed successfully ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:55:09.992739718 pooler-n3: SetPrimary: stale primary, restarting as standby ,"new_leader":"n2","incoming_position":"4.0","postgres_mode":"in_recovery"}
+== 20261013T235615Z-D3-3-real-c422c7a4
+  inject f0 on n1 at t=70305318249 ns
+  inject f1 on n2 at t=90086609653 ns
+  inject f2 on n1 at t=110379325121 ns
+  2026-10-13T23:56:42.504579172 orch-z1: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":1,"reason":"ShardInit"}
+  2026-10-13T23:56:42.534578073 pooler-n1: recruit received ,"revoked_below_term":1,"coordinator_id":"rgzbpdkz"}
+  2026-10-13T23:56:42.776108237 orch-z1: recruited pooler ,"pooler":"n1","lsn":"0/4000000"}
+  2026-10-13T23:56:43.064108500 pooler-n2: recruit received ,"revoked_below_term":1,"coordinator_id":"rgzbpdkz"}
+  2026-10-13T23:56:43.295594565 orch-z1: recruited pooler ,"pooler":"n2","lsn":"0/4000000"}
+  2026-10-13T23:56:43.344703088 orch-z1: promote succeeded ,"pooler":"n2","is_leader":false}
+  2026-10-13T23:56:43.755877935 orch-z1: promote succeeded ,"pooler":"n1","is_leader":true}
+  2026-10-13T23:56:47.187024660 pooler-n3: recruit received ,"revoked_below_term":1,"coordinator_id":"rgzbpdkz"}
+  2026-10-13T23:56:47.643115025 orch-z1: recruited pooler ,"pooler":"n3","lsn":"0/4000000"}
+  2026-10-13T23:56:47.689643653 orch-z1: promote succeeded ,"pooler":"n3","is_leader":false}
+  2026-10-13T23:56:47.689661983 orch-z1: primary.promotion ,"event_type":"primary.promotion","outcome":"success","proposed_term":1,"reason":"ShardInit","new_primary":"n1","recruit_ms":791,"promote_ms":4393}
+  2026-10-13T23:58:02.300830979 orch-z1: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:58:02.348392607 orch-z1: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-13T23:58:02.348460415 orch-z1: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":2,"reason":"LeaderUnhealthy"}
+  2026-10-13T23:58:02.348746955 pooler-n1: recruit received ,"revoked_below_term":2,"coordinator_id":"rgzbpdkz"}
+  2026-10-13T23:58:02.348772945 pooler-n3: recruit received ,"revoked_below_term":2,"coordinator_id":"rgzbpdkz"}
+  2026-10-13T23:58:02.348811293 pooler-n2: recruit received ,"revoked_below_term":2,"coordinator_id":"rgzbpdkz"}
+  2026-10-13T23:58:02.348978018 orch-z1: recruit failed ,"pooler":"n1","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-13T23:58:02.491849735 orch-z1: recruited pooler ,"pooler":"n3","lsn":"0/40D8EF0"}
+  2026-10-13T23:58:02.494304515 orch-z1: recruited pooler ,"pooler":"n2","lsn":"0/40D8EF0"}
+  2026-10-13T23:58:02.543142672 orch-z1: promote succeeded ,"pooler":"n3","is_leader":false}
+  2026-10-13T23:58:03.028346098 pooler-n1: MonitorPostgres: PostgreSQL initialized but not running, starting PostgreSQL }
+  2026-10-13T23:58:03.070605189 orch-z1: promote succeeded ,"pooler":"n2","is_leader":true}
+  2026-10-13T23:58:03.070621268 orch-z1: primary.promotion ,"event_type":"primary.promotion","outcome":"success","proposed_term":2,"reason":"LeaderUnhealthy","new_primary":"n2","recruit_ms":145,"promote_ms":576}
+  2026-10-13T23:58:03.070638098 orch-z1: appoint leader action completed successfully ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:58:04.106154959 pooler-n1: MonitorPostgres: Postgres started successfully }
+  2026-10-13T23:58:04.112757994 pooler-n1: SetPrimary: stale primary, restarting as standby ,"new_leader":"n2","incoming_position":"2.0","postgres_mode":"in_recovery"}
+  2026-10-13T23:58:19.780257203 orch-z2: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:58:19.781057577 orch-z3: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:58:19.783077441 orch-z1: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:58:19.825874097 orch-z3: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-13T23:58:19.825887516 orch-z2: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-13T23:58:19.825942444 orch-z2: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":3,"reason":"LeaderUnhealthy"}
+  2026-10-13T23:58:19.825953524 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":3,"reason":"LeaderUnhealthy"}
+  2026-10-13T23:58:19.826289743 pooler-n1: recruit received ,"revoked_below_term":3,"coordinator_id":"ngwn7xsv"}
+  2026-10-13T23:58:19.826298823 pooler-n2: recruit received ,"revoked_below_term":3,"coordinator_id":"ngwn7xsv"}
+  2026-10-13T23:58:19.826324142 pooler-n2: recruit received ,"revoked_below_term":3,"coordinator_id":"h48m2lxv"}
+  2026-10-13T23:58:19.826439798 pooler-n3: recruit received ,"revoked_below_term":3,"coordinator_id":"ngwn7xsv"}
+  2026-10-13T23:58:19.826481567 orch-z2: recruit failed ,"pooler":"n2","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-13T23:58:19.826495576 orch-z3: recruit failed ,"pooler":"n2","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-13T23:58:19.827371038 orch-z1: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-13T23:58:19.827416106 orch-z1: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":3,"reason":"LeaderUnhealthy"}
+  2026-10-13T23:58:19.827586241 pooler-n2: recruit received ,"revoked_below_term":3,"coordinator_id":"rgzbpdkz"}
+  2026-10-13T23:58:19.827743296 orch-z1: recruit failed ,"pooler":"n2","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-13T23:58:19.970890473 pooler-n3: recruit received ,"revoked_below_term":3,"coordinator_id":"h48m2lxv"}
+  2026-10-13T23:58:19.971209682 orch-z2: recruited pooler ,"pooler":"n3","lsn":"0/41E00E0"}
+  2026-10-13T23:58:19.971232622 pooler-n3: recruit received ,"revoked_below_term":3,"coordinator_id":"rgzbpdkz"}
+  2026-10-13T23:58:19.971592750 orch-z3: recruit failed ,"pooler":"n3","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 3 from coordinator zone2_ngwn7xsv, requested by zone3_h48m2lxv"}
+  2026-10-13T23:58:19.971683357 orch-z1: recruit failed ,"pooler":"n3","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 3 from coordinator zone2_ngwn7xsv, requested by zone1_rgzbpdkz"}
+  2026-10-13T23:58:19.971896200 pooler-n1: recruit received ,"revoked_below_term":3,"coordinator_id":"h48m2lxv"}
+  2026-10-13T23:58:19.972012576 orch-z2: recruited pooler ,"pooler":"n1","lsn":"0/41E00E0"}
+  2026-10-13T23:58:19.972195601 pooler-n1: recruit received ,"revoked_below_term":3,"coordinator_id":"rgzbpdkz"}
+  2026-10-13T23:58:19.972360865 orch-z3: recruit failed ,"pooler":"n1","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 3 from coordinator zone2_ngwn7xsv, requested by zone3_h48m2lxv"}
+  2026-10-13T23:58:19.972377035 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"failed","proposed_term":3,"reason":"LeaderUnhealthy","recruit_ms":146,"error":"recruitment failed: no nodes responded to recruit"}
+  2026-10-13T23:58:19.972649076 orch-z1: recruit failed ,"pooler":"n1","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 3 from coordinator zone2_ngwn7xsv, requested by zone1_rgzbpdkz"}
+  2026-10-13T23:58:19.972727753 orch-z1: primary.promotion ,"event_type":"primary.promotion","outcome":"failed","proposed_term":3,"reason":"LeaderUnhealthy","recruit_ms":145,"error":"recruitment failed: no nodes responded to recruit"}
+  2026-10-13T23:58:20.019059884 orch-z2: promote succeeded ,"pooler":"n3","is_leader":false}
+  2026-10-13T23:58:20.598164842 orch-z2: promote succeeded ,"pooler":"n1","is_leader":true}
+  2026-10-13T23:58:20.598181412 orch-z2: primary.promotion ,"event_type":"primary.promotion","outcome":"success","proposed_term":3,"reason":"LeaderUnhealthy","new_primary":"n1","recruit_ms":146,"promote_ms":626}
+  2026-10-13T23:58:20.598190702 orch-z2: appoint leader action completed successfully ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:58:23.724629600 pooler-n2: MonitorPostgres: PostgreSQL initialized but not running, starting PostgreSQL }
+  2026-10-13T23:58:24.788438215 pooler-n2: MonitorPostgres: Postgres started successfully }
+  2026-10-13T23:58:24.794586944 pooler-n2: SetPrimary: stale primary, restarting as standby ,"new_leader":"n1","incoming_position":"3.0","postgres_mode":"in_recovery"}
+  2026-10-13T23:58:42.452213143 orch-z1: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:58:42.495895634 orch-z1: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-13T23:58:42.495951232 orch-z1: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":4,"reason":"LeaderUnhealthy"}
+  2026-10-13T23:58:42.496207204 pooler-n3: recruit received ,"revoked_below_term":4,"coordinator_id":"rgzbpdkz"}
+  2026-10-13T23:58:42.496207614 pooler-n2: recruit received ,"revoked_below_term":4,"coordinator_id":"rgzbpdkz"}
+  2026-10-13T23:58:42.496213733 pooler-n1: recruit received ,"revoked_below_term":4,"coordinator_id":"rgzbpdkz"}
+  2026-10-13T23:58:42.496374078 orch-z1: recruit failed ,"pooler":"n1","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-13T23:58:42.633915189 orch-z1: recruited pooler ,"pooler":"n3","lsn":"0/431F870"}
+  2026-10-13T23:58:42.634857798 orch-z1: recruited pooler ,"pooler":"n2","lsn":"0/431F870"}
+  2026-10-13T23:58:42.682528899 orch-z1: promote succeeded ,"pooler":"n3","is_leader":false}
+  2026-10-13T23:58:43.192366472 orch-z1: promote succeeded ,"pooler":"n2","is_leader":true}
+  2026-10-13T23:58:43.192389611 orch-z1: primary.promotion ,"event_type":"primary.promotion","outcome":"success","proposed_term":4,"reason":"LeaderUnhealthy","new_primary":"n2","recruit_ms":138,"promote_ms":556}
+  2026-10-13T23:58:43.192399130 orch-z1: appoint leader action completed successfully ,"shard_key":"postgres/default/0-inf"}
+  2026-10-13T23:58:44.400519146 pooler-n1: MonitorPostgres: PostgreSQL initialized but not running, starting PostgreSQL }
+  2026-10-13T23:58:45.460662784 pooler-n1: MonitorPostgres: Postgres started successfully }
+  2026-10-13T23:58:45.466246243 pooler-n1: SetPrimary: stale primary, restarting as standby ,"new_leader":"n2","incoming_position":"4.0","postgres_mode":"in_recovery"}
+  2026-10-13T23:59:18.174980218 pooler-n1: MonitorPostgres: Postgres started successfully }
+== 20261013T235947Z-D3-4-real-6b74e887
+  inject f0 on n1 at t=70304221333 ns
+  inject f1 on n2 at t=90576438829 ns
+  inject f2 on n1 at t=111503358257 ns
+  2026-10-14T00:00:10.499293511 orch-z1: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":1,"reason":"ShardInit"}
+  2026-10-14T00:00:10.499828904 pooler-n2: recruit received ,"revoked_below_term":1,"coordinator_id":"9pgdc7ks"}
+  2026-10-14T00:00:10.499845813 pooler-n1: recruit received ,"revoked_below_term":1,"coordinator_id":"9pgdc7ks"}
+  2026-10-14T00:00:10.733295549 orch-z1: recruited pooler ,"pooler":"n1","lsn":"0/4000000"}
+  2026-10-14T00:00:10.737205983 orch-z1: recruited pooler ,"pooler":"n2","lsn":"0/4000000"}
+  2026-10-14T00:00:10.800185003 orch-z1: promote succeeded ,"pooler":"n2","is_leader":false}
+  2026-10-14T00:00:11.560362444 orch-z1: promote succeeded ,"pooler":"n1","is_leader":true}
+  2026-10-14T00:00:14.168834189 pooler-n3: recruit received ,"revoked_below_term":1,"coordinator_id":"9pgdc7ks"}
+  2026-10-14T00:00:14.497301966 orch-z1: recruited pooler ,"pooler":"n3","lsn":"0/4000000"}
+  2026-10-14T00:00:14.545274110 orch-z1: promote succeeded ,"pooler":"n3","is_leader":false}
+  2026-10-14T00:00:14.545291180 orch-z1: primary.promotion ,"event_type":"primary.promotion","outcome":"success","proposed_term":1,"reason":"ShardInit","new_primary":"n1","recruit_ms":237,"promote_ms":3807}
+  2026-10-14T00:01:30.624032750 pooler-n1: MonitorPostgres: PostgreSQL initialized but not running, starting PostgreSQL }
+  2026-10-14T00:01:31.683207512 pooler-n1: MonitorPostgres: Postgres started successfully }
+  2026-10-14T00:01:31.856228311 orch-z1: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-14T00:01:31.912879457 orch-z1: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-14T00:01:31.912941575 orch-z1: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":2,"reason":"LeaderUnhealthy"}
+  2026-10-14T00:01:31.913238935 pooler-n1: recruit received ,"revoked_below_term":2,"coordinator_id":"9pgdc7ks"}
+  2026-10-14T00:01:31.913273444 pooler-n2: recruit received ,"revoked_below_term":2,"coordinator_id":"9pgdc7ks"}
+  2026-10-14T00:01:31.913277884 pooler-n3: recruit received ,"revoked_below_term":2,"coordinator_id":"9pgdc7ks"}
+  2026-10-14T00:01:31.962423981 orch-z3: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-14T00:01:31.962460429 orch-z2: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-14T00:01:32.015237459 orch-z2: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-14T00:01:32.015287208 orch-z2: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":2,"reason":"LeaderUnhealthy"}
+  2026-10-14T00:01:32.015666165 orch-z3: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-14T00:01:32.015705304 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":2,"reason":"LeaderUnhealthy"}
+  2026-10-14T00:01:32.041061762 pooler-n3: recruit received ,"revoked_below_term":2,"coordinator_id":"rqw8knnc"}
+  2026-10-14T00:01:32.041295105 orch-z1: recruited pooler ,"pooler":"n3","lsn":"0/40D9558"}
+  2026-10-14T00:01:32.041380232 pooler-n3: recruit received ,"revoked_below_term":2,"coordinator_id":"v797qh6d"}
+  2026-10-14T00:01:32.041706312 orch-z2: recruit failed ,"pooler":"n3","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 2 from coordinator zone1_9pgdc7ks, requested by zone2_rqw8knnc"}
+  2026-10-14T00:01:32.041813428 orch-z3: recruit failed ,"pooler":"n3","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 2 from coordinator zone1_9pgdc7ks, requested by zone3_v797qh6d"}
+  2026-10-14T00:01:32.042952512 pooler-n2: recruit received ,"revoked_below_term":2,"coordinator_id":"rqw8knnc"}
+  2026-10-14T00:01:32.043089687 orch-z1: recruited pooler ,"pooler":"n2","lsn":"0/40D9558"}
+  2026-10-14T00:01:32.043257392 pooler-n2: recruit received ,"revoked_below_term":2,"coordinator_id":"v797qh6d"}
+  2026-10-14T00:01:32.043654919 orch-z2: recruit failed ,"pooler":"n2","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 2 from coordinator zone1_9pgdc7ks, requested by zone2_rqw8knnc"}
+  2026-10-14T00:01:32.043787425 orch-z3: recruit failed ,"pooler":"n2","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 2 from coordinator zone1_9pgdc7ks, requested by zone3_v797qh6d"}
+  2026-10-14T00:01:32.090493789 orch-z1: promote succeeded ,"pooler":"n3","is_leader":false}
+  2026-10-14T00:01:32.144534269 pooler-n1: recruit received ,"revoked_below_term":2,"coordinator_id":"rqw8knnc"}
+  2026-10-14T00:01:32.144908967 orch-z1: recruited pooler ,"pooler":"n1","lsn":"0/40D9558"}
+  2026-10-14T00:01:32.144980925 pooler-n1: recruit received ,"revoked_below_term":2,"coordinator_id":"v797qh6d"}
+  2026-10-14T00:01:32.145238026 orch-z2: recruit failed ,"pooler":"n1","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 2 from coordinator zone1_9pgdc7ks, requested by zone2_rqw8knnc"}
+  2026-10-14T00:01:32.145267545 orch-z2: primary.promotion ,"event_type":"primary.promotion","outcome":"failed","proposed_term":2,"reason":"LeaderUnhealthy","recruit_ms":129,"error":"recruitment failed: no nodes responded to recruit"}
+  2026-10-14T00:01:32.145685042 orch-z3: recruit failed ,"pooler":"n1","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 2 from coordinator zone1_9pgdc7ks, requested by zone3_v797qh6d"}
+  2026-10-14T00:01:32.145724641 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"failed","proposed_term":2,"reason":"LeaderUnhealthy","recruit_ms":129,"error":"recruitment failed: no nodes responded to recruit"}
+  2026-10-14T00:01:32.587487306 orch-z1: promote succeeded ,"pooler":"n2","is_leader":true}
+  2026-10-14T00:01:32.587510865 orch-z1: primary.promotion ,"event_type":"primary.promotion","outcome":"success","proposed_term":2,"reason":"LeaderUnhealthy","new_primary":"n2","recruit_ms":130,"promote_ms":544}
+  2026-10-14T00:01:32.587539264 orch-z1: appoint leader action completed successfully ,"shard_key":"postgres/default/0-inf"}
+  2026-10-14T00:01:35.939632332 pooler-n1: SetPrimary: stale primary, restarting as standby ,"new_leader":"n2","incoming_position":"2.0","postgres_mode":"in_recovery"}
+  2026-10-14T00:01:47.152111441 orch-z1: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-14T00:01:47.197176900 orch-z1: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-14T00:01:47.197236098 orch-z1: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":3,"reason":"LeaderUnhealthy"}
+  2026-10-14T00:01:47.197473100 pooler-n1: recruit received ,"revoked_below_term":3,"coordinator_id":"9pgdc7ks"}
+  2026-10-14T00:01:47.197473260 pooler-n2: recruit received ,"revoked_below_term":3,"coordinator_id":"9pgdc7ks"}
+  2026-10-14T00:01:47.197493680 pooler-n3: recruit received ,"revoked_below_term":3,"coordinator_id":"9pgdc7ks"}
+  2026-10-14T00:01:47.197679244 orch-z1: recruit failed ,"pooler":"n2","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-14T00:01:47.325357280 orch-z1: recruited pooler ,"pooler":"n3","lsn":"0/41C0110"}
+  2026-10-14T00:01:47.326192173 orch-z1: recruited pooler ,"pooler":"n1","lsn":"0/41C0110"}
+  2026-10-14T00:01:47.374908285 orch-z1: promote succeeded ,"pooler":"n3","is_leader":false}
+  2026-10-14T00:01:47.865121465 orch-z1: promote succeeded ,"pooler":"n1","is_leader":true}
+  2026-10-14T00:01:47.865139655 orch-z1: primary.promotion ,"event_type":"primary.promotion","outcome":"success","proposed_term":3,"reason":"LeaderUnhealthy","new_primary":"n1","recruit_ms":129,"promote_ms":538}
+  2026-10-14T00:01:47.865149034 orch-z1: appoint leader action completed successfully ,"shard_key":"postgres/default/0-inf"}
+  2026-10-14T00:01:50.959220432 pooler-n2: MonitorPostgres: PostgreSQL initialized but not running, starting PostgreSQL }
+  2026-10-14T00:01:52.022163053 pooler-n2: MonitorPostgres: Postgres started successfully }
+  2026-10-14T00:01:52.029233287 pooler-n2: SetPrimary: stale primary, restarting as standby ,"new_leader":"n1","incoming_position":"3.0","postgres_mode":"in_recovery"}
+  2026-10-14T00:02:07.678889202 orch-z2: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-14T00:02:07.680031545 orch-z1: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-14T00:02:07.700227420 orch-z3: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-14T00:02:07.724637510 orch-z1: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-14T00:02:07.724665289 orch-z2: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-14T00:02:07.724691199 orch-z1: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":4,"reason":"LeaderUnhealthy"}
+  2026-10-14T00:02:07.724729537 orch-z2: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":4,"reason":"LeaderUnhealthy"}
+  2026-10-14T00:02:07.724920571 pooler-n1: recruit received ,"revoked_below_term":4,"coordinator_id":"9pgdc7ks"}
+  2026-10-14T00:02:07.725030588 pooler-n1: recruit received ,"revoked_below_term":4,"coordinator_id":"rqw8knnc"}
+  2026-10-14T00:02:07.725032778 pooler-n3: recruit received ,"revoked_below_term":4,"coordinator_id":"9pgdc7ks"}
+  2026-10-14T00:02:07.725038438 pooler-n2: recruit received ,"revoked_below_term":4,"coordinator_id":"9pgdc7ks"}
+  2026-10-14T00:02:07.725161974 orch-z1: recruit failed ,"pooler":"n1","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-14T00:02:07.725171173 orch-z2: recruit failed ,"pooler":"n1","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-14T00:02:07.746929849 orch-z3: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-14T00:02:07.746981357 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":4,"reason":"LeaderUnhealthy"}
+  2026-10-14T00:02:07.747198230 pooler-n1: recruit received ,"revoked_below_term":4,"coordinator_id":"v797qh6d"}
+  2026-10-14T00:02:07.747376994 orch-z3: recruit failed ,"pooler":"n1","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-14T00:02:07.853061148 pooler-n3: recruit received ,"revoked_below_term":4,"coordinator_id":"rqw8knnc"}
+  2026-10-14T00:02:07.853279361 orch-z1: recruited pooler ,"pooler":"n3","lsn":"0/430EC30"}
+  2026-10-14T00:02:07.853311130 pooler-n3: recruit received ,"revoked_below_term":4,"coordinator_id":"v797qh6d"}
+  2026-10-14T00:02:07.853464995 orch-z2: recruit failed ,"pooler":"n3","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 4 from coordinator zone1_9pgdc7ks, requested by zone2_rqw8knnc"}
+  2026-10-14T00:02:07.853721877 orch-z3: recruit failed ,"pooler":"n3","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 4 from coordinator zone1_9pgdc7ks, requested by zone3_v797qh6d"}
+  2026-10-14T00:02:07.854118685 pooler-n2: recruit received ,"revoked_below_term":4,"coordinator_id":"rqw8knnc"}
+  2026-10-14T00:02:07.854244231 orch-z1: recruited pooler ,"pooler":"n2","lsn":"0/430EC30"}
+  2026-10-14T00:02:07.854410146 pooler-n2: recruit received ,"revoked_below_term":4,"coordinator_id":"v797qh6d"}
+  2026-10-14T00:02:07.854581380 orch-z2: recruit failed ,"pooler":"n2","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 4 from coordinator zone1_9pgdc7ks, requested by zone2_rqw8knnc"}
+  2026-10-14T00:02:07.854597370 orch-z2: primary.promotion ,"event_type":"primary.promotion","outcome":"failed","proposed_term":4,"reason":"LeaderUnhealthy","recruit_ms":129,"error":"recruitment failed: no nodes responded to recruit"}
+  2026-10-14T00:02:07.854819343 orch-z3: recruit failed ,"pooler":"n2","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 4 from coordinator zone1_9pgdc7ks, requested by zone3_v797qh6d"}
+  2026-10-14T00:02:07.854829752 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"failed","proposed_term":4,"reason":"LeaderUnhealthy","recruit_ms":107,"error":"recruitment failed: no nodes responded to recruit"}
+  2026-10-14T00:02:07.905243742 orch-z1: promote succeeded ,"pooler":"n2","is_leader":false}
+  2026-10-14T00:02:08.409034292 orch-z1: promote succeeded ,"pooler":"n3","is_leader":true}
+  2026-10-14T00:02:08.409091780 orch-z1: primary.promotion ,"event_type":"primary.promotion","outcome":"success","proposed_term":4,"reason":"LeaderUnhealthy","new_primary":"n3","recruit_ms":129,"promote_ms":554}
+  2026-10-14T00:02:08.409099490 orch-z1: appoint leader action completed successfully ,"shard_key":"postgres/default/0-inf"}
+  2026-10-14T00:02:12.006470779 pooler-n1: MonitorPostgres: PostgreSQL initialized but not running, starting PostgreSQL }
+  2026-10-14T00:02:13.069253085 pooler-n1: MonitorPostgres: Postgres started successfully }
+  2026-10-14T00:02:13.075264932 pooler-n1: SetPrimary: stale primary, restarting as standby ,"new_leader":"n3","incoming_position":"4.0","postgres_mode":"in_recovery"}
+== 20261014T000305Z-D3-5-real-457577b2
+  inject f0 on n1 at t=70313067852 ns
+  inject f1 on n2 at t=88405455334 ns
+  inject f2 on n1 at t=105475857845 ns
+  2026-10-14T00:03:29.898399661 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":1,"reason":"ShardInit"}
+  2026-10-14T00:03:29.898793898 pooler-n1: recruit received ,"revoked_below_term":1,"coordinator_id":"f7h57bm4"}
+  2026-10-14T00:03:29.898803998 pooler-n3: recruit received ,"revoked_below_term":1,"coordinator_id":"f7h57bm4"}
+  2026-10-14T00:03:30.130440468 orch-z3: recruited pooler ,"pooler":"n3","lsn":"0/4000000"}
+  2026-10-14T00:03:30.131212964 orch-z3: recruited pooler ,"pooler":"n1","lsn":"0/4000000"}
+  2026-10-14T00:03:30.192927453 orch-z3: promote succeeded ,"pooler":"n3","is_leader":false}
+  2026-10-14T00:03:30.845658214 orch-z3: promote succeeded ,"pooler":"n1","is_leader":true}
+  2026-10-14T00:03:31.217974596 pooler-n2: recruit received ,"revoked_below_term":1,"coordinator_id":"f7h57bm4"}
+  2026-10-14T00:03:31.545405343 orch-z3: recruited pooler ,"pooler":"n2","lsn":"0/4000000"}
+  2026-10-14T00:03:31.589618699 orch-z3: promote succeeded ,"pooler":"n2","is_leader":false}
+  2026-10-14T00:03:31.589640308 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"success","proposed_term":1,"reason":"ShardInit","new_primary":"n1","recruit_ms":232,"promote_ms":1458}
+  2026-10-14T00:04:44.298277128 orch-z2: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-14T00:04:44.342981574 orch-z2: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-14T00:04:44.343015592 orch-z2: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":2,"reason":"LeaderUnhealthy"}
+  2026-10-14T00:04:44.343281934 pooler-n1: recruit received ,"revoked_below_term":2,"coordinator_id":"ztcd7jkj"}
+  2026-10-14T00:04:44.343305133 pooler-n3: recruit received ,"revoked_below_term":2,"coordinator_id":"ztcd7jkj"}
+  2026-10-14T00:04:44.343306283 pooler-n2: recruit received ,"revoked_below_term":2,"coordinator_id":"ztcd7jkj"}
+  2026-10-14T00:04:44.343549186 orch-z2: recruit failed ,"pooler":"n1","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-14T00:04:44.471177197 orch-z2: recruited pooler ,"pooler":"n2","lsn":"0/40DC590"}
+  2026-10-14T00:04:44.472081868 orch-z2: recruited pooler ,"pooler":"n3","lsn":"0/40DC590"}
+  2026-10-14T00:04:44.526720620 orch-z2: promote succeeded ,"pooler":"n3","is_leader":false}
+  2026-10-14T00:04:45.022272519 orch-z2: promote succeeded ,"pooler":"n2","is_leader":true}
+  2026-10-14T00:04:45.022291048 orch-z2: primary.promotion ,"event_type":"primary.promotion","outcome":"success","proposed_term":2,"reason":"LeaderUnhealthy","new_primary":"n2","recruit_ms":129,"promote_ms":550}
+  2026-10-14T00:04:45.022299668 orch-z2: appoint leader action completed successfully ,"shard_key":"postgres/default/0-inf"}
+  2026-10-14T00:04:45.164847638 pooler-n1: MonitorPostgres: PostgreSQL initialized but not running, starting PostgreSQL }
+  2026-10-14T00:04:46.232401090 pooler-n1: MonitorPostgres: Postgres started successfully }
+  2026-10-14T00:04:46.807310830 pooler-n1: SetPrimary: stale primary, restarting as standby ,"new_leader":"n2","incoming_position":"2.0","postgres_mode":"in_recovery"}
+  2026-10-14T00:05:01.811134067 pooler-n2: MonitorPostgres: PostgreSQL initialized but not running, starting PostgreSQL }
+  2026-10-14T00:05:01.977043891 orch-z3: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-14T00:05:01.977942703 orch-z2: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-14T00:05:02.026903625 orch-z3: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-14T00:05:02.026981972 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":3,"reason":"LeaderUnhealthy"}
+  2026-10-14T00:05:02.027324052 pooler-n1: recruit received ,"revoked_below_term":3,"coordinator_id":"f7h57bm4"}
+  2026-10-14T00:05:02.027346401 orch-z2: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-14T00:05:02.027436028 pooler-n3: recruit received ,"revoked_below_term":3,"coordinator_id":"f7h57bm4"}
+  2026-10-14T00:05:02.027767077 orch-z2: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":3,"reason":"LeaderUnhealthy"}
+  2026-10-14T00:05:02.165633979 pooler-n3: recruit received ,"revoked_below_term":3,"coordinator_id":"ztcd7jkj"}
+  2026-10-14T00:05:02.165909660 orch-z3: recruited pooler ,"pooler":"n3","lsn":"0/41D5AE8"}
+  2026-10-14T00:05:02.166218651 orch-z2: recruit failed ,"pooler":"n3","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 3 from coordinator zone3_f7h57bm4, requested by zone2_ztcd7jkj"}
+  2026-10-14T00:05:02.166691176 pooler-n1: recruit received ,"revoked_below_term":3,"coordinator_id":"ztcd7jkj"}
+  2026-10-14T00:05:02.166829941 orch-z3: recruited pooler ,"pooler":"n1","lsn":"0/41D5AE8"}
+  2026-10-14T00:05:02.167159491 orch-z2: recruit failed ,"pooler":"n1","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 3 from coordinator zone3_f7h57bm4, requested by zone2_ztcd7jkj"}
+  2026-10-14T00:05:02.217970354 orch-z3: promote succeeded ,"pooler":"n3","is_leader":false}
+  2026-10-14T00:05:02.727826336 orch-z3: promote succeeded ,"pooler":"n1","is_leader":true}
+  2026-10-14T00:05:02.871144925 pooler-n2: MonitorPostgres: Postgres started successfully }
+  2026-10-14T00:05:02.877115256 pooler-n2: recruit received ,"revoked_below_term":3,"coordinator_id":"f7h57bm4"}
+  2026-10-14T00:05:03.105357861 pooler-n2: recruit received ,"revoked_below_term":3,"coordinator_id":"ztcd7jkj"}
+  2026-10-14T00:05:03.105567964 orch-z3: recruited pooler ,"pooler":"n2","lsn":"0/41D5B18"}
+  2026-10-14T00:05:03.105908214 orch-z2: recruit failed ,"pooler":"n2","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 3 from coordinator zone3_f7h57bm4, requested by zone2_ztcd7jkj"}
+  2026-10-14T00:05:03.105921403 orch-z2: primary.promotion ,"event_type":"primary.promotion","outcome":"failed","proposed_term":3,"reason":"LeaderUnhealthy","recruit_ms":1078,"error":"recruitment failed: no nodes responded to recruit"}
+  2026-10-14T00:05:03.106599372 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"success","proposed_term":3,"reason":"LeaderUnhealthy","new_primary":"n1","recruit_ms":139,"promote_ms":939}
+  2026-10-14T00:05:03.106610122 orch-z3: appoint leader action completed successfully ,"shard_key":"postgres/default/0-inf"}
+  2026-10-14T00:05:06.495704711 pooler-n2: SetPrimary: stale primary, restarting as standby ,"new_leader":"n1","incoming_position":"3.0","postgres_mode":"in_recovery"}
+  2026-10-14T00:05:21.487284165 pooler-n1: MonitorPostgres: PostgreSQL initialized but not running, starting PostgreSQL }
+  2026-10-14T00:05:22.543511916 pooler-n1: MonitorPostgres: Postgres started successfully }
+  2026-10-14T00:05:27.600286356 pooler-n1: MonitorPostgres: rule names us leader but postgres is a standby; resigning ,"position":"3.0"}
+  2026-10-14T00:05:39.612625267 orch-z3: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-14T00:05:39.615829326 orch-z1: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-14T00:05:39.617107286 orch-z2: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-14T00:05:39.671783280 orch-z1: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-14T00:05:39.671784470 orch-z2: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-14T00:05:39.671797900 orch-z1: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":4,"reason":"LeaderResigned"}
+  2026-10-14T00:05:39.671837379 orch-z3: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-14T00:05:39.671842078 orch-z2: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":4,"reason":"LeaderResigned"}
+  2026-10-14T00:05:39.671857988 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":4,"reason":"LeaderResigned"}
+  2026-10-14T00:05:39.672270705 pooler-n2: recruit received ,"revoked_below_term":4,"coordinator_id":"f7h57bm4"}
+  2026-10-14T00:05:39.672293734 pooler-n1: recruit received ,"revoked_below_term":4,"coordinator_id":"4k9249x2"}
+  2026-10-14T00:05:39.672468609 pooler-n3: recruit received ,"revoked_below_term":4,"coordinator_id":"ztcd7jkj"}
+  2026-10-14T00:05:39.673551334 pooler-n2: recruit received ,"revoked_below_term":4,"coordinator_id":"4k9249x2"}
+  2026-10-14T00:05:39.673762758 orch-z3: recruit failed ,"pooler":"n2","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-14T00:05:39.674556902 pooler-n2: recruit received ,"revoked_below_term":4,"coordinator_id":"ztcd7jkj"}
+  2026-10-14T00:05:39.674746216 orch-z1: recruit failed ,"pooler":"n2","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-14T00:05:39.675666357 orch-z2: recruit failed ,"pooler":"n2","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-14T00:05:39.802636130 pooler-n3: recruit received ,"revoked_below_term":4,"coordinator_id":"4k9249x2"}
+  2026-10-14T00:05:39.803288980 orch-z2: recruited pooler ,"pooler":"n3","lsn":"0/42E3D70"}
+  2026-10-14T00:05:39.803295130 pooler-n3: recruit received ,"revoked_below_term":4,"coordinator_id":"f7h57bm4"}
+  2026-10-14T00:05:39.803653659 orch-z1: recruit failed ,"pooler":"n3","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 4 from coordinator zone2_ztcd7jkj, requested by zone1_4k9249x2"}
+  2026-10-14T00:05:39.804000648 orch-z3: recruit failed ,"pooler":"n3","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 4 from coordinator zone2_ztcd7jkj, requested by zone3_f7h57bm4"}
+  2026-10-14T00:05:39.896865177 pooler-n1: recruit received ,"revoked_below_term":4,"coordinator_id":"f7h57bm4"}
+  2026-10-14T00:05:39.897132118 orch-z1: recruited pooler ,"pooler":"n1","lsn":"0/42E3D70"}
+  2026-10-14T00:05:39.897183747 orch-z1: primary.promotion ,"event_type":"primary.promotion","outcome":"failed","proposed_term":4,"reason":"LeaderResigned","recruit_ms":225,"error":"recruitment failed: insufficient outgoing cohort recruitment: majority not sat
+  2026-10-14T00:05:39.897213906 pooler-n1: recruit received ,"revoked_below_term":4,"coordinator_id":"ztcd7jkj"}
+  2026-10-14T00:05:39.897382000 orch-z3: recruit failed ,"pooler":"n1","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 4 from coordinator zone1_4k9249x2, requested by zone3_f7h57bm4"}
+  2026-10-14T00:05:39.897396530 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"failed","proposed_term":4,"reason":"LeaderResigned","recruit_ms":225,"error":"recruitment failed: no nodes responded to recruit"}
+  2026-10-14T00:05:39.897667401 orch-z2: recruit failed ,"pooler":"n1","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 4 from coordinator zone1_4k9249x2, requested by zone2_ztcd7jkj"}
+  2026-10-14T00:05:39.897682601 orch-z2: primary.promotion ,"event_type":"primary.promotion","outcome":"failed","proposed_term":4,"reason":"LeaderResigned","recruit_ms":225,"error":"recruitment failed: insufficient outgoing cohort recruitment: majority not sat
+  2026-10-14T00:05:40.398586754 orch-z1: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-14T00:05:40.398739909 orch-z3: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-14T00:05:40.453327677 orch-z1: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-14T00:05:40.453341646 orch-z3: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-14T00:05:40.453345186 orch-z1: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":4,"reason":"LeaderResigned"}
+  2026-10-14T00:05:40.453358866 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":4,"reason":"LeaderResigned"}
+  2026-10-14T00:05:40.453609738 pooler-n2: recruit received ,"revoked_below_term":4,"coordinator_id":"f7h57bm4"}
+  2026-10-14T00:05:40.453639997 pooler-n1: recruit received ,"revoked_below_term":4,"coordinator_id":"f7h57bm4"}
+  2026-10-14T00:05:40.453716464 pooler-n3: recruit received ,"revoked_below_term":4,"coordinator_id":"f7h57bm4"}
+  2026-10-14T00:05:40.453971266 pooler-n1: recruit received ,"revoked_below_term":4,"coordinator_id":"4k9249x2"}
+  2026-10-14T00:05:40.454268627 pooler-n3: recruit received ,"revoked_below_term":4,"coordinator_id":"4k9249x2"}
+  2026-10-14T00:05:40.454294806 orch-z3: recruit failed ,"pooler":"n1","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 4 from coordinator zone1_4k9249x2, requested by zone3_f7h57bm4"}
+  2026-10-14T00:05:40.454388393 orch-z3: recruit failed ,"pooler":"n3","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 4 from coordinator zone2_ztcd7jkj, requested by zone3_f7h57bm4"}
+  2026-10-14T00:05:40.454643245 orch-z1: recruit failed ,"pooler":"n3","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 4 from coordinator zone2_ztcd7jkj, requested by zone1_4k9249x2"}
+  2026-10-14T00:05:40.454675164 orch-z1: recruit failed ,"pooler":"n1","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: coordinator zone1_4k9249x2 reused term 4 with a different coordinator_initiated_at"}
+  2026-10-14T00:05:40.454969495 pooler-n2: recruit received ,"revoked_below_term":4,"coordinator_id":"4k9249x2"}
+  2026-10-14T00:05:40.455091891 orch-z3: recruit failed ,"pooler":"n2","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-14T00:05:40.455116720 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"failed","proposed_term":4,"reason":"LeaderResigned","recruit_ms":1,"error":"recruitment failed: no nodes responded to recruit"}
+  2026-10-14T00:05:40.456337352 orch-z1: recruit failed ,"pooler":"n2","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-14T00:05:40.456352152 orch-z1: primary.promotion ,"event_type":"primary.promotion","outcome":"failed","proposed_term":4,"reason":"LeaderResigned","recruit_ms":3,"error":"recruitment failed: no nodes responded to recruit"}
+  2026-10-14T00:05:40.955956795 orch-z3: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-14T00:05:40.957168007 orch-z1: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-14T00:05:41.011554121 orch-z1: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-14T00:05:41.011554211 orch-z3: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-14T00:05:41.011569630 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":4,"reason":"LeaderResigned"}
+  2026-10-14T00:05:41.011591690 orch-z1: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":4,"reason":"LeaderResigned"}
+  2026-10-14T00:05:41.011821923 pooler-n1: recruit received ,"revoked_below_term":4,"coordinator_id":"4k9249x2"}
+  2026-10-14T00:05:41.011824912 pooler-n3: recruit received ,"revoked_below_term":4,"coordinator_id":"4k9249x2"}
+  2026-10-14T00:05:41.011832792 pooler-n2: recruit received ,"revoked_below_term":4,"coordinator_id":"f7h57bm4"}
+  2026-10-14T00:05:41.012227950 pooler-n1: recruit received ,"revoked_below_term":4,"coordinator_id":"f7h57bm4"}
+  2026-10-14T00:05:41.012278058 orch-z1: recruit failed ,"pooler":"n1","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: coordinator zone1_4k9249x2 reused term 4 with a different coordinator_initiated_at"}
+  2026-10-14T00:05:41.012510001 pooler-n3: recruit received ,"revoked_below_term":4,"coordinator_id":"f7h57bm4"}
+  2026-10-14T00:05:41.012622958 orch-z1: recruit failed ,"pooler":"n3","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 4 from coordinator zone2_ztcd7jkj, requested by zone1_4k9249x2"}
+  2026-10-14T00:05:41.012722114 orch-z3: recruit failed ,"pooler":"n1","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 4 from coordinator zone1_4k9249x2, requested by zone3_f7h57bm4"}
+  2026-10-14T00:05:41.012909539 orch-z3: recruit failed ,"pooler":"n3","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 4 from coordinator zone2_ztcd7jkj, requested by zone3_f7h57bm4"}
+  2026-10-14T00:05:41.013082653 pooler-n2: recruit received ,"revoked_below_term":4,"coordinator_id":"4k9249x2"}
+  2026-10-14T00:05:41.013141721 orch-z3: recruit failed ,"pooler":"n2","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-14T00:05:41.013158881 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"failed","proposed_term":4,"reason":"LeaderResigned","recruit_ms":1,"error":"recruitment failed: no nodes responded to recruit"}
+  2026-10-14T00:05:41.013947216 orch-z1: recruit failed ,"pooler":"n2","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-14T00:05:41.013961356 orch-z1: primary.promotion ,"event_type":"primary.promotion","outcome":"failed","proposed_term":4,"reason":"LeaderResigned","recruit_ms":2,"error":"recruitment failed: no nodes responded to recruit"}
+  2026-10-14T00:05:41.513802113 orch-z3: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-14T00:05:41.514813191 orch-z1: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-14T00:05:41.569067049 orch-z3: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-14T00:05:41.569068549 orch-z1: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-14T00:05:41.569086168 orch-z1: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":4,"reason":"LeaderResigned"}
+  2026-10-14T00:05:41.569107737 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":4,"reason":"LeaderResigned"}
+  2026-10-14T00:05:41.569318361 pooler-n1: recruit received ,"revoked_below_term":4,"coordinator_id":"4k9249x2"}
+  2026-10-14T00:05:41.569351210 pooler-n2: recruit received ,"revoked_below_term":4,"coordinator_id":"4k9249x2"}
+  2026-10-14T00:05:41.569357469 pooler-n3: recruit received ,"revoked_below_term":4,"coordinator_id":"4k9249x2"}
+  2026-10-14T00:05:41.569620491 pooler-n1: recruit received ,"revoked_below_term":4,"coordinator_id":"f7h57bm4"}
+  2026-10-14T00:05:41.569699209 pooler-n3: recruit received ,"revoked_below_term":4,"coordinator_id":"f7h57bm4"}
+  2026-10-14T00:05:41.569764967 orch-z1: recruit failed ,"pooler":"n1","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: coordinator zone1_4k9249x2 reused term 4 with a different coordinator_initiated_at"}
+  2026-10-14T00:05:41.569783026 orch-z1: recruit failed ,"pooler":"n3","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 4 from coordinator zone2_ztcd7jkj, requested by zone1_4k9249x2"}
+  2026-10-14T00:05:41.569935371 orch-z3: recruit failed ,"pooler":"n1","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 4 from coordinator zone1_4k9249x2, requested by zone3_f7h57bm4"}
+  2026-10-14T00:05:41.570034018 orch-z3: recruit failed ,"pooler":"n3","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 4 from coordinator zone2_ztcd7jkj, requested by zone3_f7h57bm4"}
+  2026-10-14T00:05:41.570335678 pooler-n2: recruit received ,"revoked_below_term":4,"coordinator_id":"f7h57bm4"}
+  2026-10-14T00:05:41.570403356 orch-z1: recruit failed ,"pooler":"n2","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-14T00:05:41.570427596 orch-z1: primary.promotion ,"event_type":"primary.promotion","outcome":"failed","proposed_term":4,"reason":"LeaderResigned","recruit_ms":1,"error":"recruitment failed: no nodes responded to recruit"}
+  2026-10-14T00:05:41.571211041 orch-z3: recruit failed ,"pooler":"n2","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-14T00:05:41.571222021 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"failed","proposed_term":4,"reason":"LeaderResigned","recruit_ms":2,"error":"recruitment failed: no nodes responded to recruit"}
+  2026-10-14T00:05:42.071058829 orch-z1: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-14T00:05:42.071990129 orch-z3: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-14T00:05:42.125213960 orch-z1: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-14T00:05:42.125213970 orch-z3: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-14T00:05:42.125247199 orch-z1: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":4,"reason":"LeaderResigned"}
+  2026-10-14T00:05:42.125250169 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":4,"reason":"LeaderResigned"}
+  2026-10-14T00:05:42.125490551 pooler-n1: recruit received ,"revoked_below_term":4,"coordinator_id":"f7h57bm4"}
+  2026-10-14T00:05:42.125508990 pooler-n3: recruit received ,"revoked_below_term":4,"coordinator_id":"f7h57bm4"}
+  2026-10-14T00:05:42.125557239 pooler-n2: recruit received ,"revoked_below_term":4,"coordinator_id":"4k9249x2"}
+  2026-10-14T00:05:42.125752633 pooler-n1: recruit received ,"revoked_below_term":4,"coordinator_id":"4k9249x2"}
+  2026-10-14T00:05:42.125824030 pooler-n3: recruit received ,"revoked_below_term":4,"coordinator_id":"4k9249x2"}
+  2026-10-14T00:05:42.125877849 orch-z3: recruit failed ,"pooler":"n1","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 4 from coordinator zone1_4k9249x2, requested by zone3_f7h57bm4"}
+  2026-10-14T00:05:42.125906608 orch-z3: recruit failed ,"pooler":"n3","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 4 from coordinator zone2_ztcd7jkj, requested by zone3_f7h57bm4"}
+  2026-10-14T00:05:42.126085412 orch-z1: recruit failed ,"pooler":"n1","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: coordinator zone1_4k9249x2 reused term 4 with a different coordinator_initiated_at"}
+  2026-10-14T00:05:42.126124541 orch-z1: recruit failed ,"pooler":"n3","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 4 from coordinator zone2_ztcd7jkj, requested by zone1_4k9249x2"}
+  2026-10-14T00:05:42.126432981 pooler-n2: recruit received ,"revoked_below_term":4,"coordinator_id":"f7h57bm4"}
+  2026-10-14T00:05:42.126507129 orch-z1: recruit failed ,"pooler":"n2","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-14T00:05:42.126518448 orch-z1: primary.promotion ,"event_type":"primary.promotion","outcome":"failed","proposed_term":4,"reason":"LeaderResigned","recruit_ms":1,"error":"recruitment failed: no nodes responded to recruit"}
+  2026-10-14T00:05:42.127245115 orch-z3: recruit failed ,"pooler":"n2","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-14T00:05:42.127263225 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"failed","proposed_term":4,"reason":"LeaderResigned","recruit_ms":2,"error":"recruitment failed: no nodes responded to recruit"}
+  2026-10-14T00:05:42.627774222 orch-z1: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-14T00:05:42.627787502 orch-z3: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-14T00:05:42.688434698 orch-z3: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-14T00:05:42.688463037 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":4,"reason":"LeaderResigned"}
+  2026-10-14T00:05:42.688492196 orch-z1: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-14T00:05:42.688519865 orch-z1: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":4,"reason":"LeaderResigned"}
+  2026-10-14T00:05:42.688848005 pooler-n1: recruit received ,"revoked_below_term":4,"coordinator_id":"f7h57bm4"}
+  2026-10-14T00:05:42.688912213 pooler-n3: recruit received ,"revoked_below_term":4,"coordinator_id":"4k9249x2"}
+  2026-10-14T00:05:42.689101057 pooler-n2: recruit received ,"revoked_below_term":4,"coordinator_id":"f7h57bm4"}
+  2026-10-14T00:05:42.689511614 pooler-n1: recruit received ,"revoked_below_term":4,"coordinator_id":"4k9249x2"}
+  2026-10-14T00:05:42.689656430 pooler-n3: recruit received ,"revoked_below_term":4,"coordinator_id":"f7h57bm4"}
+  2026-10-14T00:05:42.689768206 orch-z3: recruit failed ,"pooler":"n1","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 4 from coordinator zone1_4k9249x2, requested by zone3_f7h57bm4"}
+  2026-10-14T00:05:42.689881083 orch-z1: recruit failed ,"pooler":"n3","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 4 from coordinator zone2_ztcd7jkj, requested by zone1_4k9249x2"}
+  2026-10-14T00:05:42.690000199 orch-z1: recruit failed ,"pooler":"n1","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: coordinator zone1_4k9249x2 reused term 4 with a different coordinator_initiated_at"}
+  2026-10-14T00:05:42.690214192 orch-z3: recruit failed ,"pooler":"n3","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 4 from coordinator zone2_ztcd7jkj, requested by zone3_f7h57bm4"}
+  2026-10-14T00:05:42.690698987 pooler-n2: recruit received ,"revoked_below_term":4,"coordinator_id":"4k9249x2"}
+  2026-10-14T00:05:42.690828723 orch-z3: recruit failed ,"pooler":"n2","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-14T00:05:42.690870841 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"failed","proposed_term":4,"reason":"LeaderResigned","recruit_ms":2,"error":"recruitment failed: no nodes responded to recruit"}
+  2026-10-14T00:05:42.692008965 orch-z1: recruit failed ,"pooler":"n2","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-14T00:05:42.692022575 orch-z1: primary.promotion ,"event_type":"primary.promotion","outcome":"failed","proposed_term":4,"reason":"LeaderResigned","recruit_ms":3,"error":"recruitment failed: no nodes responded to recruit"}
+  2026-10-14T00:05:43.191871613 orch-z3: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-14T00:05:43.193028206 orch-z1: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-14T00:05:43.245686965 orch-z1: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-14T00:05:43.245692455 orch-z3: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-14T00:05:43.245716144 orch-z1: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":4,"reason":"LeaderResigned"}
+  2026-10-14T00:05:43.245719184 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":4,"reason":"LeaderResigned"}
+  2026-10-14T00:05:43.245986165 pooler-n1: recruit received ,"revoked_below_term":4,"coordinator_id":"4k9249x2"}
+  2026-10-14T00:05:43.246004825 pooler-n2: recruit received ,"revoked_below_term":4,"coordinator_id":"4k9249x2"}
+  2026-10-14T00:05:43.246004835 pooler-n3: recruit received ,"revoked_below_term":4,"coordinator_id":"4k9249x2"}
+  2026-10-14T00:05:43.246248307 pooler-n1: recruit received ,"revoked_below_term":4,"coordinator_id":"f7h57bm4"}
+  2026-10-14T00:05:43.246301895 pooler-n3: recruit received ,"revoked_below_term":4,"coordinator_id":"f7h57bm4"}
+  2026-10-14T00:05:43.246402952 orch-z1: recruit failed ,"pooler":"n1","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: coordinator zone1_4k9249x2 reused term 4 with a different coordinator_initiated_at"}
+  2026-10-14T00:05:43.246414612 orch-z1: recruit failed ,"pooler":"n3","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 4 from coordinator zone2_ztcd7jkj, requested by zone1_4k9249x2"}
+  2026-10-14T00:05:43.246600076 orch-z3: recruit failed ,"pooler":"n1","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 4 from coordinator zone1_4k9249x2, requested by zone3_f7h57bm4"}
+  2026-10-14T00:05:43.246620985 orch-z3: recruit failed ,"pooler":"n3","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 4 from coordinator zone2_ztcd7jkj, requested by zone3_f7h57bm4"}
+  2026-10-14T00:05:43.246920626 pooler-n2: recruit received ,"revoked_below_term":4,"coordinator_id":"f7h57bm4"}
+  2026-10-14T00:05:43.247005763 orch-z1: recruit failed ,"pooler":"n2","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-14T00:05:43.247021753 orch-z1: primary.promotion ,"event_type":"primary.promotion","outcome":"failed","proposed_term":4,"reason":"LeaderResigned","recruit_ms":1,"error":"recruitment failed: no nodes responded to recruit"}
+  2026-10-14T00:05:43.247759690 orch-z3: recruit failed ,"pooler":"n2","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-14T00:05:43.247770379 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"failed","proposed_term":4,"reason":"LeaderResigned","recruit_ms":2,"error":"recruitment failed: no nodes responded to recruit"}
+  2026-10-14T00:05:43.747570249 orch-z1: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-14T00:05:43.748832460 orch-z3: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-14T00:05:43.801098491 orch-z1: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-14T00:05:43.801098641 orch-z3: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-14T00:05:43.801121850 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":4,"reason":"LeaderResigned"}
+  2026-10-14T00:05:43.801129390 orch-z1: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":4,"reason":"LeaderResigned"}
+  2026-10-14T00:05:43.801389811 pooler-n1: recruit received ,"revoked_below_term":4,"coordinator_id":"f7h57bm4"}
+  2026-10-14T00:05:43.801426150 pooler-n3: recruit received ,"revoked_below_term":4,"coordinator_id":"4k9249x2"}
+  2026-10-14T00:05:43.801426720 pooler-n2: recruit received ,"revoked_below_term":4,"coordinator_id":"4k9249x2"}
+  2026-10-14T00:05:43.801636554 pooler-n1: recruit received ,"revoked_below_term":4,"coordinator_id":"4k9249x2"}
+  2026-10-14T00:05:43.801726631 pooler-n3: recruit received ,"revoked_below_term":4,"coordinator_id":"f7h57bm4"}
+  2026-10-14T00:05:43.801759640 orch-z3: recruit failed ,"pooler":"n1","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 4 from coordinator zone1_4k9249x2, requested by zone3_f7h57bm4"}
+  2026-10-14T00:05:43.801856257 orch-z1: recruit failed ,"pooler":"n3","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 4 from coordinator zone2_ztcd7jkj, requested by zone1_4k9249x2"}
+  2026-10-14T00:05:43.801952004 orch-z1: recruit failed ,"pooler":"n1","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: coordinator zone1_4k9249x2 reused term 4 with a different coordinator_initiated_at"}
+  2026-10-14T00:05:43.802078520 orch-z3: recruit failed ,"pooler":"n3","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 4 from coordinator zone2_ztcd7jkj, requested by zone3_f7h57bm4"}
+  2026-10-14T00:05:43.802318082 pooler-n2: recruit received ,"revoked_below_term":4,"coordinator_id":"f7h57bm4"}
+  2026-10-14T00:05:43.802386190 orch-z1: recruit failed ,"pooler":"n2","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-14T00:05:43.802396020 orch-z1: primary.promotion ,"event_type":"primary.promotion","outcome":"failed","proposed_term":4,"reason":"LeaderResigned","recruit_ms":1,"error":"recruitment failed: no nodes responded to recruit"}
+  2026-10-14T00:05:43.803158226 orch-z3: recruit failed ,"pooler":"n2","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-14T00:05:43.803176225 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"failed","proposed_term":4,"reason":"LeaderResigned","recruit_ms":2,"error":"recruitment failed: no nodes responded to recruit"}
+  2026-10-14T00:05:44.162561236 pooler-n2: MonitorPostgres: PostgreSQL initialized but not running, starting PostgreSQL }
+  2026-10-14T00:05:44.205933728 pooler-n2: MonitorPostgres: Postgres started successfully }
+  2026-10-14T00:05:50.311978371 orch-z3: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-14T00:05:50.365711956 orch-z3: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-14T00:05:50.365730646 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":5,"reason":"LeaderResigned"}
+  2026-10-14T00:05:50.365938909 pooler-n1: recruit received ,"revoked_below_term":5,"coordinator_id":"f7h57bm4"}
+  2026-10-14T00:05:50.365959409 pooler-n3: recruit received ,"revoked_below_term":5,"coordinator_id":"f7h57bm4"}
+  2026-10-14T00:05:50.415246964 orch-z2: executing appoint leader action ,"shard_key":"postgres/default/0-inf"}
+  2026-10-14T00:05:50.469202212 orch-z2: starting leader appointment ,"database":"postgres","tablegroup":"default","shard":"0-inf","cohort_size":3}
+  2026-10-14T00:05:50.469215312 orch-z2: primary.promotion ,"event_type":"primary.promotion","outcome":"started","proposed_term":5,"reason":"LeaderResigned"}
+  2026-10-14T00:05:50.491477839 pooler-n3: recruit received ,"revoked_below_term":5,"coordinator_id":"ztcd7jkj"}
+  2026-10-14T00:05:50.491693763 orch-z3: recruited pooler ,"pooler":"n3","lsn":"0/42E3D70"}
+  2026-10-14T00:05:50.491959694 orch-z2: recruit failed ,"pooler":"n3","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 5 from coordinator zone3_f7h57bm4, requested by zone2_ztcd7jkj"}
+  2026-10-14T00:05:50.589851406 pooler-n1: recruit received ,"revoked_below_term":5,"coordinator_id":"ztcd7jkj"}
+  2026-10-14T00:05:50.590094159 orch-z3: recruited pooler ,"pooler":"n1","lsn":"0/42E3D70"}
+  2026-10-14T00:05:50.590316972 orch-z2: recruit failed ,"pooler":"n1","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: already accepted term 5 from coordinator zone3_f7h57bm4, requested by zone2_ztcd7jkj"}
+  2026-10-14T00:05:51.322441520 pooler-n1: SetPrimary: stale primary, restarting as standby ,"new_leader":"n3","incoming_position":"3.0 proposal=5.0","postgres_mode":"in_recovery"}
+  2026-10-14T00:05:51.946984241 orch-z3: promote succeeded ,"pooler":"n3","is_leader":true}
+  2026-10-14T00:06:14.163375770 pooler-n2: recruit received ,"revoked_below_term":5,"coordinator_id":"f7h57bm4"}
+  2026-10-14T00:06:14.164649860 pooler-n2: recruit received ,"revoked_below_term":5,"coordinator_id":"ztcd7jkj"}
+  2026-10-14T00:06:14.164883003 orch-z3: recruit failed ,"pooler":"n2","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-14T00:06:14.165765945 orch-z2: recruit failed ,"pooler":"n2","error":"rpc error: code = FailedPrecondition desc = cannot accept revocation: unknown WAL position"}
+  2026-10-14T00:06:14.165782374 orch-z2: primary.promotion ,"event_type":"primary.promotion","outcome":"failed","proposed_term":5,"reason":"LeaderResigned","recruit_ms":23696,"error":"recruitment failed: no nodes responded to recruit"}
+  2026-10-14T00:06:14.167483330 orch-z3: primary.promotion ,"event_type":"primary.promotion","outcome":"success","proposed_term":5,"reason":"LeaderResigned","new_primary":"n3","recruit_ms":224,"promote_ms":23577}
+  2026-10-14T00:06:14.167493870 orch-z3: appoint leader action completed successfully ,"shard_key":"postgres/default/0-inf"}
+== pinned source (e3cbdbb)
+-- go/services/multigateway/poolergateway/pooler_gateway.go:88-107
+// classifyError determines whether an error is eligible for failover buffering.
+// Only PRIMARY traffic is buffered, and only for:
+//   - no writable primary in the gateway's current routing view
+//   - MTF01: multipooler signals planned failover (SERVING_RDONLY)
+//   - an internal pre-execution marker from backend acquisition
+//   - 25006, or the exact 0A000 BEGIN READ WRITE recovery rejection, when the
+//     request is safe to replay: a single autocommit query, or the first
+//     statement of a deferred explicit transaction that was not READ ONLY.
+func classifyError(err error, target *query.Target, retryReadOnlyError bool) errorAction {
+	if !modeRequiresLeader(target.GetMode()) {
+		return actionFail
+	}
+	if isNoWritablePrimaryError(err) || mterrors.IsErrorCode(err, mterrors.MTF01.ID) || mterrors.IsPreExecutionUnavailable(err) {
+		return actionBuffer
+	}
+	if retryReadOnlyError && (mterrors.IsErrorCode(err, mterrors.PgSSReadOnlyTransaction) || isReadWriteDuringRecoveryError(err)) {
+		return actionBuffer
+	}
+	return actionFail
+}
+-- go/common/constants/gateway.go:49-52
+	// MaxBufferingRetries is the maximum number of times a query will be
+	// retried after failover buffering completes.
+	MaxBufferingRetries = 3
+
+-- go/services/multigateway/buffer/shard_buffer.go:99-128
+func (sb *shardBuffer) waitForFailoverEnd(ctx context.Context) (RetryDoneFunc, error) {
+	// Fast path: if draining or idle with recent failover, skip.
+	sb.mu.Lock()
+	switch sb.state {
+	case stateDraining:
+		// The observed primary ended this buffer cycle. Retry immediately without
+		// reopening it; withBuffering keeps the drain slot until its bounded retries
+		// finish, so DrainConcurrency limits a second-failure retry wave.
+		sb.mu.Unlock()
+		return func() {}, nil
+	case stateIdle:
+		// Check timing guard: don't start buffering again too soon.
+		if !sb.lastEnd.IsZero() {
+			minGap := sb.buf.config.MinTimeBetweenFailovers.Get()
+			if sb.buf.now().Sub(sb.lastEnd) < minGap {
+				sb.mu.Unlock()
+				sb.buf.stats.recordSkipped(ctx, "min_time_between_failovers")
+				sb.logger.DebugContext(ctx, "skipping buffering: too soon since last failover",
+					"last_end", sb.lastEnd, "min_gap", minGap)
+				return nil, nil
+			}
+		}
+
+		// Transition IDLE -> BUFFERING.
+		sb.state = stateBuffering
+		sb.generation++
+		gen := sb.generation
+		sb.lastStart = sb.buf.now()
+		sb.logger.InfoContext(ctx, "failover detected, starting buffering")
+		sb.buf.stats.recordFailover(ctx, string(commontypes.FormatShardKey(sb.shardKey)))
+-- go/services/multigateway/poolergateway/load_balancer.go:559-570
+// onPoolerHealthUpdate is the callback invoked by poolerConnection when health
+// state changes. It folds the LeaderObservation into the shard's
+// shardSummary — recording the named leader unconditionally, regardless of
+// whether we currently have a connection to that leader. The connection
+// lookup happens at GetConnection time via the cache, so identity survives
+// any connection lifecycle event.
+//
+// After folding the observation in, the SERVING-leader notification fires
+// unconditionally: notifyLeaderServingFromSummary is idempotent (StopBuffering is
+// idempotent and the SERVING check is a pure read), so this covers both the
+// "new rule installed" case and the previously-distinct "same rule but the
+// leader has just become SERVING" case in one path.
+-- go/common/consensus/revocation.go:350-360
+	// its three-tier decision/proposal comparison:
+	// decision dominates outright in both directions, and only when
+	// decisions tie does the proposal break it. In particular, a position
+	// whose decision is behind outgoing_rule is revoked regardless of how
+	// advanced its own (unconfirmed) proposal is — an unconfirmed proposal
+	// never overrides a decision-level comparison.
+	pos := status.GetCurrentPosition()
+	if pos == nil {
+		return errors.New("cannot accept revocation: unknown WAL position")
+	}
+	if _, err := pgutil.ParseLSN(pos.Lsn); err != nil {
+-- go/services/multiorch/consensus/failover_backoff.go:60-77
+}
+
+// NextFailoverAttempt returns this orchestrator's earliest permitted failover
+// recruitment time for cohort and whether that time has arrived, per backoff.
+// Aggressive-first: acts immediately when no revocation is observed, or when
+// the observed one demonstrably targets a different, already-resolved
+// problem (see backoffRelevantRevocations); otherwise defers to the
+// revocation's deterministic collective backoff.
+func (c *Coordinator) NextFailoverAttempt(cohort []*multiorchdatapb.PoolerHealthState, backoff ha.BackoffSchedule) (readyAt time.Time, ready bool) {
+	statuses := eligibleConsensusStatuses(cohort)
+	decision := commonconsensus.HighestDecidedRule(statuses)
+	rev := commonconsensus.HighestRevokedBelowTermRevocation(backoffRelevantRevocations(statuses, decision))
+	if rev == nil {
+		return time.Time{}, true
+	}
+	readyAt = backoff.NextAttempt(rev, c.GetCoordinatorID())
+	return readyAt, !time.Now().Before(readyAt)
+}
+-- go/common/ha/backoff.go:57-63
+func DefaultBackoffSchedule() BackoffSchedule {
+	return BackoffSchedule{
+		Base:           10 * time.Second,
+		Max:            5 * time.Minute,
+		JitterFraction: 0.25,
+	}
+}
+-- go/services/multipooler/internal/manager/postgres_monitor.go:1338-1349
+	case remedialActionResignLeadership:
+		pm.setMonitorReason(ctx, reasonPostgresRunning, "MonitorPostgres: PostgreSQL is running")
+		// The rule names us leader but postgres is running as a standby. Signal
+		// voluntary resignation at the highest-known rule's term so the coordinator
+		// re-elects; this branch only fires when that rule names us, so the term is
+		// current. We do not self-promote.
+		highestPosition := pm.highestKnownPosition()
+		pm.logger.InfoContext(ctx, "MonitorPostgres: rule names us leader but postgres is a standby; resigning", //nolint:sloglint // message intentionally starts with an operation name or proper noun
+			"position", commonconsensus.FormatRulePosition(highestPosition))
+		if commonconsensus.PossiblyUndecidedRule(highestPosition).GetRuleNumber().GetCoordinatorTerm() != 0 {
+			if err := pm.consensusMgr.SetResignedLeaderAtTerm(ctx, highestPosition); err != nil {
+				pm.logger.ErrorContext(ctx, "MonitorPostgres: failed to set resigned primary term", "error", err) //nolint:sloglint // message intentionally starts with an operation name or proper noun
+-- go/services/multipooler/internal/manager/postgres_monitor.go:1374-1384
+		// Honour the in-memory flag set by tests and demos to suppress auto-restart
+		// during controlled failovers.
+		if pm.postgresRestartsDisabled.Load() {
+			pm.logger.InfoContext(ctx, "MonitorPostgres: skipping start, postgres restarts disabled") //nolint:sloglint // message intentionally starts with an operation name or proper noun
+			return nil
+		}
+		pm.setMonitorReason(ctx, reasonStartingPostgres, "MonitorPostgres: PostgreSQL initialized but not running, starting PostgreSQL")
+		// Retract writability and serving before the blocking restart. Otherwise a
+		// successful start can be exposed before its role and WAL safety are known.
+		if pm.stateManager != nil {
+			if err := pm.stateManager.Mutate(ctx, func(s *servingStateMutation) {

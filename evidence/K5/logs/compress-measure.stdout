@@ -1,0 +1,13 @@
+{"run":"20261013T230136Z-C9-1-real-21458975","zstd19_bytes":1807228,"zstd22_long27_bytes":1774878,"xz9e_bytes":1750212}
+{"run":"20261013T230358Z-C9-2-real-b0861f34","zstd19_bytes":1871499,"zstd22_long27_bytes":1833448,"xz9e_bytes":1812960}
+{"run":"20261013T230909Z-C9-3-real-bb8a276f","zstd19_bytes":1947160,"zstd22_long27_bytes":1899692,"xz9e_bytes":1870332}
+{"run":"20261013T231132Z-C10-1-real-4e2010a8","zstd19_bytes":1831507,"zstd22_long27_bytes":1804261,"xz9e_bytes":1780720}
+{"run":"20261013T231500Z-C10-2-real-01af5fe0","zstd19_bytes":1885171,"zstd22_long27_bytes":1860496,"xz9e_bytes":1837552}
+{"run":"20261013T231736Z-C10-3-real-018e2dd9","zstd19_bytes":1964274,"zstd22_long27_bytes":1939862,"xz9e_bytes":1912420}
+{"run":"20261013T232032Z-C10-4-real-0370610b","zstd19_bytes":1908542,"zstd22_long27_bytes":1884196,"xz9e_bytes":1859764}
+{"run":"20261013T232303Z-C10-5-real-ed9c988d","zstd19_bytes":1919113,"zstd22_long27_bytes":1896385,"xz9e_bytes":1868216}
+{"run":"20261013T232750Z-C11-2-real-1f5423ed","zstd19_bytes":3450920,"zstd22_long27_bytes":3383497,"xz9e_bytes":3349536}
+{"run":"20261014T004127Z-C9-1-real-e8381b69","zstd19_bytes":611286,"zstd22_long27_bytes":608290,"xz9e_bytes":598876}
+{"run":"20261014T010524Z-C9-2-real-b8b35825","zstd19_bytes":292289,"zstd22_long27_bytes":291495,"xz9e_bytes":284212}
+{"run":"20261014T012149Z-C9-3-real-52de89e0","zstd19_bytes":492329,"zstd22_long27_bytes":490639,"xz9e_bytes":481160}
+{"command":"k5-compress-measure","full_archives":12,"full_zstd19_bytes":19981318,"full_zstd22_long27_bytes":19667139,"full_xz9e_bytes":19405960,"stubs":144,"stubs_zstd19_bytes":6879969,"stubs_zstd22_long27_bytes":6879533,"stubs_solid_zstd22_long27_bytes":1466740,"evidence_outside_k5_bytes":183082177,"k5_staged_bytes":28566935,"k5_best_measured_bytes":22578348,"evidence_best_measured_bytes":205660525,"budget":200000000,"fits":false,"exit_code":0}
