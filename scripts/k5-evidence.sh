@@ -28,7 +28,9 @@
 #   ci        make lint-workflow; make ci-unit ci-checkers ci-cluster-smoke
 #             ci-nemesis-smoke ci-mutant-smoke (a new attempt after a rebuild)
 #   store     runs archived in full or as stubs (ADR-0030), patches and lock
-#             copied, results.json written; refuses to exceed P25
+#             copied, results.json written; refuses to exceed P25.
+#             K5_STORE_POLICY selects k5-store-runs.sh's policy (default
+#             adr0030; stubs is the interim while the owner decides ADR-0032)
 #   gate      cpgate K5 --negative-controls (cpgate-k5, cpgate-k5-2, …)
 set -u -o pipefail
 export GOTOOLCHAIN=go1.26.9 CGO_ENABLED=0
@@ -202,7 +204,7 @@ ci() {
 
 store() {
 	if [ -z "$(recorded store-runs)" ] || [ -n "$(rundirs)" ]; then
-		step 0 "$(next store-runs)" scripts/k5-store-runs.sh "$EV/runs" runs/k5-full
+		step 0 "$(next store-runs)" scripts/k5-store-runs.sh "$EV/runs" runs/k5-full "${K5_STORE_POLICY:-adr0030}"
 		mkdir -p "$EV/mutants"
 		for m in M3 M5; do cp "mutants/$m.patch" "$EV/mutants/$m.patch"; done
 		cp images.lock.json "$EV/images.lock.json"
