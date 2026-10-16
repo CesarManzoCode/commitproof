@@ -36,7 +36,8 @@
 | [0032](0032-k5-storage-exceeds-p25-proposed.md) | K5's runs do not fit P25 under ADR-0030's storage: measurements and options | Decided by the owner (K5): option 1, applied by ADR-0034 |
 | [0033](0033-d3-prime-followers-acks-delayed.md) | D3′: the leader is killed while every commit waits for its delayed standby acknowledgement (amendment of §9.2 D3) | Accepted by the owner (K5, contract 1.0.10) |
 | [0034](0034-p25-raised-to-250-mb.md) | P25 raised to 250 MB; K5 stored as ADR-0030 prescribes (owner decision on ADR-0032) | Accepted by the owner (K5, contract 1.1.0) |
-| [0035](0035-g12-fault-windows-proposed.md) | G12's ok fraction excludes operations invoked inside fault windows (clarification of §10.9) | Proposed (K5) — not applied; for the owner after K5 |
+| [0035](0035-g12-fault-windows-proposed.md) | G12's ok fraction excludes operations invoked inside fault windows (clarification of §10.9) | Proposed (K5); accepted by the owner prospectively for K7 only, applied by ADR-0037 |
 | [0036](0036-k6-report-definitions.md) | K6 report: the reference run, the failover metrics, the campaign statistics and the gate's cross-check, fixed before any K6 render | Accepted (K6, contract 1.1.1) |
+| [0037](0037-g12-judged-outside-fault-windows.md) | G12 is judged outside fault windows from contract 1.2.0 on; both fractions are reported (owner decision on ADR-0035) | Accepted by the owner (pre-K7, contract 1.2.0) |
 
 New ADRs continue the numbering. Each ADR: Context, Decision, Alternatives rejected, Consequences, Sources.

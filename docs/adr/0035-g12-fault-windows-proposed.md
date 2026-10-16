@@ -1,6 +1,6 @@
 # ADR-0035 — G12's ok fraction excludes operations invoked inside fault windows (proposed clarification of CONTRACT §10.9, for after K5)
 
-Status: **Proposed (K5) — not applied.** Written at the owner's request (decision of 2026-10-14, item 3) for the owner to consider after K5. K5 keeps G12's literal rule, C11 seed 2's FAIL and its §11 classification (`PROTOCOL_DEVIATION`, severity `medium`, FND-C11-17a344c1). Nothing in this ADR changes a K5 verdict, a checker or the contract.
+Status: **Accepted by the owner (pre-K7, 2026-10-15), prospectively for K7 only; applied by ADR-0037 (contract 1.2.0).** Proposed in K5 at the owner's request (decision of 2026-10-14, item 3). K5 keeps G12's literal rule, C11 seed 2's FAIL and its §11 classification (`PROTOCOL_DEVIATION`, severity `medium`, FND-C11-17a344c1): the owner's acceptance changes no recorded verdict or finding (ADR-0037 quotes it). The text below is the proposal as written in K5.
 
 ## Owner decision (verbatim)
 

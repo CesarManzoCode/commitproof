@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Contract version | **1.1.1** (K0; K1 corrections: ADR-0019, ADR-0020, ADR-0021; K3 corrections: ADR-0022, ADR-0023; K4 clarifications and corrections: ADR-0024, ADR-0025, ADR-0026; K4 amendment approved by the owner: ADR-0027; K5 corrections and clarifications: ADR-0029, ADR-0030; K5 amendment approved by the owner: ADR-0033; K5 change approved by the owner: ADR-0034, P25; K6 clarifications: ADR-0036) |
+| Contract version | **1.2.0** (K0; K1 corrections: ADR-0019, ADR-0020, ADR-0021; K3 corrections: ADR-0022, ADR-0023; K4 clarifications and corrections: ADR-0024, ADR-0025, ADR-0026; K4 amendment approved by the owner: ADR-0027; K5 corrections and clarifications: ADR-0029, ADR-0030; K5 amendment approved by the owner: ADR-0033; K5 change approved by the owner: ADR-0034, P25; K6 clarifications: ADR-0036; pre-K7 change approved by the owner: ADR-0037, G12) |
 | Date | 2026-10-09 |
 | Owner | César Manzo (GitHub `CesarManzoCode`) |
 | System under test | Multigres, `github.com/multigres/multigres` @ `e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73` |
@@ -457,7 +457,7 @@ Inputs: W7 stream events (each change carries table, key, commit LSN — the tra
 
 - G9: after the failover window (first successful op after a recorded leader change), `SHOW` of each tracked GUC equals the value set before; `EXECUTE` of each named prepared statement succeeds and returns the expected row. Violations `session-setting-lost`, `prepared-statement-lost`.
 - G10: notifications whose `NOTIFY` transaction committed `ok` **after** the listener's first successful op post-recovery must be delivered within 10 s (`notify-not-resumed`). Notifications in the reconnect window are counted (`notify-window-loss`, observation only). Recovery from a fault window is the first `ok` write through the listener's gateway invoked after the window's last nemesis event (P06's notion); a NOTIFY whose 10 s window overlaps a fault window, or that no listener session was live for, is in a reconnect window (ADR-0030).
-- G12: during W8 storm, `cp_steady` ops: fraction `ok` ≥ 0.9 and no rule change attributable to the storm (no leader change during a storm window without a nemesis fault) — violations `fair-share-starvation`, `overload-failover`.
+- G12: during W8 storm, `cp_steady` ops: fraction `ok` ≥ 0.9 and no rule change attributable to the storm (no leader change during a storm window without a nemesis fault) — violations `fair-share-starvation`, `overload-failover`. From contract 1.2.0 on — runs whose plan carries 1.2.0 or later; recorded runs keep the literal rule and their verdicts — the fraction counts only the `cp_steady` operations invoked outside every fault window (first to last nemesis event of a fault id, as for G10); both fractions, literal and outside fault windows, are reported side by side; the operations invoked inside fault windows are the observation `overload-fault-overlap`; a storm window without starvation that has no such operation, or fewer than one per second of storm outside fault windows, is not judged (observation `fair-share-not-judged`, C8 `unknown`, never PASS) (ADR-0037, the owner's decision on ADR-0035).
 
 ### 10.10 C9 availability (observation + G8)
 
@@ -768,7 +768,7 @@ Checker-level sabotage: build tag `cp_sabotage_report_nondeterminism` (inserts m
 | V2 slotless | C1, C2, C4 | `slotless` | 5 each |
 | V3 buffered | C8 | `buffered` | 10 |
 | V4 replica reads | C13: W1 read-only transactions through the replica port mixed with primary-port writes, no nemesis and with F2a | `replica-port` | 5 |
-| V5 overload | C11 | `baseline` | 5 |
+| V5 overload | C11 (both G12 fractions reported per cell, ADR-0037) | `baseline` | 5 |
 | Mutants | D1–D5 (and P1 for M4) | as defined | 5 each |
 | H1 | DH1 | `h1` | 5 (if deployable) |
 

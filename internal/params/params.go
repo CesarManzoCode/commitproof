@@ -11,8 +11,11 @@ import (
 )
 
 // ContractVersion is the docs/CONTRACT.md version this code implements
-// (checked against the contract header by params_test.go).
-const ContractVersion = "1.1.1"
+// (checked against the contract header by params_test.go). K6 closed with
+// 1.1.1 and made no run; 1.2.0 (ADR-0037, the owner's decision on
+// ADR-0035) changes G12's verdict rule for plans carrying 1.2.0 or later,
+// and every recorded run keeps the version it carries.
+const ContractVersion = "1.2.0"
 
 // K4RunsContractVersion is the contract version of the K4 runs made before
 // ADR-0027. Contract 1.0.7 changes only M2's directed schedule, and as a new
