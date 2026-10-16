@@ -12,7 +12,7 @@
 | [0008](0008-findings-taxonomy.md) | Closed multi-dimensional findings taxonomy with claim levels | Accepted (K0) |
 | [0009](0009-verdicts-and-statistics.md) | Run verdicts, reproducibility classes and campaign statistics | Accepted (K0) |
 | [0010](0010-ci-vs-local-evidence.md) | What runs in GitHub Actions and what is recorded local evidence | Accepted (K0) |
-| [0011](0011-bullet-coverage.md) | Honest coverage of job bullets 1, 3, 6 and 8 | Accepted (K0) |
+| [0011](0011-bullet-coverage.md) | Honest coverage of job bullets 1, 3, 6 and 8 | Accepted (K0); bullet 6's C13 removed by ADR-0040 |
 | [0012](0012-license.md) | License: Apache-2.0 | Accepted (K0) |
 | [0013](0013-name.md) | Final name: CommitProof | Accepted (K0) |
 | [0014](0014-language-and-toolchain.md) | English documentation; Go 1.26.9 via GOTOOLCHAIN | Accepted (K0); amended by ADR-0019 |
@@ -41,5 +41,6 @@
 | [0037](0037-g12-judged-outside-fault-windows.md) | G12 is judged outside fault windows from contract 1.2.0 on; both fractions are reported (owner decision on ADR-0035) | Accepted by the owner (pre-K7, contract 1.2.0) |
 | [0038](0038-metrics-scrapes-otel-prometheus-exporter.md) | /metrics scrapes (P23) from the OpenTelemetry Prometheus exporter; the families recorded, the report's metric timelines and the gate's cross-check | Accepted (pre-K7, contract 1.2.1) |
 | [0039](0039-k7-storage-and-cited-directed-cells.md) | K7's evidence storage under P25 (§13 literally) and the directed cells K7 cites from K4 and K5 | Accepted by the owner (K6b, contract 1.3.0) |
+| [0040](0040-c13-and-v4-removed.md) | Campaign C13 and K7 cell V4 (replica reads) are removed | Accepted by the owner (K6b, contract 1.4.0) |
 
 New ADRs continue the numbering. Each ADR: Context, Decision, Alternatives rejected, Consequences, Sources.

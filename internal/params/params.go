@@ -16,8 +16,9 @@ import (
 // ADR-0035) changes G12's verdict rule for plans carrying 1.2.0 or later,
 // and every recorded run keeps the version it carries; 1.2.1 (ADR-0038)
 // corrects where P23's /metrics is served; 1.3.0 (ADR-0039) fixes K7's
-// storage under P25 and cites K4's and K5's directed cells in K7.
-const ContractVersion = "1.3.0"
+// storage under P25 and cites K4's and K5's directed cells in K7; 1.4.0
+// (ADR-0040) removes C13, V4 and profile replica-port.
+const ContractVersion = "1.4.0"
 
 // K4RunsContractVersion is the contract version of the K4 runs made before
 // ADR-0027. Contract 1.0.7 changes only M2's directed schedule, and as a new
@@ -87,8 +88,8 @@ const (
 	DirectedRuns    = 5 // P14
 	DetectedAtLeast = 4
 
-	RepsV1V3   = 10 // P15
-	RepsV2V4V5 = 5
+	RepsV1V3 = 10 // P15
+	RepsV2V5 = 5  // V4 removed (ADR-0040)
 
 	PauseShort = 3 * time.Second // P16
 	PauseLong  = 60 * time.Second
@@ -159,8 +160,8 @@ func Table() []Param {
 			[]string{fmt.Sprintf("%d; REPRODUCED if ≥ %d", Replays, ReproducedAtLeast)}},
 		{"P14", "Directed runs per mutant", "5; DETECTED if ≥ 4",
 			[]string{fmt.Sprintf("%d; DETECTED if ≥ %d", DirectedRuns, DetectedAtLeast)}},
-		{"P15", "K7 repetitions", "10 per cell of V1 and V3; 5 per cell of V2, V4, V5; mutants and H1 per P14 (5)",
-			[]string{fmt.Sprintf("%d per cell of V1 and V3", RepsV1V3), fmt.Sprintf("%d per cell of V2, V4, V5", RepsV2V4V5)}},
+		{"P15", "K7 repetitions", "10 per cell of V1 and V3; 5 per cell of V2, V5; mutants and H1 per P14 (5)",
+			[]string{fmt.Sprintf("%d per cell of V1 and V3", RepsV1V3), fmt.Sprintf("%d per cell of V2, V5", RepsV2V5)}},
 		{"P16", "Pause durations", "short 3 s; long 60 s",
 			[]string{"short " + s(PauseShort), "long " + s(PauseLong)}},
 		{"P17", "slowfs injected latency", "200 ms per `write`/`fsync`; confirmed if median probe ≥ 150 ms and baseline median < 50 ms",

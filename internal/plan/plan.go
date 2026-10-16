@@ -34,8 +34,8 @@ const (
 // Gateways in cell order.
 var Gateways = []string{"gw-z1", "gw-z2", "gw-z3"}
 
-// Profiles of CONTRACT §5.5.
-var Profiles = []string{"baseline", "buffered", "slotless", "replica-port", "h1"}
+// Profiles of CONTRACT §5.5 (replica-port removed with C13, ADR-0040).
+var Profiles = []string{"baseline", "buffered", "slotless", "h1"}
 
 // Campaign describes what a campaign's plan contains.
 type Campaign struct {

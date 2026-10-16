@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Contract version | **1.3.0** (K0; K1 corrections: ADR-0019, ADR-0020, ADR-0021; K3 corrections: ADR-0022, ADR-0023; K4 clarifications and corrections: ADR-0024, ADR-0025, ADR-0026; K4 amendment approved by the owner: ADR-0027; K5 corrections and clarifications: ADR-0029, ADR-0030; K5 amendment approved by the owner: ADR-0033; K5 change approved by the owner: ADR-0034, P25; K6 clarifications: ADR-0036; pre-K7 change approved by the owner: ADR-0037, G12; pre-K7 correction: ADR-0038, P23; K6b changes approved by the owner: ADR-0039, K7 storage and cited cells) |
+| Contract version | **1.4.0** (K0; K1 corrections: ADR-0019, ADR-0020, ADR-0021; K3 corrections: ADR-0022, ADR-0023; K4 clarifications and corrections: ADR-0024, ADR-0025, ADR-0026; K4 amendment approved by the owner: ADR-0027; K5 corrections and clarifications: ADR-0029, ADR-0030; K5 amendment approved by the owner: ADR-0033; K5 change approved by the owner: ADR-0034, P25; K6 clarifications: ADR-0036; pre-K7 change approved by the owner: ADR-0037, G12; pre-K7 correction: ADR-0038, P23; K6b changes approved by the owner: ADR-0039, K7 storage and cited cells; ADR-0040, C13 and V4 removed) |
 | Date | 2026-10-09 |
 | Owner | César Manzo (GitHub `CesarManzoCode`) |
 | System under test | Multigres, `github.com/multigres/multigres` @ `e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73` |
@@ -129,7 +129,7 @@ Coverage values: **COVERED** (direct executable evidence), **PARTIAL** (some asp
 | 3 | Materialization pipelines for migrations and CDC | **PARTIAL** (CDC failover only) | G11 campaign C10, mutant M5 (logical decoding not gated by standby slots) — gate K5.3 | Migrations and materialization: the migrator exists only as a proto (S30). No pipeline is built or tested. |
 | 4 | Connection pooling and workload isolation | **COVERED** (as fault behavior) | G8–G10, G12 campaigns C8, C9, C11; mutant M3 — gates K5.1, K5.2, K5.4 | Pool performance optimization; pooler internals beyond black-box behavior. |
 | 5 | Open-source collaboration | **PARTIAL** | Upstream-format evidence packages for every finding (§11.4), DCO-ready patches for mutants, issue drafts — gate K7.4 | Any actual upstream interaction: publication is the owner's decision (AGENTS.md). |
-| 6 | Sharding, relational algebra, Postgres internals | **PARTIAL** (internals only) | Internals exercised and explained: sync-rep cancel semantics (C7, S61), pg_rewind same-timeline divergence (C6, S44), visibility order and snapshot isolation on replicas (C13, S62), WAL/LSN and timeline reasoning in findings; isolation checking (C3) | Sharding and relational algebra: nothing to test (S48). |
+| 6 | Sharding, relational algebra, Postgres internals | **PARTIAL** (internals only) | Internals exercised and explained: sync-rep cancel semantics (C7, S61), pg_rewind same-timeline divergence (C6, S44), WAL/LSN and timeline reasoning in findings; isolation checking (C3) | Sharding and relational algebra: nothing to test (S48). Visibility order and snapshot isolation on replicas: not tested (C13 removed, ADR-0040; LIM-42). |
 | 7 | Consensus protocols (Raft, Paxos, FlexPaxos), distributed transactions | **PARTIAL** | FlexPaxos quorum-intersection table cross-checked against upstream `CheckSufficientRecruitment` (§10.8, gate K4.1); equivalence analysis of recruitment mutants (§9.3); consensus campaigns (K4) | Distributed transactions: single shard, no 2PC in scope; Raft/Paxos implementations are not built. |
 | 8 | Stream processing, materialization, CDC | **PARTIAL** | CDC consumer with gap/phantom/duplicate checking across failover (C10, C7 checker) — gate K5.3 | Stream processing frameworks, materialized views. |
 | 9 | Robust, high-performance distributed systems with strong observability | **COVERED** (for the harness) | The harness itself: fail-closed fault confirmation (K3), sealed hash-chained histories (K1), byte-reproducible incident timeline/report with metrics (K6), statistics (K7) | Production deployment of CommitProof; performance tuning of Multigres. |
@@ -204,7 +204,6 @@ After sealing, every file is chmod `0444` and the directory `0555`. `cpcheck ver
 | `baseline` | — | default everywhere |
 | `buffered` | gateways add `--buffer-enabled=true` (defaults otherwise, S14: window 10 s, size 1000, max failover duration 20 s, min time between failovers 1 min); the runner waits 60 s after the run-start HEALTHY evaluation before the workload starts, so that bootstrap's buffering episode cannot suppress the first failover's (ADR-0029) | C8, mutant M3 |
 | `slotless` | pooler and gateway `--enable-slot-based-replication=false` | K7 variant V2 |
-| `replica-port` | gateways add `--pg-replica-port=15433` | C13 |
 | `h1` | topology for historical commit `4bca1d5770a6…` with flags taken from that commit's `demo/k8s/*.yaml` (derivation file `deploy/DERIVATION-h1.md`); images from that commit's Dockerfiles, FROM-only; HEALTHY evaluated as (a') one node out of recovery, (b') its `synchronous_standby_names` names exactly the other two, both streaming, (c) as §5.1, (d') the containers run the locked h1 images — the commit has no rule model and no `multigres.version()` (ADR-0025) | H1 |
 
 ### 5.6 Command-line interfaces (fixed)
@@ -251,7 +250,7 @@ All numbers used by gates live here. Implementations read them from one Go const
 | P12 | Cycle search budget per strongly connected component | 10 s → UNKNOWN | — |
 | P13 | Replays per minimized failure | 5; REPRODUCED if ≥ 3 | — |
 | P14 | Directed runs per mutant | 5; DETECTED if ≥ 4 | — |
-| P15 | K7 repetitions | 10 per cell of V1 and V3; 5 per cell of V2, V4, V5; mutants and H1 per P14 (5) | — |
+| P15 | K7 repetitions | 10 per cell of V1 and V3; 5 per cell of V2, V5; mutants and H1 per P14 (5) | — |
 | P16 | Pause durations | short 3 s; long 60 s | long > `leader-postgres-response-threshold` 30 s (S21) |
 | P17 | slowfs injected latency | 200 ms per `write`/`fsync`; confirmed if median probe ≥ 150 ms and baseline median < 50 ms | — |
 | P18 | netem delay | 50 ms one-way on egress of the target netns; confirmed if measured TCP connect RTT increase ≥ 40 ms | — |
@@ -767,12 +766,11 @@ Checker-level sabotage: build tag `cp_sabotage_report_nondeterminism` (inserts m
 | V1 baseline | C1, C2, C3, C4, C5, C6, C7, C9, C10, C12 | `baseline` | 10 each |
 | V2 slotless | C1, C2, C4 | `slotless` | 5 each |
 | V3 buffered | C8 | `buffered` | 10 |
-| V4 replica reads | C13: W1 read-only transactions through the replica port mixed with primary-port writes, no nemesis and with F2a | `replica-port` | 5 |
 | V5 overload | C11 (both G12 fractions reported per cell, ADR-0037) | `baseline` | 5 |
 | Mutants | D1, D2′, D3′, D5 and P1 for M4, each with the real build on the same schedule (§9.1, §12.4) | as defined | cited from K4/K5, not re-run: 5 each, valid, with the contract versions their plans carry (ADR-0039) |
 | H1 | DH1 | `h1` | cited from K4: 5 runs (ADR-0039) |
 
-K7 runs the cells V1–V5 (135 runs); the measured wall time per run in K4 and K5 is about 2.3 minutes (cluster up, 90 s workload, recovery, final reads, teardown; `evidence/pre-K7/k7-feasibility.md`), plus re-runs of INVALID runs and the minimization and replays of failures; the campaign driver is resumable.
+K7 runs the cells V1, V2, V3 and V5 (130 runs; V4 and its campaign C13 were removed by the owner, ADR-0040); the measured wall time per run in K4 and K5 is about 2.3 minutes (cluster up, 90 s workload, recovery, final reads, teardown; `evidence/pre-K7/k7-feasibility.md`), plus re-runs of INVALID runs and the minimization and replays of failures; the campaign driver is resumable.
 
 C12 mixed: all workloads W1–W4, nemesis drawing uniformly from {F1a–F1d, F2a–F2e, F3a, F3b, F4a, F6, F7}, plus one F5a/F5b pair per run.
 
@@ -906,7 +904,7 @@ next_sprint_ready: true | false
 | R12 | Resource exhaustion on 16 GB | P10 gate; one cluster at a time; K7 resumable | — |
 | R13 | Runtime of K7 exceeds a session | resumable `campaign`, background-safe, idempotent skip of sealed runs | — |
 | R14 | Docker socket in runner is root-equivalent | documented in PREREQUISITES; runner image built locally only | LIM-11 |
-| R15 | Findings in C7/C13 are PostgreSQL behavior, not Multigres | origin dimension `POSTGRES_INHERITED`; reproduce on plain PostgreSQL streaming replication when claimed | — |
+| R15 | Findings in C7 are PostgreSQL behavior, not Multigres | origin dimension `POSTGRES_INHERITED`; reproduce on plain PostgreSQL streaming replication when claimed | — |
 | R16 | Licensing contamination from Elle | no Elle code copied; elle-cli only executed in a container, never vendored (ADR-0004) | — |
 | R17 | Publication by mistake | AGENTS.md hard rule; BLOCKED protocol | — |
 | R18 | Single etcd is a SPOF not present in production | etcd faults only F2e; LIMITATIONS | LIM-12 |
