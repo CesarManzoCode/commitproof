@@ -16,6 +16,21 @@
 #             cites (D1, D2′, D3′, P1, D5 on mutant and real build; DH1)
 #             re-checked with this commit's cpcheck, checks.json compared
 #             byte for byte with the recorded one
+#   config    ADR-0041: slotless differs from baseline only in the slot flag
+#             of the seven poolers and gateways (rendered Compose configs);
+#             K7's matrix and the smoke matrix as dry runs (make campaign-k7
+#             DRY_RUN=1): the cells, their plans and the run count
+#   images    binaries and images of this commit (the runner image must be
+#             built from the host binary's commit), locked
+#   smoke     decision 3 / item 8: make campaign-k7 on campaigns/k6b-smoke.json
+#             (C12 seed 1001 on baseline, C4 seed 1001 on slotless) into
+#             runs/.k6b/smoke, waited for with the slot flag of every pooler
+#             and gateway captured; a second invocation (resume: no run);
+#             cpcheck on each run; their summaries (stub, checks.json) under
+#             smoke-not-evidence/ — not K7 evidence
+#   exporter  decision 5: the smoke plan (seed 42) with and without ADR-0038's
+#             exporter (CP_OTEL_METRICS_EXPORTER=none), each with per-container
+#             CPU and memory; summaries under exporter-ab-not-evidence/
 set -u -o pipefail
 export GOTOOLCHAIN=go1.26.9 CGO_ENABLED=0
 EV=${K6B_EV:-evidence/K6b}
@@ -70,10 +85,59 @@ cited() {
 	[ "$(recorded cited-recheck)" = 0 ] || step 0 "$(next cited-recheck)" scripts/k6b-cited-recheck.sh
 }
 
+config() {
+	step 0 "$(next build)" make build
+	step 0 slotless-config scripts/k6b-slotless-config.sh
+	step 0 "$(next k7-dry-run)" make campaign-k7 DRY_RUN=1
+	step 0 "$(next smoke-dry-run)" make campaign-k7 DRY_RUN=1 K7_MATRIX=campaigns/k6b-smoke.json K7_OUT=$SCRATCH/smoke
+}
+
+images() {
+	step 0 "$(next build)" make build
+	step 0 "$(next images-build)" bin/commitproof images build
+}
+
+smoke() {
+	local m=campaigns/k6b-smoke.json o=$SCRATCH/smoke d=$EV/smoke-not-evidence
+	mkdir -p "$d"
+	step 0 "$(next build)" make build
+	if [ -z "$(recorded smoke-wait)" ]; then
+		step 0 "$(next smoke-start)" make campaign-k7 K7_MATRIX=$m K7_OUT=$o
+		step any smoke-wait scripts/k6b-smoke-wait.sh "$m" "$o" "$d/container-commands.jsonl"
+	fi
+	if [ -z "$(recorded smoke-resume-wait)" ]; then
+		step 0 "$(next smoke-resume)" make campaign-k7 K7_MATRIX=$m K7_OUT=$o
+		step any smoke-resume-wait scripts/campaign-k7.sh wait "$m" "$o"
+	fi
+	local r n=0
+	for r in "$o"/*/; do
+		r=${r%/}
+		[ -f "$r/seal.json" ] || continue
+		n=$((n + 1))
+		step any "smoke-cpcheck-$n" bin/cpcheck check "$r"
+	done
+	step 0 smoke-store scripts/store-summaries.sh "$o" "$d" --measure-full
+	[ -f "$d/campaign-k7.log" ] || cp "$o/campaign-k7.log" "$d/campaign-k7.log"
+}
+
+exporter() {
+	local o=$SCRATCH/exporter-ab d=$EV/exporter-ab-not-evidence
+	mkdir -p "$o" "$d"
+	step 0 "$(next build)" make build
+	[ "$(recorded exporter-ab-on)" = 0 ] || step 0 "$(next exporter-ab-on)" scripts/k6b-exporter-ab.sh on "$o"
+	[ "$(recorded exporter-ab-off)" = 0 ] || step 0 "$(next exporter-ab-off)" env CP_OTEL_METRICS_EXPORTER=none scripts/k6b-exporter-ab.sh off "$o"
+	step 0 exporter-ab-store-on scripts/store-summaries.sh "$o/runs-on" "$d" --measure-full
+	step 0 exporter-ab-store-off scripts/store-summaries.sh "$o/runs-off" "$d" --measure-full
+	local m
+	for m in on off; do
+		[ -f "$d/samples-$m.jsonl.zst" ] || zstd -q -19 -o "$d/samples-$m.jsonl.zst" "$o/samples-$m.jsonl"
+	done
+}
+
 case "${1:-}" in
-setup | cited) "$1" ;;
+setup | cited | config | images | smoke | exporter) "$1" ;;
 *)
-	echo "usage: $0 setup|cited" >&2
+	echo "usage: $0 setup|cited|config|images|smoke|exporter" >&2
 	exit 3
 	;;
 esac
