@@ -8,7 +8,10 @@
 # identical means the current checkers give the cited runs the verdicts
 # and classes recorded under their own contract versions. Full archives
 # come from evidence/ (committed in full) or, for stubs, from the local
-# runs/k4-full/ and runs/k5-full/ (LIM-30, LIM-37). Scratch in runs/.k6b.
+# runs/k4-full/ and runs/k5-full/ (LIM-30, LIM-37). A recorded checks.json
+# that carries C3's elle-cli cross-check (K4's triage re-checked those runs
+# with --elle-oracle, §10.11) is re-checked the same way, with the oracle
+# image the record names. Scratch in runs/.k6b.
 set -u -o pipefail
 S=runs/.k6b/cited-recheck
 if [ -d "$S" ]; then chmod -R u+w "$S" && rm -rf "${S:?}"; fi
@@ -27,7 +30,13 @@ for k in K4 K5; do
 			continue
 		fi
 		zstd -q -dc "$arch" | tar -x -C "$S" || { echo "{\"run\":\"$id\",\"error\":\"extract\"}"; rc=1; continue; }
-		bin/cpcheck check "$S/$id" >"$S/$id.out" 2>"$S/$id.err"
+		oracle=false
+		args=(check "$S/$id")
+		if grep -q '"elle":{' "$checks"; then
+			oracle=true
+			args=(check "$S/$id" --elle-oracle)
+		fi
+		bin/cpcheck "${args[@]}" >"$S/$id.out" 2>"$S/$id.err"
 		code=$?
 		n=$((n + 1))
 		if cmp -s "$S/$id.checks.json" "$checks"; then
@@ -39,7 +48,7 @@ for k in K4 K5; do
 		fi
 		verdict=$(sed -n 's/.*"verdict":"\([A-Z]*\)".*/\1/p' "$S/$id.out" | tail -n 1)
 		cv=$(jq -r '.contract_version' "$S/$id/plan.json")
-		echo "{\"sprint\":\"$k\",\"run\":\"$id\",\"plan_contract_version\":\"$cv\",\"archive\":\"$src\",\"cpcheck_exit\":$code,\"verdict\":\"$verdict\",\"checks_identical\":$ident,\"recorded_sha256\":\"$(sha256sum "$checks" | cut -d' ' -f1)\"}"
+		echo "{\"sprint\":\"$k\",\"run\":\"$id\",\"plan_contract_version\":\"$cv\",\"archive\":\"$src\",\"elle_oracle\":$oracle,\"cpcheck_exit\":$code,\"verdict\":\"$verdict\",\"checks_identical\":$ident,\"recorded_sha256\":\"$(sha256sum "$checks" | cut -d' ' -f1)\"}"
 		chmod -R u+w "$S/$id" && rm -rf "${S:?}/$id"
 	done
 done

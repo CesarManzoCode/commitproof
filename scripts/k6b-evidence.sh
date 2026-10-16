@@ -67,7 +67,7 @@ setup() {
 
 cited() {
 	step 0 "$(next build)" make build
-	step 0 cited-recheck scripts/k6b-cited-recheck.sh
+	[ "$(recorded cited-recheck)" = 0 ] || step 0 "$(next cited-recheck)" scripts/k6b-cited-recheck.sh
 }
 
 case "${1:-}" in
