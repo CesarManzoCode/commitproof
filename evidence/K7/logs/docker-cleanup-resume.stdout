@@ -1,0 +1,4 @@
+containers: 26
+networks: commitproof_cpnet 
+volumes: commitproof_backups commitproof_certs commitproof_data-n1 commitproof_data-n2 commitproof_data-n3 commitproof_data-n4 commitproof_etcd-data 
+left: containers=0 networks=0 volumes=0

@@ -1,0 +1,2 @@
+scripts/campaign-k7.sh start campaigns/k7.json runs/k7
+{"command":"campaign-k7","action":"start","matrix":"campaigns/k7.json","out":"runs/k7","log":"runs/k7/campaign-k7.log","pid":820489,"exit_code":0}
