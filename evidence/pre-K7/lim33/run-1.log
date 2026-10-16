@@ -1,0 +1,44 @@
+== 00:52:51.776 docker network create --label com.docker.compose.project=commitproof --label commitproof.experiment=lim33 commitproof-lim33-net
+b54a3c25854b1b9a88b9993ebd6bb03c690da991985da79b6c20eb786aed06a0
+== 00:52:51.837 docker volume create --label com.docker.compose.project=commitproof --label commitproof.experiment=lim33 commitproof-lim33-va
+commitproof-lim33-va
+== 00:52:51.855 docker volume create --label com.docker.compose.project=commitproof --label commitproof.experiment=lim33 commitproof-lim33-vb
+commitproof-lim33-vb
+== 00:52:51.871 docker run -d --label com.docker.compose.project=commitproof --label commitproof.experiment=lim33 --name commitproof-lim33-a --hostname commitproof-lim33-a --network commitproof-lim33-net -v commitproof-lim33-va:/var/lib/postgresql/data -e POSTGRES_HOST_AUTH_METHOD=trust postgres:17.7@sha256:2006493727bd5277eece187319af1ef82b4cf82cf4fc1ed00da0775b646ac2a4 postgres -c wal_level=replica -c wal_log_hints=on -c max_wal_senders=10 -c wal_keep_size=1GB -c hot_standby=on -c synchronous_standby_names=standby1
+0d4c4ec3b1d4f947f5b37ed55d8ec47131a6d3c878bbe271ceea3edaa1971001
+== 00:52:52.250 docker run -d --label com.docker.compose.project=commitproof --label commitproof.experiment=lim33 --name commitproof-lim33-client --network commitproof-lim33-net --entrypoint sleep postgres:17.7@sha256:2006493727bd5277eece187319af1ef82b4cf82cf4fc1ed00da0775b646ac2a4 infinity
+66313c9388f1b5edd48c6a4798618572e086e249985819e3b795f4732b54b240
+== 00:52:54.705 docker exec commitproof-lim33-a bash -c echo 'host replication all all trust' >> /var/lib/postgresql/data/pg_hba.conf
+t
+== 00:52:54.810 docker run --rm --label com.docker.compose.project=commitproof --label commitproof.experiment=lim33 --network commitproof-lim33-net -v commitproof-lim33-vb:/var/lib/postgresql/data postgres:17.7@sha256:2006493727bd5277eece187319af1ef82b4cf82cf4fc1ed00da0775b646ac2a4 bash -c chown postgres:postgres /var/lib/postgresql/data && chmod 700 /var/lib/postgresql/data && gosu postgres pg_basebackup -h commitproof-lim33-a -U postgres -D /var/lib/postgresql/data -X stream -c fast -R && echo "primary_conninfo = 'host=commitproof-lim33-a port=5432 user=postgres application_name=standby1'" >> /var/lib/postgresql/data/postgresql.auto.conf
+== 00:52:56.956 docker run -d --label com.docker.compose.project=commitproof --label commitproof.experiment=lim33 --name commitproof-lim33-b --hostname commitproof-lim33-b --network commitproof-lim33-net -v commitproof-lim33-vb:/var/lib/postgresql/data postgres:17.7@sha256:2006493727bd5277eece187319af1ef82b4cf82cf4fc1ed00da0775b646ac2a4 postgres -c wal_level=replica -c wal_log_hints=on -c max_wal_senders=10 -c wal_keep_size=1GB -c hot_standby=on
+caac644673604484e59d42081cb8146eef0af90e375246e7c80b4bd955f87319
+CREATE TABLE
+INSERT 0 1
+== 00:52:57.588 docker network disconnect commitproof-lim33-net commitproof-lim33-b
+== 00:52:57.693 client k=1: insert (background)
+== 00:52:57.694 client k=2: insert (background)
+== 00:52:57.696 client k=3: insert (background)
+== 00:52:58.272 pg_cancel_backend k=1: t
+== 00:52:58.273 docker exec commitproof-lim33-client pkill -INT -f values \(2,
+== 00:52:58.315 docker exec commitproof-lim33-client pkill -KILL -f values \(3,
+== 00:53:01.488 docker exec commitproof-lim33-b psql -U postgres -At -c select pg_promote(true, 60)
+t
+== 00:53:01.654 docker stop -t 60 commitproof-lim33-a
+commitproof-lim33-a
+== 00:53:57.610 docker network connect commitproof-lim33-net commitproof-lim33-b
+== 00:53:57.783 docker run --rm --label com.docker.compose.project=commitproof --label commitproof.experiment=lim33 --network commitproof-lim33-net -v commitproof-lim33-va:/var/lib/postgresql/data --user postgres postgres:17.7@sha256:2006493727bd5277eece187319af1ef82b4cf82cf4fc1ed00da0775b646ac2a4 pg_rewind --target-pgdata=/var/lib/postgresql/data --source-server=host=commitproof-lim33-b port=5432 user=postgres dbname=postgres -R --progress
+pg_rewind: connected to server
+pg_rewind: servers diverged at WAL location 0/302AB60 on timeline 1
+pg_rewind: rewinding from last common checkpoint at 0/2000080 on timeline 1
+pg_rewind: reading source file list
+pg_rewind: reading target file list
+pg_rewind: reading WAL in target
+pg_rewind: need to copy 51 MB (total source directory size is 70 MB)
+    0/53225 kB (0%) copied
+53225/53225 kB (100%) copied
+pg_rewind: creating backup label and updating control file
+pg_rewind: syncing target data directory
+pg_rewind: Done!
+== 00:53:58.804 docker start commitproof-lim33-a
+commitproof-lim33-a

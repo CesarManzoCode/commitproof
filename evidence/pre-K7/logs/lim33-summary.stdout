@@ -1,0 +1,1 @@
+{"command":"lim33-summary","runs":5,"k1_pg_cancel_backend_read_then_vanished":5,"k2_cancelrequest_read_then_vanished":5,"k3_disconnect_never_read":5,"k3_disconnect_still_waiting":5,"errors":0,"exit_code":0}

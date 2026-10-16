@@ -1,0 +1,5 @@
+Cancel request sent
+WARNING:  canceling wait for synchronous replication due to user request
+DETAIL:  The transaction has already committed locally, but might not have been replicated to the standby.
+INSERT 0 1
+exit=1
