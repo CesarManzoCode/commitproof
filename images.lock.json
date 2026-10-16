@@ -12,10 +12,10 @@
     "tool": "docker buildx build"
   },
   "commitproof": {
-    "commit": "ecef6d32c7f6e4553c8d13d99f81ecb25d251d5c",
+    "commit": "43d68828763264b7c1e1855b86f39c8dd2e4aa57",
     "dirty": false
   },
-  "contract_version": "1.6.0",
+  "contract_version": "1.7.0",
   "dockerfiles": {
     "build/Dockerfile": {
       "sha256": "b816e502e999edc98e3ccf3b116f2c8ae95efcd0f9b2991084a491fa43b7a8fa",
@@ -254,14 +254,14 @@
     },
     "commitproof/runner:real": {
       "binaries": {
-        "/usr/local/bin/commitproof": "641a2c857c02bdac4d254d326e2003bfbbb8a79c6cc7eecf4672009de0adb21a"
+        "/usr/local/bin/commitproof": "9be5e5812776e50e57af3f1b9a873378268c87f47afdf970c488249b7a59f1ab"
       },
       "build_args": {
-        "CP_COMMIT": "ecef6d32c7f6e4553c8d13d99f81ecb25d251d5c",
+        "CP_COMMIT": "43d68828763264b7c1e1855b86f39c8dd2e4aa57",
         "CP_DIRTY": "false"
       },
       "dockerfile": "build/Dockerfile.runner",
-      "id": "sha256:021c8c56c77d39e3c0b4e56060ac7366f98a8f7e370a1b59ff7179e8f9dd7190",
+      "id": "sha256:ea5686e050a4134409f398e2c3ff1106ba32c248493a85027dd4eb790ed6a940",
       "variant": "real",
       "versions": {
         "docker --version": "Docker version 29.8.2, build 7fc2dff9bceb96b266a3b2c3117c0955a0d9e616"
