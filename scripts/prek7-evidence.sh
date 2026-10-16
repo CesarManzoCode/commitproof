@@ -29,7 +29,8 @@
 #             ci-nemesis-smoke ci-mutant-smoke ci-report (a new attempt name
 #             after a failed one)
 #   final     cpgate K1–K6 on copies again, evidence size, the backup
-#             manifest of the local-only full archives
+#             manifest of the local-only full archives, and ADR-0038's
+#             metrics cross-check on the CI run's runs with faults
 #   lim33     D-D: LIM-33's origin experiment on plain PostgreSQL, 5 runs
 #             (scripts/prek7-lim33.sh; raw outputs under lim33/), and their
 #             summary
@@ -149,14 +150,30 @@ ci() {
 	[ "$(recorded "$name")" = 0 ] || { echo "prek7-evidence: $name exited $(recorded "$name"); see $EV/logs/$name.*" >&2; exit 1; }
 }
 
+final() {
+	step 0 "$(next build)" make build
+	step 0 "$(next precondition)" scripts/prek7-precondition.sh
+	step 0 "$(next evidence-size)" scripts/prek7-evidence-size.sh
+	step 0 "$(next backup-manifest)" scripts/prek7-backup-manifest.sh "$EV/backup-manifest.tsv"
+	# ADR-0038 on runs with faults: the CI-equivalent run's nemesis smoke and
+	# mutant smoke runs (local, git-ignored runs/), rendered and cross-checked.
+	local runs
+	runs=$(sed -n 's/.*"run_dir":"\(runs\/[^"]*-\(nsmoke\|D1\)-[^"]*\)".*/\1/p' "$EV/logs/$(lastci).stdout" | sort -u)
+	step 0 "$(next fault-metrics)" scripts/prek7-fault-metrics.sh $runs
+}
+
+lastci() { # the latest ci record's name
+	grep -oE '"name":"ci(-[0-9]+)?"' "$EV/commands.jsonl" | tail -n 1 | sed 's/"name":"\(.*\)"/\1/'
+}
+
 case "${1:-}" in
-setup | g12 | probe | scrape | feasible | lim33 | ci) "$1" ;;
+setup | g12 | probe | scrape | feasible | lim33 | ci | final) "$1" ;;
 upstream)
 	shift
 	upstream "$@"
 	;;
 *)
-	echo "usage: $0 setup|g12|probe|scrape|feasible|lim33|ci|upstream [read <n>...]" >&2
+	echo "usage: $0 setup|g12|probe|scrape|feasible|lim33|ci|final|upstream [read <n>...]" >&2
 	exit 3
 	;;
 esac
