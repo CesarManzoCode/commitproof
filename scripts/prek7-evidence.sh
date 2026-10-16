@@ -25,6 +25,9 @@
 #   upstream  D-C: read-only lookups on github.com/multigres/multigres
 #             (clone, file diffs since the pinned commit, issue/PR search);
 #             "upstream read <n>..." reads the issues/PRs the search found
+#   lim33     D-D: LIM-33's origin experiment on plain PostgreSQL, 5 runs
+#             (scripts/prek7-lim33.sh; raw outputs under lim33/), and their
+#             summary
 set -u -o pipefail
 export GOTOOLCHAIN=go1.26.9 CGO_ENABLED=0
 EV=${PREK7_EV:-evidence/pre-K7}
@@ -124,14 +127,22 @@ upstream() {
 	fi
 }
 
+lim33() {
+	local n
+	for n in 1 2 3 4 5; do
+		[ "$(recorded "lim33-run-$n")" = 0 ] || step 0 "$(next "lim33-run-$n")" scripts/prek7-lim33.sh "$n" "$EV/lim33"
+	done
+	step 0 lim33-summary bash -c 'for n in 1 2 3 4 5; do tail -n 1 "$1/logs/lim33-run-$n.stdout"; done | jq -sc "{command: \"lim33-summary\", runs: length, k1_pg_cancel_backend_read_then_vanished: (map(select(.k1_pg_cancel_backend_read_then_vanished)) | length), k2_cancelrequest_read_then_vanished: (map(select(.k2_cancelrequest_read_then_vanished)) | length), k3_disconnect_never_read: (map(select(.k3_disconnect_never_read)) | length), k3_disconnect_still_waiting: (map(select(.k3_disconnect_still_waiting)) | length), errors: (map(select(.error)) | length), exit_code: 0}"' _ "$EV"
+}
+
 case "${1:-}" in
-setup | g12 | probe | scrape | feasible) "$1" ;;
+setup | g12 | probe | scrape | feasible | lim33) "$1" ;;
 upstream)
 	shift
 	upstream "$@"
 	;;
 *)
-	echo "usage: $0 setup|g12|probe|scrape|feasible|upstream [read <n>...]" >&2
+	echo "usage: $0 setup|g12|probe|scrape|feasible|lim33|upstream [read <n>...]" >&2
 	exit 3
 	;;
 esac
