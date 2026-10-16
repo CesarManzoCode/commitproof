@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Contract version | **1.8.0** (K0; K1 corrections: ADR-0019, ADR-0020, ADR-0021; K3 corrections: ADR-0022, ADR-0023; K4 clarifications and corrections: ADR-0024, ADR-0025, ADR-0026; K4 amendment approved by the owner: ADR-0027; K5 corrections and clarifications: ADR-0029, ADR-0030; K5 amendment approved by the owner: ADR-0033; K5 change approved by the owner: ADR-0034, P25; K6 clarifications: ADR-0036; pre-K7 change approved by the owner: ADR-0037, G12; pre-K7 correction: ADR-0038, P23; K6b changes approved by the owner: ADR-0039, K7 storage and cited cells; ADR-0040, C13 and V4 removed; K6b clarification: ADR-0041, C12, slotless and the K7 campaign command; K6b change approved by the owner: ADR-0042, G2 split into G2a and G2b; ADR-0043, known status KNOWN and the G6 finding; K6b correction: ADR-0044, exposure in checks.json; K7 change approved by the owner: ADR-0045, repeats of recorded findings stay summaries) |
+| Contract version | **1.8.1** (K0; K1 corrections: ADR-0019, ADR-0020, ADR-0021; K3 corrections: ADR-0022, ADR-0023; K4 clarifications and corrections: ADR-0024, ADR-0025, ADR-0026; K4 amendment approved by the owner: ADR-0027; K5 corrections and clarifications: ADR-0029, ADR-0030; K5 amendment approved by the owner: ADR-0033; K5 change approved by the owner: ADR-0034, P25; K6 clarifications: ADR-0036; pre-K7 change approved by the owner: ADR-0037, G12; pre-K7 correction: ADR-0038, P23; K6b changes approved by the owner: ADR-0039, K7 storage and cited cells; ADR-0040, C13 and V4 removed; K6b clarification: ADR-0041, C12, slotless and the K7 campaign command; K6b change approved by the owner: ADR-0042, G2 split into G2a and G2b; ADR-0043, known status KNOWN and the G6 finding; K6b correction: ADR-0044, exposure in checks.json; K7 change approved by the owner: ADR-0045, repeats of recorded findings stay summaries; K7 clarification: ADR-0046, the oracle on C3 anomalies and M1's D1 runs) |
 | Date | 2026-10-09 |
 | Owner | César Manzo (GitHub `CesarManzoCode`) |
 | System under test | Multigres, `github.com/multigres/multigres` @ `e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73` |
@@ -469,7 +469,7 @@ Input: the probe suite's `wl: probe` operations (§15 K4; ADR-0024). P1 (`SET sy
 
 ### 10.11 Elle oracle (K2 only)
 
-`cpcheck check --elle-oracle` exports W1 histories to elle-cli JSON and runs elle-cli 0.1.11 in the pinned `clojure` container (§14). Used to cross-validate C3 in K2 and to double-check every C3 finding in K7 (a C3 finding the oracle does not confirm is labelled `oracle-disagreement` and triaged before any finding package is written).
+`cpcheck check --elle-oracle` exports W1 histories to elle-cli JSON and runs elle-cli 0.1.11 in the pinned `clojure` container (§14). Used to cross-validate C3 in K2 and to double-check every C3 finding in K7 (a C3 finding the oracle does not confirm is labelled `oracle-disagreement` and triaged before any finding package is written); how K7 runs it — on every C3 anomaly of its matrix and on M1's D1 runs, with elle-cli's validity pass recorded separately when cpcheck's three passes cannot finish, and the label when neither completes — is fixed by ADR-0046).
 
 ---
 
