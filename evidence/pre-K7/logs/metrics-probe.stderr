@@ -1,0 +1,11 @@
+--profile is required
+usage:
+  commitproof images build [--mutant M<n>] [--no-cache]
+  commitproof images verify
+  commitproof cluster up|down|verify --profile <p> [--mutant M<n>]
+  commitproof plan --campaign <C> --seed <u64> [--profile <p>]
+  commitproof run  --campaign <C> --seed <u64> [--profile <p>] [--mutant M<n>] [--directed D<n>] --out runs/
+  commitproof probe --suite claims [--mutant M<n>] [--seed <u64>] --out runs/
+  commitproof minimize <run-dir> --out runs/ [--cpcheck bin/cpcheck]
+  commitproof replay <run-dir> --times <k> --out runs/ [--cpcheck bin/cpcheck]
+  commitproof campaign --matrix <file> --out runs/ [--cpcheck bin/cpcheck]

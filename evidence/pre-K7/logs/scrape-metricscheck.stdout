@@ -1,0 +1,1 @@
+{"command":"metricscheck","exit_code":0,"problems":null,"run":"20261016T002743Z-smoke-42-real-885f0c2e","seal_root":"657e09cd7e7a2ba9fefde54a7f013cd7157886fb1d691ec53f18d6905fd63f6f","summary":"metrics: 9 targets [gw-z1 gw-z2 gw-z3 orch-z1 orch-z2 orch-z3 pooler-n1 pooler-n2 pooler-n3], 51 target families compared (scrapes, failed; n, first, last, min, max, increase)"}

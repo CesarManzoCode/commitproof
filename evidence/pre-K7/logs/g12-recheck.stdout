@@ -1,0 +1,12 @@
+{"run":"20261013T232532Z-C11-1-real-3cc39b6f","archive":"runs/k5-full","cpcheck_exit":0,"verdict":"PASS","checks_identical":true,"recorded_sha256":"1a20d528bd54486211a76702e600119108be1c2df3e17c5772668e8597f1a7a3"}
+{"run":"20261013T232750Z-C11-2-real-1f5423ed","archive":"evidence","cpcheck_exit":1,"verdict":"FAIL","checks_identical":true,"recorded_sha256":"f20fb1a6c64e2ce835a4d4a543f2d740b1cbb65a37808b202fdc9e9b4dbc315a"}
+{"run":"20261013T233007Z-C11-3-real-73d5b2c8","archive":"runs/k5-full","cpcheck_exit":0,"verdict":"PASS","checks_identical":true,"recorded_sha256":"d4e74f6a02d9f97c3e71cb5b366de84d29479cb6c8d3b425c6c2f84d4a903942"}
+{"run":"20261014T013316Z-C11-2-real-0efbcabe","archive":"runs/k5-full","cpcheck_exit":0,"verdict":"PASS","checks_identical":true,"recorded_sha256":"ce49db9a3fcf86a9738e8b08dbc33c6c453274f993a9277dd830925e71bd1c78"}
+{"run":"20261014T013539Z-C11-2-real-41d1c6c8","archive":"runs/k5-full","cpcheck_exit":0,"verdict":"PASS","checks_identical":true,"recorded_sha256":"2304b699e4c888a2cd8827805be967b518e9db03b41e95f53101bf68c5f101c0"}
+{"run":"20261014T013721Z-C11-2-real-8687a2b9","archive":"runs/k5-full","cpcheck_exit":0,"verdict":"PASS","checks_identical":true,"recorded_sha256":"40ef359fc1b3dcfd9d4765c2d09878b3b953fd59eaadc46151733f0132801017"}
+{"run":"20261014T013939Z-C11-2-real-1f5423ed","archive":"runs/k5-full","cpcheck_exit":0,"verdict":"PASS","checks_identical":true,"recorded_sha256":"e1870defac626e4c124d5f340878c6a686ff48028f6b69e1db121bf8f52a9392"}
+{"run":"20261014T014156Z-C11-2-real-1f5423ed","archive":"runs/k5-full","cpcheck_exit":1,"verdict":"FAIL","checks_identical":true,"recorded_sha256":"31158c15393d4a4ac9d5cfcf658b327df7c78fd67744f875e280146891a905ac"}
+{"run":"20261014T014426Z-C11-2-real-1f5423ed","archive":"runs/k5-full","cpcheck_exit":0,"verdict":"PASS","checks_identical":true,"recorded_sha256":"8e58d3616360b3de0c0d67bddd6d836c040c0560d7fb4b4136ae5c0f97235cef"}
+{"run":"20261014T014645Z-C11-2-real-1f5423ed","archive":"runs/k5-full","cpcheck_exit":1,"verdict":"FAIL","checks_identical":true,"recorded_sha256":"3ef9190706f3dd4bf1948278332c845d54b1cd950efc475f925ec003e40453d9"}
+{"run":"20261014T014905Z-C11-2-real-1f5423ed","archive":"runs/k5-full","cpcheck_exit":0,"verdict":"PASS","checks_identical":true,"recorded_sha256":"b1f2c328c04548acdf9d4795ca0360fd040438e39fce580ed977bf1b76428777"}
+{"command":"prek7-g12-recheck","runs":11,"identical":11,"exit_code":0}
