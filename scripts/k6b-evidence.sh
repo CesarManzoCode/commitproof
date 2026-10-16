@@ -12,6 +12,10 @@
 # usage: k6b-evidence.sh <group>
 #   setup     binaries (make build); cpgate K1–K6 on copies of the closed
 #             evidence (precondition)
+#   cited     decision 2: every valid primary run of the directed cells K7
+#             cites (D1, D2′, D3′, P1, D5 on mutant and real build; DH1)
+#             re-checked with this commit's cpcheck, checks.json compared
+#             byte for byte with the recorded one
 set -u -o pipefail
 export GOTOOLCHAIN=go1.26.9 CGO_ENABLED=0
 EV=${K6B_EV:-evidence/K6b}
@@ -61,10 +65,15 @@ setup() {
 	step 0 precondition scripts/prek7-precondition.sh
 }
 
+cited() {
+	step 0 "$(next build)" make build
+	step 0 cited-recheck scripts/k6b-cited-recheck.sh
+}
+
 case "${1:-}" in
-setup) "$1" ;;
+setup | cited) "$1" ;;
 *)
-	echo "usage: $0 setup" >&2
+	echo "usage: $0 setup|cited" >&2
 	exit 3
 	;;
 esac
