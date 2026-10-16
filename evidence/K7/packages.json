@@ -1,0 +1,218 @@
+[
+  {
+    "anomaly_class": "incompatible-order",
+    "campaign": "D1",
+    "classification": {
+      "claim_level": "INFERRED",
+      "class": "SAFETY_VIOLATION",
+      "guarantee": "G2b",
+      "known_status": "NEW",
+      "origin": "POSTGRES_INHERITED",
+      "reproducibility": "REPRODUCED",
+      "severity": "high"
+    },
+    "id": "FND-D1-fb8d0f8c",
+    "minimized": "evidence/K4/runs/20261012T014955Z-D1-1-real-6625432a.tar.zst",
+    "original": "evidence/K4/runs/20261011T221027Z-D1-1-real-59a95336.tar.zst",
+    "recorded_classification": {
+      "claim_level": "EXPLICIT",
+      "class": "SAFETY_VIOLATION",
+      "guarantee": "G2",
+      "known_status": "NEW",
+      "origin": "UNDETERMINED",
+      "reproducibility": "REPRODUCED",
+      "severity": "critical"
+    },
+    "triage": "evidence/K4/triage/20261011T221027Z-D1-1-real-59a95336.json"
+  },
+  {
+    "anomaly_class": "incompatible-order",
+    "campaign": "D1",
+    "classification": {
+      "claim_level": "INFERRED",
+      "class": "SAFETY_VIOLATION",
+      "guarantee": "G2b",
+      "known_status": "NEW",
+      "origin": "POSTGRES_INHERITED",
+      "reproducibility": "REPRODUCED",
+      "severity": "high"
+    },
+    "id": "FND-D1-2e860fd2",
+    "minimized": "evidence/K4/runs/20261012T020127Z-D1-3-real-fb2e3778.tar.zst",
+    "original": "evidence/K4/runs/20261011T221506Z-D1-3-real-da159fa0.tar.zst",
+    "recorded_classification": {
+      "claim_level": "EXPLICIT",
+      "class": "SAFETY_VIOLATION",
+      "guarantee": "G2",
+      "known_status": "NEW",
+      "origin": "UNDETERMINED",
+      "reproducibility": "REPRODUCED",
+      "severity": "critical"
+    },
+    "triage": "evidence/K4/triage/20261011T221506Z-D1-3-real-da159fa0.json"
+  },
+  {
+    "anomaly_class": "incompatible-order",
+    "campaign": "D1",
+    "classification": {
+      "claim_level": "INFERRED",
+      "class": "SAFETY_VIOLATION",
+      "guarantee": "G2b",
+      "known_status": "NEW",
+      "origin": "POSTGRES_INHERITED",
+      "reproducibility": "REPRODUCED",
+      "severity": "high"
+    },
+    "id": "FND-D1-a8eb9857",
+    "minimized": "evidence/K4/runs/20261012T021947Z-D1-4-real-eb537f55.tar.zst",
+    "original": "evidence/K4/runs/20261011T221728Z-D1-4-real-ad3fca18.tar.zst",
+    "recorded_classification": {
+      "claim_level": "EXPLICIT",
+      "class": "SAFETY_VIOLATION",
+      "guarantee": "G2",
+      "known_status": "NEW",
+      "origin": "UNDETERMINED",
+      "reproducibility": "REPRODUCED",
+      "severity": "critical"
+    },
+    "triage": "evidence/K4/triage/20261011T221728Z-D1-4-real-ad3fca18.json"
+  },
+  {
+    "anomaly_class": "incompatible-order",
+    "campaign": "C2",
+    "classification": {
+      "claim_level": "INFERRED",
+      "class": "SAFETY_VIOLATION",
+      "guarantee": "G2b",
+      "known_status": "NEW",
+      "origin": "POSTGRES_INHERITED",
+      "reproducibility": "INTERMITTENT",
+      "severity": "high"
+    },
+    "id": "FND-C2-2a534585",
+    "minimized": "evidence/K4/runs/20261012T025629Z-C2-3-real-3fb018bf.tar.zst",
+    "original": "evidence/K4/runs/20261011T231036Z-C2-3-real-f4505b54.tar.zst",
+    "recorded_classification": {
+      "claim_level": "EXPLICIT",
+      "class": "SAFETY_VIOLATION",
+      "guarantee": "G2",
+      "known_status": "NEW",
+      "origin": "UNDETERMINED",
+      "reproducibility": "INTERMITTENT",
+      "severity": "critical"
+    },
+    "triage": "evidence/K4/triage/20261011T231036Z-C2-3-real-f4505b54.json"
+  },
+  {
+    "anomaly_class": "non-linearizable",
+    "campaign": "C2",
+    "classification": {
+      "claim_level": "DESIGN",
+      "class": "SAFETY_VIOLATION",
+      "guarantee": "G6",
+      "known_status": "NEW",
+      "origin": "POSTGRES_INHERITED",
+      "reproducibility": "REPRODUCED",
+      "severity": "high"
+    },
+    "id": "FND-C2-6806aeca",
+    "minimized": "evidence/K4/runs/20261012T025629Z-C2-3-real-3fb018bf.tar.zst",
+    "original": "evidence/K4/runs/20261011T231036Z-C2-3-real-f4505b54.tar.zst",
+    "triage": "evidence/K6b/findings/FND-C2-6806aeca.json"
+  },
+  {
+    "anomaly_class": "notify-not-resumed",
+    "campaign": "C9",
+    "classification": {
+      "claim_level": "DESIGN",
+      "class": "PROTOCOL_DEVIATION",
+      "guarantee": "G10",
+      "known_status": "KNOWN",
+      "origin": "MULTIGRES",
+      "reproducibility": "REPRODUCED",
+      "severity": "medium"
+    },
+    "id": "FND-C9-40b6f05a",
+    "minimized": "evidence/K5/runs/20261014T004127Z-C9-1-real-e8381b69.tar.zst",
+    "original": "evidence/K5/runs/20261013T230136Z-C9-1-real-21458975.tar.zst",
+    "recorded_classification": {
+      "claim_level": "DESIGN",
+      "class": "PROTOCOL_DEVIATION",
+      "guarantee": "G10",
+      "known_status": "NEW",
+      "origin": "MULTIGRES",
+      "reproducibility": "REPRODUCED",
+      "severity": "medium"
+    },
+    "triage": "evidence/K5/triage/20261013T230136Z-C9-1-real-21458975.json"
+  },
+  {
+    "anomaly_class": "notify-not-resumed",
+    "campaign": "C9",
+    "classification": {
+      "claim_level": "DESIGN",
+      "class": "PROTOCOL_DEVIATION",
+      "guarantee": "G10",
+      "known_status": "KNOWN",
+      "origin": "MULTIGRES",
+      "reproducibility": "REPRODUCED",
+      "severity": "medium"
+    },
+    "id": "FND-C9-2fe9a9fc",
+    "minimized": "evidence/K5/runs/20261014T010524Z-C9-2-real-b8b35825.tar.zst",
+    "original": "evidence/K5/runs/20261013T230358Z-C9-2-real-b0861f34.tar.zst",
+    "recorded_classification": {
+      "claim_level": "DESIGN",
+      "class": "PROTOCOL_DEVIATION",
+      "guarantee": "G10",
+      "known_status": "NEW",
+      "origin": "MULTIGRES",
+      "reproducibility": "REPRODUCED",
+      "severity": "medium"
+    },
+    "triage": "evidence/K5/triage/20261013T230358Z-C9-2-real-b0861f34.json"
+  },
+  {
+    "anomaly_class": "notify-not-resumed",
+    "campaign": "C9",
+    "classification": {
+      "claim_level": "DESIGN",
+      "class": "PROTOCOL_DEVIATION",
+      "guarantee": "G10",
+      "known_status": "KNOWN",
+      "origin": "MULTIGRES",
+      "reproducibility": "INTERMITTENT",
+      "severity": "medium"
+    },
+    "id": "FND-C9-90da5532",
+    "minimized": "evidence/K5/runs/20261014T012149Z-C9-3-real-52de89e0.tar.zst",
+    "original": "evidence/K5/runs/20261013T230909Z-C9-3-real-bb8a276f.tar.zst",
+    "recorded_classification": {
+      "claim_level": "DESIGN",
+      "class": "PROTOCOL_DEVIATION",
+      "guarantee": "G10",
+      "known_status": "NEW",
+      "origin": "MULTIGRES",
+      "reproducibility": "INTERMITTENT",
+      "severity": "medium"
+    },
+    "triage": "evidence/K5/triage/20261013T230909Z-C9-3-real-bb8a276f.json"
+  },
+  {
+    "anomaly_class": "fair-share-starvation",
+    "campaign": "C11",
+    "classification": {
+      "claim_level": "DESIGN",
+      "class": "PROTOCOL_DEVIATION",
+      "guarantee": "G12",
+      "known_status": "NEW",
+      "origin": "MULTIGRES",
+      "reproducibility": "INTERMITTENT",
+      "severity": "medium"
+    },
+    "id": "FND-C11-17a344c1",
+    "minimized": "evidence/K5/runs/20261013T232750Z-C11-2-real-1f5423ed.tar.zst",
+    "original": "evidence/K5/runs/20261013T232750Z-C11-2-real-1f5423ed.tar.zst",
+    "triage": "evidence/K5/triage/20261013T232750Z-C11-2-real-1f5423ed.json"
+  }
+]
