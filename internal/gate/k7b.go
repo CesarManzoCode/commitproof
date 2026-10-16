@@ -862,6 +862,9 @@ func sabotageK76(dir string) error {
 
 // ---------------------------------------------------------------- K7.7
 
+// k7FirstCommit is K7's first commit (ADR-0045, before any K7 run).
+const k7FirstCommit = "d07fca6c83729ee37972b2762d38a12b50f3e6e4"
+
 var k7CIArgs = []string{"make", "ci-unit", "ci-checkers", "ci-cluster-smoke", "ci-nemesis-smoke", "ci-mutant-smoke", "ci-report"}
 
 func evalK77(e *Evidence) (string, []string, []string) {
@@ -903,14 +906,14 @@ func evalK77(e *Evidence) (string, []string, []string) {
 	if l := strListOf(t["code_diff"]); len(l) > 0 || t["code_diff"] == nil {
 		p = append(p, fmt.Sprintf("the tagged commit's code differs from the CI's: %v", t["code_diff"]))
 	}
-	if l := strListOf(t["remotes"]); len(l) > 0 || t["remotes"] == nil {
-		p = append(p, fmt.Sprintf("remotes %v: nothing may be pushed (AGENTS.md §6)", t["remotes"]))
+	if l := strListOf(t["k7_on_remote"]); len(l) > 0 || t["k7_on_remote"] == nil {
+		p = append(p, fmt.Sprintf("remote-tracking refs %v contain K7's first commit: nothing of K7 may be pushed (AGENTS.md §6)", t["k7_on_remote"]))
 	}
-	if l := strListOf(t["remote_refs"]); len(l) > 0 || t["remote_refs"] == nil {
-		p = append(p, fmt.Sprintf("remote refs %v", t["remote_refs"]))
+	if str(t, "first_k7_commit") != k7FirstCommit {
+		p = append(p, fmt.Sprintf("tag-check tested commit %s, K7's first is %s", str(t, "first_k7_commit"), k7FirstCommit))
 	}
-	d = append(d, fmt.Sprintf("%s exit %d on %s; v1.0.0 (%s) on %s; code diff %v; remotes %v", name, r.ExitCode, ciCommit, str(t, "object_type"),
-		str(t, "tag_commit"), t["code_diff"], t["remotes"]))
+	d = append(d, fmt.Sprintf("%s exit %d on %s; v1.0.0 (%s) on %s; code diff %v; remote-tracking refs %v, none with K7's commits", name, r.ExitCode, ciCommit, str(t, "object_type"),
+		str(t, "tag_commit"), t["code_diff"], t["remote_refs"]))
 	return "commands.jsonl", p, d
 }
 
