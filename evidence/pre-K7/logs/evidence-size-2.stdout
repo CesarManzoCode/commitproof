@@ -1,0 +1,10 @@
+{"dir":"evidence/K1","bytes":9663972}
+{"dir":"evidence/K2","bytes":13847254}
+{"dir":"evidence/K3","bytes":47499041}
+{"dir":"evidence/K4","bytes":112071910}
+{"dir":"evidence/K5","bytes":32261800}
+{"dir":"evidence/K6","bytes":1679844}
+{"dir":"evidence/pre-K7","bytes":3223252}
+{"sprint":"K4","full_archives":114,"full_bytes":99437529,"stubs":106,"stub_bytes":2855688,"checks":220,"checks_bytes":713282}
+{"sprint":"K5","full_archives":12,"full_bytes":19981318,"stubs":202,"stub_bytes":9802892,"checks":214,"checks_bytes":753400}
+{"command":"prek7-evidence-size","evidence_bytes":220247115,"p25_bytes":250000000,"remaining_bytes":29752885,"largest_file_bytes":4110156,"largest_file":"./evidence/K1/runs/20261011T015033Z-smoke-42-real-8437a280/history.jsonl","exit_code":0}
