@@ -27,7 +27,8 @@ nchecks=$(ls evidence/K4/runs/*.checks.json evidence/K5/runs/*.checks.json "$EV"
 checks_mean=$((checks / nchecks))
 total=0 n=0
 while read -r cell campaign profile seed; do
-	bin/commitproof plan --campaign "$campaign" --seed "$seed" --profile "$profile" 2>/dev/null | head -n 1 >"$scratch/plan.json"
+	bin/commitproof plan --campaign "$campaign" --seed "$seed" --profile "$profile" >"$scratch/out" 2>/dev/null
+	head -n 1 "$scratch/out" >"$scratch/plan.json"
 	pz=$(zstd -q -19 -c "$scratch/plan.json" | wc -c)
 	b=$((pz + over + checks_mean))
 	total=$((total + b)) n=$((n + 1))
