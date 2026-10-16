@@ -127,6 +127,17 @@ m1oracle() {
 	done
 }
 
+# m1triage: for the M1 D1 runs where elle-cli finished with classes C3
+# does not report, the keys of elle-cli's cycles against the keys whose
+# reads are incompatible (K7.3 triage, LIM-31).
+m1triage() {
+	local id d
+	for id in 20261011T220335Z-D1-3-M1-da159fa0 20261011T220553Z-D1-4-M1-ad3fca18; do
+		d=$SCRATCH/oracle/$id
+		step 0 "cycle-keys-$id" python3 -I scripts/k7-cycle-keys.py "$d" "$d.elle/validity.json"
+	done
+}
+
 images() {
 	step 0 "$(next build)" make build
 	step 0 "$(next images-build)" bin/commitproof images build
@@ -142,10 +153,10 @@ wait_campaign() {
 }
 
 case "${1:-}" in
-setup | m1oracle | images | start) "$1" ;;
+setup | m1oracle | m1triage | images | start) "$1" ;;
 wait) wait_campaign ;;
 *)
-	echo "usage: $0 setup|m1oracle|images|start|wait" >&2
+	echo "usage: $0 setup|m1oracle|m1triage|images|start|wait" >&2
 	exit 3
 	;;
 esac
