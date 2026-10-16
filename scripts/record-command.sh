@@ -17,6 +17,11 @@ json_str() {
 	s=$(printf '%s' "$1" | tr -d '\000-\010\013\014\016-\037')
 	s=${s//\\/\\\\}
 	s=${s//\"/\\\"}
+	# Tab, newline and carriage return are kept, escaped: a raw one would
+	# split or invalidate the record's JSON line.
+	s=${s//$'\t'/\\t}
+	s=${s//$'\n'/\\n}
+	s=${s//$'\r'/\\r}
 	printf '"%s"' "$s"
 }
 
