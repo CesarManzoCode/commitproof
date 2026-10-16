@@ -72,7 +72,8 @@ type Campaign struct {
 // Campaigns implemented so far. K1: smoke (W1–W4, no nemesis, P04 smoke).
 // K3: one fault campaign per fault kind (k3-*), a composite, and the CI
 // nemesis smoke runs (nsmoke-*), all with W1–W4 (nemesis.go). K4: C1–C7,
-// the directed schedules D1, D2, DH1 and the probe suite (k4.go).
+// the directed schedules D1, D2, DH1 and the probe suite (k4.go). K5:
+// C8–C11, D3, D3′, D5 (k5.go). K7: C12 (k7.go).
 func Campaigns() map[string]Campaign {
 	cs := map[string]Campaign{
 		"smoke": {Name: "smoke", Duration: params.SmokeDuration},
@@ -84,6 +85,9 @@ func Campaigns() map[string]Campaign {
 		cs[n] = c
 	}
 	for n, c := range k5Campaigns() {
+		cs[n] = c
+	}
+	for n, c := range k7Campaigns() {
 		cs[n] = c
 	}
 	return cs
