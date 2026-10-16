@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"reflect"
 	"regexp"
+	"strings"
 	"testing"
 
 	"github.com/CesarManzoCode/commitproof/internal/history/historytest"
@@ -184,5 +185,29 @@ func TestFailClosed(t *testing.T) {
 	}
 	if _, err := LoadRun(filepath.Join(t.TempDir(), "x"+StubSuffix)); err == nil {
 		t.Error("a stub loaded")
+	}
+}
+
+// ADR-0037: a cell whose runs carry C8 storm windows reports both G12
+// fractions side by side; cells without them render nothing.
+func TestRenderG12(t *testing.T) {
+	var none bytes.Buffer
+	if got := renderG12(&none, []*Cell{{Campaign: "C2"}}); len(got) != 0 || none.Len() != 0 {
+		t.Fatalf("a cell without storm windows rendered %q", none.String())
+	}
+	cl := &Cell{Campaign: "C11", Profile: "baseline", Mutant: "real",
+		G12: G12Fractions{Windows: 4, LiteralTotal: 3516, LiteralOK: 3396, LiteralBelow: 1, JudgedTotal: 3396, JudgedOK: 3396, NotJudged: 0}}
+	var b bytes.Buffer
+	got := renderG12(&b, []*Cell{{Campaign: "C2"}, cl})
+	if _, ok := got[1]; !ok || len(got) != 1 {
+		t.Fatalf("data for cells %v, want cell 1 only", got)
+	}
+	for _, want := range []string{"<td class=\"n\">3396/3516</td><td class=\"n\">1</td><td class=\"n\">3396/3396</td><td class=\"n\">0</td><td class=\"n\">0</td>", "ADR-0037"} {
+		if !strings.Contains(b.String(), want) {
+			t.Errorf("rendered G12 table lacks %q:\n%s", want, b.String())
+		}
+	}
+	if got[1]["judged_ok"] != int64(3396) || got[1]["literal_below_90"] != int64(1) {
+		t.Errorf("data %v", got[1])
 	}
 }

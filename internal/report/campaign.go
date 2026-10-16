@@ -3,6 +3,7 @@ package report
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"sort"
@@ -23,6 +24,16 @@ type CampaignRun struct {
 	Checkers                                       []string
 	Ops, OKWrites, FaultTime                       int64
 	Confirmed                                      map[string]int64
+	// G12 holds C8's storm windows (stats.storm_windows), present for plans
+	// of contract 1.2.0 or later (ADR-0037).
+	G12 []StormWindow
+}
+
+// StormWindow is one storm window of C8's statistics (ADR-0037): both ok
+// fractions and the window's result.
+type StormWindow struct {
+	LiteralTotal, LiteralOK, JudgedTotal, JudgedOK int64
+	Result                                         string
 }
 
 // Campaign is a verified campaign directory.
@@ -101,6 +112,17 @@ func summarize(id, sealRoot string, man map[string]any, checks *output.Checks) *
 	}
 	cr.Classes = sortedKeys(classes)
 	sort.Strings(cr.Checkers)
+	for _, ch := range checks.Checkers {
+		if ch.ID != "C8" {
+			continue
+		}
+		ws, _ := ch.Stats["storm_windows"].([]any)
+		for _, x := range ws {
+			m, _ := x.(map[string]any)
+			cr.G12 = append(cr.G12, StormWindow{LiteralTotal: num(m["literal_total"], 0), LiteralOK: num(m["literal_ok"], 0),
+				JudgedTotal: num(m["judged_total"], 0), JudgedOK: num(m["judged_ok"], 0), Result: str(m, "result")})
+		}
+	}
 	return cr
 }
 
@@ -213,6 +235,15 @@ type Cell struct {
 	Confirmed                 map[string]int64
 	Checkers                  []string
 	Multigres                 []string
+	G12                       G12Fractions
+}
+
+// G12Fractions sums a cell's storm windows over its valid runs (ADR-0037):
+// the literal and the judged (outside fault windows) ok fractions side by
+// side, and the windows below 90 % under each.
+type G12Fractions struct {
+	Windows, LiteralTotal, LiteralOK, LiteralBelow int64
+	JudgedTotal, JudgedOK, JudgedBelow, NotJudged  int64
 }
 
 // Cells groups the primary runs (ADR-0036).
@@ -246,6 +277,23 @@ func (c *Campaign) Cells() []*Cell {
 		}
 		for _, cls := range r.Classes {
 			cl.Classes[cls]++
+		}
+		for _, w := range r.G12 {
+			g := &cl.G12
+			g.Windows++
+			g.LiteralTotal += w.LiteralTotal
+			g.LiteralOK += w.LiteralOK
+			g.JudgedTotal += w.JudgedTotal
+			g.JudgedOK += w.JudgedOK
+			if w.LiteralOK*10 < w.LiteralTotal*9 {
+				g.LiteralBelow++
+			}
+			switch w.Result {
+			case "fair-share-starvation":
+				g.JudgedBelow++
+			case "not-judged":
+				g.NotJudged++
+			}
 		}
 		if !r.Stub {
 			cl.FullRuns++
@@ -350,7 +398,15 @@ func RenderCampaign(c *Campaign) ([]byte, error) {
 			esc(cl.Campaign), esc(cl.Profile), esc(cl.Mutant), esc(cl.Campaign), esc(cl.Profile), esc(cl.Mutant), cl.N, cl.Invalid, cl.Pass, cl.Fail, cl.Unknown,
 			strings.Join(vs, "<br>"), bound, cl.Ops, cl.OKWrites, esc(kindsText(cl.Confirmed)), secs(cl.FaultTime), cl.FullRuns, cl.N)
 	}
-	fmt.Fprint(w, "</table>\n<p class=\"small\">Exposure counts only runs held in full; a stub (manifest, plan, seal) is verified and counted by its checks.json verdict but its history is not in the directory (CONTRACT §13; LIMITATIONS LIM-30, LIM-37). ok writes = ok ledger inserts + appended elements of ok append operations + ok register writes and CAS + ok bank transfers; fault-time = Σ (heal − confirmed) (ADR-0036).</p>\n")
+	fmt.Fprint(w, "</table>\n")
+	if g12 := renderG12(w, cells); len(g12) > 0 {
+		for i, cd := range data {
+			if x, ok := g12[i]; ok {
+				cd.(map[string]any)["g12"] = x
+			}
+		}
+	}
+	fmt.Fprint(w, "<p class=\"small\">Exposure counts only runs held in full; a stub (manifest, plan, seal) is verified and counted by its checks.json verdict but its history is not in the directory (CONTRACT §13; LIMITATIONS LIM-30, LIM-37). ok writes = ok ledger inserts + appended elements of ok append operations + ok register writes and CAS + ok bank transfers; fault-time = Σ (heal − confirmed) (ADR-0036).</p>\n")
 	fmt.Fprint(w, "<h2 id=\"statements\">Clean-result statements (§12.3)</h2>\n<p class=\"small\">For real-build cells whose valid runs all PASS and are held in full; mutant cells are detection experiments (§12.4), not clean results.</p>\n<ul>\n")
 	qualifies := false
 	for _, cl := range cells {
@@ -391,6 +447,36 @@ func RenderCampaign(c *Campaign) ([]byte, error) {
 	}
 	fmt.Fprintf(w, "<script type=\"application/json\" id=\"cp-data\">%s</script>\n</body>\n</html>\n", db)
 	return b.Bytes(), nil
+}
+
+// renderG12 renders, for the cells whose runs carry C8 storm windows
+// (contract 1.2.0 or later, ADR-0037), both G12 ok fractions side by side
+// and returns their data by cell index. Nothing is rendered without them.
+func renderG12(w io.Writer, cells []*Cell) map[int]map[string]any {
+	out := map[int]map[string]any{}
+	for i, cl := range cells {
+		if cl.G12.Windows > 0 {
+			g := cl.G12
+			out[i] = map[string]any{"storm_windows": g.Windows, "literal_total": g.LiteralTotal, "literal_ok": g.LiteralOK,
+				"literal_below_90": g.LiteralBelow, "judged_total": g.JudgedTotal, "judged_ok": g.JudgedOK,
+				"judged_below_90": g.JudgedBelow, "not_judged": g.NotJudged}
+		}
+	}
+	if len(out) == 0 {
+		return out
+	}
+	fmt.Fprint(w, "<h3 id=\"g12\">G12 fair share: literal and outside fault windows (ADR-0037)</h3>\n<p class=\"small\">Over the storm windows of the cell's valid runs (C8 <code>stats.storm_windows</code>, plans of contract 1.2.0 or later). <i>Literal</i>: every cp_steady operation invoked in the window (the rule of contract ≤ 1.1.1, reported, not judged). <i>Judged</i>: those invoked outside every fault window, the verdict rule; a window with no such operation or fewer than one per second of storm outside fault windows is not judged (C8 unknown).</p>\n")
+	fmt.Fprint(w, "<table><tr><th>campaign</th><th>profile</th><th>build</th><th>storm windows</th><th>literal ok/invoked</th><th>literal windows &lt; 90 %</th><th>judged ok/invoked</th><th>judged windows &lt; 90 %</th><th>not judged</th></tr>\n")
+	for i, cl := range cells {
+		if _, ok := out[i]; !ok {
+			continue
+		}
+		g := cl.G12
+		fmt.Fprintf(w, "<tr><td>%s</td><td>%s</td><td>%s</td><td class=\"n\">%d</td><td class=\"n\">%d/%d</td><td class=\"n\">%d</td><td class=\"n\">%d/%d</td><td class=\"n\">%d</td><td class=\"n\">%d</td></tr>\n",
+			esc(cl.Campaign), esc(cl.Profile), esc(cl.Mutant), g.Windows, g.LiteralOK, g.LiteralTotal, g.LiteralBelow, g.JudgedOK, g.JudgedTotal, g.JudgedBelow, g.NotJudged)
+	}
+	fmt.Fprint(w, "</table>\n")
+	return out
 }
 
 func held(r *CampaignRun) string {
