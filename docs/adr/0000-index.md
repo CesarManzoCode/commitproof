@@ -42,5 +42,6 @@
 | [0038](0038-metrics-scrapes-otel-prometheus-exporter.md) | /metrics scrapes (P23) from the OpenTelemetry Prometheus exporter; the families recorded, the report's metric timelines and the gate's cross-check | Accepted (pre-K7, contract 1.2.1) |
 | [0039](0039-k7-storage-and-cited-directed-cells.md) | K7's evidence storage under P25 (§13 literally) and the directed cells K7 cites from K4 and K5 | Accepted by the owner (K6b, contract 1.3.0) |
 | [0040](0040-c13-and-v4-removed.md) | Campaign C13 and K7 cell V4 (replica reads) are removed | Accepted by the owner (K6b, contract 1.4.0) |
+| [0041](0041-c12-slotless-and-k7-campaign-fixed-before-runs.md) | Campaign C12, profile `slotless` and the K7 campaign command, fixed before any run of them | Accepted (K6b, contract 1.4.1) |
 
 New ADRs continue the numbering. Each ADR: Context, Decision, Alternatives rejected, Consequences, Sources.

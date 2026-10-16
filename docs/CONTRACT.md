@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Contract version | **1.4.0** (K0; K1 corrections: ADR-0019, ADR-0020, ADR-0021; K3 corrections: ADR-0022, ADR-0023; K4 clarifications and corrections: ADR-0024, ADR-0025, ADR-0026; K4 amendment approved by the owner: ADR-0027; K5 corrections and clarifications: ADR-0029, ADR-0030; K5 amendment approved by the owner: ADR-0033; K5 change approved by the owner: ADR-0034, P25; K6 clarifications: ADR-0036; pre-K7 change approved by the owner: ADR-0037, G12; pre-K7 correction: ADR-0038, P23; K6b changes approved by the owner: ADR-0039, K7 storage and cited cells; ADR-0040, C13 and V4 removed) |
+| Contract version | **1.4.1** (K0; K1 corrections: ADR-0019, ADR-0020, ADR-0021; K3 corrections: ADR-0022, ADR-0023; K4 clarifications and corrections: ADR-0024, ADR-0025, ADR-0026; K4 amendment approved by the owner: ADR-0027; K5 corrections and clarifications: ADR-0029, ADR-0030; K5 amendment approved by the owner: ADR-0033; K5 change approved by the owner: ADR-0034, P25; K6 clarifications: ADR-0036; pre-K7 change approved by the owner: ADR-0037, G12; pre-K7 correction: ADR-0038, P23; K6b changes approved by the owner: ADR-0039, K7 storage and cited cells; ADR-0040, C13 and V4 removed; K6b clarification: ADR-0041, C12, slotless and the K7 campaign command) |
 | Date | 2026-10-09 |
 | Owner | César Manzo (GitHub `CesarManzoCode`) |
 | System under test | Multigres, `github.com/multigres/multigres` @ `e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73` |
@@ -219,7 +219,7 @@ commitproof run  --campaign <C> --seed <u64> [--profile <p>] [--mutant M<n>] [--
 commitproof probe --suite claims [--mutant M<n>] [--seed <u64>] --out runs/
 commitproof minimize <run-dir> --out runs/ [--cpcheck <bin>]  # writes a new run dir for the minimal plan
 commitproof replay <run-dir> --times <k> --out runs/ [--cpcheck <bin>]
-commitproof campaign --matrix <file> --out runs/ [--cpcheck <bin>]  # resumable: skips sealed runs already present
+commitproof campaign --matrix <file> --out runs/ [--cpcheck <bin>] [--dry-run]  # resumable: skips sealed runs already present; --dry-run prints the cells and the runs still to make (ADR-0041)
 cpcheck verify-seal <run-dir>
 cpcheck check <run-dir> [--elle-oracle]                      # writes <run-dir>.checks.json next to the run (not inside the seal)
 cpcheck corpus <dir>                                         # K2 synthetic corpus
@@ -772,7 +772,7 @@ Checker-level sabotage: build tag `cp_sabotage_report_nondeterminism` (inserts m
 
 K7 runs the cells V1, V2, V3 and V5 (130 runs; V4 and its campaign C13 were removed by the owner, ADR-0040); the measured wall time per run in K4 and K5 is about 2.3 minutes (cluster up, 90 s workload, recovery, final reads, teardown; `evidence/pre-K7/k7-feasibility.md`), plus re-runs of INVALID runs and the minimization and replays of failures; the campaign driver is resumable.
 
-C12 mixed: all workloads W1–W4, nemesis drawing uniformly from {F1a–F1d, F2a–F2e, F3a, F3b, F4a, F6, F7}, plus one F5a/F5b pair per run.
+C12 mixed: all workloads W1–W4, nemesis drawing uniformly from {F1a–F1d, F2a–F2e, F3a, F3b, F4a, F6, F7}, plus one F5a/F5b pair per run. Its steps, targets, holds, seeds and clients, profile `slotless`, and `make campaign-k7` (resumable, background-safe, with a dry run) are fixed by ADR-0041 (before any run of them).
 
 **Deliverables.** `make campaign-k7` (resumable, background-safe); statistics per §12.3; `findings/` packages for every finding (§11.4); `claims.yaml` (§17) covering every claim in README, LIMITATIONS and NOTES; public `README.md` (what it is, how to reproduce, results table with statistics, the §4 matrix, limitations summary, how to read findings); final `docs/LIMITATIONS.md`; `CHANGELOG.md`; `evidence/K7/`; annotated local tag `v1.0.0`.
 
