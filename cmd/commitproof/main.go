@@ -628,7 +628,7 @@ func campaignDryRun(matrix, out string, pos []string) int {
 		}
 	}
 	sum["matrix"], sum["cells"], sum["runs_by_cell"], sum["states"], sum["runs_to_make"] = m.Name, int64(len(cells)), byCell, states, toRun
-	sum["minimize_failures"] = m.MinimizeFailures
+	sum["minimize_failures"], sum["skip_repeats"] = m.MinimizeFailures, m.SkipRepeats
 	return summary(sum, 0)
 }
 

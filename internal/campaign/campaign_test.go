@@ -1,10 +1,12 @@
 package campaign
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"path/filepath"
 	"reflect"
+	"strings"
 	"testing"
 
 	"github.com/CesarManzoCode/commitproof/internal/history"
@@ -133,6 +135,9 @@ func TestK7Matrix(t *testing.T) {
 			t.Errorf("%s: K7 cites the mutant cells (ADR-0039)", key)
 		}
 	}
+	if !m.SkipRepeats {
+		t.Error("k7.json: skip_repeats must be set (ADR-0045)")
+	}
 	if want := map[string]int{"V1": 100, "V2": 15, "V3": 10, "V5": 5}; !reflect.DeepEqual(got, want) {
 		t.Errorf("runs per cell %v, want %v", got, want)
 	}
@@ -186,5 +191,45 @@ func TestDryRunStates(t *testing.T) {
 	}
 	if len(cells[0].Faults) != 4 || cells[0].Faults[0] != "F5a" || cells[0].Faults[3] != "F5b" {
 		t.Errorf("C12 seed 1 faults %v", cells[0].Faults)
+	}
+}
+
+// ADR-0045: with skip_repeats, a FAIL whose every group matches a recorded
+// finding's predicate is reported as a repeat and not followed up (no run
+// is started: the test has no cluster, so a follow-up would fail).
+func TestSkipRepeats(t *testing.T) {
+	out := t.TempDir()
+	p, err := plan.Generate("C9", 1, "baseline", "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	sha, _ := p.SHA256()
+	dir := filepath.Join(out, "run-g10")
+	os.MkdirAll(dir, 0o755)
+	os.WriteFile(filepath.Join(dir, history.FileManifest), []byte(`{"campaign":"C9","plan_sha256":"`+sha+`","profile":"baseline","mutant":"real"}`), 0o644)
+	os.WriteFile(filepath.Join(dir, history.FileSeal), []byte(`{"merkle_root":"r1"}`), 0o644)
+	notify := func(cl, l string) string {
+		return `{"class":"notify-not-resumed","ops":[` + l + `,900],"explanation":"NOTIFY 5 (i=900) was not received within 10s by listener client ` + cl + `, whose session (LISTEN i=` + l + `) was alive and past its first successful op after recovery"}`
+	}
+	os.WriteFile(dir+".checks.json", []byte(`{"run_id":"run-g10","seal_root":"r1","verdict":"FAIL","checkers":[`+
+		`{"id":"C8","valid":false,"anomalies":[`+notify("26", "8")+`,`+notify("27", "4")+`],"stats":{"counts":{"notify-not-resumed":2}}},`+
+		`{"id":"C9","valid":true,"anomalies":[],"stats":{"counts":{},"exposure":{"confirmed_faults":{"F2b":1}}}}]}`), 0o644)
+	var log strings.Builder
+	d := &Driver{Out: out, Log: &log}
+	m := &Matrix{Name: "t", Replays: 5, MinimizeFailures: true, SkipRepeats: true,
+		Entries: []Entry{{Cell: "V1", Campaign: "C9", Profile: "baseline", Seeds: []uint64{1}}}}
+	cells, complete, err := d.RunMatrix(context.Background(), m)
+	if err != nil || !complete || len(cells) != 1 || cells[0].Run.ID != "run-g10" {
+		t.Fatalf("cells %v complete %v err %v", cells, complete, err)
+	}
+	if !strings.Contains(log.String(), `"event":"repeat"`) || !strings.Contains(log.String(), `"predicate":"R-G10"`) || strings.Contains(log.String(), "minimize") {
+		t.Errorf("log %s", log.String())
+	}
+	// Without skip_repeats the same FAIL is followed up: the minimization
+	// first reads the run's plan.json, which this fixture lacks, so it
+	// errors before any run (the repeat path above is the one that skips).
+	m.SkipRepeats = false
+	if _, _, err := (&Driver{Out: out}).RunMatrix(context.Background(), m); err == nil || !strings.Contains(err.Error(), "plan.json") {
+		t.Errorf("follow-up error %v, want the missing plan.json", err)
 	}
 }

@@ -47,13 +47,24 @@ func (d *Driver) journal(m *Minimized, done bool) {
 // MaxAttempts) is FAIL with the same class. Candidates already run (sealed,
 // candidate_of the original) are reused.
 func (d *Driver) Minimize(ctx context.Context, orig *Run) (*Minimized, error) {
+	return d.MinimizeFor(ctx, orig, "")
+}
+
+// MinimizeFor is Minimize for a given target class ("" = TargetClass; K7's
+// new failures: the first class of the first unmatched group, ADR-0045).
+func (d *Driver) MinimizeFor(ctx context.Context, orig *Run, class string) (*Minimized, error) {
 	if err := d.Check(ctx, orig); err != nil {
 		return nil, err
 	}
 	if orig.Verdict != "FAIL" {
 		return nil, fmt.Errorf("%s is %s, not FAIL", orig.ID, orig.Verdict)
 	}
-	m := &Minimized{Original: orig, Class: TargetClass(orig), Run: orig}
+	if class == "" {
+		class = TargetClass(orig)
+	} else if !orig.has(class) {
+		return nil, fmt.Errorf("%s has no anomaly of class %s", orig.ID, class)
+	}
+	m := &Minimized{Original: orig, Class: class, Run: orig}
 	cur, err := PlanOf(orig)
 	if err != nil {
 		return nil, err

@@ -9,6 +9,7 @@ import (
 
 	"github.com/CesarManzoCode/commitproof/internal/params"
 	"github.com/CesarManzoCode/commitproof/internal/plan"
+	"github.com/CesarManzoCode/commitproof/internal/repeats"
 )
 
 // Matrix is a campaign matrix file (`commitproof campaign --matrix`).
@@ -18,7 +19,12 @@ type Matrix struct {
 	// MinimizeFailures: every FAIL run of the matrix is minimized and its
 	// minimal plan replayed Replays times (CONTRACT §12.2, K4.5).
 	MinimizeFailures bool `json:"minimize_failures"`
-	Replays          int  `json:"replays"`
+	// SkipRepeats (K7, ADR-0045): a FAIL whose every guarantee group matches
+	// a recorded finding's predicate (internal/repeats) is a repeat and is
+	// not followed up; any other FAIL is minimized for the first class of
+	// its first unmatched group. Requires MinimizeFailures.
+	SkipRepeats bool `json:"skip_repeats"`
+	Replays     int  `json:"replays"`
 }
 
 // Entry is one matrix row: a campaign (or directed schedule, or the probe
@@ -46,6 +52,9 @@ func ReadMatrix(path string) (*Matrix, error) {
 	}
 	if m.Replays == 0 {
 		m.Replays = params.Replays
+	}
+	if m.SkipRepeats && !m.MinimizeFailures {
+		return nil, fmt.Errorf("%s: skip_repeats needs minimize_failures (ADR-0045)", path)
 	}
 	if m.Replays != params.Replays {
 		return nil, fmt.Errorf("%s: replays %d, CONTRACT P13 says %d", path, m.Replays, params.Replays)
@@ -106,7 +115,26 @@ func (d *Driver) RunMatrix(ctx context.Context, m *Matrix) ([]Cell, bool, error)
 		if !c.Valid || c.Run.Verdict != "FAIL" {
 			continue
 		}
-		ok, err := d.FollowUp(ctx, c.Run, m.Replays)
+		class := ""
+		if m.SkipRepeats {
+			b, err := os.ReadFile(c.Run.Checks)
+			if err != nil {
+				return cells, false, err
+			}
+			res, err := repeats.Classify(b)
+			if err != nil {
+				return cells, false, fmt.Errorf("repeats %s: %w", c.Run.ID, err)
+			}
+			if res.Repeat {
+				d.emit(map[string]any{"event": "repeat", "cell": c.Entry.Cell, "campaign": c.Entry.Campaign, "profile": c.Entry.Profile,
+					"seed": c.Seed, "run": c.Run.ID, "classification": toAny(res)})
+				continue
+			}
+			class = res.Target
+			d.emit(map[string]any{"event": "new-failure", "cell": c.Entry.Cell, "campaign": c.Entry.Campaign, "profile": c.Entry.Profile,
+				"seed": c.Seed, "run": c.Run.ID, "target_class": class, "classification": toAny(res)})
+		}
+		ok, err := d.FollowUpFor(ctx, c.Run, m.Replays, class)
 		if err != nil {
 			return cells, false, err
 		}
@@ -117,7 +145,12 @@ func (d *Driver) RunMatrix(ctx context.Context, m *Matrix) ([]Cell, bool, error)
 
 // FollowUp minimizes a FAIL run and replays its minimal plan (K4.5).
 func (d *Driver) FollowUp(ctx context.Context, r *Run, replays int) (bool, error) {
-	mz, err := d.Minimize(ctx, r)
+	return d.FollowUpFor(ctx, r, replays, "")
+}
+
+// FollowUpFor is FollowUp for a given target class ("" = TargetClass).
+func (d *Driver) FollowUpFor(ctx context.Context, r *Run, replays int, class string) (bool, error) {
+	mz, err := d.MinimizeFor(ctx, r, class)
 	if err != nil {
 		return false, fmt.Errorf("minimize %s: %w", r.ID, err)
 	}
@@ -131,6 +164,21 @@ func (d *Driver) FollowUp(ctx context.Context, r *Run, replays int) (bool, error
 }
 
 func bytesReader(b []byte) *bytes.Reader { return bytes.NewReader(b) }
+
+// toAny turns v into the generic JSON form the driver's events carry.
+func toAny(v any) any {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return nil
+	}
+	var out any
+	dec := json.NewDecoder(bytes.NewReader(b))
+	dec.UseNumber()
+	if dec.Decode(&out) != nil {
+		return nil
+	}
+	return out
+}
 
 // Planned is one cell of a dry run: its plan and what Out already holds.
 type Planned struct {
