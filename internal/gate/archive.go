@@ -53,6 +53,11 @@ func (e *Evidence) RunDir(rel string) (string, error) {
 
 // Close removes extracted runs.
 func (e *Evidence) Close() {
+	for _, v := range e.memo {
+		if c, ok := v.(*Evidence); ok && c != e {
+			c.Close()
+		}
+	}
 	for _, t := range e.temps {
 		removeAll(t)
 	}

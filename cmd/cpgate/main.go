@@ -66,6 +66,8 @@ func run(args []string) int {
 		crits = gate.K5()
 	case "K6":
 		crits = gate.K6()
+	case "K7":
+		crits = gate.K7()
 	default:
 		return summary(map[string]any{"command": "cpgate", "sprint": sprint, "error": "gate not implemented yet"}, 3)
 	}
@@ -85,7 +87,12 @@ func run(args []string) int {
 	m := map[string]any{"command": "cpgate", "sprint": sprint, "result": gf.Result, "criteria": crit}
 	ok := gf.Result == "PASS"
 	if *controls {
-		cs := gate.NegativeControls(*evidence, crits)
+		var cs []gate.Control
+		if sprint == "K7" {
+			cs = gate.K7NegativeControls(*evidence, crits)
+		} else {
+			cs = gate.NegativeControls(*evidence, crits)
+		}
 		if err := writeJSON(filepath.Join(*evidence, "negative-controls.json"), cs); err != nil {
 			return summary(map[string]any{"command": "cpgate", "error": err.Error()}, 3)
 		}

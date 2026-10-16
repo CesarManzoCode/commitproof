@@ -107,8 +107,14 @@ func (e *Evidence) runIndex(key string, contractOK func(campaign, version string
 }
 
 func buildRunIndex(e *Evidence, contractOK func(campaign, version string) bool) *k4Index {
+	return buildRunIndexIn(e, "runs", contractOK)
+}
+
+// buildRunIndexIn indexes the runs of e.Dir/sub (K7 keeps the packages'
+// replays apart from its matrix runs).
+func buildRunIndexIn(e *Evidence, sub string, contractOK func(campaign, version string) bool) *k4Index {
 	ix := &k4Index{ByID: map[string]*k4Run{}}
-	dir := filepath.Join(e.Dir, "runs")
+	dir := filepath.Join(e.Dir, sub)
 	ents, err := os.ReadDir(dir)
 	if err != nil {
 		ix.Error = err
@@ -132,19 +138,19 @@ func buildRunIndex(e *Evidence, contractOK func(campaign, version string) bool) 
 			r.Problems = append(r.Problems, "run committed twice (full and stub)")
 		}
 		ix.ByID[id] = r
-		e.loadRun(r, contractOK)
+		e.loadRunIn(sub, r, contractOK)
 	}
 	sort.Slice(ix.Runs, func(i, j int) bool { return ix.Runs[i].ID < ix.Runs[j].ID })
 	return ix
 }
 
-func (e *Evidence) loadRun(r *k4Run, contractOK func(campaign, version string) bool) {
+func (e *Evidence) loadRunIn(sub string, r *k4Run, contractOK func(campaign, version string) bool) {
 	bad := func(f string, a ...any) { r.Problems = append(r.Problems, fmt.Sprintf(f, a...)) }
 	var err error
 	if r.Stub {
-		r.Dir, err = e.extractStub(filepath.Join(e.Dir, "runs", r.ID+StubSuffix), r.ID)
+		r.Dir, err = e.extractStub(filepath.Join(e.Dir, sub, r.ID+StubSuffix), r.ID)
 	} else {
-		r.Dir, err = e.RunDir("runs/" + r.ID)
+		r.Dir, err = e.RunDir(sub + "/" + r.ID)
 	}
 	if err != nil {
 		bad("%v", err)
@@ -189,7 +195,7 @@ func (e *Evidence) loadRun(r *k4Run, contractOK func(campaign, version string) b
 		str(r.Plan, "profile") != r.profile()) {
 		bad("plan.json (campaign %s seed %v profile %s) does not match the manifest", str(r.Plan, "campaign"), r.Plan["seed"], str(r.Plan, "profile"))
 	}
-	cp := filepath.Join(e.Dir, "runs", r.ID+".checks.json")
+	cp := filepath.Join(e.Dir, sub, r.ID+".checks.json")
 	if r.Checks, err = readJSON(cp); err != nil {
 		bad("checks.json: %v", err)
 		return
