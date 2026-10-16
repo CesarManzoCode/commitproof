@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Contract version | **1.5.0** (K0; K1 corrections: ADR-0019, ADR-0020, ADR-0021; K3 corrections: ADR-0022, ADR-0023; K4 clarifications and corrections: ADR-0024, ADR-0025, ADR-0026; K4 amendment approved by the owner: ADR-0027; K5 corrections and clarifications: ADR-0029, ADR-0030; K5 amendment approved by the owner: ADR-0033; K5 change approved by the owner: ADR-0034, P25; K6 clarifications: ADR-0036; pre-K7 change approved by the owner: ADR-0037, G12; pre-K7 correction: ADR-0038, P23; K6b changes approved by the owner: ADR-0039, K7 storage and cited cells; ADR-0040, C13 and V4 removed; K6b clarification: ADR-0041, C12, slotless and the K7 campaign command; K6b change approved by the owner: ADR-0042, G2 split into G2a and G2b) |
+| Contract version | **1.6.0** (K0; K1 corrections: ADR-0019, ADR-0020, ADR-0021; K3 corrections: ADR-0022, ADR-0023; K4 clarifications and corrections: ADR-0024, ADR-0025, ADR-0026; K4 amendment approved by the owner: ADR-0027; K5 corrections and clarifications: ADR-0029, ADR-0030; K5 amendment approved by the owner: ADR-0033; K5 change approved by the owner: ADR-0034, P25; K6 clarifications: ADR-0036; pre-K7 change approved by the owner: ADR-0037, G12; pre-K7 correction: ADR-0038, P23; K6b changes approved by the owner: ADR-0039, K7 storage and cited cells; ADR-0040, C13 and V4 removed; K6b clarification: ADR-0041, C12, slotless and the K7 campaign command; K6b change approved by the owner: ADR-0042, G2 split into G2a and G2b; ADR-0043, known status KNOWN and the G6 finding) |
 | Date | 2026-10-09 |
 | Owner | César Manzo (GitHub `CesarManzoCode`) |
 | System under test | Multigres, `github.com/multigres/multigres` @ `e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73` |
@@ -483,7 +483,7 @@ Input: the probe suite's `wl: probe` operations (§15 K4; ADR-0024). P1 (`SET sy
 | Claim level | `EXPLICIT`, `DESIGN`, `INFERRED` (from the guarantee row) |
 | Origin hypothesis | `MULTIGRES`, `POSTGRES_INHERITED` (the behavior reproduces on plain PostgreSQL 17.7 streaming replication or is documented PostgreSQL behavior, e.g. S61, S62), `UNDETERMINED` |
 | Reproducibility | `REPRODUCED` (minimized plan reproduces in ≥ 3/5 replays), `INTERMITTENT` (1–2/5), `NOT_REPRODUCED` (0/5; the original history is still the evidence) |
-| Known status | `NEW`, `KNOWN_GAP` (matches an `alpha-known-gap` issue or a documented limitation such as S19; must cite it), `KNOWN_FIXED` (historical control) |
+| Known status | `NEW`, `KNOWN` (an open upstream issue or an unmerged upstream pull request describes or fixes the same mechanism; must cite it; ADR-0043), `KNOWN_GAP` (matches an `alpha-known-gap` issue or a documented limitation such as S19; must cite it), `KNOWN_FIXED` (historical control) |
 
 `HARNESS_DEFECT` is never reported as a Multigres finding; every one is fixed and the affected runs are re-run.
 
@@ -497,7 +497,7 @@ Input: the probe suite's `wl: probe` operations (§15 K4; ADR-0024). P1 (`SET sy
 
 ### 11.4 Evidence package (per finding, K7)
 
-`findings/<id>/`: `README.md` in upstream issue format (S50): title `component: description`; Summary; Version/environment (pinned commit, profile, PostgreSQL 17.7, host); Reproduction (exact commands: build, cluster up, `commitproof replay`); Expected vs actual (cite the guarantee and its source); Analysis (design says / system did, timeline excerpt, LSN/rule evidence from observations); Suggested direction (optional); Limitations. Plus: minimized `plan.json`, the original and minimized run directories (sealed), replay results, `checks.json`, report excerpt, and `claim.yaml` (§17). Packages are written; nothing is published (AGENTS.md).
+`findings/<id>/`: `README.md` in upstream issue format (S50): title `component: description`; Summary; Version/environment (pinned commit, profile, PostgreSQL 17.7, host); Reproduction (exact commands: build, cluster up, `commitproof replay`); Expected vs actual (cite the guarantee and its source); Analysis (design says / system did, timeline excerpt, LSN/rule evidence from observations); Suggested direction (optional); Limitations. Plus: minimized `plan.json`, the original and minimized run directories (sealed), replay results, `checks.json`, report excerpt, and `claim.yaml` (§17). A `KNOWN` finding's README is written as an independent reproduction supporting the cited upstream item, not as a new issue, with the same sections (ADR-0043). Packages are written; nothing is published (AGENTS.md).
 
 ---
 
@@ -909,5 +909,5 @@ next_sprint_ready: true | false
 | R16 | Licensing contamination from Elle | no Elle code copied; elle-cli only executed in a container, never vendored (ADR-0004) | — |
 | R17 | Publication by mistake | AGENTS.md hard rule; BLOCKED protocol | — |
 | R18 | Single etcd is a SPOF not present in production | etcd faults only F2e; LIMITATIONS | LIM-12 |
-| R19 | A finding reported by CommitProof is already known | taxonomy `KNOWN_GAP`/`KNOWN_FIXED`; search of S50 before packaging | — |
+| R19 | A finding reported by CommitProof is already known | taxonomy `KNOWN`/`KNOWN_GAP`/`KNOWN_FIXED`; search of S50 before packaging | — |
 | R20 | Wall-clock dependence in heartbeat lag (S32) untested | stated as untested sensitivity | LIM-04 |

@@ -1,0 +1,222 @@
+{
+  "finding_id": "FND-C2-6806aeca",
+  "id_derivation": "§11.3: sha256(\"SAFETY_VIOLATION|G6|non-linearizable|3fb018bf532f53a631e5e745ba447e260aaa4e0d67457b4577cbd98e5e66127a\")[:8] = 6806aeca (the same formula gives the recorded FND-C2-2a534585 with G2 and incompatible-order)",
+  "run_id": "20261011T231036Z-C2-3-real-f4505b54",
+  "seal_root": "a5472bd9c4212b63ab9397b7ff513a05ba7efe81aeeed54c7da492d6b20c4969",
+  "checks_sha256": "2a520b5dca7e16367c5ab61676b72e70858204855ab235447f66c2d0f679d066",
+  "classes": [
+    "incompatible-order",
+    "non-linearizable"
+  ],
+  "anomaly_class": "non-linearizable",
+  "checker_output": [
+    {
+      "checker": "C4",
+      "class": "non-linearizable",
+      "ops": [
+        3370
+      ],
+      "explanation": "register 1: no linearization; the earliest offending operation is cas i=3370 ({f:cas v:0 old:240 new_:245} -> {known:true set:false v:0 applied:false})"
+    },
+    {
+      "checker": "C4",
+      "class": "non-linearizable",
+      "ops": [
+        3412
+      ],
+      "explanation": "register 4: no linearization; the earliest offending operation is read i=3412 ({f:read v:0 old:0 new_:0} -> {known:true set:true v:227 applied:false})"
+    },
+    {
+      "checker": "C6",
+      "valid": true,
+      "note": "no offending read is a stale-read (its value was not superseded by a write that completed before it): the reads returned values that later vanished"
+    }
+  ],
+  "minimized_run": "20261012T025629Z-C2-3-real-3fb018bf",
+  "minimized_plan_sha256": "3fb018bf532f53a631e5e745ba447e260aaa4e0d67457b4577cbd98e5e66127a",
+  "minimization_note": "K4 minimized the run for its first class (incompatible-order, ADR-0024's target); the minimized run itself shows incompatible-order only. No separate minimization targeted non-linearizable.",
+  "replays": [
+    {
+      "run": "20261012T030115Z-C2-3-real-3fb018bf",
+      "verdict": "FAIL",
+      "classes": [
+        "non-linearizable"
+      ]
+    },
+    {
+      "run": "20261012T030249Z-C2-3-real-3fb018bf",
+      "verdict": "PASS",
+      "classes": []
+    },
+    {
+      "run": "20261012T030441Z-C2-3-real-3fb018bf",
+      "verdict": "FAIL",
+      "classes": [
+        "incompatible-order",
+        "non-linearizable"
+      ]
+    },
+    {
+      "run": "20261012T030625Z-C2-3-real-3fb018bf",
+      "verdict": "FAIL",
+      "classes": [
+        "incompatible-order"
+      ]
+    },
+    {
+      "run": "20261012T030809Z-C2-3-real-3fb018bf",
+      "verdict": "FAIL",
+      "classes": [
+        "non-linearizable"
+      ]
+    }
+  ],
+  "replays_with_class": 3,
+  "classification": {
+    "guarantee": "G6",
+    "class": "SAFETY_VIOLATION",
+    "claim_level": "DESIGN",
+    "severity": "high",
+    "origin": "POSTGRES_INHERITED",
+    "reproducibility": "REPRODUCED",
+    "known_status": "NEW"
+  },
+  "severity_derivation": "§11.1: G6 is a SAFETY_VIOLATION guarantee; its row's level is DESIGN (S28). §11.2: high = SAFETY_VIOLATION ∧ (DESIGN ∨ INFERRED). Not critical (that needs EXPLICIT).",
+  "reproducibility_derivation": "§11.1: the minimized plan reproduces non-linearizable in 3 of 5 replays (P13: REPRODUCED if ≥ 3).",
+  "completion_review": [
+    {
+      "op": 3258,
+      "wl": "register",
+      "f": "cas",
+      "value": {
+        "k": 1,
+        "old": 237,
+        "new": 240
+      },
+      "gw": "gw-z2",
+      "invoke_t_ms": 10729,
+      "completion": "info",
+      "complete_t_ms": 20731,
+      "err": {
+        "class": "timeout",
+        "phase": "client-timeout",
+        "sqlstate": ""
+      },
+      "row": 9,
+      "row_reason": "client timeout (P01) after the statement was sent: the write whose value 240 was read and later vanished"
+    },
+    {
+      "op": 3307,
+      "wl": "register",
+      "f": "read",
+      "value": {
+        "k": 1
+      },
+      "gw": "gw-z3",
+      "invoke_t_ms": 30780,
+      "completion": "ok",
+      "result": 240,
+      "row": 1
+    },
+    {
+      "op": 3313,
+      "wl": "register",
+      "f": "read",
+      "value": {
+        "k": 1
+      },
+      "gw": "gw-z2",
+      "invoke_t_ms": 30834,
+      "completion": "ok",
+      "result": 240,
+      "row": 1
+    },
+    {
+      "op": 3370,
+      "wl": "register",
+      "f": "cas",
+      "value": {
+        "k": 1,
+        "old": 240,
+        "new": 245
+      },
+      "gw": "gw-z3",
+      "invoke_t_ms": 40882,
+      "completion": "ok",
+      "result": "applied false (register 1 no longer 240)",
+      "row": 1
+    },
+    {
+      "op": 3099,
+      "wl": "register",
+      "f": "write",
+      "value": {
+        "k": 4,
+        "v": 227
+      },
+      "gw": "gw-z2",
+      "invoke_t_ms": 10223,
+      "completion": "ok",
+      "complete_t_ms": 10230,
+      "row": 1
+    },
+    {
+      "op": 3289,
+      "wl": "register",
+      "f": "write",
+      "value": {
+        "k": 4,
+        "v": 242
+      },
+      "gw": "gw-z3",
+      "invoke_t_ms": 20779,
+      "completion": "info",
+      "complete_t_ms": 30780,
+      "err": {
+        "class": "timeout",
+        "phase": "client-timeout",
+        "sqlstate": ""
+      },
+      "row": 9,
+      "row_reason": "client timeout (P01) after the statement was sent: the write whose value 242 was read and later vanished"
+    },
+    {
+      "op": 3316,
+      "wl": "register",
+      "f": "read",
+      "value": {
+        "k": 4
+      },
+      "gw": "gw-z2",
+      "invoke_t_ms": 30884,
+      "completion": "ok",
+      "result": 242,
+      "row": 1
+    },
+    {
+      "op": 3412,
+      "wl": "register",
+      "f": "read",
+      "value": {
+        "k": 4
+      },
+      "gw": "gw-z3",
+      "invoke_t_ms": 41033,
+      "completion": "ok",
+      "result": 227,
+      "row": 1
+    }
+  ],
+  "timeline": "F1c on the leader n1 injected at 10.65 s, confirmed 11.88 s, healed 42.18 s (gateways keep reaching n1). Rule 2.0 with leader n2 first observed at 36.3 s (pooler status of n2, n3). The two vanished values (register 1 = 240, register 4 = 242) were written by operations whose client gave up at P01 (info at 20.73 s and 30.78 s) and were read by ok reads through gw-z3 and gw-z2 at 30.78–30.88 s, before the new rule was observed; after the failover register 1 no longer held 240 (a cas expecting 240 at 40.88 s was not applied) and register 4 held the older value 227 (ok write at 10.22 s; read at 41.03 s).",
+  "analysis": "Same mechanism as the G2b findings of this run and of D1 (cross-reference FND-C2-2a534585, FND-D1-fb8d0f8c, FND-D1-2e860fd2, FND-D1-a8eb9857): COMMITs on the leader cut off by F1c wait for a synchronous standby; when the client gives up (P01) a cancel reaches the backend (the client's CancelRequest or the pooler's cancel on context end), PostgreSQL completes the commit locally (S61), other sessions read the unreplicated value, and the failover to a standby that never received it removes it. On registers this shows as C4 non-linearizable (an info write's value read, then an older value): G6, single-key reads and writes through the primary port are linearizable (DESIGN, S28). It is a separate finding because §3 gives each finding exactly one guarantee and §11.3 hashes guarantee and anomaly class (owner decision 7 of 2026-10-15, ADR-0043); K4 had folded it into FND-C2-2a534585's analysis.",
+  "origin_reasoning": "POSTGRES_INHERITED, as the owner decided for the vanish mechanism (decision 6, ADR-0042, R15): on plain PostgreSQL 17.7 streaming replication a read observing a write that later disappears reproduces in 5 of 5 runs when a SyncRep wait is cancelled (evidence/pre-K7/lim33.md) and is documented (S61). Which cancel acted in this run is UNDETERMINED. Whether the old leader had been superseded when it served these reads: the new rule was first observed at 36.3 s, after them (the observation polls every 1 s).",
+  "known_status_reasoning": "NEW: the read-only upstream check of 2026-10-16 (evidence/pre-K7/upstream-check.md, 39 lookups) found no issue or pull request about reads of locally committed, unreplicated values after a cancelled synchronous-replication wait.",
+  "oracle": {
+    "result": "not applicable",
+    "reason": "C4 (Porcupine) anomaly, not C3; §10.11's elle-cli oracle cross-checks C3 only. The run's C3 anomaly is FND-C2-2a534585's and was confirmed by the recorded elle-cli validity pass (K4)."
+  },
+  "harness_defect": false,
+  "harness_review": "§6.2 review: the reads and the cas are ok with explicit successes (row 1); the two writes of the vanished values are info, row 9 (client timeout after sending). Porcupine treats info operations as open-ended (§10.4): the anomaly needs an ok read of a value whose write may or may not have taken effect, followed by ok operations that see an older value — which a misclassification could produce only if an ok read were not a successful read or an older value came from a fail write; neither holds. Every fault of the run was confirmed and healed.",
+  "contract_version": "1.6.0",
+  "decided_by": "owner decision 7 of 2026-10-15 (ADR-0043); classification per CONTRACT §3, §11.1–§11.3"
+}
