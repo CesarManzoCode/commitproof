@@ -1,0 +1,3 @@
+{"run":"20261016T025319Z-C12-1001-real-b768137e","seal_root":"ca1fc533b309388f70666ddef8693cc2173c48e9a40cb749be40ba5c45a79fe5","verdict":"PASS","stub_bytes":99029,"checks_bytes":2034,"full_archive_bytes":2188811}
+{"run":"20261016T025634Z-C4-1001-real-3fdb4168","seal_root":"c6d41077601c88b8148182d9a79d59bc4c1e30a878e4385c9b5962520cc2d46c","verdict":"PASS","stub_bytes":81443,"checks_bytes":1878,"full_archive_bytes":1377469}
+{"command":"store-summaries","runs":2,"bytes":184384,"dest":"evidence/K6b/smoke-not-evidence","exit_code":0}

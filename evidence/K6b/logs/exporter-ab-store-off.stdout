@@ -1,0 +1,2 @@
+{"run":"20261016T030055Z-smoke-42-real-e2ed36db","seal_root":"aeab0cd7bc1202bcd923be877b59045bd08c8224e7d809a9e058e322d68aaafa","verdict":"PASS","stub_bytes":49344,"checks_bytes":1744,"full_archive_bytes":1046979}
+{"command":"store-summaries","runs":1,"bytes":51088,"dest":"evidence/K6b/exporter-ab-not-evidence","exit_code":0}

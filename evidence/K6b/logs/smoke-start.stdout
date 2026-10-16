@@ -1,0 +1,3 @@
+go build -trimpath -ldflags "-X github.com/CesarManzoCode/commitproof/internal/buildinfo.Commit=ecef6d32c7f6e4553c8d13d99f81ecb25d251d5c -X github.com/CesarManzoCode/commitproof/internal/buildinfo.Dirty=false" -o bin/ ./cmd/commitproof ./cmd/cpcheck ./cmd/cpgate ./cmd/cpreport ./cmd/quorumxcheck
+scripts/campaign-k7.sh start campaigns/k6b-smoke.json runs/.k6b/smoke
+{"command":"campaign-k7","action":"start","matrix":"campaigns/k6b-smoke.json","out":"runs/.k6b/smoke","log":"runs/.k6b/smoke/campaign-k7.log","pid":547499,"exit_code":0}

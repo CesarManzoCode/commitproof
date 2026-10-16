@@ -1,0 +1,1 @@
+{"command":"campaign-k7","action":"wait","matrix":"campaigns/k6b-smoke.json","out":"runs/.k6b/smoke","log":"runs/.k6b/smoke/campaign-k7.log","runs_started_since_last_start":0,"campaign":{"cells":2,"command":"campaign","complete":true,"exit_code":0,"matrix":"k6b-smoke","out":"runs/.k6b/smoke","verdicts":{"PASS":2}},"exit_code":0}
