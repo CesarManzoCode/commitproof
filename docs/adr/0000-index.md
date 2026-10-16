@@ -39,5 +39,6 @@
 | [0035](0035-g12-fault-windows-proposed.md) | G12's ok fraction excludes operations invoked inside fault windows (clarification of §10.9) | Proposed (K5); accepted by the owner prospectively for K7 only, applied by ADR-0037 |
 | [0036](0036-k6-report-definitions.md) | K6 report: the reference run, the failover metrics, the campaign statistics and the gate's cross-check, fixed before any K6 render | Accepted (K6, contract 1.1.1) |
 | [0037](0037-g12-judged-outside-fault-windows.md) | G12 is judged outside fault windows from contract 1.2.0 on; both fractions are reported (owner decision on ADR-0035) | Accepted by the owner (pre-K7, contract 1.2.0) |
+| [0038](0038-metrics-scrapes-otel-prometheus-exporter.md) | /metrics scrapes (P23) from the OpenTelemetry Prometheus exporter; the families recorded, the report's metric timelines and the gate's cross-check | Accepted (pre-K7, contract 1.2.1) |
 
 New ADRs continue the numbering. Each ADR: Context, Decision, Alternatives rejected, Consequences, Sources.

@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Contract version | **1.2.0** (K0; K1 corrections: ADR-0019, ADR-0020, ADR-0021; K3 corrections: ADR-0022, ADR-0023; K4 clarifications and corrections: ADR-0024, ADR-0025, ADR-0026; K4 amendment approved by the owner: ADR-0027; K5 corrections and clarifications: ADR-0029, ADR-0030; K5 amendment approved by the owner: ADR-0033; K5 change approved by the owner: ADR-0034, P25; K6 clarifications: ADR-0036; pre-K7 change approved by the owner: ADR-0037, G12) |
+| Contract version | **1.2.1** (K0; K1 corrections: ADR-0019, ADR-0020, ADR-0021; K3 corrections: ADR-0022, ADR-0023; K4 clarifications and corrections: ADR-0024, ADR-0025, ADR-0026; K4 amendment approved by the owner: ADR-0027; K5 corrections and clarifications: ADR-0029, ADR-0030; K5 amendment approved by the owner: ADR-0033; K5 change approved by the owner: ADR-0034, P25; K6 clarifications: ADR-0036; pre-K7 change approved by the owner: ADR-0037, G12; pre-K7 correction: ADR-0038, P23) |
 | Date | 2026-10-09 |
 | Owner | César Manzo (GitHub `CesarManzoCode`) |
 | System under test | Multigres, `github.com/multigres/multigres` @ `e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73` |
@@ -158,7 +158,7 @@ Common flags for all Multigres components: `--topo-global-server-addresses=etcd:
 
 Bootstrap HEALTHY predicate (used by K1.4 and by every run): (a) exactly one pooler reports itself leader of a decided rule and all of n1–n3 report that rule; (b) the rule's cohort is exactly {n1, n2, n3}; (c) a write and a read-back succeed through each of gw-z1, gw-z2, gw-z3; (d) `SELECT multigres.version()` through gw-z1 reports the pinned commit. Observation of (a)/(b) uses pooler status RPCs (§5.6, observations only).
 
-The derivation of every flag from S03 is recorded in `deploy/DERIVATION.md` (created in K1): one line per flag with its S03 file:line, or the reason for divergence. Divergences allowed: service IDs, cells, addresses, volume layout, OpenTelemetry/pprof flags removed, `--hostname` set to the service name, the process user of multipooler (it runs as the pgctld image's postgres user, uid 999, so both processes of a node share `/data`, `/certs` and `/backups`; ADR-0021), and the pg_hba template's `local all all` line set to `trust` instead of `peer` (`deploy/pg_hba_template.baseline.conf`: the pooler's per-user pools connect as the client's role over the Unix socket, which `peer` refuses for every role but the pooler's OS user; ADR-0029).
+The derivation of every flag from S03 is recorded in `deploy/DERIVATION.md` (created in K1): one line per flag with its S03 file:line, or the reason for divergence. Divergences allowed: service IDs, cells, addresses, volume layout, OpenTelemetry/pprof flags removed, `--hostname` set to the service name, the process user of multipooler (it runs as the pgctld image's postgres user, uid 999, so both processes of a node share `/data`, `/certs` and `/backups`; ADR-0021), the pg_hba template's `local all all` line set to `trust` instead of `peer` (`deploy/pg_hba_template.baseline.conf`: the pooler's per-user pools connect as the client's role over the Unix socket, which `peer` refuses for every role but the pooler's OS user; ADR-0029), and the OpenTelemetry Prometheus exporter enabled on every multigateway, multipooler and multiorch (`OTEL_METRICS_EXPORTER=prometheus`, `OTEL_EXPORTER_PROMETHEUS_HOST=0.0.0.0`, `OTEL_EXPORTER_PROMETHEUS_PORT=9464`) instead of S03's OTLP push to a collector, so that P23's scrapes exist (ADR-0038).
 
 ### 5.2 Images
 
@@ -259,7 +259,7 @@ All numbers used by gates live here. Implementations read them from one Go const
 | P20 | List-append keys | 8 active keys; a key retires at 64 elements and a fresh key replaces it | — |
 | P21 | Register keys | 5 keys; written values unique per run | — |
 | P22 | Bank | 5 accounts × 100 | — |
-| P23 | Metrics scrape interval | 1 s (`/metrics` on HTTP ports 15000, 16000, 17000) | — |
+| P23 | Metrics scrape interval | 1 s (`/metrics` of the OpenTelemetry Prometheus exporter on port 9464 of every multigateway, multipooler and multiorch; the HTTP ports 15000, 16000, 17000 serve no `/metrics` at the pinned commit — ADR-0038) | — |
 | P24 | Observation interval | 1 s | — |
 | P25 | Evidence size budget in git | ≤ 250 MB total under `evidence/` | — |
 | P26 | Docker subnet | 10.77.0.0/24 | configurable via `CP_SUBNET`; gates use the default |
@@ -739,7 +739,7 @@ Clients, fault counts, holds and order per run, the directed schedules' timing, 
 
 **Determinism rules.** No generation timestamps, hostnames or absolute paths in output; maps iterated in sorted order; floating-point values rendered from integer arithmetic with fixed decimal places; SVG coordinates integers.
 
-The reference run, the report's inputs and fail-closed behaviour, the event elements K6.3 counts, observed rules and leader changes, and the per-fault metrics K6.5 cross-checks are fixed by ADR-0036 (before any K6 render). No real K4 run holds both F2a and F1c; the reference is K4's C2 seed 3 (three F1c, one failover).
+The reference run, the report's inputs and fail-closed behaviour, the event elements K6.3 counts, observed rules and leader changes, and the per-fault metrics K6.5 cross-checks are fixed by ADR-0036 (before any K6 render). Metric scrapes (P23) are drawn when a run holds them, and K6.5's cross-check covers their summary; the recorded families are fixed by ADR-0038. No real K4 run holds both F2a and F1c; the reference is K4's C2 seed 3 (three F1c, one failover).
 
 **Gate K6:**
 

@@ -14,8 +14,9 @@ import (
 // (checked against the contract header by params_test.go). K6 closed with
 // 1.1.1 and made no run; 1.2.0 (ADR-0037, the owner's decision on
 // ADR-0035) changes G12's verdict rule for plans carrying 1.2.0 or later,
-// and every recorded run keeps the version it carries.
-const ContractVersion = "1.2.0"
+// and every recorded run keeps the version it carries; 1.2.1 (ADR-0038)
+// corrects where P23's /metrics is served.
+const ContractVersion = "1.2.1"
 
 // K4RunsContractVersion is the contract version of the K4 runs made before
 // ADR-0027. Contract 1.0.7 changes only M2's directed schedule, and as a new
@@ -103,6 +104,7 @@ const (
 	BankAccounts          = 5 // P22
 	BankInitialBalance    = 100
 	MetricsScrapeInterval = 1 * time.Second  // P23
+	MetricsPort           = 9464             // P23 (ADR-0038)
 	ObservationInterval   = 1 * time.Second  // P24
 	EvidenceBudgetMB      = 250              // P25 (ADR-0034)
 	DockerSubnet          = "10.77.0.0/24"   // P26
@@ -172,8 +174,8 @@ func Table() []Param {
 			[]string{fmt.Sprintf("%d keys", RegisterKeys)}},
 		{"P22", "Bank", "5 accounts × 100",
 			[]string{fmt.Sprintf("%d accounts × %d", BankAccounts, BankInitialBalance)}},
-		{"P23", "Metrics scrape interval", "1 s (`/metrics` on HTTP ports 15000, 16000, 17000)",
-			[]string{s(MetricsScrapeInterval) + " ("}},
+		{"P23", "Metrics scrape interval", "1 s (`/metrics` of the OpenTelemetry Prometheus exporter on port 9464 of every multigateway, multipooler and multiorch; the HTTP ports 15000, 16000, 17000 serve no `/metrics` at the pinned commit — ADR-0038)",
+			[]string{s(MetricsScrapeInterval) + " (", fmt.Sprintf("port %d", MetricsPort)}},
 		{"P24", "Observation interval", "1 s",
 			[]string{s(ObservationInterval)}},
 		{"P25", "Evidence size budget in git", "≤ 250 MB total under `evidence/`",

@@ -5,7 +5,9 @@ Source (S03): `demo/k8s/*.yaml` of Multigres at `e3cbdbbb0b94453ca2ec43c9c40c05c
 CommitProof process is listed with the upstream line it is copied from, or with
 the reason it diverges. Divergences allowed by CONTRACT §5.1: service IDs,
 cells, addresses, volume layout, OpenTelemetry/pprof flags removed, `--hostname`
-set to the service name. Anything else that differs is listed under
+set to the service name, and (contract 1.2.1, ADR-0038) the OpenTelemetry
+Prometheus exporter enabled on multipooler, multiorch and multigateway instead of
+S03's OTLP push. Anything else that differs is listed under
 "Other divergences" with its reason.
 
 Abbreviations: `MP` = `k8s-multipooler-statefulset.yaml`, `MO` =
@@ -60,6 +62,7 @@ pooler and pgctld containers of one pod share localhost (MP:107–257).
 | `--hostname` | `pooler-nX` | not set upstream (the pod name resolves through the headless Service); allowed divergence (`--hostname` set to the service name). `pooler-nX` is a network alias of `pg-nX` on `cpnet` because a container in another container's network namespace has no DNS name of its own |
 | env `PGDATA`, `POSTGRES_PASSWORD_FILE` | as pgctld | MP:200, MP:202 |
 | OTel env (`OTEL_SERVICE_NAME`, `otel-config`) and `/etc/otel` mount | removed | allowed divergence (OpenTelemetry) |
+| env `OTEL_METRICS_EXPORTER=prometheus`, `OTEL_EXPORTER_PROMETHEUS_HOST=0.0.0.0`, `OTEL_EXPORTER_PROMETHEUS_PORT=9464` (anchor `x-otel-env`) | added | allowed divergence (CONTRACT §5.1, P23, ADR-0038): the pinned autoexport's Prometheus exporter serves `/metrics` on 9464 for the runner's scrapes; S03 pushes OTLP to a collector instead (`k8s-observability.yaml` ConfigMap `otel-config`: `OTEL_METRICS_EXPORTER=otlp`, interval 5 s) and no HTTP port of the pinned commit serves `/metrics` (record `metrics-probe-2`, evidence/pre-K7) |
 | process user | `999:999` (the pgctld image's postgres user) instead of the image's `65532:65532` | allowed divergence (CONTRACT §5.1, ADR-0021): both processes of a node share `/data`, the 0600 pgBackRest key and `/backups` |
 
 ## multiorch (`orch-z1` … `orch-z3`)
@@ -77,6 +80,8 @@ pooler and pgctld containers of one pod share localhost (MP:107–257).
 | `--pooler-health-check-interval` | `500ms` | MO:34 |
 | `--recovery-cycle-interval` | `500ms` | MO:35 |
 | `--pprof-http=true` | removed | allowed divergence (pprof) |
+| OTel env (`OTEL_SERVICE_NAME`, `otel-config`) and `/etc/otel` mount | removed | allowed divergence (OpenTelemetry) |
+| env `OTEL_METRICS_EXPORTER=prometheus`, `OTEL_EXPORTER_PROMETHEUS_HOST=0.0.0.0`, `OTEL_EXPORTER_PROMETHEUS_PORT=9464` (anchor `x-otel-env`) | added | allowed divergence (CONTRACT §5.1, P23, ADR-0038): the pinned autoexport's Prometheus exporter serves `/metrics` on 9464 for the runner's scrapes; S03 pushes OTLP to a collector instead (`k8s-observability.yaml` ConfigMap `otel-config`: `OTEL_METRICS_EXPORTER=otlp`, interval 5 s) and no HTTP port of the pinned commit serves `/metrics` (record `metrics-probe-2`, evidence/pre-K7) |
 | replicas | 3 (one per cell) instead of 1 | CONTRACT §5.1 / ADR-0001 (three cells, S42) |
 
 ## multigateway (`gw-z1` … `gw-z3`)
@@ -93,6 +98,8 @@ pooler and pgctld containers of one pod share localhost (MP:107–257).
 | `--cell` | `zone1` / `zone2` / `zone3` | MG:33 (`zone1`); allowed divergence (cells) |
 | `--pprof-http=true` | removed | allowed divergence (pprof) |
 | `--enable-slot-based-replication` | `true` | MG:37 |
+| OTel env (`OTEL_SERVICE_NAME`, `otel-config`) and `/etc/otel` mount | removed | allowed divergence (OpenTelemetry) |
+| env `OTEL_METRICS_EXPORTER=prometheus`, `OTEL_EXPORTER_PROMETHEUS_HOST=0.0.0.0`, `OTEL_EXPORTER_PROMETHEUS_PORT=9464` (anchor `x-otel-env`) | added | allowed divergence (CONTRACT §5.1, P23, ADR-0038): the pinned autoexport's Prometheus exporter serves `/metrics` on 9464 for the runner's scrapes; S03 pushes OTLP to a collector instead (`k8s-observability.yaml` ConfigMap `otel-config`: `OTEL_METRICS_EXPORTER=otlp`, interval 5 s) and no HTTP port of the pinned commit serves `/metrics` (record `metrics-probe-2`, evidence/pre-K7) |
 | replicas | 3 (one per cell) instead of 5 behind one Service | CONTRACT §5.1 (clients address each gateway) |
 
 ## etcd (`etcd`)
