@@ -1,0 +1,1 @@
+go build -trimpath -ldflags "-X github.com/CesarManzoCode/commitproof/internal/buildinfo.Commit=0b09ba058f6e412e4b21c940328a28e5bcde877b -X github.com/CesarManzoCode/commitproof/internal/buildinfo.Dirty=true" -o bin/ ./cmd/commitproof ./cmd/cpcheck ./cmd/cpgate ./cmd/cpreport ./cmd/quorumxcheck
