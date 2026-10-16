@@ -30,7 +30,11 @@
 #             smoke-not-evidence/ — not K7 evidence
 #   exporter  decision 5: the smoke plan (seed 42) with and without ADR-0038's
 #             exporter (CP_OTEL_METRICS_EXPORTER=none), each with per-container
-#             CPU and memory; summaries under exporter-ab-not-evidence/
+#             CPU and memory; summaries under exporter-ab-not-evidence/;
+#             the pair compared per component and role
+#   estimate  item 9: summary bytes of every K7 cell's plan, durations,
+#             bytes per real-build finding (K4/K5), evidence size; §12.3's
+#             bounds for N = 5 and 10
 set -u -o pipefail
 export GOTOOLCHAIN=go1.26.9 CGO_ENABLED=0
 EV=${K6B_EV:-evidence/K6b}
@@ -132,12 +136,19 @@ exporter() {
 	for m in on off; do
 		[ -f "$d/samples-$m.jsonl.zst" ] || zstd -q -19 -o "$d/samples-$m.jsonl.zst" "$o/samples-$m.jsonl"
 	done
+	step 0 exporter-ab-compare scripts/k6b-exporter-compare.sh "$EV/logs/exporter-ab-on.stdout" "$EV/logs/exporter-ab-off.stdout" "$o"
+}
+
+estimate() {
+	step 0 "$(next build)" make build
+	step 0 "$(next k7-estimate)" scripts/k6b-k7-estimate.sh
+	step 0 "$(next k7bounds)" go run ./internal/tools/k7bounds
 }
 
 case "${1:-}" in
-setup | cited | config | images | smoke | exporter) "$1" ;;
+setup | cited | config | images | smoke | exporter | estimate) "$1" ;;
 *)
-	echo "usage: $0 setup|cited|config|images|smoke|exporter" >&2
+	echo "usage: $0 setup|cited|config|images|smoke|exporter|estimate" >&2
 	exit 3
 	;;
 esac
