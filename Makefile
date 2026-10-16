@@ -75,15 +75,20 @@ ci-report: build
 ## log $(K7_OUT)/campaign-k7.log; resumable — re-invoke to continue (sealed
 ## runs are never recomputed). DRY_RUN=1 prints each cell's plan and the
 ## run count and starts nothing. K7_MATRIX / K7_OUT override the matrix and
-## the output directory.
+## the output directory. It does not rebuild bin/: the campaign runs the
+## binaries the runner image was built from (`make build` then
+## `bin/commitproof images build`); a start refuses binaries whose commit
+## differs from images.lock.json's, so a resume after later commits uses the
+## same binaries and a status poll never replaces them under a running
+## campaign.
 K7_MATRIX ?= campaigns/k7.json
 K7_OUT ?= runs/k7
-campaign-k7: build
+campaign-k7:
 	scripts/campaign-k7.sh $(if $(filter 1,$(DRY_RUN)),dry-run,start) $(K7_MATRIX) $(K7_OUT)
 
 ## campaign-k7-status: whether make campaign-k7 is running, and the runs
 ## made and still to make in $(K7_OUT)
-campaign-k7-status: build
+campaign-k7-status:
 	scripts/campaign-k7.sh status $(K7_MATRIX) $(K7_OUT)
 
 ## sabotage-nemesis: K3.2/K3.3 fixtures — host binaries and runner images

@@ -31,6 +31,15 @@ start)
 		json ',"error":"CP_OTEL_METRICS_EXPORTER is set; K7 runs keep the exporter (ADR-0041)","exit_code":3'
 		exit 3
 	fi
+	# The binaries must be the ones the runner image was built from
+	# (images.lock.json's commitproof commit, clean); `make campaign-k7`
+	# does not rebuild them.
+	bc=$("$CP" version 2>/dev/null | tail -n 1 | jq -r '.commit + " " + (.dirty|tostring)' 2>/dev/null)
+	lc=$(jq -r '.commitproof.commit + " " + (.commitproof.dirty|tostring)' images.lock.json 2>/dev/null)
+	if [ -z "$bc" ] || [ "$bc" != "$lc" ] || [ "${bc#* }" != false ]; then
+		json ",\"error\":\"bin/commitproof is ${bc:-missing}, images.lock.json's runner is ${lc:-missing}: make build, then bin/commitproof images build\",\"exit_code\":3"
+		exit 3
+	fi
 	mkdir -p "$out"
 	if alive; then
 		json ",\"error\":\"already running (pid $(cat "$pidf"))\",\"exit_code\":3"
