@@ -87,6 +87,12 @@ oracle_run() {
 			step any "elle-validity-$id" docker run --rm --label com.docker.compose.project=commitproof --network none \
 				--read-only --tmpfs /tmp -v "./$d.elle:/h:ro" commitproof/elle-oracle:9c2a18b -m list-append -c "$model" \
 				--output json --cycle-search-timeout 10000 /h/history.elle.json
+			# Out of memory with the default heap: once more with 9 GB (K4).
+			if [ "$(recorded "elle-validity-$id")" = 255 ] && grep -q OutOfMemoryError "$EV/logs/elle-validity-$id.stderr"; then
+				step any "elle-validity-xmx9g-$id" docker run --rm --label com.docker.compose.project=commitproof --network none \
+					--read-only --tmpfs /tmp -e JAVA_TOOL_OPTIONS=-Xmx9g -v "./$d.elle:/h:ro" commitproof/elle-oracle:9c2a18b -m list-append -c "$model" \
+					--output json --cycle-search-timeout 10000 /h/history.elle.json
+			fi
 			step any "elle-process-$id" docker run --rm --label com.docker.compose.project=commitproof --network none \
 				--read-only --tmpfs /tmp -v "./$d.elle:/h:ro" commitproof/elle-oracle:9c2a18b -m list-append -c "$model" \
 				--output json --cycle-search-timeout 10000 \

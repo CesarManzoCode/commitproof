@@ -7,6 +7,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -43,7 +44,11 @@ func main() {
 	}
 	var v any
 	j, _ := json.Marshal(o)
-	json.Unmarshal(j, &v)
+	dec := json.NewDecoder(bytes.NewReader(j))
+	dec.UseNumber()
+	if err := dec.Decode(&v); err != nil {
+		fail(err)
+	}
 	cb, err := canonjson.Marshal(v)
 	if err != nil {
 		fail(err)

@@ -26,7 +26,7 @@ A new finding's minimized run and replays are not part of K7.3; the finding's or
 For each run, on its full run directory, with no cluster running (elle-cli's JVM and P10 on the 16 GB host):
 
 1. `cpcheck check <run> --elle-oracle` (recorded `oracle-<run-id>`). If it completes, C3's `stats.elle` decides: `valid` `false` with `agree` (elle-cli's classes equal C3's) → **confirmed**; elle-cli answering `unknown` is not a confirmation (cpcheck's `agree` is then true by K2's convention) and is treated as not completed (step 2); any other answer → **`oracle-disagreement`**, triaged.
-2. If it does not complete (elle-cli exits with an error, e.g. `OutOfMemoryError`, or times out): elle-cli's validity pass on the exported history (`elle-validity-<run-id>`: `-m list-append -c <model> --output json --cycle-search-timeout 10000`, model from the run's isolation level as cpcheck chooses it) and the process pass (`elle-process-<run-id>`, the anomalies with `-process` suffixes), each recorded with the pinned image `commitproof/elle-oracle:9c2a18b`, no network, read-only. If the validity pass answers `valid? false` with exactly C3's classes (Elle names mapped by §10.11's table, informational names dropped) → **confirmed** (source: the validity pass); if it answers otherwise → **`oracle-disagreement`**, triaged.
+2. If it does not complete (elle-cli exits with an error, e.g. `OutOfMemoryError`, or times out): elle-cli's validity pass on the exported history (`elle-validity-<run-id>`: `-m list-append -c <model> --output json --cycle-search-timeout 10000`, model from the run's isolation level as cpcheck chooses it) and the process pass (`elle-process-<run-id>`, the anomalies with `-process` suffixes), each recorded with the pinned image `commitproof/elle-oracle:9c2a18b`, no network, read-only. If the validity pass runs out of memory with the JVM's default heap, it is repeated once with `JAVA_TOOL_OPTIONS=-Xmx9g` (`elle-validity-xmx9g-<run-id>`), as K4 did for D1 seed 4 (`evidence/K4/NOTES.md`, the oracle paragraph); no cluster runs meanwhile. If a validity pass answers `valid? false` with exactly C3's classes (Elle names mapped by §10.11's table, informational names dropped) → **confirmed** (source: the validity pass); if it answers otherwise → **`oracle-disagreement`**, triaged.
 3. If neither cpcheck's oracle nor the validity pass completes, the run is labelled **`oracle-disagreement`** with the triage "elle-cli did not complete (…)": an unanswered oracle is never a confirmation (fail closed, LIM-31).
 
 ### Where it is recorded
@@ -39,7 +39,7 @@ The oracle never changes a verdict: C3 decides, elle-cli cross-checks (§10.11).
 
 ## Alternatives rejected
 
-- **A larger heap or a longer cycle search.** LIM-31: 9 GB did not help on K4's histories; the host has 16 GB and K7 runs one cluster at a time.
+- **A heap above 9 GB or a longer cycle search.** K4's retry used 9 GB (LIM-31: it did not help on K4's ~18 000-operation histories); the host has 16 GB, and a longer cycle search changes what the pass decides, not only whether it finishes.
 - **Skipping M1's D1 runs** because they are mutant runs: K7.3 covers every C3 anomaly of the cells K7 reports; the owner's decision asks for them.
 - **Re-checking M1's D1 runs in place.** Closed evidence is immutable (AGENTS.md); the copy is checked and the result recorded under K7.
 

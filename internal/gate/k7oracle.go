@@ -87,31 +87,46 @@ func DecideK7Oracle(e *Evidence, checksJSON []byte) (*K7Oracle, error) {
 		}
 		o.Note = "cpcheck's oracle: elle-cli answered unknown, not a confirmation (ADR-0046)"
 	}
-	// 2. The validity pass on its own (K4's approach).
-	r, ok := e.lastRecord("elle-validity-" + c.RunID)
-	if !ok {
+	// 2. The validity pass on its own, with the default heap and, if that
+	// ran out of memory, with 9 GB (K4's approach). The last pass that
+	// answered decides.
+	var passes []Record
+	for _, n := range []string{"elle-validity-", "elle-validity-xmx9g-"} {
+		if r, ok := e.lastRecord(n + c.RunID); ok {
+			passes = append(passes, r)
+		}
+	}
+	if len(passes) == 0 {
 		if o.ElleValid == "" {
 			return nil, fmt.Errorf("%s: no stats.elle in checks.json and no elle-validity record", c.RunID)
 		}
 		o.Result, o.DecidedBy = "oracle-disagreement", "none"
 		return o, nil
 	}
-	o.Records = append(o.Records, r.Name)
+	var v map[string]any
+	var exits []string
+	for _, r := range passes {
+		o.Records = append(o.Records, r.Name)
+		if !argvHas(r, "commitproof/elle-oracle", c.RunID+".elle") {
+			return nil, fmt.Errorf("record %s is not elle-cli on this run's export", r.Name)
+		}
+		_, out, err := e.Get(r.Name)
+		if err != nil {
+			return nil, err
+		}
+		var w map[string]any
+		if (r.ExitCode == 0 || r.ExitCode == 1) && json.Unmarshal(out, &w) == nil {
+			v = w
+		}
+		exits = append(exits, fmt.Sprintf("%s exit %d", r.Name, r.ExitCode))
+	}
 	if pr, ok := e.lastRecord("elle-process-" + c.RunID); ok {
 		o.Records = append(o.Records, pr.Name)
 	}
-	if !argvHas(r, "commitproof/elle-oracle", c.RunID+".elle") {
-		return nil, fmt.Errorf("record %s is not elle-cli on this run's export", r.Name)
-	}
-	_, out, err := e.Get(r.Name)
-	if err != nil {
-		return nil, err
-	}
-	var v map[string]any
-	if (r.ExitCode != 0 && r.ExitCode != 1) || json.Unmarshal(out, &v) != nil {
+	if v == nil {
 		o.Result, o.DecidedBy = "oracle-disagreement", "none"
 		o.ElleValid, o.ElleClasses = "no answer", nil
-		o.Note = strings.TrimSpace(o.Note + fmt.Sprintf("; elle-cli's validity pass did not complete (exit %d)", r.ExitCode))
+		o.Note = strings.TrimPrefix(o.Note+"; elle-cli's validity pass did not complete ("+strings.Join(exits, ", ")+")", "; ")
 		return o, nil
 	}
 	o.ElleValid = fmt.Sprint(v["valid?"])
