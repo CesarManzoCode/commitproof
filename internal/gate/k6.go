@@ -615,7 +615,14 @@ func evalK65(e *Evidence) (string, []string, []string) {
 			p = append(p, fmt.Sprintf("the report has metrics for fault %s, which the history does not hold", id))
 		}
 	}
-	return ev, p, []string{fmt.Sprintf("%d faults compared field by field (windows, gaps, non-ok counts per gateway; n, p50, p95, p99 per phase; rule and leader changes)", compared)}
+	// Metric scrapes (P23, ADR-0038): vacuous for a run without them.
+	mp, mnote := CheckMetrics(pg.data, rep.Observations)
+	p = append(p, mp...)
+	notes := []string{fmt.Sprintf("%d faults compared field by field (windows, gaps, non-ok counts per gateway; n, p50, p95, p99 per phase; rule and leader changes)", compared)}
+	if mnote != "" {
+		notes = append(notes, mnote)
+	}
+	return ev, p, notes
 }
 
 // k6Diff compares the expected value w with the report's g (decoded with
