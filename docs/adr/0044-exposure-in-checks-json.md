@@ -1,6 +1,6 @@
 # ADR-0044 — A run's §12.3 exposure travels in its checks.json (C9's stats) from contract 1.7.0, so that runs kept as summaries still give a cell its clean statement
 
-Status: **Accepted (K6b, contract 1.7.0).** Resolves a contradiction (CONTRACT §18) that ADR-0039 exposed. Written and committed before the code and before any K7 run. Amends ADR-0036 (exposure) and ADR-0039 (what makes a run cited).
+Status: **Accepted (K6b, contract 1.7.0); accepted by the owner (K7, decision 3 of 2026-10-15):** every README or report statement that uses the exposure of a summarized run says it is cpcheck-reported from the sealed history and re-derivable from the full archive, which is not in git; cpgate K7 recomputes it independently for every run held in full (ADR-0045 §6). Resolves a contradiction (CONTRACT §18) that ADR-0039 exposed. Written and committed before the code and before any K7 run. Amends ADR-0036 (exposure) and ADR-0039 (what makes a run cited).
 
 ## Context: the contradiction
 

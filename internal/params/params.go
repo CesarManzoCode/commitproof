@@ -21,8 +21,9 @@ import (
 // fixes C12, slotless and the K7 campaign command; 1.5.0 (ADR-0042) splits
 // G2 into G2a (EXPLICIT) and G2b (INFERRED); 1.6.0 (ADR-0043) adds known
 // status KNOWN and records the G6 finding of K4's C2 seed 3 run; 1.7.0
-// (ADR-0044) puts a run's §12.3 exposure into C9's stats.
-const ContractVersion = "1.7.0"
+// (ADR-0044) puts a run's §12.3 exposure into C9's stats; 1.8.0 (ADR-0045)
+// keeps K7 failures that repeat a recorded finding as summaries.
+const ContractVersion = "1.8.0"
 
 // K4RunsContractVersion is the contract version of the K4 runs made before
 // ADR-0027. Contract 1.0.7 changes only M2's directed schedule, and as a new

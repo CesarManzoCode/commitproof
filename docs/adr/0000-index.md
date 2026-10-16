@@ -45,6 +45,7 @@
 | [0041](0041-c12-slotless-and-k7-campaign-fixed-before-runs.md) | Campaign C12, profile `slotless` and the K7 campaign command, fixed before any run of them | Accepted (K6b, contract 1.4.1) |
 | [0042](0042-g2-split-g2a-g2b.md) | G2 is split into G2a (acknowledged write lost under split brain, EXPLICIT) and G2b (a read observes a write that later disappears, INFERRED), prospectively | Accepted by the owner (K6b, contract 1.5.0) |
 | [0043](0043-findings-known-status-g6-g10-packaging.md) | Known status `KNOWN` (an open upstream fix), the G6 finding of C2 seed 3, and how G10 is packaged | Accepted by the owner (K6b, contract 1.6.0) |
-| [0044](0044-exposure-in-checks-json.md) | A run's §12.3 exposure travels in its checks.json (C9's stats) from contract 1.7.0, so that runs kept as summaries still give a cell its clean statement | Accepted (K6b, contract 1.7.0) |
+| [0044](0044-exposure-in-checks-json.md) | A run's §12.3 exposure travels in its checks.json (C9's stats) from contract 1.7.0, so that runs kept as summaries still give a cell its clean statement | Accepted (K6b, contract 1.7.0); accepted by the owner (K7, decision 3) |
+| [0045](0045-k7-repeats-of-recorded-findings-stay-summaries.md) | K7 under P25: a real-build failure that repeats a recorded finding stays a summary; the repeat predicates, the store step and the D3′/D5 decision | Accepted by the owner (K7, contract 1.8.0) |
 
 New ADRs continue the numbering. Each ADR: Context, Decision, Alternatives rejected, Consequences, Sources.
