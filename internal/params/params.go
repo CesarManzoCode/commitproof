@@ -15,8 +15,9 @@ import (
 // 1.1.1 and made no run; 1.2.0 (ADR-0037, the owner's decision on
 // ADR-0035) changes G12's verdict rule for plans carrying 1.2.0 or later,
 // and every recorded run keeps the version it carries; 1.2.1 (ADR-0038)
-// corrects where P23's /metrics is served.
-const ContractVersion = "1.2.1"
+// corrects where P23's /metrics is served; 1.3.0 (ADR-0039) fixes K7's
+// storage under P25 and cites K4's and K5's directed cells in K7.
+const ContractVersion = "1.3.0"
 
 // K4RunsContractVersion is the contract version of the K4 runs made before
 // ADR-0027. Contract 1.0.7 changes only M2's directed schedule, and as a new
@@ -178,7 +179,7 @@ func Table() []Param {
 			[]string{s(MetricsScrapeInterval) + " (", fmt.Sprintf("port %d", MetricsPort)}},
 		{"P24", "Observation interval", "1 s",
 			[]string{s(ObservationInterval)}},
-		{"P25", "Evidence size budget in git", "≤ 250 MB total under `evidence/`",
+		{"P25", "Evidence size budget in git", "≤ 250 MB total under `evidence/` and the run archives under `findings/` (ADR-0039)",
 			[]string{fmt.Sprintf("≤ %d MB", EvidenceBudgetMB)}},
 		{"P26", "Docker subnet", "10.77.0.0/24",
 			[]string{DockerSubnet}},

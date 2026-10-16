@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Contract version | **1.2.1** (K0; K1 corrections: ADR-0019, ADR-0020, ADR-0021; K3 corrections: ADR-0022, ADR-0023; K4 clarifications and corrections: ADR-0024, ADR-0025, ADR-0026; K4 amendment approved by the owner: ADR-0027; K5 corrections and clarifications: ADR-0029, ADR-0030; K5 amendment approved by the owner: ADR-0033; K5 change approved by the owner: ADR-0034, P25; K6 clarifications: ADR-0036; pre-K7 change approved by the owner: ADR-0037, G12; pre-K7 correction: ADR-0038, P23) |
+| Contract version | **1.3.0** (K0; K1 corrections: ADR-0019, ADR-0020, ADR-0021; K3 corrections: ADR-0022, ADR-0023; K4 clarifications and corrections: ADR-0024, ADR-0025, ADR-0026; K4 amendment approved by the owner: ADR-0027; K5 corrections and clarifications: ADR-0029, ADR-0030; K5 amendment approved by the owner: ADR-0033; K5 change approved by the owner: ADR-0034, P25; K6 clarifications: ADR-0036; pre-K7 change approved by the owner: ADR-0037, G12; pre-K7 correction: ADR-0038, P23; K6b changes approved by the owner: ADR-0039, K7 storage and cited cells) |
 | Date | 2026-10-09 |
 | Owner | César Manzo (GitHub `CesarManzoCode`) |
 | System under test | Multigres, `github.com/multigres/multigres` @ `e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73` |
@@ -261,7 +261,7 @@ All numbers used by gates live here. Implementations read them from one Go const
 | P22 | Bank | 5 accounts × 100 | — |
 | P23 | Metrics scrape interval | 1 s (`/metrics` of the OpenTelemetry Prometheus exporter on port 9464 of every multigateway, multipooler and multiorch; the HTTP ports 15000, 16000, 17000 serve no `/metrics` at the pinned commit — ADR-0038) | — |
 | P24 | Observation interval | 1 s | — |
-| P25 | Evidence size budget in git | ≤ 250 MB total under `evidence/` | — |
+| P25 | Evidence size budget in git | ≤ 250 MB total under `evidence/` and the run archives under `findings/` (ADR-0039) | — |
 | P26 | Docker subnet | 10.77.0.0/24 | configurable via `CP_SUBNET`; gates use the default |
 | P27 | Fault confirmation deadline | 15 s after the inject command returns | — |
 | P28 | Heal confirmation deadline | 30 s | — |
@@ -541,7 +541,7 @@ GitHub Actions (public repo, `ubuntu-24.04`, 4 CPU/16 GB/14 GB SSD, 6 h/job, S88
 | `make ci-report` | regenerate the K6 reference report from the committed reference run and compare bytes | CI + local |
 | `make campaign-k4` / `campaign-k5` / `campaign-k7` | full matrices | **local only**, evidence recorded |
 
-Local evidence policy: every run cited by a claim is committed sealed under `evidence/` (compressed with zstd, still sealed by hash of the uncompressed files); total ≤ P25. K5 commits in full only the runs a gate criterion reads in full (C10 primary runs for K5.3; the primary and minimized runs of every real-build failure), the others as stubs (ADR-0030). Runs not cited are summarized in `evidence/K7/runs-index.json` with their seal roots; if the budget is exceeded, uncited runs are summarized only, and LIMITATIONS says they are not independently re-checkable without re-running.
+Local evidence policy: every run cited by a claim is committed sealed under `evidence/` (compressed with zstd, still sealed by hash of the uncompressed files); total ≤ P25. K5 commits in full only the runs a gate criterion reads in full (C10 primary runs for K5.3; the primary and minimized runs of every real-build failure), the others as stubs (ADR-0030). K7 (ADR-0039, the owner's decision): a run that a claim, a finding package or a K7 report names as its artifact is cited and committed in full, once; every other run — one that only contributes its verdict and classes to a cell's statistics — is committed as a summary (its stub: manifest, plan, seal; its `checks.json` beside it) and listed with its seal root in `evidence/K7/runs-index.json`, its full archive kept on the machine that ran it, and LIMITATIONS says such runs are not independently re-checkable without re-running. P25 counts every byte under `evidence/` and every run archive under `findings/`; the text files of `findings/` do not count.
 
 ---
 
@@ -769,10 +769,10 @@ Checker-level sabotage: build tag `cp_sabotage_report_nondeterminism` (inserts m
 | V3 buffered | C8 | `buffered` | 10 |
 | V4 replica reads | C13: W1 read-only transactions through the replica port mixed with primary-port writes, no nemesis and with F2a | `replica-port` | 5 |
 | V5 overload | C11 (both G12 fractions reported per cell, ADR-0037) | `baseline` | 5 |
-| Mutants | D1–D5 (and P1 for M4) | as defined | 5 each |
-| H1 | DH1 | `h1` | 5 (if deployable) |
+| Mutants | D1, D2′, D3′, D5 and P1 for M4, each with the real build on the same schedule (§9.1, §12.4) | as defined | cited from K4/K5, not re-run: 5 each, valid, with the contract versions their plans carry (ADR-0039) |
+| H1 | DH1 | `h1` | cited from K4: 5 runs (ADR-0039) |
 
-Estimated wall time at ~4 minutes per run (cluster up, 90 s workload, recovery, final reads, teardown): about 11 hours for the 165 runs above; the campaign driver is resumable.
+K7 runs the cells V1–V5 (135 runs); the measured wall time per run in K4 and K5 is about 2.3 minutes (cluster up, 90 s workload, recovery, final reads, teardown; `evidence/pre-K7/k7-feasibility.md`), plus re-runs of INVALID runs and the minimization and replays of failures; the campaign driver is resumable.
 
 C12 mixed: all workloads W1–W4, nemesis drawing uniformly from {F1a–F1d, F2a–F2e, F3a, F3b, F4a, F6, F7}, plus one F5a/F5b pair per run.
 
