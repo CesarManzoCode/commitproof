@@ -15,6 +15,11 @@
 #             byte-identical (no recorded verdict changes)
 #   probe     ADR-0038: what serves /metrics at the pinned commit (the
 #             committed baseline compose, before the exporter is enabled)
+#   scrape    ADR-0038 on a real run: images rebuilt and locked, one smoke
+#             run (P04, 45 s) with scrapes, cpcheck, the run archived under
+#             scrape-run/ (§13 form), its scrape cost measured, two renders
+#             (the first committed under scrape-report/), metricscheck, and
+#             the metrics section's negative controls
 set -u -o pipefail
 export GOTOOLCHAIN=go1.26.9 CGO_ENABLED=0
 EV=${PREK7_EV:-evidence/pre-K7}
@@ -74,10 +79,35 @@ probe() {
 	[ "$(recorded metrics-probe)" = 0 ] || step 0 "$(next metrics-probe)" scripts/prek7-metrics-probe.sh baseline
 }
 
+scrape() {
+	local out=$SCRATCH/scrape
+	step 0 "$(next build)" make build
+	[ "$(recorded images-build)" = 0 ] || step 0 "$(next images-build)" bin/commitproof images build
+	if [ "$(recorded scrape-smoke)" != 0 ]; then
+		mkdir -p "$out"
+		step 0 "$(next scrape-smoke)" bin/commitproof run --campaign smoke --seed 42 --out "$out"
+	fi
+	local id
+	id=$(sed -n 's/.*"run_dir":"[^"]*\/\([^"/]*\)".*/\1/p' "$EV/logs/$(grep -F '"name":"scrape-smoke' "$EV/commands.jsonl" | tail -n 1 | sed 's/.*"name":"\([^"]*\)".*/\1/').stdout" | tail -n 1)
+	[ -n "$id" ] || { echo "prek7-evidence: no run_dir in the scrape-smoke record" >&2; exit 1; }
+	step any scrape-check bin/cpcheck check "$out/$id"
+	if [ ! -f "$EV/scrape-run/$id.tar.zst" ]; then
+		mkdir -p "$SCRATCH/scrape-stage" "$EV/scrape-run"
+		cp -a "$out/$id" "$SCRATCH/scrape-stage/"
+		step 0 scrape-archive scripts/compress-runs.sh "$SCRATCH/scrape-stage"
+		cp "$SCRATCH/scrape-stage/$id.tar.zst" "$out/$id.checks.json" "$EV/scrape-run/"
+	fi
+	step 0 scrape-measure scripts/prek7-scrape-measure.sh "$out/$id" "$EV/scrape-run/$id.tar.zst"
+	step 0 scrape-render-1 bin/cpreport render "$EV/scrape-run/$id.tar.zst" --out "$EV/scrape-report"
+	[ -n "$(recorded scrape-render-2)" ] || { rm -rf "$SCRATCH/scrape-render-2"; step 0 scrape-render-2 bin/cpreport render "$EV/scrape-run/$id.tar.zst" --out "$SCRATCH/scrape-render-2"; }
+	step 0 scrape-metricscheck go run ./internal/tools/metricscheck --report "$EV/scrape-report/$id.html" --run "$EV/scrape-run/$id.tar.zst"
+	step 0 metrics-controls scripts/prek7-metrics-controls.sh "$EV/scrape-run/$id.tar.zst" "$EV/scrape-report/$id.html"
+}
+
 case "${1:-}" in
-setup | g12 | probe) "$1" ;;
+setup | g12 | probe | scrape) "$1" ;;
 *)
-	echo "usage: $0 setup|g12|probe" >&2
+	echo "usage: $0 setup|g12|probe|scrape" >&2
 	exit 3
 	;;
 esac
