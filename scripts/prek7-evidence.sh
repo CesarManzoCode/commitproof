@@ -11,6 +11,10 @@
 # usage: prek7-evidence.sh <group>
 #   setup     binaries (make build); cpgate K1–K6 on copies of the closed
 #             evidence (precondition)
+#   g12       ADR-0037: every recorded K5 C11 run re-checked, checks.json
+#             byte-identical (no recorded verdict changes)
+#   probe     ADR-0038: what serves /metrics at the pinned commit (the
+#             committed baseline compose, before the exporter is enabled)
 set -u -o pipefail
 export GOTOOLCHAIN=go1.26.9 CGO_ENABLED=0
 EV=${PREK7_EV:-evidence/pre-K7}
@@ -60,10 +64,20 @@ setup() {
 	step 0 precondition scripts/prek7-precondition.sh
 }
 
+g12() {
+	step 0 "$(next build)" make build
+	step 0 g12-recheck scripts/prek7-g12-recheck.sh
+}
+
+probe() {
+	step 0 "$(next build)" make build
+	step 0 metrics-probe scripts/prek7-metrics-probe.sh baseline
+}
+
 case "${1:-}" in
-setup) "$1" ;;
+setup | g12 | probe) "$1" ;;
 *)
-	echo "usage: $0 setup" >&2
+	echo "usage: $0 setup|g12|probe" >&2
 	exit 3
 	;;
 esac
