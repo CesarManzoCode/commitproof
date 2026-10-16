@@ -71,7 +71,7 @@ g12() {
 
 probe() {
 	step 0 "$(next build)" make build
-	step 0 metrics-probe scripts/prek7-metrics-probe.sh baseline
+	[ "$(recorded metrics-probe)" = 0 ] || step 0 "$(next metrics-probe)" scripts/prek7-metrics-probe.sh baseline
 }
 
 case "${1:-}" in

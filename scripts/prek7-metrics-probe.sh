@@ -12,7 +12,7 @@ set -u -o pipefail
 up=$(bin/commitproof cluster up --profile "${1:-baseline}" | tail -n 1)
 if ! grep -q '"healthy":true' <<<"$up"; then
 	echo "{\"error\":\"cluster up did not reach HEALTHY\"}"
-	bin/commitproof cluster down >/dev/null
+	bin/commitproof cluster down --profile "${1:-baseline}" >/dev/null
 	exit 3
 fi
 for t in gw-z1:15000 gw-z2:15000 gw-z3:15000 pg-n1:16000 pg-n2:16000 pg-n3:16000 orch-z1:17000 orch-z2:17000 orch-z3:17000; do
@@ -25,5 +25,5 @@ for t in gw-z1:15000 gw-z2:15000 gw-z3:15000 pg-n1:16000 pg-n2:16000 pg-n3:16000
 			"$svc" "$pp" "$path" "${f[0]:-}" "$(sed 's/^ *//;s/"/\\"/g' <<<"${f[1]:-}")" "${f[2]:-0}" "${f[3]:-}" "$(sed 's/"/\\"/g' <<<"${f[4]:-}")" "${f[5]:-0}"
 	done
 done
-bin/commitproof cluster down | tail -n 1 | grep -q '"exit_code":0' || { echo '{"error":"cluster down failed"}'; exit 3; }
+bin/commitproof cluster down --profile "${1:-baseline}" | tail -n 1 | grep -q '"exit_code":0' || { echo '{"error":"cluster down failed"}'; exit 3; }
 echo '{"command":"prek7-metrics-probe","exit_code":0}'
