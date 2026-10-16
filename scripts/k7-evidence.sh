@@ -36,7 +36,8 @@
 #   render    cpreport's campaign pages: K7's runs, and the cited K4 and K5
 #             runs (K7.2)
 #   triage    k7triage drafts for every valid real-build FAIL primary of
-#             runs/k7 (evidence/K7/triage/<run-id>.draft.json)
+#             runs/k7; each repeat's triage record from its draft and oracle
+#             record (scripts/k7-triage-final.py); new failures by hand
 #   pkgreplay K7.4: for every findings/<id>/finding.json, its minimized run
 #             extracted into runs/k7-pkg/<id>/ and the package's replay
 #             command executed once more (pkg-replay-<id>); the replays
@@ -150,89 +151,17 @@ m1oracle() {
 # does not report, the keys of elle-cli's cycles against the keys whose
 # reads are incompatible (K7.3 triage, LIM-31).
 m1triage() {
-	local id d
-	for id in 20261011T220335Z-D1-3-M1-da159fa0 20261011T220553Z-D1-4-M1-ad3fca18; do
-		d=$SCRATCH/oracle/$id
-		step 0 "cycle-keys-$id" python3 -I scripts/k7-cycle-keys.py "$d" "$d.elle/validity.json"
-	done
-	# The records again, with the triage written into them: every one
-	# decided, every oracle-disagreement triaged (exit 0).
-	for id in 20261011T215900Z-D1-1-M1-59a95336 20261011T220118Z-D1-2-M1-8b22bb67 20261011T220335Z-D1-3-M1-da159fa0 \
-		20261011T220553Z-D1-4-M1-ad3fca18 20261011T220810Z-D1-5-M1-3319a30c; do
-		d=$SCRATCH/oracle/$id
-		step 0 "$(next "k7oracle-$id")" go run ./internal/tools/k7oracle --ev "$EV" --checks "$d.checks.json" \
-			--source "D1 on M1 (K4, cited by K7; ADR-0039)" --out "$EV/oracle/$id.json"
-	done
-}
-
-images() {
-	step 0 "$(next build)" make build
-	step 0 "$(next images-build)" bin/commitproof images build
-}
-
-start() {
-	step 0 "$(next k7-dry-run)" make campaign-k7 DRY_RUN=1
-	step 0 "$(next campaign-start)" make campaign-k7
-}
-
-wait_campaign() {
-	step any "$(next campaign-wait)" scripts/campaign-k7.sh wait campaigns/k7.json runs/k7
-}
-
-# primaries <verdict-filter>: the valid matrix primaries of runs/k7 (no
-# replay_of, no candidate_of) whose checks.json satisfies the jq filter.
-primaries() {
-	local d
-	for d in runs/k7/*/; do
-		d=${d%/}
-		case "$d" in *.elle) continue ;; esac
-		[ -f "$d/seal.json" ] && [ -f "$d.checks.json" ] || continue
-		jq -e '(.replay_of == null) and (.candidate_of == null)' "$d/manifest.json" >/dev/null || continue
-		jq -e "$1" "$d.checks.json" >/dev/null && echo "$d"
-	done
-}
-
-idle() { # no project container may run (P10; ADR-0046: no cluster meanwhile)
-	[ -z "$(docker ps -q --filter label=com.docker.compose.project=commitproof)" ] || { echo "k7-evidence: a project container is running" >&2; exit 1; }
-	if [ -f runs/k7/campaign-k7.pid ] && kill -0 "$(cat runs/k7/campaign-k7.pid)" 2>/dev/null; then
-		echo "k7-evidence: the campaign is still running" >&2
-		exit 1
-	fi
-}
-
-oracle() {
-	idle
-	local d m
-	for d in $(primaries '.verdict == "FAIL" and any(.checkers[]; .id == "C3" and .valid == false)'); do
-		m=$(jq -r '"K7 " + .campaign + "/" + .profile + " seed " + (.seed|tostring)' "$d/manifest.json")
-		oracle_run "$d" "$m (matrix)"
-	done
-}
-
-store() {
-	local pending
-	pending=$(make -s campaign-k7 DRY_RUN=1 | tail -n 1 | jq -r .runs_to_make)
-	step 0 "$(next store)" scripts/k7-store.sh runs/k7 "$EV/runs" --pending "$pending"
-}
-
-results() {
-	step 0 "$(next campaign-log)" zstd -q -19 -f runs/k7/campaign-k7.log -o "$EV/campaign-k7.log.zst"
-	step 0 "$(next k7results)" go run ./internal/tools/k7results --runs "$EV/runs" --matrix campaigns/k7.json --log "$EV/campaign-k7.log.zst" --out "$EV"
-}
-
-render() {
-	step 0 "$(next render-k7)" bin/cpreport render "$EV/runs" --out "$EV/report/k7"
-	step 0 "$(next render-cited-k4)" bin/cpreport render evidence/K4/runs --out "$EV/report/cited-k4"
-	step 0 "$(next render-cited-k5)" bin/cpreport render evidence/K5/runs --out "$EV/report/cited-k5"
-}
-
-triage() {
-	local d id
+	local d id n cell o
 	mkdir -p "$EV/triage"
 	for d in $(primaries '.verdict == "FAIL"'); do
 		id=$(basename "$d")
-		step 0 "$(next "k7triage-$id")" go run ./internal/tools/k7triage --run "$d"
-		cp "$EV/logs/$(grep -oE "\"name\":\"k7triage-$id(-[0-9]+)?\"" "$EV/commands.jsonl" | tail -n 1 | sed 's/"name":"\(.*\)"/\1/').stdout" "$EV/triage/$id.draft.json"
+		[ -n "$(recorded "k7triage-$id")" ] || step 0 "k7triage-$id" go run ./internal/tools/k7triage --run "$d"
+		jq -e .repeat.repeat "$EV/logs/k7triage-$id.stdout" >/dev/null || { echo "== $id is a new failure: triaged by hand (triage/$id.json)" >&2; continue; }
+		cell=$(jq -r --arg c "$(jq -r .campaign "$d/manifest.json")" --arg p "$(jq -r .profile "$d/manifest.json")" \
+			'.entries[] | select(.campaign == $c and (.profile // "baseline") == $p) | .cell' campaigns/k7.json)
+		o=()
+		[ -f "$EV/oracle/$id.json" ] && o=("$EV/oracle/$id.json")
+		[ -n "$(recorded "triage-final-$id")" ] || step 0 "triage-final-$id" python3 -I scripts/k7-triage-final.py "$EV/logs/k7triage-$id.stdout" "$cell" "$EV/triage/$id.json" "${o[@]}"
 	done
 }
 
