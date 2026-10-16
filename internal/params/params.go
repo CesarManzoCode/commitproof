@@ -18,8 +18,9 @@ import (
 // corrects where P23's /metrics is served; 1.3.0 (ADR-0039) fixes K7's
 // storage under P25 and cites K4's and K5's directed cells in K7; 1.4.0
 // (ADR-0040) removes C13, V4 and profile replica-port; 1.4.1 (ADR-0041)
-// fixes C12, slotless and the K7 campaign command.
-const ContractVersion = "1.4.1"
+// fixes C12, slotless and the K7 campaign command; 1.5.0 (ADR-0042) splits
+// G2 into G2a (EXPLICIT) and G2b (INFERRED).
+const ContractVersion = "1.5.0"
 
 // K4RunsContractVersion is the contract version of the K4 runs made before
 // ADR-0027. Contract 1.0.7 changes only M2's directed schedule, and as a new

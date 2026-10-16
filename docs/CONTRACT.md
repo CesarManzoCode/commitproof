@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Contract version | **1.4.1** (K0; K1 corrections: ADR-0019, ADR-0020, ADR-0021; K3 corrections: ADR-0022, ADR-0023; K4 clarifications and corrections: ADR-0024, ADR-0025, ADR-0026; K4 amendment approved by the owner: ADR-0027; K5 corrections and clarifications: ADR-0029, ADR-0030; K5 amendment approved by the owner: ADR-0033; K5 change approved by the owner: ADR-0034, P25; K6 clarifications: ADR-0036; pre-K7 change approved by the owner: ADR-0037, G12; pre-K7 correction: ADR-0038, P23; K6b changes approved by the owner: ADR-0039, K7 storage and cited cells; ADR-0040, C13 and V4 removed; K6b clarification: ADR-0041, C12, slotless and the K7 campaign command) |
+| Contract version | **1.5.0** (K0; K1 corrections: ADR-0019, ADR-0020, ADR-0021; K3 corrections: ADR-0022, ADR-0023; K4 clarifications and corrections: ADR-0024, ADR-0025, ADR-0026; K4 amendment approved by the owner: ADR-0027; K5 corrections and clarifications: ADR-0029, ADR-0030; K5 amendment approved by the owner: ADR-0033; K5 change approved by the owner: ADR-0034, P25; K6 clarifications: ADR-0036; pre-K7 change approved by the owner: ADR-0037, G12; pre-K7 correction: ADR-0038, P23; K6b changes approved by the owner: ADR-0039, K7 storage and cited cells; ADR-0040, C13 and V4 removed; K6b clarification: ADR-0041, C12, slotless and the K7 campaign command; K6b change approved by the owner: ADR-0042, G2 split into G2a and G2b) |
 | Date | 2026-10-09 |
 | Owner | César Manzo (GitHub `CesarManzoCode`) |
 | System under test | Multigres, `github.com/multigres/multigres` @ `e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73` |
@@ -96,12 +96,13 @@ Each item is labelled **FACT** (directly supported by a cited source), **INFEREN
 
 ## 3. Guarantees under test
 
-Claim levels: **EXPLICIT** (public product statement), **DESIGN** (repository design doc, decision log or test intent), **INFERRED** (expectation derived from PostgreSQL compatibility; I2). Every finding cites exactly one guarantee ID.
+Claim levels: **EXPLICIT** (public product statement), **DESIGN** (repository design doc, decision log or test intent), **INFERRED** (expectation derived from PostgreSQL compatibility; I2). Every finding cites exactly one guarantee ID. G2 (contract ≤ 1.4.1: G2a's and G2b's observables under one EXPLICIT row) was split prospectively by ADR-0042; findings recorded under G2 keep their records and ids, and `evidence/K6b/reclassification.md` classifies them under G2a/G2b.
 
 | ID | Guarantee (as tested) | Level | Source | Checker(s) | Campaigns |
 |---|---|---|---|---|---|
 | G1 | A write acknowledged as committed to a client is present after any sequence of failovers, partitions, pauses and membership changes, once the cluster has recovered. | EXPLICIT | S48, S49, S42 | C1 lost-acked-writes | C1–C7, C12 |
-| G2 | No split brain: the history admits a single total order of committed transactions; no two leaders commit divergent durable histories. Observable as: no acknowledged write lost (G1) **and** no list-append incompatible order / no read observing a write that later disappears. | EXPLICIT | S48, S42 | C1, C2, C3 | C2, C3, C4, C6, C12 |
+| G2a | No split brain for acknowledged writes: no two leaders commit divergent durable histories in which an acknowledged write is lost. Observable as: no acknowledged write lost while the cluster was split or failing over (C1 `lost-write`) and no divergence of the stable final reads between gateways (C1 `final-read-divergence`). | EXPLICIT | S48, S42 | C1 | C2, C3, C4, C6, C12 |
+| G2b | No read observes a write that later disappears: a value an `ok` read returned is in the history that survives, whether or not its write was acknowledged. Observable as: no list-append `incompatible-order` (C3) from a value that later vanished. No public source states it (ADR-0042). | INFERRED | I2 | C3 | C2, C3, C4, C6, C12 |
 | G3 | Membership changes (3→4→3) do not lose acknowledged writes, including a membership change concurrent with leader failure. | EXPLICIT | S41 | C1, C3 | C4 |
 | G4 | A write the client saw definitively fail never becomes visible (no G1a / aborted read). | INFERRED | I2, S72 | C2, C3 | all |
 | G5 | Transactions at SERIALIZABLE through the primary port are serializable; at REPEATABLE READ they satisfy snapshot isolation; across failovers. | INFERRED | I2, S63 | C3, C5 | C1–C6, C12 |
@@ -478,7 +479,7 @@ Input: the probe suite's `wl: probe` operations (§15 K4; ADR-0024). P1 (`SET sy
 
 | Dimension | Values |
 |---|---|
-| Class | `SAFETY_VIOLATION` (G1–G6, G11, G13 violations); `PROTOCOL_DEVIATION` (G7–G10, G12); `LIVENESS_OBSERVATION` (no recovery within P06, unavailability windows); `HARNESS_DEFECT` (CommitProof bug: fault not applied/healed, checker error, misclassified completion) |
+| Class | `SAFETY_VIOLATION` (G1, G2a, G2b, G3–G6, G11, G13 violations); `PROTOCOL_DEVIATION` (G7–G10, G12); `LIVENESS_OBSERVATION` (no recovery within P06, unavailability windows); `HARNESS_DEFECT` (CommitProof bug: fault not applied/healed, checker error, misclassified completion) |
 | Claim level | `EXPLICIT`, `DESIGN`, `INFERRED` (from the guarantee row) |
 | Origin hypothesis | `MULTIGRES`, `POSTGRES_INHERITED` (the behavior reproduces on plain PostgreSQL 17.7 streaming replication or is documented PostgreSQL behavior, e.g. S61, S62), `UNDETERMINED` |
 | Reproducibility | `REPRODUCED` (minimized plan reproduces in ≥ 3/5 replays), `INTERMITTENT` (1–2/5), `NOT_REPRODUCED` (0/5; the original history is still the evidence) |
