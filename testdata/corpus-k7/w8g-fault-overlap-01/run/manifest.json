@@ -1,0 +1,1 @@
+{"campaign":"synthetic","contract_version":"1.2.0","generator":"internal/synth (cmd: go run ./internal/tools/gencorpus)","mutant":"none","plan_sha256":"93d0a4175a52d3ecc644c0442148d102b57b493caac1349d8a6a7699e53ee1f0","profile":"baseline","run_id":"w8g-fault-overlap-01","seed":5375523178313631806,"synthetic":true}

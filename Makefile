@@ -44,10 +44,11 @@ ci-checkers: build elle-oracle
 elle-oracle:
 	scripts/elle-oracle.sh
 
-## corpus: regenerate testdata/corpus, testdata/pathological and testdata/corpus-k5 (internal/synth)
+## corpus: regenerate testdata/corpus, testdata/pathological, testdata/corpus-k5 and testdata/corpus-k7 (internal/synth)
 corpus:
 	go run ./internal/tools/gencorpus --out testdata
 	go run ./internal/tools/gencorpus --set k5 --out testdata
+	go run ./internal/tools/gencorpus --set k7 --out testdata
 
 ## ci-cluster-smoke: build pinned images, cluster up/verify/down, 45 s smoke run, cpcheck verify-seal
 ci-cluster-smoke: build

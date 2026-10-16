@@ -4,7 +4,8 @@
 // expected.json, C3 agrees with elle-cli except registered divergences (K2
 // corpus), and each checker sabotage fails exactly its dependent labels.
 // --set k5 does the same for the K5 corpus (§15 K5.1) and its sabotage
-// rules; that corpus has no Elle entries.
+// rules; --set k7 for the G12 corpus of ADR-0037 and its sabotage rules;
+// those corpora have no Elle entries.
 package main
 
 import (
@@ -18,7 +19,7 @@ import (
 )
 
 func main() {
-	set := flag.String("set", "k2", "corpus set: k2 or k5")
+	set := flag.String("set", "k2", "corpus set: k2, k5 or k7")
 	corpus := flag.String("corpus", "", "corpus directory (default: the set's)")
 	results := flag.String("results", "", "results.jsonl of the corpus run")
 	raw := flag.String("raw", "", "elle raw output directory (k2)")
@@ -31,8 +32,10 @@ func main() {
 	case "k2":
 	case "k5":
 		deps, dir = gate.K5SabotageDeps, gate.K5Corpus
+	case "k7":
+		deps, dir = gate.K7G12SabotageDeps, gate.K7G12Corpus
 	default:
-		fmt.Fprintf(os.Stderr, "k2check: --set %q: want k2 or k5\n", *set)
+		fmt.Fprintf(os.Stderr, "k2check: --set %q: want k2, k5 or k7\n", *set)
 		os.Exit(3)
 	}
 	if *corpus == "" {

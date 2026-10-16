@@ -1,0 +1,64 @@
+{
+  "checkers": {
+    "C1": {
+      "valid": true,
+      "anomalies": [],
+      "observations": []
+    },
+    "C2": {
+      "valid": true,
+      "anomalies": [],
+      "observations": []
+    },
+    "C3": {
+      "valid": true,
+      "anomalies": [],
+      "observations": []
+    },
+    "C4": {
+      "valid": true,
+      "anomalies": [],
+      "observations": []
+    },
+    "C5": {
+      "valid": true,
+      "anomalies": [],
+      "observations": []
+    },
+    "C6": {
+      "valid": true,
+      "anomalies": [],
+      "observations": []
+    },
+    "C7": {
+      "valid": true,
+      "anomalies": [],
+      "observations": []
+    },
+    "C8": {
+      "valid": "unknown",
+      "anomalies": [],
+      "observations": [
+        "fair-share-not-judged",
+        "overload-fault-overlap"
+      ]
+    },
+    "C9": {
+      "valid": true,
+      "anomalies": [],
+      "observations": []
+    }
+  },
+  "derivation": "expected classes are written per plant from CONTRACT §10 (internal/synth), never from running cpcheck",
+  "elle": false,
+  "family": "w8g",
+  "id": "w8g-not-judged-sparse-03",
+  "iso": "serializable",
+  "label": "fair-share-not-judged",
+  "plant": "not-judged-sparse",
+  "profile": "baseline",
+  "verdict": "UNKNOWN",
+  "workloads": [
+    "W8"
+  ]
+}

@@ -2,7 +2,8 @@
 // --set k2 (default) the K2 corpus (CONTRACT §15 K2),
 // testdata/corpus/<id>/{run/ (sealed), expected.json} and
 // testdata/pathological/; with --set k5 the K5 corpus (§15 K5.1, ADR-0030),
-// testdata/corpus-k5/. Output is a pure function of the code: --verify
+// testdata/corpus-k5/; with --set k7 the G12 corpus of ADR-0037,
+// testdata/corpus-k7/. Output is a pure function of the code: --verify
 // regenerates into a temporary directory and compares every file byte for
 // byte with the committed corpus.
 package main
@@ -23,12 +24,12 @@ func main() {
 	out := flag.String("out", "testdata", "output root (corpus/ and pathological/ are written below it)")
 	verify := flag.Bool("verify", false, "regenerate into a temp dir and compare with --out")
 	only := flag.String("only", "", "generate only entries whose id has this prefix (development)")
-	set := flag.String("set", "k2", "corpus: k2 (corpus/, pathological/) or k5 (corpus-k5/)")
+	set := flag.String("set", "k2", "corpus: k2 (corpus/, pathological/), k5 (corpus-k5/) or k7 (corpus-k7/)")
 	flag.Parse()
-	if *set != "k2" && *set != "k5" {
-		check(fmt.Errorf("--set %q: want k2 or k5", *set))
+	if *set != "k2" && *set != "k5" && *set != "k7" {
+		check(fmt.Errorf("--set %q: want k2, k5 or k7", *set))
 	}
-	dirs = map[string][]string{"k2": {"corpus", "pathological"}, "k5": {"corpus-k5"}}[*set]
+	dirs = map[string][]string{"k2": {"corpus", "pathological"}, "k5": {"corpus-k5"}, "k7": {"corpus-k7"}}[*set]
 	if *verify {
 		tmp, err := os.MkdirTemp("", "gencorpus-")
 		check(err)
@@ -60,8 +61,11 @@ func main() {
 var dirs []string
 
 func entries(set string) []synth.Entry {
-	if set == "k5" {
+	switch set {
+	case "k5":
 		return synth.K5Corpus()
+	case "k7":
+		return synth.K7Corpus()
 	}
 	return synth.Corpus()
 }
