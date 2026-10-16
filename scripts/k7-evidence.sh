@@ -136,6 +136,14 @@ m1triage() {
 		d=$SCRATCH/oracle/$id
 		step 0 "cycle-keys-$id" python3 -I scripts/k7-cycle-keys.py "$d" "$d.elle/validity.json"
 	done
+	# The records again, with the triage written into them: every one
+	# decided, every oracle-disagreement triaged (exit 0).
+	for id in 20261011T215900Z-D1-1-M1-59a95336 20261011T220118Z-D1-2-M1-8b22bb67 20261011T220335Z-D1-3-M1-da159fa0 \
+		20261011T220553Z-D1-4-M1-ad3fca18 20261011T220810Z-D1-5-M1-3319a30c; do
+		d=$SCRATCH/oracle/$id
+		step 0 "$(next "k7oracle-$id")" go run ./internal/tools/k7oracle --ev "$EV" --checks "$d.checks.json" \
+			--source "D1 on M1 (K4, cited by K7; ADR-0039)" --out "$EV/oracle/$id.json"
+	done
 }
 
 images() {

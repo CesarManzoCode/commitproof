@@ -1,0 +1,11 @@
+{"valid?":false,
+ "anomaly-types":
+ ["G-nonadjacent-item", "G0", "G2-item", "cycle-search-timeout",
+  "incompatible-order"],
+ "anomalies":
+ {"G-nonadjacent-item":
+  [{"cycle":
+    [{"index":4302,
+      "time":35015235550,
+      "type":"ok",
+      

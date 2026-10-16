@@ -1,0 +1,37 @@
+{"valid?":false,
+ "anomaly-types":
+ ["G-nonadjacent-item", "G0", "G1c-process", "cycle-search-timeout",
+  "incompatible-order"],
+ "anomalies":
+ {"G-nonadjacent-item":
+  [{"cycle":
+    [{"index":4302,
+      "time":35015235550,
+      "type":"ok",
+      "process":1,
+      "f":"txn",
+      "value":
+      [["r", 44, [2, 5, 7, 3, 4, 9, 15]],
+       ["r", 40,
+        [2, 1, 4, 9, 7, 11, 12, 21, 14, 16, 19, 20, 28, 30, 31, 24, 25,
+         26, 27, 32, 33]]]},
+     {"index":4662,
+      "time":37292492223,
+      "type":"ok",
+      "process":1,
+      "f":"txn",
+      "value":
+      [["append", 40, 62],
+       ["r", 47, [1, 2, 4, 3, 6, 8, 9, 14, 15, 17, 16, 18, 19]],
+       ["append", 47, 31], ["append", 47, 32]]},
+     {"index":4725,
+      "time":38603150622,
+      "type":"ok",
+      "process":2,
+      "f":"txn",
+      "value":
+      [["r", 40,
+        [43, 36, 37, 38, 39, 40, 42, 44, 45, 49, 46, 47, 48, 50, 52,
+         57, 53, 55, 54, 61, 62]],
+       ["append", 42, 57], ["append", 42, 58]]},
+     

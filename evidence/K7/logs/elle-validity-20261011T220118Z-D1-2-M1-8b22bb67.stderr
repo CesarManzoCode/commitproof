@@ -1,0 +1,8 @@
+Exception in thread "main" java.lang.OutOfMemoryError: Java heap space
+	at clojure.core$println.invokeStatic(core.clj:3763)
+	at clojure.core$println.doInvoke(core.clj:3763)
+	at clojure.lang.RestFn.invoke(RestFn.java:400)
+	at elle_cli.cli$_main.invokeStatic(cli.clj:270)
+	at elle_cli.cli$_main.doInvoke(cli.clj:229)
+	at clojure.lang.RestFn.applyTo(RestFn.java:140)
+	at elle_cli.cli.main(Unknown Source)

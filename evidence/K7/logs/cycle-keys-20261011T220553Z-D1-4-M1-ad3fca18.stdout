@@ -1,0 +1,1 @@
+{"incompatible_keys": [40, 41, 42, 43, 44, 45, 46, 47], "cycle_keys": {"G-single-item": [[41, 43, 47, 48]], "G0": [[40, 41, 43]]}, "cycle_keys_not_incompatible": [48]}
