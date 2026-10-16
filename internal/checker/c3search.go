@@ -336,7 +336,9 @@ func (s *searcher) find(sh int) ([]int, []uint8, error) {
 		if path == nil {
 			continue
 		}
-		cyc := append(append([]int{}, a.path[:len(a.path)-1]...), path[:len(path)-1]...)
+		// The cycle is the whole anchor path (u … last) and the walk after
+		// last, without its final node (u again): one node per edge.
+		cyc := append(append([]int{}, a.path...), path[:len(path)-1]...)
 		cl := append(append([]uint8{}, a.labels...), pl...)
 		if simple(cyc) {
 			return cyc, cl, nil
@@ -362,7 +364,7 @@ func (s *searcher) find(sh int) ([]int, []uint8, error) {
 			return nil, nil, err
 		}
 		if path != nil {
-			cyc := append(append([]int{}, a.path[:len(a.path)-1]...), path[:len(path)-1]...)
+			cyc := append(append([]int{}, a.path...), path[:len(path)-1]...)
 			return cyc, append(append([]uint8{}, a.labels...), pl...), nil
 		}
 	}
