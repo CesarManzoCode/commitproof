@@ -1,6 +1,6 @@
 # ADR-0038 — /metrics scrapes (P23) from the OpenTelemetry Prometheus exporter; the families recorded, the report's metric timelines and the gate's cross-check
 
-Status: **Accepted (pre-K7, contract 1.2.1).** Implements the owner's decision D-A of 2026-10-15 ("LIM-40: add the /metrics scraper to the observer (do not amend §5.4/P23)") and corrects a research defect in P23 that the decision could not have known. Written and committed before the scraper, the report change and the gate change.
+Status: **Accepted (pre-K7, contract 1.2.1); the exporter and the corrected P23 text kept by the owner's decision 5 of 2026-10-15 (K6b; LIM-41 states the difference from K4/K5 runs, measured in evidence/K6b/exporter-ab.md).** Implements the owner's decision D-A of 2026-10-15 ("LIM-40: add the /metrics scraper to the observer (do not amend §5.4/P23)") and corrects a research defect in P23 that the decision could not have known. Written and committed before the scraper, the report change and the gate change.
 
 ## Owner decision (verbatim)
 

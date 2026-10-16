@@ -1,6 +1,6 @@
 # ADR-0037 — G12 is judged outside fault windows from contract 1.2.0 on; both fractions are reported (owner decision on ADR-0035)
 
-Status: **Accepted by the owner (pre-K7, contract 1.2.0).** Applies ADR-0035 prospectively. Written and committed before any K7 run, as the owner requires, and before the checker code that implements it.
+Status: **Accepted by the owner (pre-K7, contract 1.2.0); the version number 1.2.0 (rather than 1.1.2) confirmed by the owner's decision 5 of 2026-10-15 (K6b).** Applies ADR-0035 prospectively. Written and committed before any K7 run, as the owner requires, and before the checker code that implements it.
 
 ## Owner decision (verbatim, 2026-10-15)
 
