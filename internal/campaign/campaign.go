@@ -105,8 +105,11 @@ func (d *Driver) Lock() (func(), error) {
 
 // runs lists the sealed run directories in Out. Directories that are not
 // sealed (a crash before sealing) are moved under Out/.unsealed/ so they are
-// neither counted nor mistaken for runs.
-func (d *Driver) runs() ([]*Run, error) {
+// neither counted nor mistaken for runs; only a caller holding Out's lock
+// may move them (a run being written is not sealed yet).
+func (d *Driver) runs() ([]*Run, error) { return d.listRuns(true) }
+
+func (d *Driver) listRuns(moveUnsealed bool) ([]*Run, error) {
 	ents, err := os.ReadDir(d.Out)
 	if err != nil {
 		if os.IsNotExist(err) {
@@ -121,7 +124,7 @@ func (d *Driver) runs() ([]*Run, error) {
 		}
 		dir := filepath.Join(d.Out, e.Name())
 		if _, err := os.Stat(filepath.Join(dir, history.FileSeal)); err != nil {
-			if _, err := os.Stat(filepath.Join(dir, history.FileManifest)); err == nil {
+			if _, err := os.Stat(filepath.Join(dir, history.FileManifest)); err == nil && moveUnsealed {
 				os.MkdirAll(filepath.Join(d.Out, ".unsealed"), 0o755)
 				if err := os.Rename(dir, filepath.Join(d.Out, ".unsealed", e.Name())); err == nil {
 					d.emit(map[string]any{"event": "unsealed-moved", "run": e.Name()})

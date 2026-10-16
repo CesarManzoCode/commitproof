@@ -42,7 +42,7 @@ const usage = `usage:
   commitproof probe --suite claims [--mutant M<n>] [--seed <u64>] --out runs/
   commitproof minimize <run-dir> --out runs/ [--cpcheck bin/cpcheck]
   commitproof replay <run-dir> --times <k> --out runs/ [--cpcheck bin/cpcheck]
-  commitproof campaign --matrix <file> --out runs/ [--cpcheck bin/cpcheck]`
+  commitproof campaign --matrix <file> --out runs/ [--cpcheck bin/cpcheck] [--dry-run]`
 
 // summary prints the final JSON line and returns code.
 func summary(m map[string]any, code int) int {
@@ -461,6 +461,7 @@ func driverCmd(ctx context.Context, name string, args []string) int {
 	cpcheck := fs.String("cpcheck", "", "cpcheck binary (default: next to this binary)")
 	times := fs.Int("times", 0, "replays (replay)")
 	matrix := fs.String("matrix", "", "matrix file (campaign)")
+	dryRun := fs.Bool("dry-run", false, "print the cells and the runs still to make; start nothing (campaign, ADR-0041)")
 	var pos []string
 	for len(args) > 0 {
 		if err := fs.Parse(args); err != nil {
@@ -473,6 +474,18 @@ func driverCmd(ctx context.Context, name string, args []string) int {
 	}
 	if *out == "" {
 		return usageErr(name, "--out is required")
+	}
+	if *dryRun {
+		if name != "campaign" {
+			return usageErr(name, "--dry-run is a campaign flag")
+		}
+		return campaignDryRun(*matrix, filepath.Clean(*out), pos)
+	}
+	// ADR-0041: the exporter is switched off only for the K6b measurement;
+	// no matrix, minimization or replay run is made without it.
+	if v := os.Getenv(exporterOverride); v != "" {
+		return summary(map[string]any{"command": name, "error": exporterOverride + "=" + v + " is set: runs of " + name +
+			" keep ADR-0038's metrics exporter (unset it)"}, 3)
 	}
 	if *cpcheck == "" {
 		exe, err := os.Executable()
@@ -568,6 +581,62 @@ func driverCmd(ctx context.Context, name string, args []string) int {
 		return summary(sum, 1)
 	}
 	return summary(sum, 0)
+}
+
+// exporterOverride turns ADR-0038's exporter off in deploy/compose.yaml
+// (ADR-0041's measurement only).
+const exporterOverride = "CP_OTEL_METRICS_EXPORTER"
+
+// campaignDryRun is `campaign --dry-run` (ADR-0041): one JSON line per cell
+// with its plan, then the cell count and the runs still to make. It needs
+// neither Docker nor the output directory's lock.
+func campaignDryRun(matrix, out string, pos []string) int {
+	sum := map[string]any{"command": "campaign", "dry_run": true, "out": filepath.ToSlash(out)}
+	if matrix == "" || len(pos) != 0 {
+		return usageErr("campaign", "want --matrix <file> and no positional arguments")
+	}
+	m, err := campaign.ReadMatrix(matrix)
+	if err != nil {
+		sum["error"] = err.Error()
+		return summary(sum, 3)
+	}
+	d := &campaign.Driver{Out: out}
+	cells, err := d.DryRun(m)
+	if err != nil {
+		sum["error"] = err.Error()
+		return summary(sum, 3)
+	}
+	byCell, toRun, states := map[string]any{}, int64(0), map[string]any{}
+	for _, c := range cells {
+		faults := make([]any, len(c.Faults))
+		for i, f := range c.Faults {
+			faults[i] = f
+		}
+		line := map[string]any{"event": "plan", "cell": c.Entry.Cell, "campaign": c.Entry.Campaign, "profile": c.Entry.Profile,
+			"mutant": mutantLabel(c.Entry.Mutant), "seed": c.Seed, "plan_sha256": c.PlanSHA, "faults": faults, "state": c.State,
+			"run": c.Run, "verdict": c.Verdict}
+		b, err := canonjson.Marshal(line)
+		if err != nil {
+			sum["error"] = err.Error()
+			return summary(sum, 3)
+		}
+		fmt.Println(string(b))
+		byCell[c.Entry.Cell] = toInt64(byCell[c.Entry.Cell]) + 1
+		states[c.State] = toInt64(states[c.State]) + 1
+		if c.State == "to-run" || c.State == "invalid" {
+			toRun++
+		}
+	}
+	sum["matrix"], sum["cells"], sum["runs_by_cell"], sum["states"], sum["runs_to_make"] = m.Name, int64(len(cells)), byCell, states, toRun
+	sum["minimize_failures"] = m.MinimizeFailures
+	return summary(sum, 0)
+}
+
+func mutantLabel(m string) string {
+	if m == "" {
+		return "real"
+	}
+	return m
 }
 
 func toInt64(v any) int64 {

@@ -1,0 +1,9 @@
+{
+  "name": "k6b-smoke",
+  "minimize_failures": false,
+  "replays": 5,
+  "entries": [
+    {"cell": "smoke-not-evidence", "campaign": "C12", "seeds": [1001]},
+    {"cell": "smoke-not-evidence", "campaign": "C4", "profile": "slotless", "seeds": [1001]}
+  ]
+}

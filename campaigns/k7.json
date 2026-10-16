@@ -1,0 +1,22 @@
+{
+  "name": "k7",
+  "minimize_failures": true,
+  "replays": 5,
+  "entries": [
+    {"cell": "V1", "campaign": "C1", "seeds": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]},
+    {"cell": "V1", "campaign": "C2", "seeds": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]},
+    {"cell": "V1", "campaign": "C3", "seeds": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]},
+    {"cell": "V1", "campaign": "C4", "seeds": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]},
+    {"cell": "V1", "campaign": "C5", "seeds": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]},
+    {"cell": "V1", "campaign": "C6", "seeds": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]},
+    {"cell": "V1", "campaign": "C7", "seeds": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]},
+    {"cell": "V1", "campaign": "C9", "seeds": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]},
+    {"cell": "V1", "campaign": "C10", "seeds": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]},
+    {"cell": "V1", "campaign": "C12", "seeds": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]},
+    {"cell": "V2", "campaign": "C1", "profile": "slotless", "seeds": [1, 2, 3, 4, 5]},
+    {"cell": "V2", "campaign": "C2", "profile": "slotless", "seeds": [1, 2, 3, 4, 5]},
+    {"cell": "V2", "campaign": "C4", "profile": "slotless", "seeds": [1, 2, 3, 4, 5]},
+    {"cell": "V3", "campaign": "C8", "profile": "buffered", "seeds": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]},
+    {"cell": "V5", "campaign": "C11", "seeds": [1, 2, 3, 4, 5]}
+  ]
+}

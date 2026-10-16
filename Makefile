@@ -16,7 +16,7 @@ CP_COMMIT := $(shell git rev-parse HEAD 2>/dev/null || echo unknown)
 CP_DIRTY := $(shell test -z "$$(git status --porcelain -- . ':(exclude)evidence' ':(exclude)images.lock.json' 2>/dev/null)" && echo false || echo true)
 LDFLAGS := -X $(PKG)/internal/buildinfo.Commit=$(CP_COMMIT) -X $(PKG)/internal/buildinfo.Dirty=$(CP_DIRTY)
 
-.PHONY: prereq-check build ci-unit ci-checkers ci-cluster-smoke ci-nemesis-smoke ci-mutant-smoke ci-report sabotage-nemesis check-dockerfile-derivation lint-workflow tidy elle-oracle corpus
+.PHONY: prereq-check build ci-unit ci-checkers ci-cluster-smoke ci-nemesis-smoke ci-mutant-smoke ci-report sabotage-nemesis check-dockerfile-derivation lint-workflow tidy elle-oracle corpus campaign-k7 campaign-k7-status
 
 ## prereq-check: verify docs/PREREQUISITES.md; writes evidence/K1/prereq.json; exit 3 on any FAIL
 prereq-check:
@@ -69,6 +69,22 @@ ci-mutant-smoke: build
 ## §15 K6)
 ci-report: build
 	scripts/ci-report.sh
+
+## campaign-k7: K7's matrix (campaigns/k7.json; ADR-0039–ADR-0041), local
+## only (CONTRACT §13): `commitproof campaign` detached from the terminal,
+## log $(K7_OUT)/campaign-k7.log; resumable — re-invoke to continue (sealed
+## runs are never recomputed). DRY_RUN=1 prints each cell's plan and the
+## run count and starts nothing. K7_MATRIX / K7_OUT override the matrix and
+## the output directory.
+K7_MATRIX ?= campaigns/k7.json
+K7_OUT ?= runs/k7
+campaign-k7: build
+	scripts/campaign-k7.sh $(if $(filter 1,$(DRY_RUN)),dry-run,start) $(K7_MATRIX) $(K7_OUT)
+
+## campaign-k7-status: whether make campaign-k7 is running, and the runs
+## made and still to make in $(K7_OUT)
+campaign-k7-status: build
+	scripts/campaign-k7.sh status $(K7_MATRIX) $(K7_OUT)
 
 ## sabotage-nemesis: K3.2/K3.3 fixtures — host binaries and runner images
 ## built with each cp_sabotage_inject_<kind> / cp_sabotage_heal_<kind> tag

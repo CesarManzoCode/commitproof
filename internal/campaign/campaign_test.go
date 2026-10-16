@@ -2,6 +2,8 @@ package campaign
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
 	"reflect"
 	"testing"
 
@@ -75,7 +77,7 @@ func TestTargetClass(t *testing.T) {
 
 // The committed matrices decode and their plans generate (§15 K4, K5).
 func TestMatricesRead(t *testing.T) {
-	for _, f := range []string{"k4.json", "k4-d2p.json", "k5.json"} {
+	for _, f := range []string{"k4.json", "k4-d2p.json", "k5.json", "k7.json"} {
 		m, err := ReadMatrix("../../campaigns/" + f)
 		if err != nil {
 			t.Fatalf("%s: %v", f, err)
@@ -103,5 +105,86 @@ func TestMapInvolved(t *testing.T) {
 	}
 	if got := mapInvolved(evs, anoms, "x", clients); !reflect.DeepEqual(got, []int{8, 29, 100}) {
 		t.Errorf("x clients %v, want [8 29 100]", got)
+	}
+}
+
+// K7's matrix (ADR-0039–ADR-0041): the cells K7 runs, P15's repetitions.
+func TestK7Matrix(t *testing.T) {
+	m, err := ReadMatrix("../../campaigns/k7.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	got := map[string]int{}
+	cells := map[string]string{}
+	for _, e := range m.Entries {
+		key := e.Campaign + "/" + e.Profile + "/" + e.Mutant
+		if _, dup := cells[key]; dup {
+			t.Errorf("%s listed twice", key)
+		}
+		cells[key] = e.Cell
+		got[e.Cell] += len(e.Seeds)
+		for i, s := range e.Seeds {
+			if s != uint64(i+1) {
+				t.Errorf("%s: seeds %v, want 1…N", key, e.Seeds)
+				break
+			}
+		}
+		if e.Mutant != "" {
+			t.Errorf("%s: K7 cites the mutant cells (ADR-0039)", key)
+		}
+	}
+	if want := map[string]int{"V1": 100, "V2": 15, "V3": 10, "V5": 5}; !reflect.DeepEqual(got, want) {
+		t.Errorf("runs per cell %v, want %v", got, want)
+	}
+	for k, c := range map[string]string{"C12/baseline/": "V1", "C1/slotless/": "V2", "C2/slotless/": "V2", "C4/slotless/": "V2",
+		"C8/buffered/": "V3", "C11/baseline/": "V5", "C10/baseline/": "V1"} {
+		if cells[k] != c {
+			t.Errorf("%s in cell %q, want %s", k, cells[k], c)
+		}
+	}
+}
+
+// The dry run reads Out without moving anything: a sealed run of a planned
+// cell is reported with its verdict, an unsealed directory stays in place.
+func TestDryRunStates(t *testing.T) {
+	out := t.TempDir()
+	m := &Matrix{Name: "t", Replays: 5, Entries: []Entry{{Cell: "V1", Campaign: "C12", Profile: "baseline", Seeds: []uint64{1, 2, 3}}}}
+	d := &Driver{Out: out}
+	mk := func(seed uint64, id, verdict string, sealed bool) {
+		p, err := plan.Generate("C12", seed, "baseline", "")
+		if err != nil {
+			t.Fatal(err)
+		}
+		sha, _ := p.SHA256()
+		dir := filepath.Join(out, id)
+		os.MkdirAll(dir, 0o755)
+		os.WriteFile(filepath.Join(dir, history.FileManifest), []byte(`{"plan_sha256":"`+sha+`","profile":"baseline","mutant":"real"}`), 0o644)
+		if !sealed {
+			return
+		}
+		os.WriteFile(filepath.Join(dir, history.FileSeal), []byte(`{"merkle_root":"r-`+id+`"}`), 0o644)
+		if verdict != "" {
+			os.WriteFile(dir+".checks.json", []byte(`{"seal_root":"r-`+id+`","verdict":"`+verdict+`"}`), 0o644)
+		}
+	}
+	mk(1, "run-a", "PASS", true)
+	mk(2, "run-b", "", true)
+	mk(3, "run-c", "", false) // being written: not sealed
+	cells, err := d.DryRun(m)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var states []string
+	for _, c := range cells {
+		states = append(states, c.State+":"+c.Run)
+	}
+	if want := []string{"valid:run-a", "unchecked:run-b", "to-run:"}; !reflect.DeepEqual(states, want) {
+		t.Errorf("states %v, want %v", states, want)
+	}
+	if _, err := os.Stat(filepath.Join(out, "run-c", history.FileManifest)); err != nil {
+		t.Errorf("the dry run moved an unsealed run: %v", err)
+	}
+	if len(cells[0].Faults) != 4 || cells[0].Faults[0] != "F5a" || cells[0].Faults[3] != "F5b" {
+		t.Errorf("C12 seed 1 faults %v", cells[0].Faults)
 	}
 }

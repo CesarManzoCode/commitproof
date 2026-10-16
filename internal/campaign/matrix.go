@@ -22,8 +22,10 @@ type Matrix struct {
 }
 
 // Entry is one matrix row: a campaign (or directed schedule, or the probe
-// suite) on a profile and build, for each seed.
+// suite) on a profile and build, for each seed. Cell is an optional label
+// (K7's V1…V5, ADR-0041) copied into the driver's events.
 type Entry struct {
+	Cell     string   `json:"cell,omitempty"`
 	Campaign string   `json:"campaign"`
 	Profile  string   `json:"profile"`
 	Mutant   string   `json:"mutant"`
@@ -92,7 +94,7 @@ func (d *Driver) RunMatrix(ctx context.Context, m *Matrix) ([]Cell, bool, error)
 			c := Cell{Entry: e, Seed: seed, Run: r, Valid: ok, Invalid: inv}
 			cells = append(cells, c)
 			complete = complete && ok
-			d.emit(map[string]any{"event": "cell", "campaign": e.Campaign, "profile": e.Profile, "mutant": mutantName(e.Mutant),
+			d.emit(map[string]any{"event": "cell", "cell": e.Cell, "campaign": e.Campaign, "profile": e.Profile, "mutant": mutantName(e.Mutant),
 				"seed": seed, "run": idOf(r), "run_dir": d.Out + "/" + idOf(r), "verdict": verdictOf(r), "valid": ok,
 				"classes": strAny(classesOf(r)), "invalid_attempts": ids(inv)})
 		}
@@ -129,3 +131,72 @@ func (d *Driver) FollowUp(ctx context.Context, r *Run, replays int) (bool, error
 }
 
 func bytesReader(b []byte) *bytes.Reader { return bytes.NewReader(b) }
+
+// Planned is one cell of a dry run: its plan and what Out already holds.
+type Planned struct {
+	Entry   Entry
+	Seed    uint64
+	PlanSHA string
+	Faults  []string // the plan's fault kinds, in step order
+	// State: "to-run" (no sealed run of the plan), "valid" (a sealed run
+	// cpcheck judged PASS, FAIL or UNKNOWN), "invalid" (only INVALID runs,
+	// fewer than MaxAttempts), "harness-defect" (MaxAttempts INVALID runs),
+	// "unchecked" (sealed, no checks.json for its seal yet).
+	State   string
+	Run     string
+	Verdict string
+}
+
+// DryRun lists every cell of m with its plan and state (ADR-0041). It
+// starts nothing, runs no cpcheck and moves nothing, so it may read Out
+// while a campaign holds its lock.
+func (d *Driver) DryRun(m *Matrix) ([]Planned, error) {
+	all, err := d.listRuns(false)
+	if err != nil {
+		return nil, err
+	}
+	var out []Planned
+	for _, e := range m.Entries {
+		for _, seed := range e.Seeds {
+			p, err := plan.Generate(e.Campaign, seed, e.Profile, "")
+			if err != nil {
+				return nil, err
+			}
+			sha, err := p.SHA256()
+			if err != nil {
+				return nil, err
+			}
+			c := Planned{Entry: e, Seed: seed, PlanSHA: sha, State: "to-run"}
+			for _, s := range p.Steps {
+				for _, el := range s.Elements {
+					c.Faults = append(c.Faults, el.Kind)
+				}
+			}
+			invalid := 0
+			spec := Spec{Plan: p, Profile: e.Profile, Mutant: e.Mutant}
+			for _, r := range all {
+				if !spec.matches(r, sha) {
+					continue
+				}
+				cj, err := readJSON(r.Dir + ".checks.json")
+				if err != nil || str(cj, "seal_root") != r.Seal || r.Seal == "" {
+					c.State, c.Run = "unchecked", r.ID
+					continue
+				}
+				if v := str(cj, "verdict"); v != "INVALID" {
+					c.State, c.Run, c.Verdict = "valid", r.ID, v
+					break
+				}
+				invalid++
+				if c.State != "unchecked" {
+					c.State, c.Run, c.Verdict = "invalid", r.ID, "INVALID"
+				}
+			}
+			if c.State == "invalid" && invalid >= MaxAttempts {
+				c.State = "harness-defect"
+			}
+			out = append(out, c)
+		}
+	}
+	return out, nil
+}
