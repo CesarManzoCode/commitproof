@@ -41,6 +41,7 @@
 #             extracted into runs/k7-pkg/<id>/ and the package's replay
 #             command executed once more (pkg-replay-<id>); the replays
 #             stored as summaries in evidence/K7/package-replays
+#   pkgreports cpreport page and report excerpt of each package's original run
 #   ci        make lint-workflow; every make ci-* target (attempt ci, ci-2, …)
 #   gate      cpgate K7 --negative-controls (cpgate-k7, cpgate-k7-2, …)
 #   tagcheck  scripts/k7-tag-check.sh on the latest CI's commit
@@ -266,6 +267,27 @@ pkgreplay() {
 	done
 }
 
+# pkgreports: §11.4's report excerpt of each package's original run —
+# cpreport's page (render-pkg-<id>, kept in runs/.k7/pkg-report, not
+# committed) and the excerpt from its data block, checks.json and the run's
+# observations (excerpt-<id> → findings/<id>/report-excerpt.md).
+pkgreports() {
+	idle
+	local f fid run arch o rn
+	for f in findings/*/finding.json; do
+		fid=$(jq -r .id "$f") run=$(jq -r .original_run.run_id "$f") arch=$(jq -r .original_run.archive "$f")
+		o=$SCRATCH/pkg-orig
+		mkdir -p "$o" "$SCRATCH/pkg-report/$fid"
+		[ -d "$o/$run" ] || zstd -dc "$arch" | tar -C "$o" -xf -
+		[ "$(recorded "render-pkg-$fid")" = 0 ] || step 0 "$(next "render-pkg-$fid")" bin/cpreport render "$arch" --out "$SCRATCH/pkg-report/$fid"
+		rn=$(grep -oE "\"name\":\"render-pkg-$fid(-[0-9]+)?\"" "$EV/commands.jsonl" | tail -n 1 | sed 's/"name":"\(.*\)"/\1/')
+		step 0 "$(next "excerpt-$fid")" python3 -I scripts/k7-report-excerpt.py "$SCRATCH/pkg-report/$fid/$run.html" "${arch%.tar.zst}.checks.json" \
+			"$rn" "$EV/logs/$rn.stdout" "$arch" "$o/$run/observations.jsonl"
+		cp "$EV/logs/$(grep -oE "\"name\":\"excerpt-$fid(-[0-9]+)?\"" "$EV/commands.jsonl" | tail -n 1 | sed 's/"name":"\(.*\)"/\1/').stdout" \
+			"findings/$fid/report-excerpt.md"
+	done
+}
+
 ci() {
 	step 0 "$(next build)" make build
 	[ "$(recorded lint-workflow)" = 0 ] || step 0 "$(next lint-workflow)" make lint-workflow
@@ -292,10 +314,10 @@ tagcheck() {
 }
 
 case "${1:-}" in
-setup | m1oracle | m1triage | images | start | oracle | store | results | render | triage | pkgreplay | ci | gate | tagcheck) "$1" ;;
+setup | m1oracle | m1triage | images | start | oracle | store | results | render | triage | pkgreplay | pkgreports | ci | gate | tagcheck) "$1" ;;
 wait) wait_campaign ;;
 *)
-	echo "usage: $0 setup|m1oracle|m1triage|images|start|wait|oracle|store|results|render|triage|pkgreplay|ci|gate|tagcheck" >&2
+	echo "usage: $0 setup|m1oracle|m1triage|images|start|wait|oracle|store|results|render|triage|pkgreplay|pkgreports|ci|gate|tagcheck" >&2
 	exit 3
 	;;
 esac
