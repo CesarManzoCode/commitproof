@@ -1,0 +1,4 @@
+b9c30eee9f3c8de25b443825ca0d467ccd5d2a72 2026-10-14 feat(minigres): serve queries between the multigateway and multipooler in memory (#1536)
+e69e88fdb2f424666cb53d85b83f7dbefc1df8ce 2026-10-13 fix(multigateway): don't look through lossy casts or variable types on constant %s arguments (#1533)
+599381f4f37ab11f1580c6a8ba667dd8ce6189be 2026-10-12 fix(multipooler): use 08006 for connection errors (#1537)
+0f0de0f1220dd72fda4b61612281e095e75e8716 2026-10-12 refactor(multipooler,multigateway): always inject process resources (#1528)
