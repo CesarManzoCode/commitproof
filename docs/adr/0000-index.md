@@ -37,13 +37,14 @@
 | [0033](0033-d3-prime-followers-acks-delayed.md) | D3′: the leader is killed while every commit waits for its delayed standby acknowledgement (amendment of §9.2 D3) | Accepted by the owner (K5, contract 1.0.10) |
 | [0034](0034-p25-raised-to-250-mb.md) | P25 raised to 250 MB; K5 stored as ADR-0030 prescribes (owner decision on ADR-0032) | Accepted by the owner (K5, contract 1.1.0) |
 | [0035](0035-g12-fault-windows-proposed.md) | G12's ok fraction excludes operations invoked inside fault windows (clarification of §10.9) | Proposed (K5); accepted by the owner prospectively for K7 only, applied by ADR-0037 |
-| [0036](0036-k6-report-definitions.md) | K6 report: the reference run, the failover metrics, the campaign statistics and the gate's cross-check, fixed before any K6 render | Accepted (K6, contract 1.1.1) |
+| [0036](0036-k6-report-definitions.md) | K6 report: the reference run, the failover metrics, the campaign statistics and the gate's cross-check, fixed before any K6 render | Accepted (K6, contract 1.1.1); exposure amended by ADR-0044 |
 | [0037](0037-g12-judged-outside-fault-windows.md) | G12 is judged outside fault windows from contract 1.2.0 on; both fractions are reported (owner decision on ADR-0035) | Accepted by the owner (pre-K7, contract 1.2.0) |
 | [0038](0038-metrics-scrapes-otel-prometheus-exporter.md) | /metrics scrapes (P23) from the OpenTelemetry Prometheus exporter; the families recorded, the report's metric timelines and the gate's cross-check | Accepted (pre-K7, contract 1.2.1) |
-| [0039](0039-k7-storage-and-cited-directed-cells.md) | K7's evidence storage under P25 (§13 literally) and the directed cells K7 cites from K4 and K5 | Accepted by the owner (K6b, contract 1.3.0) |
+| [0039](0039-k7-storage-and-cited-directed-cells.md) | K7's evidence storage under P25 (§13 literally) and the directed cells K7 cites from K4 and K5 | Accepted by the owner (K6b, contract 1.3.0); the exposure clause amended by ADR-0044 |
 | [0040](0040-c13-and-v4-removed.md) | Campaign C13 and K7 cell V4 (replica reads) are removed | Accepted by the owner (K6b, contract 1.4.0) |
 | [0041](0041-c12-slotless-and-k7-campaign-fixed-before-runs.md) | Campaign C12, profile `slotless` and the K7 campaign command, fixed before any run of them | Accepted (K6b, contract 1.4.1) |
 | [0042](0042-g2-split-g2a-g2b.md) | G2 is split into G2a (acknowledged write lost under split brain, EXPLICIT) and G2b (a read observes a write that later disappears, INFERRED), prospectively | Accepted by the owner (K6b, contract 1.5.0) |
 | [0043](0043-findings-known-status-g6-g10-packaging.md) | Known status `KNOWN` (an open upstream fix), the G6 finding of C2 seed 3, and how G10 is packaged | Accepted by the owner (K6b, contract 1.6.0) |
+| [0044](0044-exposure-in-checks-json.md) | A run's §12.3 exposure travels in its checks.json (C9's stats) from contract 1.7.0, so that runs kept as summaries still give a cell its clean statement | Accepted (K6b, contract 1.7.0) |
 
 New ADRs continue the numbering. Each ADR: Context, Decision, Alternatives rejected, Consequences, Sources.
