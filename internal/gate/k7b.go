@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"strconv"
 	"strings"
 
 	"gopkg.in/yaml.v3"
@@ -190,12 +191,16 @@ type k7Package struct {
 	MinimizedPlanSHA       string            `json:"minimized_plan_sha256"`
 	Replays                []k7PkgRun        `json:"replays"`
 	ReplaysWithClass       int               `json:"replays_with_class"`
-	K7Replay               struct {
-		Record   string   `json:"record"`
-		Run      string   `json:"run_id"`
-		Verdict  string   `json:"verdict"`
-		Classes  []string `json:"classes"`
-		HasClass bool     `json:"has_anomaly_class"`
+	// K7Replay is K7.4's re-execution of the package's replay command
+	// (`commitproof replay <minimized run> --times 5`, P13: the command the
+	// CLI accepts and the one that produced the recorded replays): its record,
+	// its replays (stored in package-replays/) and their §11.1 class. The
+	// recorded classification stands; this result is reported beside it.
+	K7Replay struct {
+		Record           string     `json:"record"`
+		Runs             []k7PkgRun `json:"runs"`
+		ReplaysWithClass int        `json:"replays_with_class"`
+		Reproducibility  string     `json:"reproducibility"`
 	} `json:"k7_replay"`
 	Recurrences []struct {
 		Run       string `json:"run_id"`
@@ -339,8 +344,9 @@ func evalK74(e *Evidence) (string, []string, []string) {
 				p = append(p, fmt.Sprintf("findings/%s: %s listed as a recurrence, ADR-0045's predicates do not give it", id, run))
 			}
 		}
-		d = append(d, fmt.Sprintf("%s: %s %s %s %s %s, %d recurrences in K7, K7 replay %s %s", id, f.Classification["guarantee"], f.Classification["class"],
-			f.Classification["claim_level"], f.Classification["severity"], f.Classification["reproducibility"], len(f.Recurrences), f.K7Replay.Run, f.K7Replay.Verdict))
+		d = append(d, fmt.Sprintf("%s: %s %s %s %s %s, %d recurrences in K7, K7 replays %d of %d with %s (%s)", id, f.Classification["guarantee"], f.Classification["class"],
+			f.Classification["claim_level"], f.Classification["severity"], f.Classification["reproducibility"], len(f.Recurrences), f.K7Replay.ReplaysWithClass,
+			len(f.K7Replay.Runs), f.AnomalyClass, f.K7Replay.Reproducibility))
 	}
 	return "findings", p, d
 }
@@ -454,21 +460,9 @@ func (e *Evidence) checkK7Package(dir string, f *k7Package) []string {
 			}
 		}
 	}
-	// K7.4: the package's replay command executed once more, its run stored.
-	pr := e.k7pkg()
-	rec, ok := e.lastRecord("pkg-replay-" + f.ID)
-	switch {
-	case !ok:
-		bad("no pkg-replay-%s record (K7.4)", f.ID)
-	case f.K7Replay.Record != rec.Name || (rec.ExitCode != 0 && rec.ExitCode != 1) || !argvHas(rec, "replay", f.Minimized.Run, "--times", "1"):
-		bad("record %s (argv %q exit %d) is not the package's replay of %s", rec.Name, rec.Argv, rec.ExitCode, f.Minimized.Run)
-	default:
-		r := pr.ByID[f.K7Replay.Run]
-		if r == nil || len(r.Problems) > 0 || str(r.Manifest, k4ReplayOf) != f.Minimized.Run || r.Verdict != f.K7Replay.Verdict ||
-			strings.Join(sortedCopy(r.Classes), ",") != strings.Join(sortedCopy(f.K7Replay.Classes), ",") || r.has(f.AnomalyClass) != f.K7Replay.HasClass {
-			bad("K7 replay %s: not a stored replay of %s with verdict %s classes %v", f.K7Replay.Run, f.Minimized.Run, f.K7Replay.Verdict, f.K7Replay.Classes)
-		}
-	}
+	// K7.4: the package's replay command executed once more, its replays
+	// stored.
+	p = append(p, e.checkK7PkgReplay(f)...)
 	if _, err := os.Stat(filepath.Join(k7Root(e), f.Triage)); err != nil || f.Triage == "" {
 		bad("triage %q not found", f.Triage)
 	}
@@ -481,6 +475,78 @@ func (e *Evidence) checkK7Package(dir string, f *k7Package) []string {
 				bad("claim.yaml lacks %s (§17)", k)
 			}
 		}
+	}
+	return p
+}
+
+// k7ReplayArgv reports whether argv runs `replay <…/run> --times <P13>`:
+// the tokens themselves, not substrings of the joined command line.
+func k7ReplayArgv(argv []string, run string) bool {
+	replay, dir, times := false, false, false
+	for i, w := range argv {
+		switch {
+		case w == "replay":
+			replay = true
+		case filepath.Base(filepath.Clean(w)) == run:
+			dir = true
+		case w == "--times":
+			times = i+1 < len(argv) && argv[i+1] == strconv.Itoa(params.Replays)
+		}
+	}
+	return replay && dir && times
+}
+
+// checkK7PkgReplay checks K7.4's re-execution of a package's replay command:
+// the record pkg-replay-<id> (the latest attempt), its summary, and its
+// replays among package-replays/ (each a replay of the minimized run, its
+// verdict, classes and seal as finding.json lists them; §11.1's class of
+// the hits recomputed for the package's anomaly class).
+func (e *Evidence) checkK7PkgReplay(f *k7Package) []string {
+	var p []string
+	bad := func(s string, a ...any) { p = append(p, fmt.Sprintf("findings/%s: ", f.ID)+fmt.Sprintf(s, a...)) }
+	rec, ok := e.lastRecord("pkg-replay-" + f.ID)
+	if !ok {
+		bad("no pkg-replay-%s record (K7.4)", f.ID)
+		return p
+	}
+	if f.K7Replay.Record != rec.Name || rec.ExitCode != 0 || !k7ReplayArgv(rec.Argv, f.Minimized.Run) {
+		bad("record %s (argv %q exit %d) is not the package's replay command for %s with --times %d, exit 0", rec.Name, rec.Argv, rec.ExitCode,
+			f.Minimized.Run, params.Replays)
+		return p
+	}
+	_, so, err := e.Get(rec.Name)
+	if err != nil {
+		bad("%v", err)
+		return p
+	}
+	sum, err := LastJSONLine(so)
+	if err != nil {
+		bad("%s: %v", rec.Name, err)
+		return p
+	}
+	var listed []string
+	for _, r := range f.K7Replay.Runs {
+		listed = append(listed, r.Run)
+	}
+	if str(sum, "of") != f.Minimized.Run || strings.Join(strListOf(sum["replays"]), ",") != strings.Join(listed, ",") {
+		bad("%s replayed %s into %v; finding.json lists %v of %s", rec.Name, str(sum, "of"), sum["replays"], listed, f.Minimized.Run)
+	}
+	pr := e.k7pkg()
+	hits := 0
+	for _, x := range f.K7Replay.Runs {
+		r := pr.ByID[x.Run]
+		if r == nil || len(r.Problems) > 0 || str(r.Manifest, k4ReplayOf) != f.Minimized.Run || r.Verdict != x.Verdict || r.SealRoot != x.SealRoot ||
+			strings.Join(sortedCopy(r.Classes), ",") != strings.Join(sortedCopy(x.Classes), ",") {
+			bad("K7 replay %s: not a stored replay of %s with verdict %s, seal %.12s, classes %v", x.Run, f.Minimized.Run, x.Verdict, x.SealRoot, x.Classes)
+			continue
+		}
+		if r.Verdict == "FAIL" && r.has(f.AnomalyClass) {
+			hits++
+		}
+	}
+	if len(f.K7Replay.Runs) != params.Replays || hits != f.K7Replay.ReplaysWithClass || k7Repro(hits) != f.K7Replay.Reproducibility {
+		bad("K7 replays: %d runs, %d with %s; finding.json says %d and %s (P13, §11.1)", len(f.K7Replay.Runs), hits, f.AnomalyClass,
+			f.K7Replay.ReplaysWithClass, f.K7Replay.Reproducibility)
 	}
 	return p
 }
