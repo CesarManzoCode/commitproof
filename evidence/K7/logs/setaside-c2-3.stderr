@@ -1,0 +1,3 @@
+mv: cannot move 'runs/k7/20261016T172043Z-C2-3-real-9375b700' to 'runs/k7-invalid/20261016T172043Z-C2-3-real-9375b700': Permission denied
+mv: cannot move 'runs/k7/20261016T172408Z-C2-3-real-9375b700' to 'runs/k7-invalid/20261016T172408Z-C2-3-real-9375b700': Permission denied
+mv: cannot move 'runs/k7/20261016T172745Z-C2-3-real-9375b700' to 'runs/k7-invalid/20261016T172745Z-C2-3-real-9375b700': Permission denied

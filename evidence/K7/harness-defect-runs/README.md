@@ -1,5 +1,43 @@
 # Runs set aside in K7 (CONTRACT §11.1, §12.1)
 
+## V1 C2 seed 3: INVALID three times by a harness defect (fixed)
+
+The first three attempts of matrix cell V1 / C2 / baseline / real / seed 3
+(plan `9375b700…`, contract 1.8.1, commitproof `8788818`):
+`20261016T172043Z-C2-3-real-9375b700` (seal root `61dd0673…`),
+`20261016T172408Z-C2-3-real-9375b700` (`634d81c4…`) and
+`20261016T172745Z-C2-3-real-9375b700` (`40999f1f…`), made by record
+`campaign-start-2`. All three ended INVALID with the same cause:
+`cpcheck verify-seal` found the files' hashes and chains intact but 36
+history problems "proc 10/11/12 invokes after an info completion". After the
+plan's third fault (F1c on n2, healed at 112.8 s), the first recovery insert
+through every gateway timed out (`info` at 122.8 s). The runner's recovery
+loop retired its process as §6.1 requires, but its final reads restarted on
+process 10 + g, the retired one. A **HARNESS_DEFECT** (§11.1), persistent
+(3×, §12.1), never a Multigres finding. It is fixed in `1f1f60b` (recovery
+and final reads share each gateway's process), with a regression test that
+fails on the old behaviour with the same message. Binaries and the runner
+image were rebuilt (records `build-5`, `images-build-2`; lock commit
+`940e31f`). Only the runner image changed.
+
+The campaign driver was stopped with SIGTERM right after the third
+attempt's cpcheck event (the next run, C2 seed 4, stopped in its preflight
+before creating a run directory: `campaign-k7.log`). The three attempts
+were moved from `runs/k7/` to `runs/k7-invalid/` on this machine (records
+`setaside-c2-3`: only their checks.json moved, the sealed 0555 directories
+could not be renamed; `setaside-c2-3-chmod`, `setaside-c2-3-2`,
+`setaside-c2-3-restore`: owner write bit added to the three directories, the
+directories moved, mode 0555 restored; no file inside changed). They were
+stored as summaries in `evidence/K7/runs/` (record `store-invalid-2`,
+`scripts/k7-store-invalid.sh`: seal roots equal checks.json's, verdict
+INVALID, every verify-seal problem of that one kind; `store-invalid`
+exited 2 on the first, wrong move). They are listed with their causes in
+`results.json` and count toward nothing. The resumed campaign
+(`campaign-start-3`, commitproof `1f1f60b`) re-ran the cell with the same
+plan and seed. The defect cannot change a run without an `info` recovery
+insert, so the runs sealed before the fix (V1 C1 seeds 1–10, C2 seeds 1–2)
+are unaffected and were reused.
+
 ## Interrupted by a host power-off (not a harness defect, not a finding)
 
 `20261016T043817Z-C1-8-real-9f75e28e.unsealed.tar.zst` (sha256

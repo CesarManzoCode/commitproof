@@ -1,0 +1,4 @@
+{"run":"20261016T172043Z-C2-3-real-9375b700","stored":"summary","seal_root":"61dd06730777a09a08a7eba977afdb08215280b9a540831482d8558c18139ed1","verify_seal_problems":36}
+{"run":"20261016T172408Z-C2-3-real-9375b700","stored":"summary","seal_root":"634d81c457ea9bc07a4594d1f9bcf67b04971eca86f111f5bf0bc1f950f9b2e5","verify_seal_problems":36}
+{"run":"20261016T172745Z-C2-3-real-9375b700","stored":"summary","seal_root":"40999f1fc5fad4804d3399aac64e8a1c09e56ec33a7a6990edc7894e49a6baa9","verify_seal_problems":36}
+{"command":"k7-store-invalid","stored":3,"exit_code":0}
