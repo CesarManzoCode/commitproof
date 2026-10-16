@@ -12,9 +12,13 @@
 #        Multigres' pooler does on context end (regular_conn.go
 #        handleContextCancellation → CancelBackend);
 #   k=2  cancelled by the client's own CancelRequest (psql on SIGINT);
-#   k=3  the client disconnects (psql killed) — what CommitProof's pgx
-#        client does at P01 (pgx's default DeadlineContextWatcherHandler:
-#        a socket deadline, no CancelRequest).
+#   k=3  the client only disconnects (psql killed, no CancelRequest) —
+#        the case Multigres' pooler turns into pg_cancel_backend when the
+#        request context ends. (CommitProof's pgx client is not this case:
+#        on P01 its context watcher sets a socket deadline and pgconn's
+#        asyncClose then sends a CancelRequest before closing — k=2. The
+#        comment at the recorded runs' commit said otherwise; the code is
+#        unchanged.)
 # A reader on A reads before and after; then B is promoted, A is shut down,
 # rewound from B (pg_rewind) and restarted as B's standby; final reads on
 # both. Prints one JSON object (the run's observations) on stdout; the
