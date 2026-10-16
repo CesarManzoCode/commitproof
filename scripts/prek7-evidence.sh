@@ -20,6 +20,8 @@
 #             scrape-run/ (§13 form), its scrape cost measured, two renders
 #             (the first committed under scrape-report/), metricscheck, and
 #             the metrics section's negative controls
+#   feasible  inputs of the K7 feasibility note: measured wall time per run
+#             (K4/K5), §12.3's bounds for N = 5 and 10, evidence sizes
 set -u -o pipefail
 export GOTOOLCHAIN=go1.26.9 CGO_ENABLED=0
 EV=${PREK7_EV:-evidence/pre-K7}
@@ -104,10 +106,16 @@ scrape() {
 	step 0 metrics-controls scripts/prek7-metrics-controls.sh "$EV/scrape-run/$id.tar.zst" "$EV/scrape-report/$id.html"
 }
 
+feasible() {
+	step 0 durations scripts/prek7-durations.sh
+	step 0 k7bounds go run ./internal/tools/k7bounds
+	step 0 "$(next evidence-size)" scripts/prek7-evidence-size.sh
+}
+
 case "${1:-}" in
-setup | g12 | probe | scrape) "$1" ;;
+setup | g12 | probe | scrape | feasible) "$1" ;;
 *)
-	echo "usage: $0 setup|g12|probe|scrape" >&2
+	echo "usage: $0 setup|g12|probe|scrape|feasible" >&2
 	exit 3
 	;;
 esac
