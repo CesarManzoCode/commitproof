@@ -1,6 +1,7 @@
 package runner
 
 import (
+	"context"
 	"path/filepath"
 	"testing"
 	"time"
@@ -44,6 +45,64 @@ func TestRecorderClosesOpenOpsAsInfo(t *testing.T) {
 	obs, _ := history.ReadChain(filepath.Join(dir, "o.jsonl"))
 	if len(obs) != 1 {
 		t.Fatalf("late completion not observed: %d observations", len(obs))
+	}
+}
+
+// fakeGateway answers the runner's recovery inserts and final reads: the
+// first infos recovery inserts time out (info), every later operation is ok
+// with the same values.
+type fakeGateway struct {
+	infos   int
+	inserts int
+}
+
+func (f *fakeGateway) Ledger(_ context.Context, v map[string]any) workload.Outcome {
+	f.inserts++
+	if f.inserts <= f.infos {
+		return workload.Outcome{Type: workload.Info, Err: map[string]any{"class": "timeout", "phase": "client-timeout", "sqlstate": ""}}
+	}
+	return workload.Outcome{Type: workload.OK, Value: v}
+}
+
+func (f *fakeGateway) FinalRead(_ context.Context, wl string) workload.Outcome {
+	return workload.Outcome{Type: workload.OK, Value: []any{wl}}
+}
+
+// Regression (K7, C2 seed 3 INVALID 3×): a recovery insert that ends info
+// retires the runner's client process; the final reads through the same
+// gateway must not invoke on it again (§6.1). Before the fix the final
+// reads restarted on process 10 + g, and verify-seal rejected the history
+// ("proc 10 invokes after an info completion").
+func TestRecoveryInfoRetiresProcessForFinalReads(t *testing.T) {
+	dir := t.TempDir()
+	h, _ := history.Create(filepath.Join(dir, "h.jsonl"), time.Now())
+	o, _ := history.Create(filepath.Join(dir, "o.jsonl"), time.Now())
+	r := &recorder{h: h, o: o, open: map[int64]*openOp{}}
+	r.nextProc.Store(13)
+	fg := &fakeGateway{infos: 1}
+	proc := finalClient(0)
+	if !recoverGateway(r, 0, fg, &proc) {
+		t.Fatal("recovery did not succeed on the second insert")
+	}
+	if proc == finalClient(0) {
+		t.Fatalf("process %d not retired after an info recovery insert", proc)
+	}
+	if !finalReads(r, 0, fg, &proc) {
+		t.Fatal("final reads not stable")
+	}
+	h.Close()
+	o.Close()
+	evs, err := history.ReadChain(filepath.Join(dir, "h.jsonl"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if p := history.WellFormed(evs); len(p) != 0 {
+		t.Fatalf("history not well formed: %v", p)
+	}
+	for _, ev := range evs {
+		if ev.Type == history.TypeInvoke && ev.F == "final-read" && ev.Proc != nil && *ev.Proc == finalClient(0) {
+			t.Fatalf("final read i=%d invoked on the retired process %d", ev.I, *ev.Proc)
+		}
 	}
 }
 

@@ -543,10 +543,18 @@ func Run(ctx context.Context, cfg Config) (string, string, error) {
 		return finish(StatusInvalid, "runner internal error: "+e)
 	}
 
-	// Recovery (P06): a successful write through each gateway.
+	// Recovery (P06): a successful write through each gateway. The runner's
+	// client of each gateway keeps one process across recovery and final
+	// reads: an info completion of either retires it (§6.1).
+	procs := make([]int64, len(plan.Gateways))
+	for g := range procs {
+		procs[g] = finalClient(g)
+	}
 	rec.marker("recovery-begin", nil)
 	recovered := parallel(len(plan.Gateways), func(g int) bool {
-		return recoverGateway(rec, g, opTimeout)
+		s := &workload.Session{GW: plan.Gateways[g], AppName: fmt.Sprintf("commitproof-recovery-%s", plan.Gateways[g]), Timeout: opTimeout}
+		defer s.Close()
+		return recoverGateway(rec, g, s, &procs[g])
 	})
 	rec.marker("recovery-end", map[string]any{"recovered": boolsAny(recovered)})
 	for _, ok := range recovered {
@@ -565,7 +573,9 @@ func Run(ctx context.Context, cfg Config) (string, string, error) {
 	}
 	rec.marker("final-reads-begin", nil)
 	stable := parallel(len(plan.Gateways), func(g int) bool {
-		return finalReads(rec, g, opTimeout)
+		s := &workload.Session{GW: plan.Gateways[g], AppName: fmt.Sprintf("commitproof-final-%s", plan.Gateways[g]), Timeout: opTimeout}
+		defer s.Close()
+		return finalReads(rec, g, s, &procs[g])
 	})
 	rec.marker("final-reads-end", map[string]any{"stable": boolsAny(stable)})
 	if consumer != nil {
@@ -729,18 +739,24 @@ func runClient(wctx context.Context, c map[string]any, rec *recorder, start, dea
 	return nil
 }
 
+// gatewayOps are the operations of the runner's own client of one gateway
+// after the workload (*workload.Session; a fake in tests).
+type gatewayOps interface {
+	Ledger(ctx context.Context, v map[string]any) workload.Outcome
+	FinalRead(ctx context.Context, wl string) workload.Outcome
+}
+
 // recoverGateway retries a ledger insert through gateway g until one is ok
-// or P06 expires.
-func recoverGateway(rec *recorder, g int, opTimeout time.Duration) bool {
+// or P06 expires. *proc is the client's process; an info completion retires
+// it (§6.1, Jepsen) and *proc becomes a fresh one, which the final reads
+// continue on.
+func recoverGateway(rec *recorder, g int, s gatewayOps, proc *int64) bool {
 	gw := plan.Gateways[g]
 	client := finalClient(g)
-	proc := client
-	s := &workload.Session{GW: gw, AppName: fmt.Sprintf("commitproof-recovery-%s", gw), Timeout: opTimeout}
-	defer s.Close()
 	end := time.Now().Add(params.RecoveryDeadline)
 	for attempt := 0; time.Now().Before(end); attempt++ {
 		v := map[string]any{"id": recoveryID(g, attempt), "payload": fmt.Sprintf("recovery-%s-%d", gw, attempt)}
-		i, err := rec.invoke(proc, client, gw, plan.WLLedger, "insert", v, "")
+		i, err := rec.invoke(*proc, client, gw, plan.WLLedger, "insert", v, "")
 		if err != nil {
 			return false
 		}
@@ -750,7 +766,7 @@ func recoverGateway(rec *recorder, g int, opTimeout time.Duration) bool {
 		case workload.OK:
 			return true
 		case workload.Info:
-			proc = rec.nextProc.Add(1) - 1
+			*proc = rec.nextProc.Add(1) - 1
 		}
 		time.Sleep(time.Second)
 	}
@@ -759,13 +775,11 @@ func recoverGateway(rec *recorder, g int, opTimeout time.Duration) bool {
 
 // finalReads reads every workload's full state through gateway g every P08
 // interval until P08's repeat count of consecutive identical rounds, within
-// P08's deadline.
-func finalReads(rec *recorder, g int, opTimeout time.Duration) bool {
+// P08's deadline, on the client's process *proc (retired by an info
+// completion, as in recoverGateway).
+func finalReads(rec *recorder, g int, s gatewayOps, proc *int64) bool {
 	gw := plan.Gateways[g]
 	client := finalClient(g)
-	proc := client
-	s := &workload.Session{GW: gw, AppName: fmt.Sprintf("commitproof-final-%s", gw), Timeout: opTimeout}
-	defer s.Close()
 	end := time.Now().Add(params.FinalReadDeadline)
 	var prev []byte
 	consecutive := 0
@@ -773,7 +787,7 @@ func finalReads(rec *recorder, g int, opTimeout time.Duration) bool {
 		var vals []any
 		okRound := true
 		for _, wl := range []string{plan.WLAppend, plan.WLRegister, plan.WLBank, plan.WLLedger} {
-			i, err := rec.invoke(proc, client, gw, wl, "final-read", map[string]any{}, "")
+			i, err := rec.invoke(*proc, client, gw, wl, "final-read", map[string]any{}, "")
 			if err != nil {
 				return false
 			}
@@ -782,7 +796,7 @@ func finalReads(rec *recorder, g int, opTimeout time.Duration) bool {
 			if out.Type != workload.OK {
 				okRound = false
 				if out.Type == workload.Info {
-					proc = rec.nextProc.Add(1) - 1
+					*proc = rec.nextProc.Add(1) - 1
 				}
 				break
 			}
