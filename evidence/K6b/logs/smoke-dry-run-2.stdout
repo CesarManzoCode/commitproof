@@ -1,0 +1,5 @@
+go build -trimpath -ldflags "-X github.com/CesarManzoCode/commitproof/internal/buildinfo.Commit=8cbee07191243b7177148f2ff30669e539237aec -X github.com/CesarManzoCode/commitproof/internal/buildinfo.Dirty=false" -o bin/ ./cmd/commitproof ./cmd/cpcheck ./cmd/cpgate ./cmd/cpreport ./cmd/quorumxcheck
+scripts/campaign-k7.sh dry-run campaigns/k6b-smoke.json runs/.k6b/smoke
+{"campaign":"C12","cell":"smoke-not-evidence","event":"plan","faults":["F5a","F1a","F3b","F5b"],"mutant":"real","plan_sha256":"9e6b06eebca47c8a7216233c3121f6496c731d21bd46b8e91b53d0b8b6db84bb","profile":"baseline","run":"","seed":1001,"state":"to-run","verdict":""}
+{"campaign":"C4","cell":"smoke-not-evidence","event":"plan","faults":["F5a","F2a","F5b"],"mutant":"real","plan_sha256":"a19844e766b9d166e78d5caf3e414e65feda74a342500640924b23970f36cc05","profile":"slotless","run":"","seed":1001,"state":"to-run","verdict":""}
+{"cells":2,"command":"campaign","dry_run":true,"exit_code":0,"matrix":"k6b-smoke","minimize_failures":false,"out":"runs/.k6b/smoke","runs_by_cell":{"smoke-not-evidence":2},"runs_to_make":2,"states":{"to-run":2}}

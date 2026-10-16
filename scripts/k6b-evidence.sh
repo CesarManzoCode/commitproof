@@ -35,6 +35,10 @@
 #   estimate  item 9: summary bytes of every K7 cell's plan, durations,
 #             bytes per real-build finding (K4/K5), evidence size; §12.3's
 #             bounds for N = 5 and 10
+#   ci        make lint-workflow; every make ci-* target (a new attempt name
+#             after a failed one)
+#   final     cpgate K1–K6 on copies again; ADR-0044's exposure of the CI
+#             run's runs against an independent computation; evidence size
 set -u -o pipefail
 export GOTOOLCHAIN=go1.26.9 CGO_ENABLED=0
 EV=${K6B_EV:-evidence/K6b}
@@ -145,10 +149,34 @@ estimate() {
 	step 0 "$(next k7bounds)" go run ./internal/tools/k7bounds
 }
 
+ci() {
+	step 0 "$(next build)" make build
+	[ "$(recorded lint-workflow)" = 0 ] || step 0 "$(next lint-workflow)" make lint-workflow
+	local name
+	name=$(next ci)
+	step any "$name" make ci-unit ci-checkers ci-cluster-smoke ci-nemesis-smoke ci-mutant-smoke ci-report
+	[ "$(recorded "$name")" = 0 ] || { echo "k6b-evidence: $name exited $(recorded "$name"); see $EV/logs/$name.*" >&2; exit 1; }
+}
+
+lastci() { # the latest ci record's name
+	grep -oE '"name":"ci(-[0-9]+)?"' "$EV/commands.jsonl" | tail -n 1 | sed 's/"name":"\(.*\)"/\1/'
+}
+
+final() {
+	step 0 "$(next build)" make build
+	step 0 "$(next precondition)" scripts/prek7-precondition.sh
+	# ADR-0044 on real runs: the CI-equivalent run's checked runs (plans of
+	# 1.7.0: the nemesis smoke runs and the mutant smoke run).
+	local runs
+	runs=$(sed -n 's/.*"run_dir":"\(runs\/[^"]*\)".*/\1/p' "$EV/logs/$(lastci).stdout" | sort -u | while read -r d; do [ -f "$d.checks.json" ] && echo "$d"; done)
+	step 0 "$(next exposure-check)" scripts/k6b-exposure-check.sh $runs
+	step 0 "$(next evidence-size)" scripts/prek7-evidence-size.sh
+}
+
 case "${1:-}" in
-setup | cited | config | images | smoke | exporter | estimate) "$1" ;;
+setup | cited | config | images | smoke | exporter | estimate | ci | final) "$1" ;;
 *)
-	echo "usage: $0 setup|cited|config|images|smoke|exporter|estimate" >&2
+	echo "usage: $0 setup|cited|config|images|smoke|exporter|estimate|ci|final" >&2
 	exit 3
 	;;
 esac

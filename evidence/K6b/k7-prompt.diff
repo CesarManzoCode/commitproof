@@ -1,0 +1,66 @@
+diff --git a/prompts/K7.md b/prompts/K7.md
+index 5e45275..fa758b3 100644
+--- a/prompts/K7.md
++++ b/prompts/K7.md
+@@ -1,28 +1,35 @@
+ # Sprint K7 — Full campaign, statistics and release
+ 
+-You are Claude Code in the CommitProof repository. K1–K6 are DONE (verify closure files; re-run `cpgate K1`–`K6`; any failure → BLOCKED). Execute sprint K7 end to end in this session.
++You are Claude Code in the CommitProof repository. K1–K6 are DONE and the K6b readiness work is committed (verify the closure files and `evidence/K6b/readiness.md`; re-run `cpgate K1`–`K6` on copies of the committed evidence; any failure → BLOCKED). Execute sprint K7 end to end in this session.
+ 
+ ## 0. Read first
+ 
+ 1. `AGENTS.md`.
+-2. `docs/CONTRACT.md` — all of it (this sprint audits every claim against it), with emphasis on §1, §3, §4, §9.4, §11, §12, §13, §15 "K7", §16, §17, §19, §20.
+-3. All ADRs; `docs/LIMITATIONS.md`; `docs/RESEARCH.md`.
+-4. `evidence/K1/` … `evidence/K6/` NOTES and closure files.
++2. `docs/CONTRACT.md` (1.7.0) — all of it (this sprint audits every claim against it), with emphasis on §1, §3 (G2a/G2b), §4, §9.4, §10.10 (C9's exposure), §11 (known status `KNOWN`), §12, §13 (ADR-0039's storage), §15 "K7", §16, §17, §19, §20.
++3. All ADRs — in particular ADR-0037 (G12 outside fault windows), ADR-0038 (metrics exporter), ADR-0039 (K7 storage, cited cells), ADR-0040 (C13 and V4 removed), ADR-0041 (C12, `slotless`, `make campaign-k7`), ADR-0042 (G2a/G2b), ADR-0043 (`KNOWN`, the G6 finding, G10 packaging), ADR-0044 (exposure in `checks.json`); `docs/LIMITATIONS.md`; `docs/RESEARCH.md`.
++4. `evidence/K1/` … `evidence/K6/` NOTES and closure files; `evidence/pre-K7/` and `evidence/K6b/` (readiness, `reclassification.md`, `findings/`, `k7-estimate.md`, `exporter-ab.md`).
+ 
+ ## 1. Objective
+ 
+-Execute the final matrix of §15 K7 (V1–V5, mutants D1–D5 and P1, H1 if deployable), compute statistics, produce findings packages, audit every claim, correct overclaims, finalize public documentation, and create the local annotated tag `v1.0.0`.
++Run the cells of §15 K7 that K7 runs — V1 (C1–C7, C9, C10, C12 on `baseline`, 10 each), V2 (C1, C2, C4 on `slotless`, 5 each), V3 (C8 on `buffered`, 10), V5 (C11 on `baseline`, 5): 130 runs, `campaigns/k7.json` — and cite the directed cells K4 and K5 hold (ADR-0039: D1, D2′, D3′, D5 and P1, each on its mutant and on the real build, and DH1; with the contract versions their plans carry; **not re-run**). C13 and V4 do not exist (ADR-0040). Compute statistics, produce findings packages, audit every claim, correct overclaims, finalize public documentation, and create the local annotated tag `v1.0.0`.
+ 
+ Requirements:
+ 
+-- Write the matrix file and run it with `make campaign-k7` (wrapping `commitproof campaign --matrix …`), in the background with a log, polling progress; it is resumable — if the session is interrupted, re-invoking skips sealed runs. INVALID runs are re-run with the same seed; persistent INVALID (3×) is a HARNESS_DEFECT to fix (fix, add a regression test, re-run affected runs).
+-- Statistics per §12.3 for every cell (k/N, Wilson 95% interval or zero-failure bound, exposure), computed by `cpgate` from `checks.json` and matching `cpreport`.
+-- Every C3 anomaly confirmed with elle-cli or labelled `oracle-disagreement` and triaged (K7.3).
+-- `findings/<id>/` package for every finding per §11.4, in upstream issue format (S50) — written, not published. Re-execute each package's replay command once and record the result.
++- Before the first run: the owner's decision on the projected evidence size (`evidence/K6b/k7-estimate.md` §4, `readiness.md`: under decision 1 the projection exceeds P25 unless failing runs of recorded mechanisms are kept as summaries, or P25 is raised) must be recorded as an ADR, with the matrix file's `minimize_failures` and the store step following it. If it is not, stop BLOCKED with that as the owner action. Do not bump the contract version while the matrix runs: plans carry it, and sealed runs of older plans no longer match.
++- Run the matrix with `make campaign-k7` (it wraps `commitproof campaign --matrix campaigns/k7.json --out runs/k7`, detached, log `runs/k7/campaign-k7.log`); check it first with `make campaign-k7 DRY_RUN=1` (130 runs); poll with `make campaign-k7-status`; it is resumable — if the session is interrupted, re-invoking skips sealed runs. INVALID runs are re-run with the same seed; persistent INVALID (3×) is a HARNESS_DEFECT to fix (fix, add a regression test, re-run affected runs). The driver refuses to run while `CP_OTEL_METRICS_EXPORTER` is set: K7's runs keep ADR-0038's exporter (LIM-41: K4/K5 runs did not have it).
++- Storage per ADR-0039: runs a claim, a finding package or a report names as its artifact are committed in full, once; every other run as a summary (stub archive and `checks.json`, `scripts/store-summaries.sh`) listed with its seal root in `evidence/K7/runs-index.json`; P25 counts `evidence/` and the run archives under `findings/`; the store step refuses to exceed P25.
++- Statistics per §12.3 for every cell, the cited ones included (k/N, Wilson 95% interval or zero-failure bound, exposure), computed by `cpgate` from `checks.json` and matching `cpreport`. K7's runs carry their exposure in C9's stats (ADR-0044); `cpgate K7` cross-checks it against the history of every run held in full. The cited K5 stubs (D3′, D5) predate ADR-0044: their exposure is "0 of 5 runs held in full" unless the owner's decision commits their full archives. V5 reports both G12 fractions (ADR-0037). State each cited cell's contract version and that it ran without the exporter (LIM-41).
++- Every C3 anomaly confirmed with elle-cli or labelled `oracle-disagreement` and triaged (K7.3) — including the `incompatible-order` anomalies of M1's five cited D1 runs, which K4 did not cross-check.
++- Every real-build FAIL triaged (checker output, §6.2 completion review, oracle for C3, classification by §11 with G2a/G2b per ADR-0042).
++- `findings/<id>/` package for every finding per §11.4 — written, not published — and each package's replay command executed once more with the result recorded. The findings to package (plus any K7 finds):
++  - FND-D1-fb8d0f8c, FND-D1-2e860fd2, FND-D1-a8eb9857, FND-C2-2a534585 — **G2b**, SAFETY_VIOLATION, INFERRED, **high**, origin POSTGRES_INHERITED (which cancel acted: UNDETERMINED), as `evidence/K6b/reclassification.md` states (ADR-0042); each package shows the recorded classification (G2, EXPLICIT, critical) beside it.
++  - FND-C2-6806aeca — **G6**, SAFETY_VIOLATION, DESIGN, **high** (§11.2 shown), POSTGRES_INHERITED, REPRODUCED, NEW; cross-referenced to the G2b findings' shared mechanism (`evidence/K6b/findings/FND-C2-6806aeca.md`, ADR-0043).
++  - FND-C9-40b6f05a, FND-C9-2fe9a9fc, FND-C9-90da5532 — G10, PROTOCOL_DEVIATION, DESIGN, medium, known status **KNOWN** (upstream PR #1550, S53), each packaged as an independent reproduction supporting that pull request, not as a new issue (ADR-0043).
++  - FND-C11-17a344c1 — G12, PROTOCOL_DEVIATION, DESIGN, medium, as recorded under the literal rule (owner decision D-B), with both fractions stated (literal 766/886 in storm window 1; outside fault windows 744/744).
+ - `claims.yaml` per §17 covering every claim in README, LIMITATIONS, NOTES (K7) and findings; statements lacking a field are rewritten as hypotheses.
+ - `evidence/K7/overclaim-review.md`: every statement changed from earlier drafts and why.
+-- Public `README.md`: first paragraph says CommitProof searches for counterexamples and reports bounded evidence (not proofs); how to reproduce (prerequisites, `make` targets); the §4 matrix verbatim with links to evidence; results per cell using the §12.3 sentence for clean cells; mutant results side by side with real-build results; H1 outcome in one line; findings list with §11 dimensions; limitations summary linking `docs/LIMITATIONS.md`. No claim without a `claims.yaml` id.
+-- Final `docs/LIMITATIONS.md` (resolve every PENDING row), `CHANGELOG.md`, `evidence/K7/runs-index.json` (seal roots of all runs; P25 budget policy of §13).
++- Public `README.md`: first paragraph says CommitProof searches for counterexamples and reports bounded evidence (not proofs); how to reproduce (prerequisites, `make` targets); the §4 matrix verbatim with links to evidence; results per cell using the §12.3 sentence for clean cells; mutant results side by side with real-build results (the cited cells, with their contract versions); H1 outcome in one line; findings list with §11 dimensions; limitations summary linking `docs/LIMITATIONS.md`. No claim without a `claims.yaml` id.
++- Final `docs/LIMITATIONS.md` (resolve every PENDING row), `CHANGELOG.md`, `evidence/K7/runs-index.json` (seal roots of all K7 runs; ADR-0039's storage).
+ - Extend `cpgate` with `K7`; run all `make ci-*` targets; create annotated tag `v1.0.0` locally on the final commit. Do not push.
+ 
+ ## 2. Gate
+@@ -35,12 +42,12 @@ Pass requires K7.1–K7.7 and negative controls failing exactly their targets. R
+ 
+ ## 3. Closure specifics
+ 
+-In the closure report, `pending_user_actions` must list: pushing the repository and tags (owner's decision), enabling GitHub Actions and recording the first remote CI run in LIMITATIONS LIM-16, and deciding whether to publish each finding upstream.
++In the closure report, `pending_user_actions` must list: pushing the repository and tags (owner's decision), enabling GitHub Actions and recording the first remote CI run in LIMITATIONS LIM-16, and deciding whether to publish each finding upstream (for G10: whether to offer the reproduction on PR #1550).
+ 
+ ## 4. Stops
+ 
+ - Allowed: DONE or BLOCKED per AGENTS.md §3.
+-- Forbidden: stopping midway to ask or offer (campaign waiting is done by polling, not by stopping); reducing repetitions or dropping cells to save time; counting INVALID runs; publishing, pushing, opening issues, or contacting upstream; wording any result more strongly than its evidence.
++- Forbidden: stopping midway to ask or offer (campaign waiting is done by polling, not by stopping); reducing repetitions or dropping cells to save time; re-running the cited directed cells (ADR-0039); counting INVALID runs or the K6b smoke runs; publishing, pushing, opening issues, commenting on upstream pull requests, or contacting upstream; wording any result more strongly than its evidence.
+ 
+ ## 5. Finish
+ 
