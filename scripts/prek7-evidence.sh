@@ -22,6 +22,9 @@
 #             the metrics section's negative controls
 #   feasible  inputs of the K7 feasibility note: measured wall time per run
 #             (K4/K5), §12.3's bounds for N = 5 and 10, evidence sizes
+#   upstream  D-C: read-only lookups on github.com/multigres/multigres
+#             (clone, file diffs since the pinned commit, issue/PR search);
+#             "upstream read <n>..." reads the issues/PRs the search found
 set -u -o pipefail
 export GOTOOLCHAIN=go1.26.9 CGO_ENABLED=0
 EV=${PREK7_EV:-evidence/pre-K7}
@@ -112,10 +115,23 @@ feasible() {
 	step 0 "$(next evidence-size)" scripts/prek7-evidence-size.sh
 }
 
+upstream() {
+	if [ "${1:-}" = read ]; then
+		shift
+		step 0 "$(next upstream-read)" scripts/prek7-upstream.sh read "$EV/upstream" "$@"
+	else
+		step 0 upstream-search scripts/prek7-upstream.sh search "$EV/upstream"
+	fi
+}
+
 case "${1:-}" in
 setup | g12 | probe | scrape | feasible) "$1" ;;
+upstream)
+	shift
+	upstream "$@"
+	;;
 *)
-	echo "usage: $0 setup|g12|probe|scrape|feasible" >&2
+	echo "usage: $0 setup|g12|probe|scrape|feasible|upstream [read <n>...]" >&2
 	exit 3
 	;;
 esac
