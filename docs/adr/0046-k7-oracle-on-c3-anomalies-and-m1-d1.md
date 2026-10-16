@@ -10,14 +10,14 @@ Status: **Accepted by the owner (K7, contract 1.8.1).** Applies the owner's deci
 
 - K7.3: "every C3 anomaly in the matrix confirmed by elle-cli or labelled `oracle-disagreement` with triage"; §10.11: elle-cli double-checks every C3 finding in K7, and a C3 finding the oracle does not confirm is labelled `oracle-disagreement` and triaged before any package is written.
 - K4 ran `cpcheck check --elle-oracle` on its real-build failures with C3 anomalies (record `oracle-<run>`). On ~18 000-operation histories elle-cli's process-order cycle search exits 255 with `OutOfMemoryError` (also with a 9 GB heap), so cpcheck could not finish; K4 then recorded elle-cli's **validity pass** on its own (`elle-validity-<run>`: the pass that decides validity and the anomaly classes) and the process pass (`elle-process-<run>`, to show the failure), and cpgate K4 accepted "confirmed" when the validity pass answered with C3's classes (`internal/gate/k4.go` `checkOracle`; LIM-31).
-- M1's five D1 runs (contract 1.0.6; committed in full in `evidence/K4/runs/`, also under `runs/k4-full/`) FAIL with `lost-write` and `incompatible-order` (C3). K4 cross-checked only real-build failures, so their C3 anomalies were never given to elle-cli (ADR-0039's criteria table).
+- M1's five D1 runs (contract 1.0.6; committed in full in `evidence/K4/runs/`) FAIL with `lost-write` and `incompatible-order` (C3). K4 cross-checked only real-build failures, so their C3 anomalies were never given to elle-cli (ADR-0039's criteria table).
 
 ## Decision
 
 ### Which runs
 
 1. Every valid primary run of K7's matrix whose `checks.json` has C3 `valid: false` (repeats and new failures alike).
-2. M1's five D1 runs (`evidence/K4/results.json`'s D1/M1 cell): 20261011T215900Z-D1-1-M1-59a95336, 20261011T220118Z-D1-2-M1-8b22bb67, 20261011T220335Z-D1-3-M1-da159fa0, 20261011T220553Z-D1-4-M1-ad3fca18, 20261011T220810Z-D1-5-M1-3319a30c, from their full archives (the committed archive is extracted into the git-ignored `runs/.k7/oracle/` after its manifest, plan and seal are compared with `runs/k4-full/`'s copy and its seal is verified; the K4 evidence is not touched).
+2. M1's five D1 runs (`evidence/K4/results.json`'s D1/M1 cell): 20261011T215900Z-D1-1-M1-59a95336, 20261011T220118Z-D1-2-M1-8b22bb67, 20261011T220335Z-D1-3-M1-da159fa0, 20261011T220553Z-D1-4-M1-ad3fca18, 20261011T220810Z-D1-5-M1-3319a30c, from their full archives: K4 committed these primaries in full in `evidence/K4/runs/` (`runs/k4-full/` holds only the archives of K4's stubbed runs); each archive is extracted into the git-ignored `runs/.k7/oracle/`, its seal verified (`cpcheck verify-seal`) and its seal root compared with K4's `checks.json`; the K4 evidence is not touched.
 
 A new finding's minimized run and replays are not part of K7.3; the finding's original run is (item 1).
 
@@ -25,7 +25,7 @@ A new finding's minimized run and replays are not part of K7.3; the finding's or
 
 For each run, on its full run directory, with no cluster running (elle-cli's JVM and P10 on the 16 GB host):
 
-1. `cpcheck check <run> --elle-oracle` (recorded `oracle-<run-id>`). If it completes, C3's `stats.elle` decides: `agree` → **confirmed**; otherwise **`oracle-disagreement`**, triaged.
+1. `cpcheck check <run> --elle-oracle` (recorded `oracle-<run-id>`). If it completes, C3's `stats.elle` decides: `valid` `false` with `agree` (elle-cli's classes equal C3's) → **confirmed**; elle-cli answering `unknown` is not a confirmation (cpcheck's `agree` is then true by K2's convention) and is treated as not completed (step 2); any other answer → **`oracle-disagreement`**, triaged.
 2. If it does not complete (elle-cli exits with an error, e.g. `OutOfMemoryError`, or times out): elle-cli's validity pass on the exported history (`elle-validity-<run-id>`: `-m list-append -c <model> --output json --cycle-search-timeout 10000`, model from the run's isolation level as cpcheck chooses it) and the process pass (`elle-process-<run-id>`, the anomalies with `-process` suffixes), each recorded with the pinned image `commitproof/elle-oracle:9c2a18b`, no network, read-only. If the validity pass answers `valid? false` with exactly C3's classes (Elle names mapped by §10.11's table, informational names dropped) → **confirmed** (source: the validity pass); if it answers otherwise → **`oracle-disagreement`**, triaged.
 3. If neither cpcheck's oracle nor the validity pass completes, the run is labelled **`oracle-disagreement`** with the triage "elle-cli did not complete (…)": an unanswered oracle is never a confirmation (fail closed, LIM-31).
 
