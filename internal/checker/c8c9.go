@@ -419,9 +419,13 @@ var g12JudgedFrom = [3]int64{1, 2, 0}
 // g12Judged reports whether the plan carries contract 1.2.0 or later. A
 // plan without a well-formed version keeps the literal rule, as every run
 // recorded before ADR-0037 does.
-func g12Judged(plan map[string]any) bool {
-	v, _ := plan["contract_version"].(string)
-	parts := strings.Split(v, ".")
+func g12Judged(plan map[string]any) bool { return planAtLeast(plan, g12JudgedFrom) }
+
+// planAtLeast reports whether the plan's contract_version is v or later; a
+// plan without a well-formed version is not.
+func planAtLeast(plan map[string]any, v [3]int64) bool {
+	s, _ := plan["contract_version"].(string)
+	parts := strings.Split(s, ".")
 	if len(parts) != 3 {
 		return false
 	}
@@ -434,8 +438,8 @@ func g12Judged(plan map[string]any) bool {
 		n[i] = k
 	}
 	for i := range n {
-		if n[i] != g12JudgedFrom[i] {
-			return n[i] > g12JudgedFrom[i]
+		if n[i] != v[i] {
+			return n[i] > v[i]
 		}
 	}
 	return true
@@ -544,7 +548,8 @@ func coveredNS(start, end int64, faults []faultWindow) int64 {
 
 // CheckAvailability is C9 (CONTRACT §10.10). Stats: unavailability windows
 // per fault and gateway, latency percentiles before/during/after faults,
-// error class counts. G8 (profile buffered only): within an F6 switchover
+// error class counts, and (plans of contract 1.7.0 or later, ADR-0044) the
+// run's §12.3 exposure. G8 (profile buffered only): within an F6 switchover
 // window (inject to healed; an operation is within it if [invoke,
 // completion] overlaps it), a fail or info on a single autocommit statement
 // (W4 insert, W2 op, autocommit append) is planned-failover-error; an
@@ -563,6 +568,9 @@ func CheckAvailability(h *History) Result {
 	stats["errors"] = intMap(errClasses)
 	stats["unavailability_ms"] = unavailability(h, faults)
 	stats["latency_us"] = latencies(h, faults)
+	if planAtLeast(h.Plan, exposureFrom) {
+		stats["exposure"] = Exposure(h)
+	}
 	if h.Profile == "buffered" {
 		var judged, windows, unbuffered int64
 		for wi, f := range faults {
