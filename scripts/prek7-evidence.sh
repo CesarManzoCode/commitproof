@@ -25,6 +25,11 @@
 #   upstream  D-C: read-only lookups on github.com/multigres/multigres
 #             (clone, file diffs since the pinned commit, issue/PR search);
 #             "upstream read <n>..." reads the issues/PRs the search found
+#   ci        make lint-workflow; make ci-unit ci-checkers ci-cluster-smoke
+#             ci-nemesis-smoke ci-mutant-smoke ci-report (a new attempt name
+#             after a failed one)
+#   final     cpgate K1–K6 on copies again, evidence size, the backup
+#             manifest of the local-only full archives
 #   lim33     D-D: LIM-33's origin experiment on plain PostgreSQL, 5 runs
 #             (scripts/prek7-lim33.sh; raw outputs under lim33/), and their
 #             summary
@@ -135,14 +140,23 @@ lim33() {
 	step 0 lim33-summary bash -c 'for n in 1 2 3 4 5; do tail -n 1 "$1/logs/lim33-run-$n.stdout"; done | jq -sc "{command: \"lim33-summary\", runs: length, k1_pg_cancel_backend_read_then_vanished: (map(select(.k1_pg_cancel_backend_read_then_vanished)) | length), k2_cancelrequest_read_then_vanished: (map(select(.k2_cancelrequest_read_then_vanished)) | length), k3_disconnect_never_read: (map(select(.k3_disconnect_never_read)) | length), k3_disconnect_still_waiting: (map(select(.k3_disconnect_still_waiting)) | length), errors: (map(select(.error)) | length), exit_code: 0}"' _ "$EV"
 }
 
+ci() {
+	step 0 "$(next build)" make build
+	[ "$(recorded lint-workflow)" = 0 ] || step 0 "$(next lint-workflow)" make lint-workflow
+	local name
+	name=$(next ci)
+	step any "$name" make ci-unit ci-checkers ci-cluster-smoke ci-nemesis-smoke ci-mutant-smoke ci-report
+	[ "$(recorded "$name")" = 0 ] || { echo "prek7-evidence: $name exited $(recorded "$name"); see $EV/logs/$name.*" >&2; exit 1; }
+}
+
 case "${1:-}" in
-setup | g12 | probe | scrape | feasible | lim33) "$1" ;;
+setup | g12 | probe | scrape | feasible | lim33 | ci) "$1" ;;
 upstream)
 	shift
 	upstream "$@"
 	;;
 *)
-	echo "usage: $0 setup|g12|probe|scrape|feasible|lim33|upstream [read <n>...]" >&2
+	echo "usage: $0 setup|g12|probe|scrape|feasible|lim33|ci|upstream [read <n>...]" >&2
 	exit 3
 	;;
 esac
