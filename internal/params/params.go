@@ -199,3 +199,22 @@ const (
 	// §14).
 	H1Commit = "4bca1d5770a6bd425bde5a61eaad240431242cd5"
 )
+
+// MetricFamily is one family of ADR-0038's table (P23): its observation
+// key, and whether it is a counter (absent from a scrape ⇒ 0; the report
+// draws its per-second increase) or a gauge.
+type MetricFamily struct {
+	Key     string
+	Counter bool
+}
+
+// MetricFamilies is ADR-0038's table, in its order. The observer
+// (internal/observe) records exactly these keys; the report and the gate
+// read their kinds from here.
+var MetricFamilies = []MetricFamily{
+	{"gw_client_connections", false}, {"gw_queries", true}, {"gw_query_errors", true}, {"gw_buffered", true},
+	{"pl_up", false}, {"pl_serving_transitions", true}, {"pl_server_conns_active", false}, {"pl_client_waiting", false},
+	{"pl_conn_open_errors", true}, {"pl_queries", true}, {"pl_replication_lag_ms", false},
+	{"or_recovery_actions", true}, {"or_recovery_errors", true}, {"or_detected_problems", false}, {"or_streams_connected", false},
+	{"cpu_ms", true},
+}

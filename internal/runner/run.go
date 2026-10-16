@@ -262,12 +262,32 @@ func Run(ctx context.Context, cfg Config) (string, string, error) {
 		return finish(StatusInvalid, "setup transaction did not commit")
 	}
 
-	// Observation pollers (P24), one per node; n4's starts when F5a starts
-	// the node.
+	// Observation pollers (P24), one per node, and metric scrapers (P23,
+	// ADR-0038), one per gateway, pooler and orchestrator; n4's start when
+	// F5a starts the node. Profile h1 has no exporter and is not scraped.
 	obsCtx, stopObs := context.WithCancel(ctx)
 	var obsWG sync.WaitGroup
 	var pollMu sync.Mutex
 	polled := map[string]bool{}
+	scraping := profile != ProfileH1 && cfg.NetPrefix != ""
+	scraper := observe.NewScraper()
+	defer scraper.Close()
+	startScraper := func(t observe.MetricsTarget) {
+		obsWG.Add(1)
+		go func() {
+			defer obsWG.Done()
+			tk := time.NewTicker(params.MetricsScrapeInterval)
+			defer tk.Stop()
+			for {
+				rec.obs(scraper.Scrape(obsCtx, t))
+				select {
+				case <-obsCtx.Done():
+					return
+				case <-tk.C:
+				}
+			}
+		}()
+	}
 	startPoller := func(node string) {
 		pollMu.Lock()
 		defer pollMu.Unlock()
@@ -275,6 +295,9 @@ func Run(ctx context.Context, cfg Config) (string, string, error) {
 			return
 		}
 		polled[node] = true
+		if scraping {
+			startScraper(observe.PoolerMetricsTarget(cfg.NetPrefix, node))
+		}
 		obsWG.Add(1)
 		if profile == ProfileH1 {
 			// The historical pooler API differs from the pinned protos:
@@ -301,6 +324,13 @@ func Run(ctx context.Context, cfg Config) (string, string, error) {
 				}
 			}
 		}()
+	}
+	if scraping {
+		for _, t := range observe.MetricsTargets(cfg.NetPrefix, nil) {
+			startScraper(t)
+		}
+	} else if profile != ProfileH1 {
+		rec.obs(map[string]any{"src": "runner", "event": "metrics-not-scraped", "reason": "no --net-prefix"})
 	}
 	for _, n := range Nodes {
 		startPoller(n)

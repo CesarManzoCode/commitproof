@@ -17,6 +17,15 @@ x-node-env: &node-env
   PGDATA: /data/pg_data
   POSTGRES_PASSWORD_FILE: /var/run/secrets/multigres/password
 
+# P23 (ADR-0038): the pinned autoexport's Prometheus exporter serves /metrics
+# on 9464 for the runner's scrapes (no HTTP port of the pinned commit does).
+# Multigateway, multipooler and multiorch only: pgctld shares the pooler's
+# network namespace and stays without it.
+x-otel-env: &otel-env
+  OTEL_METRICS_EXPORTER: prometheus
+  OTEL_EXPORTER_PROMETHEUS_HOST: 0.0.0.0
+  OTEL_EXPORTER_PROMETHEUS_PORT: "9464"
+
 networks:
   cpnet:
     ipam:
@@ -170,7 +179,8 @@ services:
       - --service-map=grpc-pooler
       - --enable-slot-based-replication=true
       - --hostname=pooler-n1
-    environment: *node-env
+    environment:
+      <<: [*node-env, *otel-env]
     volumes:
       - data-n1:/data
       - certs:/certs
@@ -329,6 +339,7 @@ services:
       - --watch-targets=postgres
       - --pooler-health-check-interval=500ms
       - --recovery-cycle-interval=500ms
+    environment: *otel-env
     networks:
       cpnet:
         ipv4_address: ${CP_NET_PREFIX:-10.77.0}.21
@@ -387,6 +398,7 @@ services:
       - --topo-global-root=/multigres/test/global
       - --cell=zone1
       - --enable-slot-based-replication=true
+    environment: *otel-env
     networks:
       cpnet:
         ipv4_address: ${CP_NET_PREFIX:-10.77.0}.31
