@@ -3,6 +3,8 @@ package checker
 import (
 	"fmt"
 	"sort"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/CesarManzoCode/commitproof/internal/canonjson"
@@ -53,6 +55,11 @@ import (
 //   - overload-failover: two consecutive ok cp_steady operations completing
 //     within a storm window report different servers, and no nemesis fault
 //     overlaps the window.
+//
+// From contract 1.2.0 on (plans carrying 1.2.0 or later; ADR-0037, the
+// owner's decision on ADR-0035) fair-share-starvation counts only the
+// cp_steady operations invoked outside every fault window; see
+// judgedFairShare. Plans of earlier versions keep the rule above.
 //
 // cp_steady operations are W4 inserts: wl "ledger" with value role
 // "cp_steady" (K5 runs, so that C1, C2 and C7 judge them as W4 inserts) or
@@ -340,24 +347,38 @@ func overloadRules(h *History, c *collector, stats map[string]any) string {
 	}
 	sort.SliceStable(steady, func(i, j int) bool { return steady[i].Invoke < steady[j].Invoke })
 	faults := h.faultWindows()
+	judged := g12Judged(h.Plan)
 	reason := ""
+	var notJudged []string
+	windows := []any{}
 	for _, p := range sortedKeys(phases) {
 		w := phases[p]
-		var total, okN int64
-		for _, o := range steady {
-			if o.Invoke >= w.start && o.Invoke <= w.end {
-				total++
-				if o.Type == history.TypeOK {
-					okN++
+		if judged {
+			ws, why, empty := judgedFairShare(c, p, w.start, w.end, steady, faults)
+			windows = append(windows, ws)
+			if why != "" {
+				notJudged = append(notJudged, why)
+			}
+			if empty {
+				continue
+			}
+		} else {
+			var total, okN int64
+			for _, o := range steady {
+				if o.Invoke >= w.start && o.Invoke <= w.end {
+					total++
+					if o.Type == history.TypeOK {
+						okN++
+					}
 				}
 			}
-		}
-		if total == 0 {
-			reason = fmt.Sprintf("storm phase %d: no cp_steady operation was invoked in its window", p)
-			continue
-		}
-		if okN*10 < total*9 && !sabotageFairShare {
-			c.add("fair-share-starvation", nil, "storm phase %d: %d of %d cp_steady operations completed ok (< 90%%)", p, okN, total)
+			if total == 0 {
+				reason = fmt.Sprintf("storm phase %d: no cp_steady operation was invoked in its window", p)
+				continue
+			}
+			if okN*10 < total*9 && !sabotageFairShare {
+				c.add("fair-share-starvation", nil, "storm phase %d: %d of %d cp_steady operations completed ok (< 90%%)", p, okN, total)
+			}
 		}
 		faulted := false
 		for _, f := range faults {
@@ -384,7 +405,141 @@ func overloadRules(h *History, c *collector, stats map[string]any) string {
 		}
 	}
 	stats["storm_phases"] = int64(len(phases))
+	if judged && len(phases) > 0 {
+		stats["storm_windows"] = windows
+		reason = strings.Join(notJudged, "; ")
+	}
 	return reason
+}
+
+// g12JudgedFrom is the first contract version whose plans judge G12's ok
+// fraction outside fault windows (ADR-0037).
+var g12JudgedFrom = [3]int64{1, 2, 0}
+
+// g12Judged reports whether the plan carries contract 1.2.0 or later. A
+// plan without a well-formed version keeps the literal rule, as every run
+// recorded before ADR-0037 does.
+func g12Judged(plan map[string]any) bool {
+	v, _ := plan["contract_version"].(string)
+	parts := strings.Split(v, ".")
+	if len(parts) != 3 {
+		return false
+	}
+	var n [3]int64
+	for i, x := range parts {
+		k, err := strconv.ParseInt(x, 10, 64)
+		if err != nil || k < 0 {
+			return false
+		}
+		n[i] = k
+	}
+	for i := range n {
+		if n[i] != g12JudgedFrom[i] {
+			return n[i] > g12JudgedFrom[i]
+		}
+	}
+	return true
+}
+
+// judgedFairShare is G12's fair-share rule for plans of contract 1.2.0 or
+// later (ADR-0037, the owner's decision on ADR-0035) over storm phase p's
+// window [start, end]. L are the cp_steady operations invoked in it, O
+// those invoked inside a fault window (first to last nemesis event of a
+// fault id, as for G10), J = L \ O. fair-share-starvation if fewer than
+// 90 % of J completed ok; otherwise the window is not judged — observation
+// fair-share-not-judged and a reason that makes C8 unknown, never PASS — if
+// J is empty or holds fewer than one operation per second of the window's
+// time outside fault windows. O is the observation overload-fault-overlap.
+// It returns the window's statistics (both fractions), the not-judged
+// reason ("" if judged), and whether L is empty.
+func judgedFairShare(c *collector, p, start, end int64, steady []*Op, faults []faultWindow) (map[string]any, string, bool) {
+	var lit, litOK, jud, judOK int64
+	var inside []int64
+	ids := map[string]bool{}
+	byType := map[string]int64{}
+	for _, o := range steady {
+		if o.Invoke < start || o.Invoke > end {
+			continue
+		}
+		ok := o.Type == history.TypeOK
+		lit++
+		if ok {
+			litOK++
+		}
+		if in := faultsAt(faults, o.Invoke); len(in) > 0 {
+			inside = append(inside, o.Index)
+			byType[o.Type]++
+			for _, id := range in {
+				ids[id] = true
+			}
+			if !sabotageG12FaultExclusion {
+				continue
+			}
+		}
+		jud++
+		if ok {
+			judOK++
+		}
+	}
+	outside := end - start - coveredNS(start, end, faults)
+	ws := map[string]any{"phase": p, "start": start, "end": end, "literal_total": lit, "literal_ok": litOK,
+		"judged_total": jud, "judged_ok": judOK, "inside_fault_total": int64(len(inside)), "outside_fault_ns": outside}
+	if len(inside) > 0 {
+		c.observe("overload-fault-overlap", inside, "storm phase %d: %d cp_steady operations invoked inside fault windows %v (ok %d, fail %d, info %d), not judged (ADR-0037)",
+			p, len(inside), sortedStrings(ids), byType[history.TypeOK], byType[history.TypeFail], byType[history.TypeInfo])
+	}
+	switch {
+	case jud > 0 && judOK*10 < jud*9:
+		ws["result"] = "fair-share-starvation"
+		if !sabotageFairShare {
+			c.add("fair-share-starvation", nil, "storm phase %d: %d of %d cp_steady operations invoked outside fault windows completed ok (< 90%%); literal fraction %d of %d (ADR-0037)",
+				p, judOK, jud, litOK, lit)
+		}
+	case !sabotageG12JudgedMinimum && (jud == 0 || jud*int64(time.Second) < outside):
+		ws["result"] = "not-judged"
+		c.observe("fair-share-not-judged", nil, "storm phase %d: %d cp_steady operations invoked outside fault windows over %d ms of storm outside them (fewer than one per second), %d ok; literal fraction %d of %d (ADR-0037)",
+			p, jud, outside/int64(time.Millisecond), judOK, litOK, lit)
+		return ws, fmt.Sprintf("storm phase %d: not judged (%d cp_steady operations outside fault windows in %d ms)", p, jud, outside/int64(time.Millisecond)), lit == 0
+	default:
+		ws["result"] = "pass"
+	}
+	return ws, "", lit == 0
+}
+
+// faultsAt returns the ids of the fault windows containing t.
+func faultsAt(faults []faultWindow, t int64) []string {
+	var out []string
+	for _, f := range faults {
+		if f.Start <= t && t <= f.End {
+			out = append(out, f.ID)
+		}
+	}
+	return out
+}
+
+// coveredNS is the length of the union of [start, end]'s intersections
+// with the fault windows (sorted by start).
+func coveredNS(start, end int64, faults []faultWindow) int64 {
+	var total int64
+	curS, curE := int64(-1), int64(-1)
+	for _, f := range faults {
+		a, b := max(start, f.Start), min(end, f.End)
+		if a > b {
+			continue
+		}
+		if curE >= 0 && a <= curE {
+			curE = max(curE, b)
+			continue
+		}
+		if curE >= 0 {
+			total += curE - curS
+		}
+		curS, curE = a, b
+	}
+	if curE >= 0 {
+		total += curE - curS
+	}
+	return total
 }
 
 // CheckAvailability is C9 (CONTRACT §10.10). Stats: unavailability windows
