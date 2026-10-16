@@ -19,6 +19,13 @@
 #             without the oracle (the checks.json) and elle-cli's validity
 #             and process passes recorded on their own (K4's approach); the
 #             record evidence/K7/oracle/<run-id>.json
+#   images    binaries and images of this commit (the runner image is built
+#             from the host binary's commit; make campaign-k7 does not
+#             rebuild bin/), then images.lock.json is committed
+#   start     the matrix: make campaign-k7 DRY_RUN=1 (130 runs), then
+#             make campaign-k7 (detached; resumable)
+#   wait      wait for the detached campaign (scripts/campaign-k7.sh wait),
+#             recorded; an interrupted wait is re-run under the next name
 set -u -o pipefail
 export GOTOOLCHAIN=go1.26.9 CGO_ENABLED=0
 EV=${K7_EV:-evidence/K7}
@@ -87,8 +94,9 @@ oracle_run() {
 			step any "elle-validity-$id" docker run --rm --label com.docker.compose.project=commitproof --network none \
 				--read-only --tmpfs /tmp -v "./$d.elle:/h:ro" commitproof/elle-oracle:9c2a18b -m list-append -c "$model" \
 				--output json --cycle-search-timeout 10000 /h/history.elle.json
-			# Out of memory with the default heap: once more with 9 GB (K4).
-			if [ "$(recorded "elle-validity-$id")" = 255 ] && grep -q OutOfMemoryError "$EV/logs/elle-validity-$id.stderr"; then
+			# Out of memory with the default heap (exit 255, or exit 1 when it
+			# ran out while printing its answer): once more with 9 GB (K4).
+			if grep -q OutOfMemoryError "$EV/logs/elle-validity-$id.stderr" && ! jq -e . "$EV/logs/elle-validity-$id.stdout" >/dev/null 2>&1; then
 				step any "elle-validity-xmx9g-$id" docker run --rm --label com.docker.compose.project=commitproof --network none \
 					--read-only --tmpfs /tmp -e JAVA_TOOL_OPTIONS=-Xmx9g -v "./$d.elle:/h:ro" commitproof/elle-oracle:9c2a18b -m list-append -c "$model" \
 					--output json --cycle-search-timeout 10000 /h/history.elle.json
@@ -119,10 +127,25 @@ m1oracle() {
 	done
 }
 
+images() {
+	step 0 "$(next build)" make build
+	step 0 "$(next images-build)" bin/commitproof images build
+}
+
+start() {
+	step 0 "$(next k7-dry-run)" make campaign-k7 DRY_RUN=1
+	step 0 "$(next campaign-start)" make campaign-k7
+}
+
+wait_campaign() {
+	step any "$(next campaign-wait)" scripts/campaign-k7.sh wait campaigns/k7.json runs/k7
+}
+
 case "${1:-}" in
-setup | m1oracle) "$1" ;;
+setup | m1oracle | images | start) "$1" ;;
+wait) wait_campaign ;;
 *)
-	echo "usage: $0 setup|m1oracle" >&2
+	echo "usage: $0 setup|m1oracle|images|start|wait" >&2
 	exit 3
 	;;
 esac
