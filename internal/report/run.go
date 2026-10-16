@@ -25,12 +25,19 @@ func RenderRun(m *Model) ([]byte, error) {
 	fmt.Fprintf(w, "<p>Campaign <b>%s</b> · seed %s · profile %s · build %s · verdict <span class=\"verdict v-%s\">%s</span> (cpcheck)</p>\n",
 		esc(str(r.Manifest, "campaign")), esc(str(r.Manifest, "seed")), esc(str(r.Manifest, "profile")), esc(str(r.Manifest, "mutant")), esc(verdict), esc(verdict))
 	fmt.Fprintf(w, "<p class=\"small\">%s · rendered from the sealed run only: every number below is computed from <code>history.jsonl</code>, <code>observations.jsonl</code> and cpcheck's <code>checks.json</code>; observations explain, they never decide a verdict (ADR-0016).</p></header>\n", esc(Format))
-	fmt.Fprint(w, "<nav><a href=\"#run\">Run</a><a href=\"#timeline\">Timeline</a><a href=\"#faults\">Faults</a><a href=\"#failover\">Failover metrics</a><a href=\"#rules\">Rules and leaders</a><a href=\"#checkers\">Checkers</a><a href=\"#markers\">Markers</a><a href=\"#reading\">How to read</a></nav>\n")
+	metricsLink := ""
+	if len(m.Scrapes) > 0 {
+		metricsLink = "<a href=\"#metrics\">Metrics</a>"
+	}
+	fmt.Fprintf(w, "<nav><a href=\"#run\">Run</a><a href=\"#timeline\">Timeline</a><a href=\"#faults\">Faults</a><a href=\"#failover\">Failover metrics</a><a href=\"#rules\">Rules and leaders</a>%s<a href=\"#checkers\">Checkers</a><a href=\"#markers\">Markers</a><a href=\"#reading\">How to read</a></nav>\n", metricsLink)
 	m.sectionRun(w)
 	m.sectionTimeline(w)
 	m.sectionFaults(w)
 	m.sectionFailover(w, met)
 	m.sectionRules(w)
+	if len(m.Scrapes) > 0 {
+		m.sectionMetrics(w)
+	}
 	m.sectionCheckers(w)
 	m.sectionMarkers(w)
 	m.sectionReading(w)
@@ -282,7 +289,7 @@ func (m *Model) sectionReading(w io.Writer) {
 	fmt.Fprint(w, "<li><b>Observations</b> (rows above the lanes and charts below) come from the runner's polling of pooler status RPCs every second (P24) and other diagnosis sources; they explain what the system did, never a verdict.</li>\n")
 	_, scraped := m.ObsBySrc["metrics"]
 	if scraped {
-		fmt.Fprint(w, "<li><b>/metrics scrapes</b> are present in this run's observations.</li>\n")
+		fmt.Fprint(w, "<li><b>/metrics scrapes (P23)</b>: every gateway, pooler and orchestrator was scraped every second; the Metrics section draws the integer families ADR-0038 records (gauges as values, counters as per-second increases) and summarizes each per target.</li>\n")
 	} else {
 		fmt.Fprint(w, "<li><b>/metrics scrapes (P23)</b>: none in this run's observations — the observer records pooler status (P24) only, so no Prometheus metric timeline can be drawn (ADR-0036, LIMITATIONS LIM-40). The node rows and charts show what the observations hold: role and reachability, WAL position, status-probe latency.</li>\n")
 	}
@@ -346,7 +353,11 @@ func (m *Model) data(met []FaultMetrics) map[string]any {
 	for k, v := range m.Counts {
 		counts[k] = v
 	}
-	return map[string]any{"format": Format, "run_id": m.Run.ID, "seal_root": m.Run.SealRoot, "checks_sha256": m.Run.ChecksSHA256,
+	out := map[string]any{"format": Format, "run_id": m.Run.ID, "seal_root": m.Run.SealRoot, "checks_sha256": m.Run.ChecksSHA256,
 		"verdict": m.Run.Checks.Verdict, "history_lines": int64(len(m.Run.History)), "observation_lines": int64(len(m.Run.Observations)),
 		"events_by_type": counts, "operations": int64(len(m.Ops)), "faults": faults, "rules": rules, "leader_changes": changes}
+	if len(m.Scrapes) > 0 {
+		out["metrics"] = m.metricsData()
+	}
+	return out
 }

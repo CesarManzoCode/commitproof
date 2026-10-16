@@ -88,6 +88,7 @@ type Model struct {
 	Nodes     map[string][]NodeObs
 	Slots     map[string][]SlotObs
 	ClientObs []ClientObs
+	Scrapes   map[string][]MetricObs // target → /metrics scrapes (P23, ADR-0038)
 	ObsBySrc  map[string]int64
 	Counts    map[string]int64 // history events by type
 	End       int64            // t of the last history event
@@ -97,7 +98,7 @@ type Model struct {
 // no completion (VerifySeal's well-formedness already excludes it).
 func Build(r *Run) (*Model, error) {
 	m := &Model{Run: r, OpOf: map[int64]*Op{}, Nodes: map[string][]NodeObs{}, Slots: map[string][]SlotObs{},
-		ObsBySrc: map[string]int64{}, Counts: map[string]int64{}}
+		Scrapes: map[string][]MetricObs{}, ObsBySrc: map[string]int64{}, Counts: map[string]int64{}}
 	inv := map[int64]history.Event{}
 	faults := map[string]*Fault{}
 	for _, ev := range r.History {
@@ -195,6 +196,18 @@ func Build(r *Run) (*Model, error) {
 			m.Slots[node] = append(m.Slots[node], SlotObs{T: ev.T, Ready: ready, Detail: str(v, "raw") + " " + str(v, "error")})
 		case "client":
 			m.ClientObs = append(m.ClientObs, ClientObs{T: ev.T, Op: num(v["op"], -1), Message: str(v, "message")})
+		case "metrics":
+			o := MetricObs{T: ev.T, OK: v["ok"] == true, V: map[string]int64{}}
+			vals, _ := v["v"].(map[string]any)
+			for k, x := range vals {
+				if n, ok := x.(json.Number); ok {
+					if i, err := strconv.ParseInt(string(n), 10, 64); err == nil {
+						o.V[k] = i
+					}
+				}
+			}
+			t := str(v, "target")
+			m.Scrapes[t] = append(m.Scrapes[t], o)
 		}
 	}
 	return m, nil

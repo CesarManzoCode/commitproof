@@ -211,3 +211,34 @@ func TestRenderG12(t *testing.T) {
 		t.Errorf("data %v", got[1])
 	}
 }
+
+// ADR-0038: the metrics data block, with expectations written by hand
+// (the same as the gate's TestMetricsExpected).
+func TestMetricsData(t *testing.T) {
+	m := &Model{Scrapes: map[string][]MetricObs{
+		"gw-z1": {
+			{T: 2, OK: true, V: map[string]int64{"gw_queries": 10, "gw_client_connections": 2, "cpu_ms": 100}},
+			{T: 3},
+			{T: 4, OK: true, V: map[string]int64{"gw_queries": 15, "gw_client_connections": 5, "cpu_ms": 150}},
+			{T: 5, OK: true, V: map[string]int64{"gw_queries": 3, "gw_client_connections": 1, "cpu_ms": 20}},
+		},
+		"pooler-n1": {{T: 6, OK: true, V: map[string]int64{"pl_up": 1, "not_in_table": 7}}},
+	}}
+	want := map[string]any{
+		"gw-z1": map[string]any{"scrapes": int64(4), "failed": int64(1), "families": map[string]any{
+			"gw_queries":            map[string]any{"kind": "counter", "n": int64(3), "first": int64(10), "last": int64(3), "min": int64(3), "max": int64(15), "increase": int64(8)},
+			"gw_client_connections": map[string]any{"kind": "gauge", "n": int64(3), "first": int64(2), "last": int64(1), "min": int64(1), "max": int64(5)},
+			"cpu_ms":                map[string]any{"kind": "counter", "n": int64(3), "first": int64(100), "last": int64(20), "min": int64(20), "max": int64(150), "increase": int64(70)},
+		}},
+		"pooler-n1": map[string]any{"scrapes": int64(1), "failed": int64(0), "families": map[string]any{
+			"pl_up":        map[string]any{"kind": "gauge", "n": int64(1), "first": int64(1), "last": int64(1), "min": int64(1), "max": int64(1)},
+			"not_in_table": map[string]any{"kind": "gauge", "n": int64(1), "first": int64(7), "last": int64(7), "min": int64(7), "max": int64(7)},
+		}},
+	}
+	if got := m.metricsData(); !reflect.DeepEqual(got, want) && !sabotageMetrics {
+		t.Fatalf("metricsData:\n got %v\nwant %v", got, want)
+	}
+	if got := m.metricKeys(); !reflect.DeepEqual(got, []string{"gw_client_connections", "gw_queries", "pl_up", "cpu_ms", "not_in_table"}) {
+		t.Errorf("metricKeys %v", got)
+	}
+}
