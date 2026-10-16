@@ -34,10 +34,12 @@ const ProjectLabel = "com.docker.compose.project=" + Project
 
 // Profiles implemented by deploy/ and their Compose files, applied in order
 // (K1: baseline; K4: h1, the historical control, ADR-0025; K5: buffered, an
-// override of the gateways' commands, CONTRACT §5.5).
+// override of the gateways' commands; K6b: slotless, an override of the
+// poolers' and gateways' commands, ADR-0041; CONTRACT §5.5).
 var composeFiles = map[string][]string{
 	"baseline": {"deploy/compose.yaml"},
 	"buffered": {"deploy/compose.yaml", "deploy/compose-buffered.yaml"},
+	"slotless": {"deploy/compose.yaml", "deploy/compose-slotless.yaml"},
 	"h1":       {"deploy/compose-h1.yaml"},
 }
 

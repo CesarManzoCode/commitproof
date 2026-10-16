@@ -20,9 +20,11 @@ x-node-env: &node-env
 # P23 (ADR-0038): the pinned autoexport's Prometheus exporter serves /metrics
 # on 9464 for the runner's scrapes (no HTTP port of the pinned commit does).
 # Multigateway, multipooler and multiorch only: pgctld shares the pooler's
-# network namespace and stays without it.
+# network namespace and stays without it. CP_OTEL_METRICS_EXPORTER=none
+# turns the exporter off for ADR-0041's exporter measurement only
+# (`commitproof campaign` refuses to run while it is set).
 x-otel-env: &otel-env
-  OTEL_METRICS_EXPORTER: prometheus
+  OTEL_METRICS_EXPORTER: ${CP_OTEL_METRICS_EXPORTER:-prometheus}
   OTEL_EXPORTER_PROMETHEUS_HOST: 0.0.0.0
   OTEL_EXPORTER_PROMETHEUS_PORT: "9464"
 

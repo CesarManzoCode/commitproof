@@ -1,0 +1,118 @@
+# Profile `slotless` (CONTRACT §5.5, ADR-0041): an override of compose.yaml.
+# Poolers and gateways run with --enable-slot-based-replication=false
+# instead of upstream's demo value true (S03), nothing else changed. Compose
+# replaces a service's command in an override, so each command is restated:
+# compose.yaml's flags, in order, with that one value flipped. K7's V2 runs
+# C1, C2 and C4 on it (real build only).
+services:
+  pooler-n1:
+    command:
+      - /multigres/bin/multipooler
+      - --http-port=16000
+      - --grpc-port=16100
+      - --topo-global-server-addresses=etcd:2379
+      - --topo-global-root=/multigres/test/global
+      - --cell=zone1
+      - --database=postgres
+      - --table-group=default
+      - --shard=0-inf
+      - --service-id=n1
+      - --pgctld-addr=localhost:16200
+      - --grpc-socket-file=/data/multipooler.sock
+      - --connpool-global-capacity=50
+      - --service-map=grpc-pooler
+      - --enable-slot-based-replication=false
+      - --hostname=pooler-n1
+
+  pooler-n2:
+    command:
+      - /multigres/bin/multipooler
+      - --http-port=16000
+      - --grpc-port=16100
+      - --topo-global-server-addresses=etcd:2379
+      - --topo-global-root=/multigres/test/global
+      - --cell=zone2
+      - --database=postgres
+      - --table-group=default
+      - --shard=0-inf
+      - --service-id=n2
+      - --pgctld-addr=localhost:16200
+      - --grpc-socket-file=/data/multipooler.sock
+      - --connpool-global-capacity=50
+      - --service-map=grpc-pooler
+      - --enable-slot-based-replication=false
+      - --hostname=pooler-n2
+
+  pooler-n3:
+    command:
+      - /multigres/bin/multipooler
+      - --http-port=16000
+      - --grpc-port=16100
+      - --topo-global-server-addresses=etcd:2379
+      - --topo-global-root=/multigres/test/global
+      - --cell=zone3
+      - --database=postgres
+      - --table-group=default
+      - --shard=0-inf
+      - --service-id=n3
+      - --pgctld-addr=localhost:16200
+      - --grpc-socket-file=/data/multipooler.sock
+      - --connpool-global-capacity=50
+      - --service-map=grpc-pooler
+      - --enable-slot-based-replication=false
+      - --hostname=pooler-n3
+
+  pooler-n4:
+    command:
+      - /multigres/bin/multipooler
+      - --http-port=16000
+      - --grpc-port=16100
+      - --topo-global-server-addresses=etcd:2379
+      - --topo-global-root=/multigres/test/global
+      - --cell=zone1
+      - --database=postgres
+      - --table-group=default
+      - --shard=0-inf
+      - --service-id=n4
+      - --pgctld-addr=localhost:16200
+      - --grpc-socket-file=/data/multipooler.sock
+      - --connpool-global-capacity=50
+      - --service-map=grpc-pooler
+      - --enable-slot-based-replication=false
+      - --hostname=pooler-n4
+
+  gw-z1:
+    command:
+      - /multigres/bin/multigateway
+      - --http-port=15000
+      - --grpc-port=15100
+      - --pg-port=15432
+      - --hostname=gw-z1
+      - --topo-global-server-addresses=etcd:2379
+      - --topo-global-root=/multigres/test/global
+      - --cell=zone1
+      - --enable-slot-based-replication=false
+
+  gw-z2:
+    command:
+      - /multigres/bin/multigateway
+      - --http-port=15000
+      - --grpc-port=15100
+      - --pg-port=15432
+      - --hostname=gw-z2
+      - --topo-global-server-addresses=etcd:2379
+      - --topo-global-root=/multigres/test/global
+      - --cell=zone2
+      - --enable-slot-based-replication=false
+
+  gw-z3:
+    command:
+      - /multigres/bin/multigateway
+      - --http-port=15000
+      - --grpc-port=15100
+      - --pg-port=15432
+      - --hostname=gw-z3
+      - --topo-global-server-addresses=etcd:2379
+      - --topo-global-root=/multigres/test/global
+      - --cell=zone3
+      - --enable-slot-based-replication=false
