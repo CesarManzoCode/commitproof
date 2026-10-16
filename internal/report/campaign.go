@@ -27,6 +27,15 @@ type CampaignRun struct {
 	// G12 holds C8's storm windows (stats.storm_windows), present for plans
 	// of contract 1.2.0 or later (ADR-0037).
 	G12 []StormWindow
+	// ChecksExposure is C9's stats.exposure (plans of contract 1.7.0 or
+	// later, ADR-0044): the exposure a stub contributes to its cell.
+	ChecksExposure *RunExposure
+}
+
+// RunExposure is one run's §12.3 exposure as checks.json carries it.
+type RunExposure struct {
+	Ops, OKWrites, FaultTime int64
+	Confirmed                map[string]int64
 }
 
 // StormWindow is one storm window of C8's statistics (ADR-0037): both ok
@@ -113,6 +122,16 @@ func summarize(id, sealRoot string, man map[string]any, checks *output.Checks) *
 	cr.Classes = sortedKeys(classes)
 	sort.Strings(cr.Checkers)
 	for _, ch := range checks.Checkers {
+		if ch.ID == "C9" {
+			if m, ok := ch.Stats["exposure"].(map[string]any); ok {
+				e := &RunExposure{Ops: num(m["operations"], 0), OKWrites: num(m["ok_writes"], 0), FaultTime: num(m["fault_time_ns"], 0), Confirmed: map[string]int64{}}
+				cf, _ := m["confirmed_faults"].(map[string]any)
+				for k, v := range cf {
+					e.Confirmed[k] = num(v, 0)
+				}
+				cr.ChecksExposure = e
+			}
+		}
 		if ch.ID != "C8" {
 			continue
 		}
@@ -231,11 +250,13 @@ type Cell struct {
 	Unknown                   int64
 	Classes                   map[string]int64 // k per anomaly class
 	FullRuns                  int64
-	Ops, OKWrites, FaultTime  int64
-	Confirmed                 map[string]int64
-	Checkers                  []string
-	Multigres                 []string
-	G12                       G12Fractions
+	// ChecksRuns: stubs whose exposure came from checks.json (ADR-0044).
+	ChecksRuns               int64
+	Ops, OKWrites, FaultTime int64
+	Confirmed                map[string]int64
+	Checkers                 []string
+	Multigres                []string
+	G12                      G12Fractions
 }
 
 // G12Fractions sums a cell's storm windows over its valid runs (ADR-0037):
@@ -295,12 +316,22 @@ func (c *Campaign) Cells() []*Cell {
 				g.NotJudged++
 			}
 		}
-		if !r.Stub {
+		switch {
+		case !r.Stub:
 			cl.FullRuns++
 			cl.Ops += r.Ops
 			cl.OKWrites += r.OKWrites
 			cl.FaultTime += r.FaultTime
 			for k, v := range r.Confirmed {
+				cl.Confirmed[k] += v
+			}
+		case r.ChecksExposure != nil:
+			e := r.ChecksExposure
+			cl.ChecksRuns++
+			cl.Ops += e.Ops
+			cl.OKWrites += e.OKWrites
+			cl.FaultTime += e.FaultTime
+			for k, v := range e.Confirmed {
 				cl.Confirmed[k] += v
 			}
 		}
@@ -387,16 +418,22 @@ func RenderCampaign(c *Campaign) ([]byte, error) {
 		for k, v := range cl.Confirmed {
 			conf[k] = v
 		}
-		cd["exposure"] = map[string]any{"runs_full": cl.FullRuns, "operations": cl.Ops, "ok_writes": cl.OKWrites, "confirmed_faults": conf, "fault_time_ns": cl.FaultTime}
+		ex := map[string]any{"runs_full": cl.FullRuns, "operations": cl.Ops, "ok_writes": cl.OKWrites, "confirmed_faults": conf, "fault_time_ns": cl.FaultTime}
+		over := fmt.Sprintf("%d of %d runs", cl.FullRuns, cl.N)
+		if cl.ChecksRuns > 0 {
+			ex["runs_checks_json"] = cl.ChecksRuns
+			over = fmt.Sprintf("%d of %d runs (%d full, %d from checks.json)", cl.FullRuns+cl.ChecksRuns, cl.N, cl.FullRuns, cl.ChecksRuns)
+		}
+		cd["exposure"] = ex
 		var ids []any
 		for _, r := range cl.Runs {
 			ids = append(ids, r.ID)
 		}
 		cd["runs"] = ids
 		data = append(data, cd)
-		fmt.Fprintf(w, "<tr id=\"cell-%s-%s-%s\"><td>%s</td><td>%s</td><td>%s</td><td class=\"n\">%d</td><td class=\"n\">%d</td><td class=\"n\">%d</td><td class=\"n\">%d</td><td class=\"n\">%d</td><td>%s</td><td class=\"n\">%s</td><td class=\"n\">%d</td><td class=\"n\">%d</td><td>%s</td><td class=\"n\">%s</td><td class=\"n\">%d of %d runs</td></tr>\n",
+		fmt.Fprintf(w, "<tr id=\"cell-%s-%s-%s\"><td>%s</td><td>%s</td><td>%s</td><td class=\"n\">%d</td><td class=\"n\">%d</td><td class=\"n\">%d</td><td class=\"n\">%d</td><td class=\"n\">%d</td><td>%s</td><td class=\"n\">%s</td><td class=\"n\">%d</td><td class=\"n\">%d</td><td>%s</td><td class=\"n\">%s</td><td class=\"n\">%s</td></tr>\n",
 			esc(cl.Campaign), esc(cl.Profile), esc(cl.Mutant), esc(cl.Campaign), esc(cl.Profile), esc(cl.Mutant), cl.N, cl.Invalid, cl.Pass, cl.Fail, cl.Unknown,
-			strings.Join(vs, "<br>"), bound, cl.Ops, cl.OKWrites, esc(kindsText(cl.Confirmed)), secs(cl.FaultTime), cl.FullRuns, cl.N)
+			strings.Join(vs, "<br>"), bound, cl.Ops, cl.OKWrites, esc(kindsText(cl.Confirmed)), secs(cl.FaultTime), esc(over))
 	}
 	fmt.Fprint(w, "</table>\n")
 	if g12 := renderG12(w, cells); len(g12) > 0 {
@@ -406,11 +443,22 @@ func RenderCampaign(c *Campaign) ([]byte, error) {
 			}
 		}
 	}
-	fmt.Fprint(w, "<p class=\"small\">Exposure counts only runs held in full; a stub (manifest, plan, seal) is verified and counted by its checks.json verdict but its history is not in the directory (CONTRACT §13; LIMITATIONS LIM-30, LIM-37). ok writes = ok ledger inserts + appended elements of ok append operations + ok register writes and CAS + ok bank transfers; fault-time = Σ (heal − confirmed) (ADR-0036).</p>\n")
-	fmt.Fprint(w, "<h2 id=\"statements\">Clean-result statements (§12.3)</h2>\n<p class=\"small\">For real-build cells whose valid runs all PASS and are held in full; mutant cells are detection experiments (§12.4), not clean results.</p>\n<ul>\n")
+	checksExposure := false
+	for _, cl := range cells {
+		checksExposure = checksExposure || cl.ChecksRuns > 0
+	}
+	// Pages without checks.json exposure (every plan before contract 1.7.0)
+	// keep ADR-0036's wording byte for byte (the K6 example).
+	if checksExposure {
+		fmt.Fprint(w, "<p class=\"small\">Exposure counts the runs held in full from their histories and the stubs (manifest, plan, seal) whose checks.json carries C9's exposure (plans of contract 1.7.0 or later, ADR-0044); a stub without it is verified and counted by its checks.json verdict only (CONTRACT §13; LIMITATIONS LIM-30, LIM-37). ok writes = ok ledger inserts + appended elements of ok append operations + ok register writes and CAS + ok bank transfers; fault-time = Σ (heal − confirmed) (ADR-0036).</p>\n")
+		fmt.Fprint(w, "<h2 id=\"statements\">Clean-result statements (§12.3)</h2>\n<p class=\"small\">For real-build cells whose valid runs all PASS and whose exposure is complete (runs held in full, or stubs carrying their exposure in checks.json, ADR-0044); mutant cells are detection experiments (§12.4), not clean results.</p>\n<ul>\n")
+	} else {
+		fmt.Fprint(w, "<p class=\"small\">Exposure counts only runs held in full; a stub (manifest, plan, seal) is verified and counted by its checks.json verdict but its history is not in the directory (CONTRACT §13; LIMITATIONS LIM-30, LIM-37). ok writes = ok ledger inserts + appended elements of ok append operations + ok register writes and CAS + ok bank transfers; fault-time = Σ (heal − confirmed) (ADR-0036).</p>\n")
+		fmt.Fprint(w, "<h2 id=\"statements\">Clean-result statements (§12.3)</h2>\n<p class=\"small\">For real-build cells whose valid runs all PASS and are held in full; mutant cells are detection experiments (§12.4), not clean results.</p>\n<ul>\n")
+	}
 	qualifies := false
 	for _, cl := range cells {
-		if cl.Mutant != "real" || cl.N == 0 || cl.Fail > 0 || cl.Unknown > 0 || cl.FullRuns != cl.N {
+		if cl.Mutant != "real" || cl.N == 0 || cl.Fail > 0 || cl.Unknown > 0 || cl.FullRuns+cl.ChecksRuns != cl.N {
 			continue
 		}
 		qualifies = true
@@ -418,7 +466,9 @@ func RenderCampaign(c *Campaign) ([]byte, error) {
 		fmt.Fprintf(w, "<li>In %d valid runs of campaign %s (profile %s, Multigres %s), exposing %d ok writes to %d confirmed faults of kinds {%s}, no violation of {%s} was observed; at 95%% confidence the per-run violation probability under this exact schedule distribution is below %s. Not tested: see docs/LIMITATIONS.md.</li>\n",
 			cl.N, esc(cl.Campaign), esc(cl.Profile), esc(strings.Join(cl.Multigres, ", ")), cl.OKWrites, sumValues(cl.Confirmed), esc(strings.Join(sortedKeys(cl.Confirmed), ", ")), esc(strings.Join(cl.Checkers, ", ")), stats.Up(zb))
 	}
-	if !qualifies {
+	if !qualifies && checksExposure {
+		fmt.Fprint(w, "<li>No cell qualifies (a real-build cell with valid runs only PASS and complete exposure).</li>\n")
+	} else if !qualifies {
 		fmt.Fprint(w, "<li>No cell qualifies (a real-build cell with valid runs only PASS, all held in full).</li>\n")
 	}
 	fmt.Fprint(w, "</ul>\n<h2 id=\"runs\">Runs per cell</h2>\n")

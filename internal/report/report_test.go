@@ -9,6 +9,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/CesarManzoCode/commitproof/internal/checker/output"
 	"github.com/CesarManzoCode/commitproof/internal/history/historytest"
 )
 
@@ -242,3 +243,75 @@ func TestMetricsData(t *testing.T) {
 		t.Errorf("metricKeys %v", got)
 	}
 }
+
+// ADR-0044: a stub whose checks.json carries C9's exposure contributes it to
+// its cell, and a cell whose runs all do gets the §12.3 clean statement; a
+// stub without it (plans before 1.7.0) still counts only by its verdict.
+// Expected numbers written by hand from the two checks files below.
+func TestChecksExposure(t *testing.T) {
+	cj := func(id string, exposure string) []byte {
+		c9 := `{"anomalies":[],"id":"C9","stats":{"faults":2},"valid":true}`
+		if exposure != "" {
+			c9 = `{"anomalies":[],"id":"C9","stats":{"exposure":` + exposure + `,"faults":2},"valid":true}`
+		}
+		return []byte(`{"checkers":[{"anomalies":[],"id":"C1","stats":{},"valid":true},` + c9 + `],"run_id":"` + id + `","seal_root":"r","verdict":"PASS"}`)
+	}
+	man := func(campaign string, seed string) map[string]any {
+		return map[string]any{"campaign": campaign, "profile": "baseline", "mutant": "real", "seed": seed, "multigres_commit": "e3cbdbbb0b94"}
+	}
+	var runs []*CampaignRun
+	for i, e := range []string{
+		`{"confirmed_faults":{"F1a":1,"F5a":1},"fault_time_ns":10000000000,"ok_writes":100,"operations":150}`,
+		`{"confirmed_faults":{"F2a":1,"F5a":1},"fault_time_ns":2500000000,"ok_writes":200,"operations":250}`,
+	} {
+		id := []string{"a", "b"}[i]
+		checks, err := outputDecode(cj(id, e))
+		if err != nil {
+			t.Fatal(err)
+		}
+		r := summarize(id, "r", man("C12", id), checks)
+		r.Stub = true
+		runs = append(runs, r)
+	}
+	old, err := outputDecode(cj("c", ""))
+	if err != nil {
+		t.Fatal(err)
+	}
+	oldRun := summarize("c", "r", man("C2", "1"), old)
+	oldRun.Stub = true
+	runs = append(runs, oldRun)
+	if runs[0].ChecksExposure == nil || oldRun.ChecksExposure != nil {
+		t.Fatalf("exposure parsed %v / %v", runs[0].ChecksExposure, oldRun.ChecksExposure)
+	}
+	cells := (&Campaign{Runs: runs}).Cells()
+	if len(cells) != 2 {
+		t.Fatalf("%d cells", len(cells))
+	}
+	c12 := cells[0] // sorted by name: C12 < C2
+	if c12.Campaign != "C12" || c12.ChecksRuns != 2 || c12.FullRuns != 0 || c12.Ops != 400 || c12.OKWrites != 300 ||
+		c12.FaultTime != 12_500_000_000 || !reflect.DeepEqual(c12.Confirmed, map[string]int64{"F1a": 1, "F2a": 1, "F5a": 2}) {
+		t.Fatalf("C12 cell %+v", c12)
+	}
+	if c2 := cells[1]; c2.Campaign != "C2" || c2.ChecksRuns != 0 || c2.Ops != 0 {
+		t.Fatalf("C2 cell %+v", c2)
+	}
+	page, err := RenderCampaign(&Campaign{Runs: runs})
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, want := range []string{
+		"2 of 2 runs (0 full, 2 from checks.json)",
+		"<li>In 2 valid runs of campaign C12 (profile baseline, Multigres e3cbdbb), exposing 300 ok writes to 4 confirmed faults of kinds {F1a, F2a, F5a}",
+		"0 of 1 runs",
+		"ADR-0044",
+	} {
+		if !strings.Contains(string(page), want) {
+			t.Errorf("campaign page lacks %q", want)
+		}
+	}
+	if strings.Contains(string(page), "<li>In 1 valid runs of campaign C2") {
+		t.Error("a cell without exposure got a clean statement")
+	}
+}
+
+func outputDecode(b []byte) (*output.Checks, error) { return output.Decode(b) }
