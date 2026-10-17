@@ -21,7 +21,7 @@ scratch=${1:?scratch directory}
 mkdir -p "$scratch"
 c3() { # checks.json → C3's comparable parts
 	jq -c '{verdict: .verdict} + ([.checkers[] | select(.id == "C3")][0] // {} |
-		{valid: (.valid // null),
+		{valid: (if has("valid") then .valid else null end),
 		 classes: ([.anomalies[]?.class] | group_by(.) | map({(.[0]): length}) | add // {}),
 		 counts: (.stats.counts // {}),
 		 observations: ([.stats.observations[]?.class] | group_by(.) | map({(.[0]): length}) | add // {}),
