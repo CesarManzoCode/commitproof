@@ -1,8 +1,11 @@
 package gate
 
 import (
+	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -756,7 +759,9 @@ func sabotageK72(dir string) error {
 
 // forgeReportAt edits a rendered page and rewrites the render record's
 // output hash (latest record named prefix or prefix-<n>) to the forged
-// page's, so that only a reading of the page's contents can tell.
+// page's, so that only a reading of the page's contents can tell. A claim
+// whose artifact is the page names the same hash in claims.yaml (two levels
+// above dir, K7's release layout); it is rewritten too.
 func forgeReportAt(dir, rel, prefix string, edit func([]byte) ([]byte, error)) error {
 	p := filepath.Join(dir, rel)
 	b, err := os.ReadFile(p)
@@ -768,6 +773,15 @@ func forgeReportAt(dir, rel, prefix string, edit func([]byte) ([]byte, error)) e
 		return err
 	}
 	if err := os.WriteFile(p, nb, 0o644); err != nil {
+		return err
+	}
+	cp := filepath.Join(filepath.Dir(filepath.Dir(filepath.Clean(dir))), "claims.yaml")
+	if cb, err := os.ReadFile(cp); err == nil {
+		cb = bytes.ReplaceAll(cb, []byte(`sha256: "`+sha(b)+`"`), []byte(`sha256: "`+sha(nb)+`"`))
+		if err := os.WriteFile(cp, cb, 0o644); err != nil {
+			return err
+		}
+	} else if !errors.Is(err, fs.ErrNotExist) {
 		return err
 	}
 	e := LoadEvidence(dir)

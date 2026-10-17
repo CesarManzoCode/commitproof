@@ -953,7 +953,7 @@ func evalK77(e *Evidence) (string, []string, []string) {
 	}
 	// The tag, recorded after the release commit: annotated, on a commit
 	// whose code is the CI's, nothing pushed (no remote).
-	trec, tout, pt := exitOK(e, "tag-check", "scripts/k7-tag-check.sh")
+	trec, tout, pt := exitOK(e, lastTagCheck(e), "scripts/k7-tag-check.sh")
 	p = append(p, pt...)
 	if len(pt) == 0 && trec.Line < r.Line {
 		p = append(p, "tag-check precedes the CI record")
@@ -984,20 +984,46 @@ func evalK77(e *Evidence) (string, []string, []string) {
 }
 
 func sabotageK77(dir string) error {
-	return editSummary(dir, "tag-check", func(m map[string]any) { m["object_type"] = "commit" })
+	e := LoadEvidence(dir)
+	name := lastTagCheck(e)
+	e.Close()
+	return editSummary(dir, name, func(m map[string]any) { m["object_type"] = "commit" })
+}
+
+var tagCheckAttempt = regexp.MustCompile(`^tag-check(-[0-9]+)?$`)
+
+// lastTagCheck: the latest tag-check attempt's name ("tag-check" if there is
+// none). The tag is checked again after a later CI attempt, as lastCI reads
+// the latest CI; earlier attempts stay recorded.
+func lastTagCheck(e *Evidence) string {
+	name := "tag-check"
+	for _, r := range e.Records {
+		if tagCheckAttempt.MatchString(r.Name) {
+			name = r.Name
+		}
+	}
+	return name
 }
 
 // ---------------------------------------------------------------- controls
 
 // K7NegativeControls runs NegativeControls with K7's layout: each copy holds
 // evidence/K7 and the release files two levels up (findings/, claims.yaml,
-// README.md, CHANGELOG.md, docs/, campaigns/), with links to the cited
-// evidence (K4, K5), which no K7 sabotage touches.
+// README.md, CHANGELOG.md, docs/, campaigns/), with links to every other
+// sprint's evidence (the cited K4/K5 runs, and the artifacts claims.yaml
+// names under K2, K3, K6b, pre-K7, …), which no K7 sabotage touches. The
+// links are absolute: a relative --evidence would leave them dangling.
 func K7NegativeControls(dir string, crits []Criterion) []Control {
-	root := filepath.Dir(filepath.Dir(filepath.Clean(dir)))
+	root, rootErr := filepath.Abs(filepath.Dir(filepath.Dir(filepath.Clean(dir))))
+	self := filepath.Base(filepath.Clean(dir))
 	var out []Control
 	for _, c := range crits {
 		ctl := Control{Criterion: c.ID, Sabotage: c.Sabotage, Failed: []string{}, TargetProblems: []string{}}
+		if rootErr != nil {
+			ctl.Error = rootErr.Error()
+			out = append(out, ctl)
+			continue
+		}
 		tmp, err := os.MkdirTemp("", "cpgate-"+c.ID+"-")
 		if err != nil {
 			ctl.Error = err.Error()
@@ -1028,8 +1054,16 @@ func K7NegativeControls(dir string, crits []Criterion) []Control {
 					return
 				}
 			}
-			for _, s := range []string{"K4", "K5", "K6b"} {
-				if err := os.Symlink(filepath.Join(root, "evidence", s), filepath.Join(tmp, "evidence", s)); err != nil {
+			sib, err := os.ReadDir(filepath.Join(root, "evidence"))
+			if err != nil {
+				ctl.Error = err.Error()
+				return
+			}
+			for _, en := range sib {
+				if en.Name() == self {
+					continue
+				}
+				if err := os.Symlink(filepath.Join(root, "evidence", en.Name()), filepath.Join(tmp, "evidence", en.Name())); err != nil {
 					ctl.Error = err.Error()
 					return
 				}
