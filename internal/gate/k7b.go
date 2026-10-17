@@ -983,11 +983,27 @@ func evalK77(e *Evidence) (string, []string, []string) {
 	return "commands.jsonl", p, d
 }
 
+// sabotageK77 forges the latest tag check's summary, its recorded stdout
+// hash, and the hash a claim names for that stdout (k7RehashClaims), so
+// that only K7.7's reading of the summary can tell.
 func sabotageK77(dir string) error {
 	e := LoadEvidence(dir)
 	name := lastTagCheck(e)
+	_, before, err := e.Get(name)
 	e.Close()
-	return editSummary(dir, name, func(m map[string]any) { m["object_type"] = "commit" })
+	if err != nil {
+		return err
+	}
+	if err := editSummary(dir, name, func(m map[string]any) { m["object_type"] = "commit" }); err != nil {
+		return err
+	}
+	e = LoadEvidence(dir)
+	_, after, err := e.Get(name)
+	e.Close()
+	if err != nil {
+		return err
+	}
+	return k7RehashClaims(dir, sha(before), sha(after))
 }
 
 var tagCheckAttempt = regexp.MustCompile(`^tag-check(-[0-9]+)?$`)

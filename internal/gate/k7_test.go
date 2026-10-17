@@ -174,3 +174,54 @@ func TestK7SabotageK72ClaimHash(t *testing.T) {
 		t.Fatalf("render record after the forgery: %s %v", out, err)
 	}
 }
+
+// TestK7SabotageK77ClaimHash: K7.7's control forges the latest tag check's
+// summary so that only K7.7 can tell — the record's stdout hash and the hash
+// a claim names for that stdout (claims.yaml) are rewritten to the forged
+// output's; an earlier attempt and a claim naming another artifact keep
+// theirs.
+func TestK7SabotageK77ClaimHash(t *testing.T) {
+	root := t.TempDir()
+	ev := filepath.Join(root, "evidence", "K7")
+	old := []byte(`{"command":"k7-tag-check","object_type":"tag","tag":"v1.0.0"}` + "\n")
+	newer := []byte(`{"command":"k7-tag-check","object_type":"tag","tag":"v1.0.0","tag_commit":"x"}` + "\n")
+	other := sha([]byte("another artifact"))
+	rec := func(name string, out []byte) string {
+		return fmt.Sprintf(`{"name":%q,"argv":["scripts/k7-tag-check.sh"],"exit_code":0,"stdout":"evidence/K7/logs/%s.stdout","stdout_sha256":%q,"stderr":"evidence/K7/logs/%s.stderr","stderr_sha256":%q}`+"\n",
+			name, name, sha(out), name, sha(nil))
+	}
+	files := map[string][]byte{
+		"evidence/K7/logs/tag-check.stdout":   old,
+		"evidence/K7/logs/tag-check.stderr":   {},
+		"evidence/K7/logs/tag-check-2.stdout": newer,
+		"evidence/K7/logs/tag-check-2.stderr": {},
+		"evidence/K7/commands.jsonl":          []byte(rec("tag-check", old) + rec("tag-check-2", newer)),
+		"claims.yaml": []byte("claims:\n  - id: CLM-0071\n    artifact: \"evidence/K7/logs/tag-check-2.stdout\"\n    sha256: \"" + sha(newer) +
+			"\"\n  - id: CLM-0025\n    artifact: \"evidence/K7/results.json\"\n    sha256: \"" + other + "\"\n"),
+	}
+	for f, b := range files {
+		p := filepath.Join(root, f)
+		if err := os.MkdirAll(filepath.Dir(p), 0o755); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(p, b, 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := sabotageK77(ev); err != nil {
+		t.Fatal(err)
+	}
+	e := LoadEvidence(ev)
+	defer e.Close()
+	_, out, err := e.Get("tag-check-2")
+	if err != nil || !bytes.Contains(out, []byte(`"object_type":"commit"`)) {
+		t.Fatalf("latest tag check after the forgery: %s %v", out, err)
+	}
+	if _, prev, err := e.Get("tag-check"); err != nil || !bytes.Equal(prev, old) {
+		t.Fatalf("earlier tag check changed: %s %v", prev, err)
+	}
+	cy, _ := os.ReadFile(filepath.Join(root, "claims.yaml"))
+	if !bytes.Contains(cy, []byte(sha(out))) || bytes.Contains(cy, []byte(sha(newer))) || !bytes.Contains(cy, []byte(other)) {
+		t.Fatalf("claims.yaml after the forgery:\n%s", cy)
+	}
+}

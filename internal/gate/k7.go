@@ -760,8 +760,8 @@ func sabotageK72(dir string) error {
 // forgeReportAt edits a rendered page and rewrites the render record's
 // output hash (latest record named prefix or prefix-<n>) to the forged
 // page's, so that only a reading of the page's contents can tell. A claim
-// whose artifact is the page names the same hash in claims.yaml (two levels
-// above dir, K7's release layout); it is rewritten too.
+// whose artifact is the page names the same hash; it is rewritten too
+// (k7RehashClaims).
 func forgeReportAt(dir, rel, prefix string, edit func([]byte) ([]byte, error)) error {
 	p := filepath.Join(dir, rel)
 	b, err := os.ReadFile(p)
@@ -775,13 +775,7 @@ func forgeReportAt(dir, rel, prefix string, edit func([]byte) ([]byte, error)) e
 	if err := os.WriteFile(p, nb, 0o644); err != nil {
 		return err
 	}
-	cp := filepath.Join(filepath.Dir(filepath.Dir(filepath.Clean(dir))), "claims.yaml")
-	if cb, err := os.ReadFile(cp); err == nil {
-		cb = bytes.ReplaceAll(cb, []byte(`sha256: "`+sha(b)+`"`), []byte(`sha256: "`+sha(nb)+`"`))
-		if err := os.WriteFile(cp, cb, 0o644); err != nil {
-			return err
-		}
-	} else if !errors.Is(err, fs.ErrNotExist) {
+	if err := k7RehashClaims(dir, sha(b), sha(nb)); err != nil {
 		return err
 	}
 	e := LoadEvidence(dir)
@@ -802,6 +796,22 @@ func forgeReportAt(dir, rel, prefix string, edit func([]byte) ([]byte, error)) e
 			}
 		}
 	})
+}
+
+// k7RehashClaims rewrites the sha256 a claim names for a file a sabotage
+// forged (claims.yaml, two levels above dir, K7's release layout), so that
+// the forgery stays consistent and only the targeted criterion's reading of
+// the file can tell; K7.5's own control sabotages claims.yaml directly.
+func k7RehashClaims(dir, oldSHA, newSHA string) error {
+	cp := filepath.Join(filepath.Dir(filepath.Dir(filepath.Clean(dir))), "claims.yaml")
+	cb, err := os.ReadFile(cp)
+	if errors.Is(err, fs.ErrNotExist) {
+		return nil
+	}
+	if err != nil {
+		return err
+	}
+	return os.WriteFile(cp, bytes.ReplaceAll(cb, []byte(`sha256: "`+oldSHA+`"`), []byte(`sha256: "`+newSHA+`"`)), 0o644)
 }
 
 // k7i reads a JSON integer (0 when absent).
