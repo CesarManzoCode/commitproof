@@ -13,10 +13,49 @@
   },
   "id": "FND-C9-40b6f05a",
   "k7_replay": {
-    "record": "",
-    "replays_with_class": 0,
-    "reproducibility": "",
-    "runs": []
+    "record": "pkg-replay-FND-C9-40b6f05a",
+    "replays_with_class": 4,
+    "reproducibility": "REPRODUCED",
+    "runs": [
+      {
+        "classes": [],
+        "run_id": "20261017T195000Z-C9-1-real-e8381b69",
+        "seal_root": "8b8514dfbb989bab9ecdc11b226386818af608b0a8ccb33ac1f3d69e0b50e43b",
+        "verdict": "PASS"
+      },
+      {
+        "classes": [
+          "notify-not-resumed"
+        ],
+        "run_id": "20261017T195114Z-C9-1-real-e8381b69",
+        "seal_root": "915cb7d9e2f4ecb7719af47c106b1bafd6e47806394fa632f30e97e6ef2f05af",
+        "verdict": "FAIL"
+      },
+      {
+        "classes": [
+          "notify-not-resumed"
+        ],
+        "run_id": "20261017T195224Z-C9-1-real-e8381b69",
+        "seal_root": "f19f1686e25e70c2741b68083e0ee13736c3c0793104639010af90bc0e3450e2",
+        "verdict": "FAIL"
+      },
+      {
+        "classes": [
+          "notify-not-resumed"
+        ],
+        "run_id": "20261017T195343Z-C9-1-real-e8381b69",
+        "seal_root": "e3fa72808ac7521a739131a70f40b21302bd5465d02df903a542189acf3ab92b",
+        "verdict": "FAIL"
+      },
+      {
+        "classes": [
+          "notify-not-resumed"
+        ],
+        "run_id": "20261017T195501Z-C9-1-real-e8381b69",
+        "seal_root": "0e0998c2fd928714ff77130c5e8a4707c9320fd2c757585c87283e6a93caf5b4",
+        "verdict": "FAIL"
+      }
+    ]
   },
   "minimized_plan_sha256": "e8381b690f38404bea54eaa9da1bd2de51239b74bb25eccbacde6d4b77041253",
   "minimized_run": {

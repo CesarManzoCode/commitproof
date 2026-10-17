@@ -3,8 +3,8 @@ id: CLM-0049
 text: "FND-C8-5254b5cb (G8, PROTOCOL_DEVIATION, DESIGN, medium, origin MULTIGRES, NEW): explicit transactions that began during a judged buffered switchover received 57P03, not 40001."
 contract: "§3 G8, §11, §11.4"
 target: {system: "multigres", commit: "e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73", profile: "buffered", mutant: "none"}
-command: "cpcheck check on the original run; bin/commitproof replay 20261016T231406Z-C8-10-real-cb16d052 --times 5 (P13; K7.4 record pending)"
+command: "cpcheck check on the original run; bin/commitproof replay 20261016T231406Z-C8-10-real-cb16d052 --times 5 (P13); K7.4: the same command once more (record pkg-replay-FND-C8-5254b5cb-3)"
 artifact: "evidence/K7/runs/20261016T231406Z-C8-10-real-cb16d052.tar.zst"
 sha256: "2232bb76e0f354ee3bf3055e4d6b770bd5a8cd4f34c510a75134877dde04ee80"
-result: "original run 20261016T231406Z-C8-10-real-cb16d052: FAIL planned-failover-error; recorded replays 1 of 5 with planned-failover-error (INTERMITTENT); 0 K7 recurrences"
+result: "original run 20261016T231406Z-C8-10-real-cb16d052: FAIL planned-failover-error; recorded replays 1 of 5 with planned-failover-error (INTERMITTENT); 0 K7 recurrences; K7.4 replays 0 of 5 with planned-failover-error (NOT_REPRODUCED; CLM-0062)"
 limitations: ["LIM-25", "LIM-01", "LIM-41"]

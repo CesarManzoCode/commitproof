@@ -61,8 +61,39 @@ Each replay brings the cluster up, runs the minimized plan (`plan.json` here; sh
 **Minimization and replays** (§12.2, K5): F2b alone, 22.5 s, all clients (the client-reduced candidate PASSed: there gw-z3's first `ok` write after the fault came late and the workload ended before any NOTIFY was judged); minimized run `20261014T004127Z-C9-1-real-e8381b69`; its five recorded replays FAIL with `notify-not-resumed` in 4 (REPRODUCED).
 
 <!-- K7-RECURRENCES -->
+## Recurrences in K7 (ADR-0045)
+
+10 valid run(s) of K7's matrix repeat this finding's mechanism: every guarantee group of their anomalies matches ADR-0045's predicate R-G10, which reads only `checks.json`. Each is counted in its cell's k/N and interval (§12.3), triaged (`evidence/K7/triage/`), committed as a summary (stub and `checks.json`, `evidence/K7/runs/`), and not minimized. Its full archive stays on the machine that ran it (`runs/k7/`). `cpgate K7` re-evaluates the predicate for every one.
+
+| Run | Cell | Seed | Seal root | Predicate | Matched fields |
+|---|---|---|---|---|---|
+| `20261016T201832Z-C9-1-real-d61643d0` | V1 C9/baseline | 1 | `56e09ff799f1eb3d…` | R-G10 | classes notify-not-resumed (notify-not-resumed 6834); F {F2a, F2b, F6}; listener sessions: client 26 LISTEN i=8; client 27 LISTEN i=9; client 28 LISTEN i=11 |
+| `20261016T202317Z-C9-2-real-5c3d3a46` | V1 C9/baseline | 2 | `7f5edfd4548bbce6…` | R-G10 | classes notify-not-resumed (notify-not-resumed 6858); F {F2a, F2b, F6}; listener sessions: client 26 LISTEN i=9; client 27 LISTEN i=11; client 28 LISTEN i=13 |
+| `20261016T203413Z-C9-3-real-c2918eba` | V1 C9/baseline | 3 | `f98e8071c4aa1c04…` | R-G10 | classes notify-not-resumed (notify-not-resumed 4590); F {F2a, F2b, F6}; listener sessions: client 26 LISTEN i=11; client 27 LISTEN i=13; client 28 LISTEN i=12 |
+| `20261016T203843Z-C9-4-real-9f68293a` | V1 C9/baseline | 4 | `7e8c71b65c21e6e3…` | R-G10 | classes notify-not-resumed (notify-not-resumed 4204); F {F2a, F2b, F6}; listener sessions: client 26 LISTEN i=9; client 27 LISTEN i=10; client 28 LISTEN i=12 |
+| `20261016T204512Z-C9-5-real-9f2b2904` | V1 C9/baseline | 5 | `08afe29e7811d27a…` | R-G10 | classes notify-not-resumed (notify-not-resumed 4882); F {F2a, F2b, F6}; listener sessions: client 26 LISTEN i=8; client 27 LISTEN i=7; client 28 LISTEN i=9 |
+| `20261016T204734Z-C9-6-real-c5c9999a` | V1 C9/baseline | 6 | `4256064d45a5eb42…` | R-G10 | classes notify-not-resumed (notify-not-resumed 7092); F {F2a, F2b, F6}; listener sessions: client 26 LISTEN i=4; client 27 LISTEN i=10; client 28 LISTEN i=13 |
+| `20261016T204952Z-C9-7-real-bfbc67fd` | V1 C9/baseline | 7 | `e9930fce8839c869…` | R-G10 | classes notify-not-resumed (notify-not-resumed 5735); F {F2a, F2b, F6}; listener sessions: client 26 LISTEN i=7; client 27 LISTEN i=8; client 28 LISTEN i=13 |
+| `20261016T205220Z-C9-8-real-93c00b1b` | V1 C9/baseline | 8 | `866c4b386a27d96b…` | R-G10 | classes notify-not-resumed (notify-not-resumed 5449); F {F2a, F2b, F6}; listener sessions: client 26 LISTEN i=8; client 27 LISTEN i=9; client 28 LISTEN i=11 |
+| `20261016T205448Z-C9-9-real-718765c7` | V1 C9/baseline | 9 | `4cb07c445a746602…` | R-G10 | classes notify-not-resumed (notify-not-resumed 934); F {F2a, F2b, F6}; listener sessions: client 26 LISTEN i=9; client 27 LISTEN i=10; client 28 LISTEN i=11 |
+| `20261016T205709Z-C9-10-real-d9d891b4` | V1 C9/baseline | 10 | `b1ab3fad2a2fce9b…` | R-G10 | classes notify-not-resumed (notify-not-resumed 6810); F {F2a, F2b, F6}; listener sessions: client 26 LISTEN i=12; client 27 LISTEN i=8; client 28 LISTEN i=7 |
+<!-- /K7-RECURRENCES -->
 
 <!-- K7-REPLAY -->
+## K7 replay (K7.4)
+
+The package's replay command was executed once more in K7 (record `pkg-replay-FND-C9-40b6f05a` in `evidence/K7/commands.jsonl`; CommitProof `e8eca97`, contract 1.9.0 (ADR-0047), with ADR-0038's metrics exporter on every Multigres component, LIM-41). The plan replayed is this package's minimized plan, unchanged. Its five replays are stored as summaries in `evidence/K7/package-replays/`:
+
+| Replay | Verdict | Classes | Seal root |
+|---|---|---|---|
+| `20261017T195000Z-C9-1-real-e8381b69` | PASS | — | `8b8514dfbb989bab…` |
+| `20261017T195114Z-C9-1-real-e8381b69` | FAIL | `notify-not-resumed` | `915cb7d9e2f4ecb7…` |
+| `20261017T195224Z-C9-1-real-e8381b69` | FAIL | `notify-not-resumed` | `f19f1686e25e70c2…` |
+| `20261017T195343Z-C9-1-real-e8381b69` | FAIL | `notify-not-resumed` | `e3fa72808ac7521a…` |
+| `20261017T195501Z-C9-1-real-e8381b69` | FAIL | `notify-not-resumed` | `0e0998c2fd928714…` |
+
+**4 of 5** show `notify-not-resumed` (§11.1 on these replays: REPRODUCED). The recorded classification stays REPRODUCED (4 of 5 recorded replays): this re-execution is reported beside it, not instead of it.
+<!-- /K7-REPLAY -->
 
 ## Suggested direction (optional)
 

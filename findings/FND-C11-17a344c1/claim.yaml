@@ -3,8 +3,8 @@ id: CLM-0053
 text: "FND-C11-17a344c1 (G12, PROTOCOL_DEVIATION, DESIGN, medium, origin MULTIGRES, NEW): under G12's literal rule the steady role's storm window falls below 90 % ok (766 of 886), all refusals inside the injected F2a; outside fault windows 744 of 744."
 contract: "§3 G12, §11, §11.4"
 target: {system: "multigres", commit: "e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73", profile: "baseline", mutant: "none"}
-command: "cpcheck check on the original run; bin/commitproof replay 20261013T232750Z-C11-2-real-1f5423ed --times 5 (P13; K7.4 record pending)"
+command: "cpcheck check on the original run; bin/commitproof replay 20261013T232750Z-C11-2-real-1f5423ed --times 5 (P13); K7.4: the same command once more (record pkg-replay-FND-C11-17a344c1)"
 artifact: "evidence/K5/runs/20261013T232750Z-C11-2-real-1f5423ed.tar.zst"
 sha256: "535406abf5f1a525c220924fbfd1c0597003f49eef2fd10560af668b1c932353"
-result: "original run 20261013T232750Z-C11-2-real-1f5423ed: FAIL fair-share-starvation; recorded replays 2 of 5 with fair-share-starvation (INTERMITTENT); 0 K7 recurrences"
+result: "original run 20261013T232750Z-C11-2-real-1f5423ed: FAIL fair-share-starvation; recorded replays 2 of 5 with fair-share-starvation (INTERMITTENT); 0 K7 recurrences; K7.4 replays 3 of 5 with fair-share-starvation (REPRODUCED; CLM-0062)"
 limitations: ["LIM-25", "LIM-01"]

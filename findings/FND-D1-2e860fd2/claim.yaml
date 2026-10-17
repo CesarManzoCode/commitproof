@@ -3,8 +3,8 @@ id: CLM-0041
 text: "FND-D1-2e860fd2 (G2b, SAFETY_VIOLATION, INFERRED, high, origin POSTGRES_INHERITED, NEW): reads of an append whose client timed out (info) return a value that the next failover removes; no acknowledged write is lost."
 contract: "§3 G2b, §11, §11.4"
 target: {system: "multigres", commit: "e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73", profile: "baseline", mutant: "none"}
-command: "cpcheck check on the original run; bin/commitproof replay 20261012T020127Z-D1-3-real-fb2e3778 --times 5 (P13; K7.4 record pending)"
+command: "cpcheck check on the original run; bin/commitproof replay 20261012T020127Z-D1-3-real-fb2e3778 --times 5 (P13); K7.4: the same command once more (record pkg-replay-FND-D1-2e860fd2)"
 artifact: "evidence/K4/runs/20261011T221506Z-D1-3-real-da159fa0.tar.zst"
 sha256: "7926f6cb4aeea04a8732c8e40aeba5d3671f083604b5db00b87bde490f3c5a96"
-result: "original run 20261011T221506Z-D1-3-real-da159fa0: FAIL incompatible-order; recorded replays 4 of 5 with incompatible-order (REPRODUCED); 3 K7 recurrences"
+result: "original run 20261011T221506Z-D1-3-real-da159fa0: FAIL incompatible-order; recorded replays 4 of 5 with incompatible-order (REPRODUCED); 3 K7 recurrences; K7.4 replays 4 of 5 with incompatible-order (REPRODUCED; CLM-0062)"
 limitations: ["LIM-33", "LIM-22", "LIM-01"]

@@ -61,8 +61,26 @@ The plan carries contract 1.0.9, so cpcheck judges its replays by the literal ru
 **Minimization and replays** (§12.2, K5): the empty schedule PASSes (the storm alone does not starve `cp_steady`), the halved 45 s plan PASSes, the client-reduced plan PASSes; the original plan is the minimum. Its five recorded replays FAIL with `fair-share-starvation` in 2 (INTERMITTENT): whether the outage's failures exceed 10 % of the storm window depends on how long PostgreSQL takes to restart.
 
 <!-- K7-RECURRENCES -->
+## Recurrences in K7 (ADR-0045)
+
+None. No valid run of K7's matrix (130 cells, `evidence/K7/results.json`) failed with a guarantee group that matches the predicate standing for this finding; nothing of K7 is cited here. Every K7 failure and how ADR-0045's predicates classified it is listed in `evidence/K7/results.json` and the K7 closure.
+<!-- /K7-RECURRENCES -->
 
 <!-- K7-REPLAY -->
+## K7 replay (K7.4)
+
+The package's replay command was executed once more in K7 (record `pkg-replay-FND-C11-17a344c1` in `evidence/K7/commands.jsonl`; CommitProof `e8eca97`, contract 1.9.0 (ADR-0047), with ADR-0038's metrics exporter on every Multigres component, LIM-41). The plan replayed is this package's minimized plan, unchanged. Its five replays are stored as summaries in `evidence/K7/package-replays/`:
+
+| Replay | Verdict | Classes | Seal root |
+|---|---|---|---|
+| `20261017T034330Z-C11-2-real-1f5423ed` | PASS | — | `24c887dafb57bd6e…` |
+| `20261017T034557Z-C11-2-real-1f5423ed` | FAIL | `fair-share-starvation` | `714a8d18ca45faf8…` |
+| `20261017T034822Z-C11-2-real-1f5423ed` | FAIL | `fair-share-starvation` | `7885584afd70d6c7…` |
+| `20261017T035054Z-C11-2-real-1f5423ed` | FAIL | `fair-share-starvation` | `aae862b5cd564663…` |
+| `20261017T035315Z-C11-2-real-1f5423ed` | PASS | — | `8340e0981c0600e9…` |
+
+**3 of 5** show `fair-share-starvation` (§11.1 on these replays: REPRODUCED). The recorded classification stays INTERMITTENT (2 of 5 recorded replays): this re-execution is reported beside it, not instead of it.
+<!-- /K7-REPLAY -->
 
 ## Suggested direction (optional; not verified)
 

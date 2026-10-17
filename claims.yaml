@@ -147,13 +147,13 @@ claims:
     result: "172 runs: 166 identical, 6 cycle operations/explanations only, 0 verdict or class changes, 0 errors"
     limitations: ["LIM-44", "LIM-08"]
   - id: CLM-0016
-    text: "Four K7 attempts ended INVALID with no successful recovery insert within P06: after the last heal one node was PRIMARY with its WAL position moving, every other node REPLICA with its WAL position frozen, and all 33 recovery inserts of each attempt ended info."
+    text: "Six K7 attempts ended INVALID with no successful recovery insert within P06: after the last heal one node was PRIMARY with its WAL position moving, every other node REPLICA with its WAL position frozen, and all 33 recovery inserts of each attempt ended info."
     contract: "§11.1, §12.1, P06"
     target: {system: "multigres", commit: "e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73", profile: "baseline", mutant: "none"}
-    command: "scripts/k7-liveness.py <run> (records liveness-<run>); jq over their outputs (record liveness-summary)"
-    artifact: "evidence/K7/logs/liveness-summary.stdout"
-    sha256: "d0493d5908314960fa975ed087c081f0de70f5baabaae999429f682131703a28"
-    result: "4 attempts (V1 C9 seed 3 ×2, V1 C9 seed 5, V1 C2 seed 3 replay 4): 0 ok of 33 recovery inserts each"
+    command: "scripts/k7-liveness.py <run> (records liveness-<run>); jq over their outputs (records liveness-summary, liveness-summary-2)"
+    artifact: "evidence/K7/logs/liveness-summary-2.stdout"
+    sha256: "a5216a8651135a7ac233888ff3f14c11eaad4dc084d99a769a7f75d445e96b1d"
+    result: "6 attempts (V1 C9 seed 3 ×2, V1 C9 seed 5; V1 C2 seed 3's plan: the driver's replay 4 and K7.4's replay 3 of FND-C2-c7475a73 ×2): 0 ok of 33 recovery inserts each"
     limitations: ["LIM-45"]
   - id: CLM-0017
     text: "In K7, 3 of 10 valid V3 C8 runs (seeds 3, 6, 10) FAIL with planned-failover-error under G8's literal rule."
@@ -326,130 +326,214 @@ claims:
     sha256: "2be574b831a5e279806a4dc9d4f8fffec2b4b60e119143ea1f2dbdb50aed8926"
     result: "kernel module veth unavailable (K7 BLOCKED, AGENTS.md §3)"
     limitations: ["LIM-02"]
+  - id: CLM-0059
+    text: "After the owner rebooted the host, the running kernel 7.2.10-arch1-1 was the installed linux package 7.2.10.arch1-1, the veth module was loaded and found by modinfo, and a throwaway container on a bridge network labelled for this project started with its veth interface."
+    contract: "§14, PREREQUISITES §3"
+    target: {system: "the owner's host", commit: "e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73", profile: "baseline", mutant: "none"}
+    command: "bash -c with uname -r, pacman -Q linux, ls /lib/modules, veth in /proc/modules, modinfo -n veth (record host-kernel-modules-2); docker network create --label com.docker.compose.project=commitproof commitproof_vethprobe, docker run --rm on it, docker network rm (record bridge-probe; argv in commands.jsonl)"
+    artifact: "evidence/K7/logs/host-kernel-modules-2.stdout"
+    sha256: "5668b2dca786e7ae017e5818ef718de01553fde9616d4a645f8fb167484e9fee"
+    result: "kernel matches package; veth loaded; bridge-probe exit 0 (eth0 up on the probe network)"
+    limitations: ["LIM-02"]
+  - id: CLM-0060
+    text: "At the resume after the reboot, make prereq-check passed 26 of 26 (R1: MemAvailable 13.45 GiB of 14.91 GiB), cpgate K1–K6 on copies of the closed evidence passed every criterion, and the local images equalled images.lock.json."
+    contract: "§14, §15, PREREQUISITES"
+    target: {system: "the owner's host; cpgate (evidence K1–K6)", commit: "e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73", profile: "baseline", mutant: "none"}
+    command: "make prereq-check (record prereq-check-resume-6); scripts/prek7-precondition.sh (record precondition-resume-4); bin/commitproof images verify (record images-verify-resume-4)"
+    artifact: "evidence/K7/prereq-resume-6.json"
+    sha256: "36729ac7e9f30ef17d4130b598a01d0750e762dd962eedc8a5874eaa0819144c"
+    result: "26 of 26 PASS; K1–K6 PASS; images match the lock"
+    limitations: ["LIM-02", "LIM-16"]
+  - id: CLM-0061
+    text: "At the resume after the reboot, all 248 run directories under runs/k7 and runs/k7-pkg passed cpcheck verify-seal; under runs/k7-invalid the three attempts of FND-C8-5254b5cb's replay 4 passed and V1 C2 seed 3's three harness-defect attempts failed as they always had."
+    contract: "§6.3, §12.1"
+    target: {system: "multigres", commit: "e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73", profile: "baseline, slotless, buffered", mutant: "none"}
+    command: "bash -c: bin/cpcheck verify-seal on every run directory under runs/k7, runs/k7-pkg and runs/k7-invalid (record seal-sweep-resume-6, exit 1; argv in commands.jsonl)"
+    artifact: "evidence/K7/logs/seal-sweep-resume-6.stdout"
+    sha256: "8fbd20df71a9041294c39134ebd8ba9882e69bb613711b0f3c7e8b7991a024b2"
+    result: "254 run directories: 251 valid; not valid: runs/k7-invalid/20261016T172043Z, 172408Z and 172745Z-C2-3-real-9375b700 (the harness defect of §3 item 1)"
+    limitations: ["LIM-43"]
+  - id: CLM-0062
+    text: "K7.4 executed every package's replay command once more on the real build: 14 records, each exit 0, each with five valid replays of the package's minimized plan. Replays with the package's own anomaly class: FND-D1-fb8d0f8c 5, FND-D1-2e860fd2 4, FND-D1-a8eb9857 3, FND-C2-2a534585 4, FND-C2-6806aeca 0, FND-C2-8215101c 5, FND-C2-c7475a73 0, FND-C8-ff4475d8 0, FND-C8-e6b7ca52 0, FND-C8-5254b5cb 0, FND-C9-40b6f05a 4, FND-C9-2fe9a9fc 5, FND-C9-90da5532 1, FND-C11-17a344c1 3, each of 5."
+    contract: "§11.1, §15 K7 (K7.4), P13, ADR-0047"
+    target: {system: "multigres", commit: "e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73", profile: "baseline, slotless, buffered", mutant: "none"}
+    command: "bin/commitproof replay <minimized run> --times 5 --out runs/k7-pkg/<id> --cpcheck bin/cpcheck (records pkg-replay-<id>; FND-C8-5254b5cb: pkg-replay-FND-C8-5254b5cb-3); go run ./internal/tools/k7findings (record k7findings-3); jq over findings/*/finding.json (record k7-replay-summary)"
+    artifact: "evidence/K7/logs/k7-replay-summary.stdout"
+    sha256: "0e53046ed6106622f863577e3ed3e2b4df58de2a621ebf66c730bf271b480b05"
+    result: "70 valid replays (45 FAIL, 25 PASS); per package as stated; REPRODUCED 8, INTERMITTENT 1, NOT_REPRODUCED 5 under §11.1 on these replays; the recorded reproducibility stands beside it"
+    limitations: ["LIM-01", "LIM-41", "LIM-46"]
+  - id: CLM-0028
+    text: "K7.4's 70 valid replays and its 5 INVALID attempts are committed as summaries (stub and checks.json) in evidence/K7/package-replays and listed in runs-index.json with their plan, manifest contract version, seal root, verdict, classes and the sha256 of both files."
+    contract: "§15 K7 (K7.4), ADR-0039, ADR-0045, ADR-0047"
+    target: {system: "multigres", commit: "e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73", profile: "baseline, slotless, buffered", mutant: "none"}
+    command: "scripts/k7-evidence.sh pkgreplay (store step); go run ./internal/tools/k7results ... --pkg-replays evidence/K7/package-replays (record k7results-2)"
+    artifact: "evidence/K7/runs-index.json"
+    sha256: "0ba3ad3f640b419a6499bde93ec7f99574e2190f361424bc90a54ef949bbec4b"
+    result: "75 entries: 45 FAIL, 25 PASS, 5 INVALID; manifest contract 1.9.0, CommitProof e8eca97; results.json byte-identical to k7results' (f2971c93…)"
+    limitations: ["LIM-43"]
+  - id: CLM-0034
+    text: "No finding's original run lost an acknowledged write: C1 is valid with no anomaly in each of the 13 original runs of the 14 packages (FND-C2-2a534585 and FND-C2-6806aeca share one)."
+    contract: "§3 G1, §10.1, §11.4"
+    target: {system: "multigres", commit: "e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73", profile: "baseline, slotless, buffered", mutant: "none"}
+    command: "jq over each package's original run checks.json (record g1-original-runs; argv in commands.jsonl)"
+    artifact: "evidence/K7/logs/g1-original-runs.stdout"
+    sha256: "f07af8d451eecaca28737edded510aa8470f0d38d8a36e71ab92098ba0dc7cd4"
+    result: "13 runs, C1 valid, 0 C1 anomalies (2 579–9 757 ok writes checked per run)"
+    limitations: ["LIM-06", "LIM-01"]
+  - id: CLM-0063
+    text: "C1 found no anomaly in any of K7.4's 75 stored replays and attempts: valid in the 70 valid replays and the 3 INVALID attempts of FND-C8-5254b5cb's replay 4, unknown in the 2 INVALID attempts of FND-C2-c7475a73's replay 3."
+    contract: "§3 G1, §10.1, §12.1"
+    target: {system: "multigres", commit: "e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73", profile: "baseline, slotless, buffered", mutant: "none"}
+    command: "jq over evidence/K7/package-replays/*.checks.json (record g1-pkg-replays; argv in commands.jsonl)"
+    artifact: "evidence/K7/logs/g1-pkg-replays.stdout"
+    sha256: "c2fde4a6626735d3d531daa482959c779b7749dc1592cdf8e066bde52e5549a7"
+    result: "75 checks.json: C1 valid 73, unknown 2 (INVALID), 0 C1 anomalies"
+    limitations: ["LIM-06"]
+  - id: CLM-0064
+    text: "P25 after the store step of §2.2 (the three INVALID attempts of FND-C8-5254b5cb's replay 4): 261 879 954 B of 275 000 000."
+    contract: "P25, ADR-0047"
+    target: {system: "this repository's evidence/", commit: "e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73", profile: "baseline", mutant: "none"}
+    command: "scripts/k7-p25-count.sh (record p25-count-resume)"
+    artifact: "evidence/K7/logs/p25-count-resume.stdout"
+    sha256: "dc1139d542043b7321b9632e7d9efc8cbffa8c24e69758b6121c3a66eef23ffd"
+    result: "261 879 954 B; margin 13 120 046 B"
+    limitations: ["LIM-43"]
+  - id: CLM-0065
+    text: "P25 after K7.4's last store step (45 replay summaries): 264 326 805 B of 275 000 000."
+    contract: "P25, ADR-0047"
+    target: {system: "this repository's evidence/", commit: "e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73", profile: "baseline", mutant: "none"}
+    command: "scripts/k7-p25-count.sh (record p25-count-resume-2)"
+    artifact: "evidence/K7/logs/p25-count-resume-2.stdout"
+    sha256: "aace025fdc4e58bc061d046d390452fcf6fcc2d65378e723195d5141b99a07be"
+    result: "264 326 805 B; margin 10 673 195 B"
+    limitations: ["LIM-43"]
   - id: CLM-0040
     text: "FND-D1-fb8d0f8c (G2b, SAFETY_VIOLATION, INFERRED, high, origin POSTGRES_INHERITED, NEW): reads of an append whose client timed out (info) return a value that the next failover removes; no acknowledged write is lost."
     contract: "§3 G2b, §11, §11.4"
     target: {system: "multigres", commit: "e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73", profile: "baseline", mutant: "none"}
-    command: "cpcheck check on the original run; bin/commitproof replay 20261012T014955Z-D1-1-real-6625432a --times 5 (P13; K7.4 record pending)"
+    command: "cpcheck check on the original run; bin/commitproof replay 20261012T014955Z-D1-1-real-6625432a --times 5 (P13); K7.4: the same command once more (record pkg-replay-FND-D1-fb8d0f8c)"
     artifact: "evidence/K4/runs/20261011T221027Z-D1-1-real-59a95336.tar.zst"
     sha256: "c8e958a5776b5d0a8e1627b0ca35ec9fd79def2ac6592a9f4cdcfc97773181cc"
-    result: "original run 20261011T221027Z-D1-1-real-59a95336: FAIL incompatible-order; recorded replays 4 of 5 with incompatible-order (REPRODUCED); 3 K7 recurrences"
+    result: "original run 20261011T221027Z-D1-1-real-59a95336: FAIL incompatible-order; recorded replays 4 of 5 with incompatible-order (REPRODUCED); 3 K7 recurrences; K7.4 replays 5 of 5 with incompatible-order (REPRODUCED; CLM-0062)"
     limitations: ["LIM-33", "LIM-22", "LIM-01"]
   - id: CLM-0041
     text: "FND-D1-2e860fd2 (G2b, SAFETY_VIOLATION, INFERRED, high, origin POSTGRES_INHERITED, NEW): reads of an append whose client timed out (info) return a value that the next failover removes; no acknowledged write is lost."
     contract: "§3 G2b, §11, §11.4"
     target: {system: "multigres", commit: "e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73", profile: "baseline", mutant: "none"}
-    command: "cpcheck check on the original run; bin/commitproof replay 20261012T020127Z-D1-3-real-fb2e3778 --times 5 (P13; K7.4 record pending)"
+    command: "cpcheck check on the original run; bin/commitproof replay 20261012T020127Z-D1-3-real-fb2e3778 --times 5 (P13); K7.4: the same command once more (record pkg-replay-FND-D1-2e860fd2)"
     artifact: "evidence/K4/runs/20261011T221506Z-D1-3-real-da159fa0.tar.zst"
     sha256: "7926f6cb4aeea04a8732c8e40aeba5d3671f083604b5db00b87bde490f3c5a96"
-    result: "original run 20261011T221506Z-D1-3-real-da159fa0: FAIL incompatible-order; recorded replays 4 of 5 with incompatible-order (REPRODUCED); 3 K7 recurrences"
+    result: "original run 20261011T221506Z-D1-3-real-da159fa0: FAIL incompatible-order; recorded replays 4 of 5 with incompatible-order (REPRODUCED); 3 K7 recurrences; K7.4 replays 4 of 5 with incompatible-order (REPRODUCED; CLM-0062)"
     limitations: ["LIM-33", "LIM-22", "LIM-01"]
   - id: CLM-0042
     text: "FND-D1-a8eb9857 (G2b, SAFETY_VIOLATION, INFERRED, high, origin POSTGRES_INHERITED, NEW): reads of an append whose client timed out (info) return a value that the next failover removes; no acknowledged write is lost."
     contract: "§3 G2b, §11, §11.4"
     target: {system: "multigres", commit: "e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73", profile: "baseline", mutant: "none"}
-    command: "cpcheck check on the original run; bin/commitproof replay 20261012T021947Z-D1-4-real-eb537f55 --times 5 (P13; K7.4 record pending)"
+    command: "cpcheck check on the original run; bin/commitproof replay 20261012T021947Z-D1-4-real-eb537f55 --times 5 (P13); K7.4: the same command once more (record pkg-replay-FND-D1-a8eb9857)"
     artifact: "evidence/K4/runs/20261011T221728Z-D1-4-real-ad3fca18.tar.zst"
     sha256: "45a068bff1408e07a3b68ad6f5c536cb12ae01b8d03f6660cdc51f6aca08c2b8"
-    result: "original run 20261011T221728Z-D1-4-real-ad3fca18: FAIL incompatible-order; recorded replays 5 of 5 with incompatible-order (REPRODUCED); 3 K7 recurrences"
+    result: "original run 20261011T221728Z-D1-4-real-ad3fca18: FAIL incompatible-order; recorded replays 5 of 5 with incompatible-order (REPRODUCED); 3 K7 recurrences; K7.4 replays 3 of 5 with incompatible-order (REPRODUCED; CLM-0062)"
     limitations: ["LIM-33", "LIM-22", "LIM-01"]
   - id: CLM-0043
     text: "FND-C2-2a534585 (G2b, SAFETY_VIOLATION, INFERRED, high, origin POSTGRES_INHERITED, NEW): reads of an append whose client timed out (info) return a value that the next failover removes; no acknowledged write is lost."
     contract: "§3 G2b, §11, §11.4"
     target: {system: "multigres", commit: "e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73", profile: "baseline", mutant: "none"}
-    command: "cpcheck check on the original run; bin/commitproof replay 20261012T025629Z-C2-3-real-3fb018bf --times 5 (P13; K7.4 record pending)"
+    command: "cpcheck check on the original run; bin/commitproof replay 20261012T025629Z-C2-3-real-3fb018bf --times 5 (P13); K7.4: the same command once more (record pkg-replay-FND-C2-2a534585)"
     artifact: "evidence/K4/runs/20261011T231036Z-C2-3-real-f4505b54.tar.zst"
     sha256: "a5472bd9c4212b63ab9397b7ff513a05ba7efe81aeeed54c7da492d6b20c4969"
-    result: "original run 20261011T231036Z-C2-3-real-f4505b54: FAIL incompatible-order, non-linearizable; recorded replays 2 of 5 with incompatible-order (INTERMITTENT); 3 K7 recurrences"
+    result: "original run 20261011T231036Z-C2-3-real-f4505b54: FAIL incompatible-order, non-linearizable; recorded replays 2 of 5 with incompatible-order (INTERMITTENT); 3 K7 recurrences; K7.4 replays 4 of 5 with incompatible-order (REPRODUCED; CLM-0062)"
     limitations: ["LIM-33", "LIM-22", "LIM-01"]
   - id: CLM-0044
     text: "FND-C2-6806aeca (G6, SAFETY_VIOLATION, DESIGN, high, origin POSTGRES_INHERITED, NEW): an ok register read returns a value whose write ended info and that the next failover removes."
     contract: "§3 G6, §11, §11.4"
     target: {system: "multigres", commit: "e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73", profile: "baseline", mutant: "none"}
-    command: "cpcheck check on the original run; bin/commitproof replay 20261012T025629Z-C2-3-real-3fb018bf --times 5 (P13; K7.4 record pending)"
+    command: "cpcheck check on the original run; bin/commitproof replay 20261012T025629Z-C2-3-real-3fb018bf --times 5 (P13); K7.4: the same command once more (record pkg-replay-FND-C2-6806aeca)"
     artifact: "evidence/K4/runs/20261011T231036Z-C2-3-real-f4505b54.tar.zst"
     sha256: "a5472bd9c4212b63ab9397b7ff513a05ba7efe81aeeed54c7da492d6b20c4969"
-    result: "original run 20261011T231036Z-C2-3-real-f4505b54: FAIL incompatible-order, non-linearizable; recorded replays 3 of 5 with non-linearizable (REPRODUCED); 3 K7 recurrences"
+    result: "original run 20261011T231036Z-C2-3-real-f4505b54: FAIL incompatible-order, non-linearizable; recorded replays 3 of 5 with non-linearizable (REPRODUCED); 3 K7 recurrences; K7.4 replays 0 of 5 with non-linearizable (NOT_REPRODUCED; CLM-0062)"
     limitations: ["LIM-33", "LIM-08", "LIM-01"]
   - id: CLM-0045
     text: "FND-C2-8215101c (G6, SAFETY_VIOLATION, DESIGN, high, origin POSTGRES_INHERITED, NEW): an ok register read returns a value whose write ended info and that the next failover removes."
     contract: "§3 G6, §11, §11.4"
     target: {system: "multigres", commit: "e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73", profile: "slotless", mutant: "none"}
-    command: "cpcheck check on the original run; bin/commitproof replay 20261017T002205Z-C2-1-real-316f3877 --times 5 (P13; K7.4 record pending)"
+    command: "cpcheck check on the original run; bin/commitproof replay 20261017T002205Z-C2-1-real-316f3877 --times 5 (P13); K7.4: the same command once more (record pkg-replay-FND-C2-8215101c)"
     artifact: "evidence/K7/runs/20261016T221153Z-C2-1-real-c8781715.tar.zst"
     sha256: "e0783b2feba2e17571e389340cc9cace5672c3bef7e0f8782bfb1750b0efe5a8"
-    result: "original run 20261016T221153Z-C2-1-real-c8781715: FAIL non-linearizable; recorded replays 5 of 5 with non-linearizable (REPRODUCED); 0 K7 recurrences"
+    result: "original run 20261016T221153Z-C2-1-real-c8781715: FAIL non-linearizable; recorded replays 5 of 5 with non-linearizable (REPRODUCED); 0 K7 recurrences; K7.4 replays 5 of 5 with non-linearizable (REPRODUCED; CLM-0062)"
     limitations: ["LIM-33", "LIM-08", "LIM-01"]
   - id: CLM-0046
     text: "FND-C2-c7475a73 (G5, SAFETY_VIOLATION, INFERRED, high, origin UNDETERMINED, NEW): C3 reports G-nonadjacent, G-single and G2-item cycles, all through an info transaction whose element the failover removed."
     contract: "§3 G5, §11, §11.4"
     target: {system: "multigres", commit: "e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73", profile: "baseline", mutant: "none"}
-    command: "cpcheck check on the original run; bin/commitproof replay 20261016T173617Z-C2-3-real-9375b700 --times 5 (P13; K7.4 record pending)"
+    command: "cpcheck check on the original run; bin/commitproof replay 20261016T173617Z-C2-3-real-9375b700 --times 5 (P13); K7.4: the same command once more (record pkg-replay-FND-C2-c7475a73)"
     artifact: "evidence/K7/runs/20261016T173617Z-C2-3-real-9375b700.tar.zst"
     sha256: "d59932aa948d9f940bf882fce51765a339104025c746af9aeb80fdbfa748ea02"
-    result: "original run 20261016T173617Z-C2-3-real-9375b700: FAIL G-nonadjacent, G-single, G2-item, incompatible-order; recorded replays 0 of 5 with G-nonadjacent (NOT_REPRODUCED); 0 K7 recurrences"
+    result: "original run 20261016T173617Z-C2-3-real-9375b700: FAIL G-nonadjacent, G-single, G2-item, incompatible-order; recorded replays 0 of 5 with G-nonadjacent (NOT_REPRODUCED); 0 K7 recurrences; K7.4 replays 0 of 5 with G-nonadjacent (NOT_REPRODUCED; CLM-0062)"
     limitations: ["LIM-22", "LIM-31", "LIM-44"]
   - id: CLM-0047
     text: "FND-C8-ff4475d8 (G8, PROTOCOL_DEVIATION, DESIGN, medium, origin MULTIGRES, NEW): explicit transactions that began during a judged buffered switchover received 57P03, not 40001."
     contract: "§3 G8, §11, §11.4"
     target: {system: "multigres", commit: "e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73", profile: "buffered", mutant: "none"}
-    command: "cpcheck check on the original run; bin/commitproof replay 20261016T225050Z-C8-3-real-537e02d1 --times 5 (P13; K7.4 record pending)"
+    command: "cpcheck check on the original run; bin/commitproof replay 20261016T225050Z-C8-3-real-537e02d1 --times 5 (P13); K7.4: the same command once more (record pkg-replay-FND-C8-ff4475d8)"
     artifact: "evidence/K7/runs/20261016T225050Z-C8-3-real-537e02d1.tar.zst"
     sha256: "3638579c2d8a74ab522bc2d32e8508a3384d44359b15f8bc2460e28efdd1ed87"
-    result: "original run 20261016T225050Z-C8-3-real-537e02d1: FAIL planned-failover-error; recorded replays 2 of 5 with planned-failover-error (INTERMITTENT); 0 K7 recurrences"
+    result: "original run 20261016T225050Z-C8-3-real-537e02d1: FAIL planned-failover-error; recorded replays 2 of 5 with planned-failover-error (INTERMITTENT); 0 K7 recurrences; K7.4 replays 0 of 5 with planned-failover-error (NOT_REPRODUCED; CLM-0062)"
     limitations: ["LIM-25", "LIM-01", "LIM-41"]
   - id: CLM-0048
     text: "FND-C8-e6b7ca52 (G8, PROTOCOL_DEVIATION, DESIGN, medium, origin MULTIGRES, NEW): explicit transactions that began during a judged buffered switchover received 57P03, not 40001."
     contract: "§3 G8, §11, §11.4"
     target: {system: "multigres", commit: "e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73", profile: "buffered", mutant: "none"}
-    command: "cpcheck check on the original run; bin/commitproof replay 20261016T230045Z-C8-6-real-9601ddce --times 5 (P13; K7.4 record pending)"
+    command: "cpcheck check on the original run; bin/commitproof replay 20261016T230045Z-C8-6-real-9601ddce --times 5 (P13); K7.4: the same command once more (record pkg-replay-FND-C8-e6b7ca52)"
     artifact: "evidence/K7/runs/20261016T230045Z-C8-6-real-9601ddce.tar.zst"
     sha256: "b0605bbb4c445d34bfd3df15434aba0c768e28e5f4e88ae43cb7230c76430028"
-    result: "original run 20261016T230045Z-C8-6-real-9601ddce: FAIL planned-failover-error; recorded replays 0 of 5 with planned-failover-error (NOT_REPRODUCED); 0 K7 recurrences"
+    result: "original run 20261016T230045Z-C8-6-real-9601ddce: FAIL planned-failover-error; recorded replays 0 of 5 with planned-failover-error (NOT_REPRODUCED); 0 K7 recurrences; K7.4 replays 0 of 5 with planned-failover-error (NOT_REPRODUCED; CLM-0062)"
     limitations: ["LIM-25", "LIM-01", "LIM-41"]
   - id: CLM-0049
     text: "FND-C8-5254b5cb (G8, PROTOCOL_DEVIATION, DESIGN, medium, origin MULTIGRES, NEW): explicit transactions that began during a judged buffered switchover received 57P03, not 40001."
     contract: "§3 G8, §11, §11.4"
     target: {system: "multigres", commit: "e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73", profile: "buffered", mutant: "none"}
-    command: "cpcheck check on the original run; bin/commitproof replay 20261016T231406Z-C8-10-real-cb16d052 --times 5 (P13; K7.4 record pending)"
+    command: "cpcheck check on the original run; bin/commitproof replay 20261016T231406Z-C8-10-real-cb16d052 --times 5 (P13); K7.4: the same command once more (record pkg-replay-FND-C8-5254b5cb-3)"
     artifact: "evidence/K7/runs/20261016T231406Z-C8-10-real-cb16d052.tar.zst"
     sha256: "2232bb76e0f354ee3bf3055e4d6b770bd5a8cd4f34c510a75134877dde04ee80"
-    result: "original run 20261016T231406Z-C8-10-real-cb16d052: FAIL planned-failover-error; recorded replays 1 of 5 with planned-failover-error (INTERMITTENT); 0 K7 recurrences"
+    result: "original run 20261016T231406Z-C8-10-real-cb16d052: FAIL planned-failover-error; recorded replays 1 of 5 with planned-failover-error (INTERMITTENT); 0 K7 recurrences; K7.4 replays 0 of 5 with planned-failover-error (NOT_REPRODUCED; CLM-0062)"
     limitations: ["LIM-25", "LIM-01", "LIM-41"]
   - id: CLM-0050
     text: "FND-C9-40b6f05a (G10, PROTOCOL_DEVIATION, DESIGN, medium, origin MULTIGRES, KNOWN): a listener that LISTENed once receives no notification committed after a failover (an independent reproduction supporting upstream PR #1550)."
     contract: "§3 G10, §11, §11.4"
     target: {system: "multigres", commit: "e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73", profile: "baseline", mutant: "none"}
-    command: "cpcheck check on the original run; bin/commitproof replay 20261014T004127Z-C9-1-real-e8381b69 --times 5 (P13; K7.4 record pending)"
+    command: "cpcheck check on the original run; bin/commitproof replay 20261014T004127Z-C9-1-real-e8381b69 --times 5 (P13); K7.4: the same command once more (record pkg-replay-FND-C9-40b6f05a)"
     artifact: "evidence/K5/runs/20261013T230136Z-C9-1-real-21458975.tar.zst"
     sha256: "9ccee7319cfa049663012ecec692ec0295e46286a7bdf4ca46cc99285917db7e"
-    result: "original run 20261013T230136Z-C9-1-real-21458975: FAIL notify-not-resumed; recorded replays 4 of 5 with notify-not-resumed (REPRODUCED); 10 K7 recurrences"
+    result: "original run 20261013T230136Z-C9-1-real-21458975: FAIL notify-not-resumed; recorded replays 4 of 5 with notify-not-resumed (REPRODUCED); 10 K7 recurrences; K7.4 replays 4 of 5 with notify-not-resumed (REPRODUCED; CLM-0062)"
     limitations: ["LIM-38", "LIM-39", "LIM-01"]
   - id: CLM-0051
     text: "FND-C9-2fe9a9fc (G10, PROTOCOL_DEVIATION, DESIGN, medium, origin MULTIGRES, KNOWN): a listener that LISTENed once receives no notification committed after a failover (an independent reproduction supporting upstream PR #1550)."
     contract: "§3 G10, §11, §11.4"
     target: {system: "multigres", commit: "e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73", profile: "baseline", mutant: "none"}
-    command: "cpcheck check on the original run; bin/commitproof replay 20261014T010524Z-C9-2-real-b8b35825 --times 5 (P13; K7.4 record pending)"
+    command: "cpcheck check on the original run; bin/commitproof replay 20261014T010524Z-C9-2-real-b8b35825 --times 5 (P13); K7.4: the same command once more (record pkg-replay-FND-C9-2fe9a9fc)"
     artifact: "evidence/K5/runs/20261013T230358Z-C9-2-real-b0861f34.tar.zst"
     sha256: "392e548c0fc99ca55ca84a4b2a487a5402cb108c87c306ed52fea0684d1e6700"
-    result: "original run 20261013T230358Z-C9-2-real-b0861f34: FAIL notify-not-resumed; recorded replays 5 of 5 with notify-not-resumed (REPRODUCED); 10 K7 recurrences"
+    result: "original run 20261013T230358Z-C9-2-real-b0861f34: FAIL notify-not-resumed; recorded replays 5 of 5 with notify-not-resumed (REPRODUCED); 10 K7 recurrences; K7.4 replays 5 of 5 with notify-not-resumed (REPRODUCED; CLM-0062)"
     limitations: ["LIM-38", "LIM-39", "LIM-01"]
   - id: CLM-0052
     text: "FND-C9-90da5532 (G10, PROTOCOL_DEVIATION, DESIGN, medium, origin MULTIGRES, KNOWN): a listener that LISTENed once receives no notification committed after a failover (an independent reproduction supporting upstream PR #1550)."
     contract: "§3 G10, §11, §11.4"
     target: {system: "multigres", commit: "e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73", profile: "baseline", mutant: "none"}
-    command: "cpcheck check on the original run; bin/commitproof replay 20261014T012149Z-C9-3-real-52de89e0 --times 5 (P13; K7.4 record pending)"
+    command: "cpcheck check on the original run; bin/commitproof replay 20261014T012149Z-C9-3-real-52de89e0 --times 5 (P13); K7.4: the same command once more (record pkg-replay-FND-C9-90da5532)"
     artifact: "evidence/K5/runs/20261013T230909Z-C9-3-real-bb8a276f.tar.zst"
     sha256: "b2d189b9510ccab37b20788a3bf43ce21d22669b2ebb39bd7b4bc9faa41a24b9"
-    result: "original run 20261013T230909Z-C9-3-real-bb8a276f: FAIL notify-not-resumed; recorded replays 1 of 5 with notify-not-resumed (INTERMITTENT); 10 K7 recurrences"
+    result: "original run 20261013T230909Z-C9-3-real-bb8a276f: FAIL notify-not-resumed; recorded replays 1 of 5 with notify-not-resumed (INTERMITTENT); 10 K7 recurrences; K7.4 replays 1 of 5 with notify-not-resumed (INTERMITTENT; CLM-0062)"
     limitations: ["LIM-38", "LIM-39", "LIM-01"]
   - id: CLM-0053
     text: "FND-C11-17a344c1 (G12, PROTOCOL_DEVIATION, DESIGN, medium, origin MULTIGRES, NEW): under G12's literal rule the steady role's storm window falls below 90 % ok (766 of 886), all refusals inside the injected F2a; outside fault windows 744 of 744."
     contract: "§3 G12, §11, §11.4"
     target: {system: "multigres", commit: "e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73", profile: "baseline", mutant: "none"}
-    command: "cpcheck check on the original run; bin/commitproof replay 20261013T232750Z-C11-2-real-1f5423ed --times 5 (P13; K7.4 record pending)"
+    command: "cpcheck check on the original run; bin/commitproof replay 20261013T232750Z-C11-2-real-1f5423ed --times 5 (P13); K7.4: the same command once more (record pkg-replay-FND-C11-17a344c1)"
     artifact: "evidence/K5/runs/20261013T232750Z-C11-2-real-1f5423ed.tar.zst"
     sha256: "535406abf5f1a525c220924fbfd1c0597003f49eef2fd10560af668b1c932353"
-    result: "original run 20261013T232750Z-C11-2-real-1f5423ed: FAIL fair-share-starvation; recorded replays 2 of 5 with fair-share-starvation (INTERMITTENT); 0 K7 recurrences"
+    result: "original run 20261013T232750Z-C11-2-real-1f5423ed: FAIL fair-share-starvation; recorded replays 2 of 5 with fair-share-starvation (INTERMITTENT); 0 K7 recurrences; K7.4 replays 3 of 5 with fair-share-starvation (REPRODUCED; CLM-0062)"
     limitations: ["LIM-25", "LIM-01"]
 hypotheses:
+  - id: HYP-0001
+    text: "The C3 cycles of FND-C2-6806aeca's K7.4 replay 1 and FND-D1-a8eb9857's K7.4 replay 5 may run through an info transaction whose element the next failover removed, as FND-C2-c7475a73's cycles do; not verified."
+    why: "K7.4's replays are recorded, not triaged and not cross-checked with elle-cli (LIM-46); their full archives are on the machine that ran them (runs/k7-pkg/)."

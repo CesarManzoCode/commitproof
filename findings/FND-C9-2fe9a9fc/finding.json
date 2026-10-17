@@ -13,10 +13,51 @@
   },
   "id": "FND-C9-2fe9a9fc",
   "k7_replay": {
-    "record": "",
-    "replays_with_class": 0,
-    "reproducibility": "",
-    "runs": []
+    "record": "pkg-replay-FND-C9-2fe9a9fc",
+    "replays_with_class": 5,
+    "reproducibility": "REPRODUCED",
+    "runs": [
+      {
+        "classes": [
+          "notify-not-resumed"
+        ],
+        "run_id": "20261017T194328Z-C9-2-real-b8b35825",
+        "seal_root": "7804d50c1d9dd6440910ab35f65f33a4611a39dede6dee072b6b98249888b3a3",
+        "verdict": "FAIL"
+      },
+      {
+        "classes": [
+          "notify-not-resumed"
+        ],
+        "run_id": "20261017T194446Z-C9-2-real-b8b35825",
+        "seal_root": "5d47dd4d0fd7f3bc369e3f02e0b709bfbd71c98cc7784d9ba291f32aa559da02",
+        "verdict": "FAIL"
+      },
+      {
+        "classes": [
+          "notify-not-resumed"
+        ],
+        "run_id": "20261017T194604Z-C9-2-real-b8b35825",
+        "seal_root": "9d8acc42d8fbe5ac3f8344f256251698c4f44eddce554466406df2736c9c430a",
+        "verdict": "FAIL"
+      },
+      {
+        "classes": [
+          "notify-not-resumed"
+        ],
+        "run_id": "20261017T194722Z-C9-2-real-b8b35825",
+        "seal_root": "075f537076f768c68203774873b0c540b4ddcf13f29a128d7cfe920f8095d5ac",
+        "verdict": "FAIL"
+      },
+      {
+        "classes": [
+          "notify-not-resumed"
+        ],
+        "run_id": "20261017T194840Z-C9-2-real-b8b35825",
+        "seal_root": "f1faec644cb7d565fc4d3743509ca825e767c833d89e73be6c45cb1b139b15ef",
+        "verdict": "FAIL"
+      }
+    ]
   },
   "minimized_plan_sha256": "b8b35825536d755a01ff0a80797ac10659ac46aba85655ebd7cca95ef04f6539",
   "minimized_run": {

@@ -3,8 +3,8 @@ id: CLM-0051
 text: "FND-C9-2fe9a9fc (G10, PROTOCOL_DEVIATION, DESIGN, medium, origin MULTIGRES, KNOWN): a listener that LISTENed once receives no notification committed after a failover (an independent reproduction supporting upstream PR #1550)."
 contract: "§3 G10, §11, §11.4"
 target: {system: "multigres", commit: "e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73", profile: "baseline", mutant: "none"}
-command: "cpcheck check on the original run; bin/commitproof replay 20261014T010524Z-C9-2-real-b8b35825 --times 5 (P13; K7.4 record pending)"
+command: "cpcheck check on the original run; bin/commitproof replay 20261014T010524Z-C9-2-real-b8b35825 --times 5 (P13); K7.4: the same command once more (record pkg-replay-FND-C9-2fe9a9fc)"
 artifact: "evidence/K5/runs/20261013T230358Z-C9-2-real-b0861f34.tar.zst"
 sha256: "392e548c0fc99ca55ca84a4b2a487a5402cb108c87c306ed52fea0684d1e6700"
-result: "original run 20261013T230358Z-C9-2-real-b0861f34: FAIL notify-not-resumed; recorded replays 5 of 5 with notify-not-resumed (REPRODUCED); 10 K7 recurrences"
+result: "original run 20261013T230358Z-C9-2-real-b0861f34: FAIL notify-not-resumed; recorded replays 5 of 5 with notify-not-resumed (REPRODUCED); 10 K7 recurrences; K7.4 replays 5 of 5 with notify-not-resumed (REPRODUCED; CLM-0062)"
 limitations: ["LIM-38", "LIM-39", "LIM-01"]

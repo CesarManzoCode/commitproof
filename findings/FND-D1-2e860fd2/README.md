@@ -71,8 +71,32 @@ Each replay brings the cluster up, runs the minimized plan (`plan.json` here, sh
 **Minimization** (§12.2, K4): the empty schedule PASSes; the workload halved once (90 → 45 s) keeps the class, with all clients. Minimized run `20261012T020127Z-D1-3-real-fb2e3778` (45 s). The five recorded replays of the minimized plan show `incompatible-order` in 4 (§11.1: REPRODUCED).
 
 <!-- K7-RECURRENCES -->
+## Recurrences in K7 (ADR-0045)
+
+3 valid run(s) of K7's matrix repeat this finding's mechanism: every guarantee group of their anomalies matches ADR-0045's predicate R-G2b, which reads only `checks.json`. Each is counted in its cell's k/N and interval (§12.3), triaged (`evidence/K7/triage/`), committed as a summary (stub and `checks.json`, `evidence/K7/runs/`), and not minimized. Its full archive stays on the machine that ran it (`runs/k7/`). `cpgate K7` re-evaluates the predicate for every one.
+
+| Run | Cell | Seed | Seal root | Predicate | Matched fields |
+|---|---|---|---|---|---|
+| `20261016T175837Z-C2-8-real-65087015` | V1 C2/baseline | 8 | `48d4079baeecf6ca…` | R-G2b | classes incompatible-order (incompatible-order 5); valid(C1) true; valid(C2) true; timeouts 35; F {F1b, F1c}; vanished: key 23: [59] read at i=5913, absent from i=6041; key 24: [35] read at i=5919, absent from i=6542; key 25: [23] read at i=5919, absent from i=7016; key 26: [27] read at i=5909, absent from i=6920; … (5 listed) |
+| `20261016T180118Z-C2-9-real-4bafa50d` | V1 C2/baseline | 9 | `75c53226ee75f4ac…` | R-G2b | classes incompatible-order (incompatible-order 3); valid(C1) true; valid(C2) true; timeouts 35; F {F1c, F1d}; vanished: key 41: [56] read at i=10126, absent from i=10318; key 42: [44] read at i=10088, absent from i=10430; key 42: [44] read at i=10113, absent from i=10430 |
+| `20261016T221713Z-C2-3-real-273a1b0c` | V2 C2/slotless | 3 | `4c6dfdf2109b9990…` | R-G2b | classes incompatible-order (incompatible-order 2); valid(C1) true; valid(C2) true; timeouts 45; F {F1c}; vanished: key 14: [40] read at i=3114, absent from i=3854; key 36: [6] read at i=7481, absent from i=8647 |
+<!-- /K7-RECURRENCES -->
 
 <!-- K7-REPLAY -->
+## K7 replay (K7.4)
+
+The package's replay command was executed once more in K7 (record `pkg-replay-FND-D1-2e860fd2` in `evidence/K7/commands.jsonl`; CommitProof `e8eca97`, contract 1.9.0 (ADR-0047), with ADR-0038's metrics exporter on every Multigres component, LIM-41). The plan replayed is this package's minimized plan, unchanged. Its five replays are stored as summaries in `evidence/K7/package-replays/`:
+
+| Replay | Verdict | Classes | Seal root |
+|---|---|---|---|
+| `20261017T200331Z-D1-3-real-fb2e3778` | FAIL | `incompatible-order` | `9d8b12f66156ce93…` |
+| `20261017T200504Z-D1-3-real-fb2e3778` | FAIL | `incompatible-order` | `6b9bf2e23da4bf36…` |
+| `20261017T200635Z-D1-3-real-fb2e3778` | FAIL | `incompatible-order` | `3b8866e4a24d7e4d…` |
+| `20261017T200806Z-D1-3-real-fb2e3778` | FAIL | `incompatible-order` | `0d8740b593468468…` |
+| `20261017T200949Z-D1-3-real-fb2e3778` | PASS | — | `81d55428131164a4…` |
+
+**4 of 5** show `incompatible-order` (§11.1 on these replays: REPRODUCED). The recorded classification stays REPRODUCED (4 of 5 recorded replays): this re-execution is reported beside it, not instead of it.
+<!-- /K7-REPLAY -->
 
 ## Suggested direction (optional; not verified)
 

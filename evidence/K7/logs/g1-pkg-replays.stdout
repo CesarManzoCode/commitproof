@@ -1,0 +1,1 @@
+{"runs":75,"by_verdict":{"FAIL":45,"INVALID":5,"PASS":25},"c1_valid":73,"c1_not_valid":[{"run_id":"20261017T042636Z-C2-3-real-9375b700","verdict":"INVALID","c1":{"valid":"unknown","anomalies":0}},{"run_id":"20261017T043111Z-C2-3-real-9375b700","verdict":"INVALID","c1":{"valid":"unknown","anomalies":0}}],"c1_anomalies":0}

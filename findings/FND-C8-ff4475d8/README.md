@@ -58,8 +58,26 @@ The hypothesis is that, within the first milliseconds of the drain, the gateway 
 **Minimization and replays** (§12.2, P13): none of the 11 candidates showed the class, so the minimized plan is the original's (`537e02d1cb9fb8a0f631316240f6d2e833b7443b9fddde2cd10a47195488c4e0`). The class appeared in 2 of 5 (replays 4 and 5) of its recorded replays (§11.1: INTERMITTENT). The window is narrow (tens of milliseconds after the injection), which fits a timing-dependent outcome.
 
 <!-- K7-RECURRENCES -->
+## Recurrences in K7 (ADR-0045)
+
+None. No valid run of K7's matrix (130 cells, `evidence/K7/results.json`) failed with a guarantee group that matches the predicate standing for this finding; nothing of K7 is cited here. Every K7 failure and how ADR-0045's predicates classified it is listed in `evidence/K7/results.json` and the K7 closure.
+<!-- /K7-RECURRENCES -->
 
 <!-- K7-REPLAY -->
+## K7 replay (K7.4)
+
+The package's replay command was executed once more in K7 (record `pkg-replay-FND-C8-ff4475d8` in `evidence/K7/commands.jsonl`; CommitProof `e8eca97`, contract 1.9.0 (ADR-0047), with ADR-0038's metrics exporter on every Multigres component, LIM-41). The plan replayed is this package's minimized plan, unchanged. Its five replays are stored as summaries in `evidence/K7/package-replays/`:
+
+| Replay | Verdict | Classes | Seal root |
+|---|---|---|---|
+| `20261017T192654Z-C8-3-real-537e02d1` | PASS | — | `b362e09e8ba0e355…` |
+| `20261017T193014Z-C8-3-real-537e02d1` | PASS | — | `a2119add0dd031ea…` |
+| `20261017T193333Z-C8-3-real-537e02d1` | PASS | — | `d63a41a32bbbf6dd…` |
+| `20261017T193650Z-C8-3-real-537e02d1` | PASS | — | `12364cdfbc83927d…` |
+| `20261017T194007Z-C8-3-real-537e02d1` | PASS | — | `4bbcfdcb81204ad1…` |
+
+**0 of 5** show `planned-failover-error` (§11.1 on these replays: NOT_REPRODUCED). The recorded classification stays INTERMITTENT (2 of 5 recorded replays): this re-execution is reported beside it, not instead of it.
+<!-- /K7-REPLAY -->
 
 ## Suggested direction (optional; not verified)
 

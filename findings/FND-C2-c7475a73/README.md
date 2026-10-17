@@ -69,8 +69,33 @@ Every operation the cycles name other than i=3178 is `ok` (§6.2 row 1), and i=3
 **Minimization and replays** (§12.2, P13): the driver targeted `G-nonadjacent`; none of the 11 candidates showed it, so the minimized plan is the original's (`9375b700cc2bc8dfb50914a958c230f2c0256a8dee205696ea5f82e1b002d8b9`). Its five recorded replays: FAIL with `incompatible-order` only, 5 of 5; `G-nonadjacent` 0 of 5 (§11.1: NOT_REPRODUCED; the original history is the evidence). A further replay attempt ended INVALID (recovery deadline P06 exceeded; `evidence/K7/NOTES.md` §7) and was re-run with the same plan.
 
 <!-- K7-RECURRENCES -->
+## Recurrences in K7 (ADR-0045)
+
+None. No valid run of K7's matrix (130 cells, `evidence/K7/results.json`) failed with a guarantee group that matches the predicate standing for this finding; nothing of K7 is cited here. Every K7 failure and how ADR-0045's predicates classified it is listed in `evidence/K7/results.json` and the K7 closure.
+<!-- /K7-RECURRENCES -->
 
 <!-- K7-REPLAY -->
+## K7 replay (K7.4)
+
+The package's replay command was executed once more in K7 (record `pkg-replay-FND-C2-c7475a73` in `evidence/K7/commands.jsonl`; CommitProof `e8eca97`, contract 1.9.0 (ADR-0047), with ADR-0038's metrics exporter on every Multigres component, LIM-41). The plan replayed is this package's minimized plan, unchanged. Its five replays are stored as summaries in `evidence/K7/package-replays/`:
+
+| Replay | Verdict | Classes | Seal root |
+|---|---|---|---|
+| `20261017T041917Z-C2-3-real-9375b700` | FAIL | `incompatible-order`, `non-linearizable` | `131176122968dc2c…` |
+| `20261017T042205Z-C2-3-real-9375b700` | FAIL | `incompatible-order` | `5335982634ce8ab4…` |
+| `20261017T043546Z-C2-3-real-9375b700` | FAIL | `incompatible-order` | `cd962bb7e0fc7033…` |
+| `20261017T043927Z-C2-3-real-9375b700` | FAIL | `incompatible-order` | `d1c3aa688593ab96…` |
+| `20261017T044306Z-C2-3-real-9375b700` | FAIL | `incompatible-order` | `0df39a9ea7ee24de…` |
+
+**0 of 5** show `G-nonadjacent` (§11.1 on these replays: NOT_REPRODUCED). The recorded classification stays NOT_REPRODUCED (0 of 5 recorded replays): this re-execution is reported beside it, not instead of it.
+
+2 INVALID attempt(s) of these replays were re-run with the same plan (§12.1) and count toward nothing; each is stored as a summary beside the replays, and its cause is in `evidence/K7/NOTES.md` §8:
+
+| Attempt | Replay | Verdict | Seal root |
+|---|---|---|---|
+| `20261017T042636Z-C2-3-real-9375b700` | 3 | INVALID | `194a561b76d05087…` |
+| `20261017T043111Z-C2-3-real-9375b700` | 3 | INVALID | `0e5ff761631e3ebc…` |
+<!-- /K7-REPLAY -->
 
 ## Suggested direction (optional; not verified)
 

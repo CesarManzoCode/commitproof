@@ -58,8 +58,34 @@ The hypothesis is that, within the first milliseconds of the drain, the gateway 
 **Minimization and replays** (§12.2, P13): none of the 11 candidates showed the class, so the minimized plan is the original's (`cb16d05219d2c878bf1d8d03cbf1447a06759861dd66f0e0aa5d9b69d3280575`). The class appeared in 1 of 5 (replay 1) of its recorded replays (§11.1: INTERMITTENT). A further attempt of replay 1 ended INVALID (F6 not confirmed within 60 s) and was re-run with the same plan. The window is narrow (tens of milliseconds after the injection), which fits a timing-dependent outcome.
 
 <!-- K7-RECURRENCES -->
+## Recurrences in K7 (ADR-0045)
+
+None. No valid run of K7's matrix (130 cells, `evidence/K7/results.json`) failed with a guarantee group that matches the predicate standing for this finding; nothing of K7 is cited here. Every K7 failure and how ADR-0045's predicates classified it is listed in `evidence/K7/results.json` and the K7 closure.
+<!-- /K7-RECURRENCES -->
 
 <!-- K7-REPLAY -->
+## K7 replay (K7.4)
+
+The package's replay command was executed once more in K7 (record `pkg-replay-FND-C8-5254b5cb-3` in `evidence/K7/commands.jsonl`; CommitProof `e8eca97`, contract 1.9.0 (ADR-0047), with ADR-0038's metrics exporter on every Multigres component, LIM-41). The plan replayed is this package's minimized plan, unchanged. Its five replays are stored as summaries in `evidence/K7/package-replays/`:
+
+| Replay | Verdict | Classes | Seal root |
+|---|---|---|---|
+| `20261017T044657Z-C8-10-real-cb16d052` | PASS | — | `9e566cd50188e633…` |
+| `20261017T045015Z-C8-10-real-cb16d052` | PASS | — | `502e3736e9da2002…` |
+| `20261017T045333Z-C8-10-real-cb16d052` | PASS | — | `4bf7a42dbdd095dd…` |
+| `20261017T190336Z-C8-10-real-cb16d052` | PASS | — | `2a88691b7730aca4…` |
+| `20261017T190654Z-C8-10-real-cb16d052` | PASS | — | `e76c5501886dc4cb…` |
+
+**0 of 5** show `planned-failover-error` (§11.1 on these replays: NOT_REPRODUCED). The recorded classification stays INTERMITTENT (1 of 5 recorded replays): this re-execution is reported beside it, not instead of it.
+
+3 INVALID attempt(s) of these replays were re-run with the same plan (§12.1) and count toward nothing; each is stored as a summary beside the replays, and its cause is in `evidence/K7/NOTES.md` §8:
+
+| Attempt | Replay | Verdict | Seal root |
+|---|---|---|---|
+| `20261017T183701Z-C8-10-real-cb16d052` | 4 | INVALID | `6df355aeb380dc60…` |
+| `20261017T183704Z-C8-10-real-cb16d052` | 4 | INVALID | `43d87470a367cb19…` |
+| `20261017T183709Z-C8-10-real-cb16d052` | 4 | INVALID | `27266480ed91d1c1…` |
+<!-- /K7-REPLAY -->
 
 ## Suggested direction (optional; not verified)
 

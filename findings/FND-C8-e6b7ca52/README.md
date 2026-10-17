@@ -58,8 +58,26 @@ The hypothesis is that, within the first milliseconds of the drain, the gateway 
 **Minimization and replays** (§12.2, P13): none of the 11 candidates showed the class, so the minimized plan is the original's (`9601ddce3ac130d9d9572c9fba4fb97f3f6135e972a75d0f433be72f9ca1e43e`). The class appeared in 0 of 5 of its recorded replays (§11.1: NOT_REPRODUCED). The window is narrow (tens of milliseconds after the injection), which fits a timing-dependent outcome.
 
 <!-- K7-RECURRENCES -->
+## Recurrences in K7 (ADR-0045)
+
+None. No valid run of K7's matrix (130 cells, `evidence/K7/results.json`) failed with a guarantee group that matches the predicate standing for this finding; nothing of K7 is cited here. Every K7 failure and how ADR-0045's predicates classified it is listed in `evidence/K7/results.json` and the K7 closure.
+<!-- /K7-RECURRENCES -->
 
 <!-- K7-REPLAY -->
+## K7 replay (K7.4)
+
+The package's replay command was executed once more in K7 (record `pkg-replay-FND-C8-e6b7ca52` in `evidence/K7/commands.jsonl`; CommitProof `e8eca97`, contract 1.9.0 (ADR-0047), with ADR-0038's metrics exporter on every Multigres component, LIM-41). The plan replayed is this package's minimized plan, unchanged. Its five replays are stored as summaries in `evidence/K7/package-replays/`:
+
+| Replay | Verdict | Classes | Seal root |
+|---|---|---|---|
+| `20261017T191018Z-C8-6-real-9601ddce` | PASS | — | `0060ecf13a850231…` |
+| `20261017T191335Z-C8-6-real-9601ddce` | PASS | — | `096d6f5b07a78d53…` |
+| `20261017T191652Z-C8-6-real-9601ddce` | PASS | — | `3d8e59700b5d844c…` |
+| `20261017T192009Z-C8-6-real-9601ddce` | PASS | — | `206774b4d8821b55…` |
+| `20261017T192328Z-C8-6-real-9601ddce` | PASS | — | `def0ac167964f782…` |
+
+**0 of 5** show `planned-failover-error` (§11.1 on these replays: NOT_REPRODUCED). The recorded classification stays NOT_REPRODUCED (0 of 5 recorded replays): this re-execution is reported beside it, not instead of it.
+<!-- /K7-REPLAY -->
 
 ## Suggested direction (optional; not verified)
 

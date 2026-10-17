@@ -1,0 +1,14 @@
+{"run_id":"20261013T232750Z-C11-2-real-1f5423ed","verdict":"FAIL","c1":{"valid":true,"anomalies":[],"ok_writes_checked":3439}}
+{"run_id":"20261011T231036Z-C2-3-real-f4505b54","verdict":"FAIL","c1":{"valid":true,"anomalies":[],"ok_writes_checked":2579}}
+{"run_id":"20261011T231036Z-C2-3-real-f4505b54","verdict":"FAIL","c1":{"valid":true,"anomalies":[],"ok_writes_checked":2579}}
+{"run_id":"20261016T221153Z-C2-1-real-c8781715","verdict":"FAIL","c1":{"valid":true,"anomalies":[],"ok_writes_checked":4582}}
+{"run_id":"20261016T173617Z-C2-3-real-9375b700","verdict":"FAIL","c1":{"valid":true,"anomalies":[],"ok_writes_checked":2641}}
+{"run_id":"20261016T231406Z-C8-10-real-cb16d052","verdict":"FAIL","c1":{"valid":true,"anomalies":[],"ok_writes_checked":8620}}
+{"run_id":"20261016T230045Z-C8-6-real-9601ddce","verdict":"FAIL","c1":{"valid":true,"anomalies":[],"ok_writes_checked":9757}}
+{"run_id":"20261016T225050Z-C8-3-real-537e02d1","verdict":"FAIL","c1":{"valid":true,"anomalies":[],"ok_writes_checked":8357}}
+{"run_id":"20261013T230358Z-C9-2-real-b0861f34","verdict":"FAIL","c1":{"valid":true,"anomalies":[],"ok_writes_checked":2755}}
+{"run_id":"20261013T230136Z-C9-1-real-21458975","verdict":"FAIL","c1":{"valid":true,"anomalies":[],"ok_writes_checked":2869}}
+{"run_id":"20261013T230909Z-C9-3-real-bb8a276f","verdict":"FAIL","c1":{"valid":true,"anomalies":[],"ok_writes_checked":2652}}
+{"run_id":"20261011T221506Z-D1-3-real-da159fa0","verdict":"FAIL","c1":{"valid":true,"anomalies":[],"ok_writes_checked":6057}}
+{"run_id":"20261011T221728Z-D1-4-real-ad3fca18","verdict":"FAIL","c1":{"valid":true,"anomalies":[],"ok_writes_checked":6925}}
+{"run_id":"20261011T221027Z-D1-1-real-59a95336","verdict":"FAIL","c1":{"valid":true,"anomalies":[],"ok_writes_checked":5956}}

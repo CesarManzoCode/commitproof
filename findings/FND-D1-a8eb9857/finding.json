@@ -13,10 +13,53 @@
   },
   "id": "FND-D1-a8eb9857",
   "k7_replay": {
-    "record": "",
-    "replays_with_class": 0,
-    "reproducibility": "",
-    "runs": []
+    "record": "pkg-replay-FND-D1-a8eb9857",
+    "replays_with_class": 3,
+    "reproducibility": "REPRODUCED",
+    "runs": [
+      {
+        "classes": [],
+        "run_id": "20261017T201121Z-D1-4-real-eb537f55",
+        "seal_root": "c4b12fd812a1cdf2540cba4abb970ef548a1cf8f49726d57e79f99daae9c332f",
+        "verdict": "PASS"
+      },
+      {
+        "classes": [
+          "incompatible-order"
+        ],
+        "run_id": "20261017T201305Z-D1-4-real-eb537f55",
+        "seal_root": "e0c8f12e41e562e2084d266ef858d55885e6106e481c09fefd726f2a0d1a3fc6",
+        "verdict": "FAIL"
+      },
+      {
+        "classes": [
+          "incompatible-order"
+        ],
+        "run_id": "20261017T201449Z-D1-4-real-eb537f55",
+        "seal_root": "ec56e661cc644595fa35710b793dd086e09f253723b851a3ad88f3377a07110f",
+        "verdict": "FAIL"
+      },
+      {
+        "classes": [
+          "incompatible-order"
+        ],
+        "run_id": "20261017T201620Z-D1-4-real-eb537f55",
+        "seal_root": "f858dbdbd3c135c76d053267a2cacd0ba4b0f1da0d710fde29d29ca2c7160caf",
+        "verdict": "FAIL"
+      },
+      {
+        "classes": [
+          "G-nonadjacent",
+          "G-single",
+          "G0",
+          "G1c",
+          "G2-item"
+        ],
+        "run_id": "20261017T201755Z-D1-4-real-eb537f55",
+        "seal_root": "548389ac81d648709dc4a5514a5787671deac46f3116d9ee7b89fae3d51e38df",
+        "verdict": "FAIL"
+      }
+    ]
   },
   "minimized_plan_sha256": "eb537f55cca0bde22afe45afee17a8c3e06e75de06b9ed3c84d717da4866acb1",
   "minimized_run": {

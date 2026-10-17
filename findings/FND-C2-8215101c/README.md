@@ -71,8 +71,26 @@ With F1d the leader cannot send WAL to its synchronous standbys, so the `cas`'s 
 **Minimization and replays** (§12.2, P13): 7 candidates; the minimized plan `316f38777476090cac8a900822d1037967cda210f8e22c907527251554d51701` keeps step 2 (F1d on the leader, 30 s) and halves the workload twice (22.5 s), 8 clients (run `20261017T002205Z-C2-1-real-316f3877`, FAIL `non-linearizable`). Its five recorded replays show `non-linearizable` in 5 of 5 (§11.1: REPRODUCED).
 
 <!-- K7-RECURRENCES -->
+## Recurrences in K7 (ADR-0045)
+
+None. No valid run of K7's matrix (130 cells, `evidence/K7/results.json`) failed with a guarantee group that matches the predicate standing for this finding; nothing of K7 is cited here. Every K7 failure and how ADR-0045's predicates classified it is listed in `evidence/K7/results.json` and the K7 closure.
+<!-- /K7-RECURRENCES -->
 
 <!-- K7-REPLAY -->
+## K7 replay (K7.4)
+
+The package's replay command was executed once more in K7 (record `pkg-replay-FND-C2-8215101c` in `evidence/K7/commands.jsonl`; CommitProof `e8eca97`, contract 1.9.0 (ADR-0047), with ADR-0038's metrics exporter on every Multigres component, LIM-41). The plan replayed is this package's minimized plan, unchanged. Its five replays are stored as summaries in `evidence/K7/package-replays/`:
+
+| Replay | Verdict | Classes | Seal root |
+|---|---|---|---|
+| `20261017T041149Z-C2-1-real-316f3877` | FAIL | `non-linearizable` | `234087ba34d38619…` |
+| `20261017T041317Z-C2-1-real-316f3877` | FAIL | `non-linearizable` | `db21f8d72f0a971e…` |
+| `20261017T041445Z-C2-1-real-316f3877` | FAIL | `non-linearizable` | `1da2f0051786dd4e…` |
+| `20261017T041620Z-C2-1-real-316f3877` | FAIL | `non-linearizable` | `35a44df73b36a18f…` |
+| `20261017T041748Z-C2-1-real-316f3877` | FAIL | `non-linearizable` | `305fa2765802d2f4…` |
+
+**5 of 5** show `non-linearizable` (§11.1 on these replays: REPRODUCED). The recorded classification stays REPRODUCED (5 of 5 recorded replays): this re-execution is reported beside it, not instead of it.
+<!-- /K7-REPLAY -->
 
 ## Suggested direction (optional; not verified)
 

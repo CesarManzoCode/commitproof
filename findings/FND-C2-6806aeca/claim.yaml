@@ -3,8 +3,8 @@ id: CLM-0044
 text: "FND-C2-6806aeca (G6, SAFETY_VIOLATION, DESIGN, high, origin POSTGRES_INHERITED, NEW): an ok register read returns a value whose write ended info and that the next failover removes."
 contract: "§3 G6, §11, §11.4"
 target: {system: "multigres", commit: "e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73", profile: "baseline", mutant: "none"}
-command: "cpcheck check on the original run; bin/commitproof replay 20261012T025629Z-C2-3-real-3fb018bf --times 5 (P13; K7.4 record pending)"
+command: "cpcheck check on the original run; bin/commitproof replay 20261012T025629Z-C2-3-real-3fb018bf --times 5 (P13); K7.4: the same command once more (record pkg-replay-FND-C2-6806aeca)"
 artifact: "evidence/K4/runs/20261011T231036Z-C2-3-real-f4505b54.tar.zst"
 sha256: "a5472bd9c4212b63ab9397b7ff513a05ba7efe81aeeed54c7da492d6b20c4969"
-result: "original run 20261011T231036Z-C2-3-real-f4505b54: FAIL incompatible-order, non-linearizable; recorded replays 3 of 5 with non-linearizable (REPRODUCED); 3 K7 recurrences"
+result: "original run 20261011T231036Z-C2-3-real-f4505b54: FAIL incompatible-order, non-linearizable; recorded replays 3 of 5 with non-linearizable (REPRODUCED); 3 K7 recurrences; K7.4 replays 0 of 5 with non-linearizable (NOT_REPRODUCED; CLM-0062)"
 limitations: ["LIM-33", "LIM-08", "LIM-01"]

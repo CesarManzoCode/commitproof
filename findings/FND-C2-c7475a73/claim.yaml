@@ -3,8 +3,8 @@ id: CLM-0046
 text: "FND-C2-c7475a73 (G5, SAFETY_VIOLATION, INFERRED, high, origin UNDETERMINED, NEW): C3 reports G-nonadjacent, G-single and G2-item cycles, all through an info transaction whose element the failover removed."
 contract: "§3 G5, §11, §11.4"
 target: {system: "multigres", commit: "e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73", profile: "baseline", mutant: "none"}
-command: "cpcheck check on the original run; bin/commitproof replay 20261016T173617Z-C2-3-real-9375b700 --times 5 (P13; K7.4 record pending)"
+command: "cpcheck check on the original run; bin/commitproof replay 20261016T173617Z-C2-3-real-9375b700 --times 5 (P13); K7.4: the same command once more (record pkg-replay-FND-C2-c7475a73)"
 artifact: "evidence/K7/runs/20261016T173617Z-C2-3-real-9375b700.tar.zst"
 sha256: "d59932aa948d9f940bf882fce51765a339104025c746af9aeb80fdbfa748ea02"
-result: "original run 20261016T173617Z-C2-3-real-9375b700: FAIL G-nonadjacent, G-single, G2-item, incompatible-order; recorded replays 0 of 5 with G-nonadjacent (NOT_REPRODUCED); 0 K7 recurrences"
+result: "original run 20261016T173617Z-C2-3-real-9375b700: FAIL G-nonadjacent, G-single, G2-item, incompatible-order; recorded replays 0 of 5 with G-nonadjacent (NOT_REPRODUCED); 0 K7 recurrences; K7.4 replays 0 of 5 with G-nonadjacent (NOT_REPRODUCED; CLM-0062)"
 limitations: ["LIM-22", "LIM-31", "LIM-44"]

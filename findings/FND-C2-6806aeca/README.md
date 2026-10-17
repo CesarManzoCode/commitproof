@@ -71,8 +71,32 @@ The reads that returned 240 and 242 happened before rule 2.0 was observed (poole
 **Minimization and replays** (§12.2, K4): the minimized plan `3fb018bf532f53a631e5e745ba447e260aaa4e0d67457b4577cbd98e5e66127a` (one F1c step of 30 s, 45 s workload; run `20261012T025629Z-C2-3-real-3fb018bf`) was minimized for `incompatible-order`, ADR-0024's target for this run; its five recorded replays show `non-linearizable` in 3 (§11.1: REPRODUCED).
 
 <!-- K7-RECURRENCES -->
+## Recurrences in K7 (ADR-0045)
+
+3 valid run(s) of K7's matrix repeat this finding's mechanism: every guarantee group of their anomalies matches ADR-0045's predicate R-G6, which reads only `checks.json`. Each is counted in its cell's k/N and interval (§12.3), triaged (`evidence/K7/triage/`), committed as a summary (stub and `checks.json`, `evidence/K7/runs/`), and not minimized. Its full archive stays on the machine that ran it (`runs/k7/`). `cpgate K7` re-evaluates the predicate for every one.
+
+| Run | Cell | Seed | Seal root | Predicate | Matched fields |
+|---|---|---|---|---|---|
+| `20261016T175516Z-C2-7-real-cbc4d528` | V1 C2/baseline | 7 | `b56d47a5d79c9984…` | R-G6 | classes non-linearizable (non-linearizable 1); valid(C1) true; valid(C2) true; valid(C6) true; timeouts 35; F {F1a, F1c, F1d} |
+| `20261016T180118Z-C2-9-real-4bafa50d` | V1 C2/baseline | 9 | `75c53226ee75f4ac…` | R-G6 | classes non-linearizable (non-linearizable 2); valid(C1) true; valid(C2) true; valid(C6) true; timeouts 35; F {F1c, F1d} |
+| `20261016T221713Z-C2-3-real-273a1b0c` | V2 C2/slotless | 3 | `4c6dfdf2109b9990…` | R-G6 | classes non-linearizable (non-linearizable 1); valid(C1) true; valid(C2) true; valid(C6) true; timeouts 45; F {F1c} |
+<!-- /K7-RECURRENCES -->
 
 <!-- K7-REPLAY -->
+## K7 replay (K7.4)
+
+The package's replay command was executed once more in K7 (record `pkg-replay-FND-C2-6806aeca` in `evidence/K7/commands.jsonl`; CommitProof `e8eca97`, contract 1.9.0 (ADR-0047), with ADR-0038's metrics exporter on every Multigres component, LIM-41). The plan replayed is this package's minimized plan, unchanged. Its five replays are stored as summaries in `evidence/K7/package-replays/`:
+
+| Replay | Verdict | Classes | Seal root |
+|---|---|---|---|
+| `20261017T040402Z-C2-3-real-3fb018bf` | FAIL | `G-nonadjacent`, `G-single`, `G0`, `G1c`, `G2-item`, `incompatible-order` | `320b79e500c6bb12…` |
+| `20261017T040533Z-C2-3-real-3fb018bf` | FAIL | `incompatible-order` | `b4a1614f94355871…` |
+| `20261017T040711Z-C2-3-real-3fb018bf` | FAIL | `incompatible-order` | `9784f11d11009249…` |
+| `20261017T040842Z-C2-3-real-3fb018bf` | FAIL | `incompatible-order` | `aa17e21511d26572…` |
+| `20261017T041016Z-C2-3-real-3fb018bf` | FAIL | `incompatible-order` | `7c5c5c97dc6da9a2…` |
+
+**0 of 5** show `non-linearizable` (§11.1 on these replays: NOT_REPRODUCED). The recorded classification stays REPRODUCED (3 of 5 recorded replays): this re-execution is reported beside it, not instead of it.
+<!-- /K7-REPLAY -->
 
 ## Suggested direction (optional; not verified)
 
