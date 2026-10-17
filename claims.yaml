@@ -299,6 +299,33 @@ claims:
     sha256: "8d067f28cab28caaabd4b385be4b1b3bdbab94d96cd8bcd51844f06071c1c5d2"
     result: "K1–K6 PASS; images match the lock"
     limitations: ["LIM-16"]
+  - id: CLM-0056
+    text: "At the resume after the owner freed memory, make prereq-check passed 26 of 26 (R1: MemAvailable 12.83 GiB of 14.91 GiB), cpgate K1–K6 on copies of the closed evidence passed every criterion, and the local images equalled images.lock.json."
+    contract: "§14, §15, PREREQUISITES"
+    target: {system: "the owner's host; cpgate (evidence K1–K6)", commit: "e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73", profile: "baseline", mutant: "none"}
+    command: "make prereq-check (record prereq-check-resume-5); scripts/prek7-precondition.sh (record precondition-resume-3); bin/commitproof images verify (record images-verify-resume-3)"
+    artifact: "evidence/K7/prereq-resume-5.json"
+    sha256: "9810beb10f493ea20e8bd6b017792c5293d7378729cab33ae972e2643e057289"
+    result: "26 of 26 PASS; K1–K6 PASS; images match the lock"
+    limitations: ["LIM-02", "LIM-16"]
+  - id: CLM-0057
+    text: "K7.4's resumed replay command of FND-C8-5254b5cb reused its sealed replays 1–3 and checked replay 3 (PASS); replay 4 was INVALID three times within 12 s (18:37:00–18:37:12Z), each attempt's cluster failing to start because Docker could not attach its containers to the project network ('failed to add the host <=> sandbox pair interfaces: operation not supported'). None of the attempts ran an operation (one history line each); they count toward nothing."
+    contract: "§12.1, §15 K7 (K7.4), P13"
+    target: {system: "multigres", commit: "e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73", profile: "buffered", mutant: "none"}
+    command: "bin/commitproof replay runs/k7-pkg/FND-C8-5254b5cb/20261016T231406Z-C8-10-real-cb16d052 --times 5 --out runs/k7-pkg/FND-C8-5254b5cb --cpcheck bin/cpcheck (record pkg-replay-FND-C8-5254b5cb-2, exit 2)"
+    artifact: "evidence/K7/logs/pkg-replay-FND-C8-5254b5cb-2.stdout"
+    sha256: "663ce7c6abf1ff43c7d89ff51bc58d82cc975655250a45571ea9ef2a3a61a8f8"
+    result: "replays 1–3 PASS; replay 4 INVALID ×3 (cluster up exit 2); K7.4 not complete"
+    limitations: ["LIM-02"]
+  - id: CLM-0058
+    text: "The running kernel 7.2.9-arch1-1 has no module tree on the owner's host: the linux package was upgraded to 7.2.10-arch1-1 at 2026-10-17T18:09:26Z, /lib/modules holds only 7.2.10-arch1-1, veth is not loaded and modinfo finds no veth module. Docker's bridge networks need veth, so no cluster can start until the host boots the installed kernel. make prereq-check does not check veth (its kernel items are nf_tables, nft_compat, sch_netem and /dev/fuse), so it passed 26 of 26 after the upgrade."
+    contract: "§14, PREREQUISITES §3"
+    target: {system: "the owner's host", commit: "e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73", profile: "baseline", mutant: "none"}
+    command: "bash -c with uname -r, ls /lib/modules, the last 'upgraded linux' line of /var/log/pacman.log, veth in /proc/modules, modinfo -n veth (record host-kernel-modules, exit 1; argv in commands.jsonl)"
+    artifact: "evidence/K7/logs/host-kernel-modules.stdout"
+    sha256: "2be574b831a5e279806a4dc9d4f8fffec2b4b60e119143ea1f2dbdb50aed8926"
+    result: "kernel module veth unavailable (K7 BLOCKED, AGENTS.md §3)"
+    limitations: ["LIM-02"]
   - id: CLM-0040
     text: "FND-D1-fb8d0f8c (G2b, SAFETY_VIOLATION, INFERRED, high, origin POSTGRES_INHERITED, NEW): reads of an append whose client timed out (info) return a value that the next failover removes; no acknowledged write is lost."
     contract: "§3 G2b, §11, §11.4"

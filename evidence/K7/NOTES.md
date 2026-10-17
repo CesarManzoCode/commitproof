@@ -35,7 +35,19 @@ Resume protocol:
 
 1. `prereq-check-resume-3` exited 2 with 24 of 26 checks: D5 failed on this project's leftover `commitproof_cpnet`, and R1 failed with MemAvailable 10.61 GiB against at least 12 GiB. `docker-cleanup-resume-2` removed only the resources labelled `com.docker.compose.project=commitproof`: 8 containers, 1 network, 7 volumes. Images were kept, and no sudo was used. `prereq-check-resume-4` passed 25 of 26. **R1 still failed**: MemAvailable 10.62 GiB of 14.91 GiB, with the owner's browser holding about 5.6 GiB RSS. `evidence/K1/prereq.json` was restored to its committed content both times (copies `prereq-resume-3.json`, `prereq-resume-4.json`). [CLM-0054]
 2. `precondition-resume-2`: cpgate K1–K6 on copies of the closed evidence, every criterion PASS. `images-verify-resume-2`: the local images equal the lock. [CLM-0055]
-3. R1 is a prerequisite of the owner's machine (AGENTS.md §3). K7 stopped BLOCKED before any further cluster run (`closure.yaml`).
+3. R1 is a prerequisite of the owner's machine (AGENTS.md §3). K7 stopped BLOCKED before any further cluster run (closure at `14688db`).
+
+### 2.2 The resume after the owner freed memory, and the kernel upgrade
+
+The owner closed the browser and other heavy applications and re-invoked the resume on 2026-10-17. State found before anything was touched: `main` at `14688db`, clean, nothing pushed. No project container, network or volume; no project process; no FUSE mount but the desktop's own `portal`. K7.4 as §2.1 left it. MemAvailable 12.87 GiB.
+
+1. `prereq-check-resume-5`: 26 of 26 (R1: MemAvailable 12.83 GiB). `evidence/K1/prereq.json` restored to its committed content (copy `prereq-resume-5.json`). `precondition-resume-3`: cpgate K1–K6 on copies, every criterion PASS. `images-verify-resume-3`: the local images equal the lock. [CLM-0056]
+2. Seal sweep: all 248 run directories under `runs/k7` and `runs/k7-pkg` pass `cpcheck verify-seal`. The only one without a `checks.json` is FND-C8-5254b5cb's replay 3. The matrix was not re-run.
+3. The group `pkgreplay` (from a fresh copy of `scripts/k7-evidence.sh`) re-verified each extracted minimized run (`verify-seal-pkg-<id>-2`) and executed `pkg-replay-FND-C8-5254b5cb-2`. It reused replays 1–3, checked replay 3 (PASS), then made replay 4. That replay was **INVALID three times within 12 s**: every attempt's `docker compose up` failed with "failed to set up container networking: … failed to add the host (veth…) <=> sandbox (veth…) pair interfaces: operation not supported". No attempt ran an operation (one history line each), the cluster was taken down with no leftover, and the command exited 2. [CLM-0057]
+4. The cause is on the host (record `host-kernel-modules`, exit 1). The `linux` package was upgraded from 7.2.9 to 7.2.10 at 2026-10-17T18:09:26Z (`/var/log/pacman.log`), while kernel 7.2.9-arch1-1 kept running. `/lib/modules` holds only 7.2.10-arch1-1, veth is not loaded and `modinfo` finds no veth module. Docker's bridge networks need veth, so no cluster can start until the host boots the installed kernel. `make prereq-check` does not check veth (its kernel items are nf_tables, nft_compat, sch_netem and `/dev/fuse`, all loaded before the upgrade), so it passed after the upgrade. [CLM-0058]
+5. The three attempts are not runs of the system under test. They were stored as summaries in `package-replays/` (`store-pkg-invalid-FND-C8-5254b5cb`) and set aside, as V1 C2 seed 3's were (§3): `setaside-c8-10-r4-chmod`, `setaside-c8-10-r4`, `setaside-c8-10-r4-restore` moved them to `runs/k7-invalid/k7-pkg-FND-C8-5254b5cb/` on this machine. No file inside changed, and every seal still verifies. The driver counts the INVALID attempts it sees for a replay index, so after the owner's reboot `pkg-replay-FND-C8-5254b5cb-3` makes replay 4 afresh with the same plan (`harness-defect-runs/README.md`).
+6. P25 after this store step (`p25-count-resume`): 261 879 954 B, margin 13 120 046 B. Projection: plus 45 replay summaries at the measured mean of 59 559 B (≈ 2.68 MB) and ADR-0045 §5's 5 MB allowance, ≈ 269.6 MB, within 275 MB.
+7. A kernel module missing on the owner's machine is a prerequisite the agent never resolves (AGENTS.md §3). K7 stopped BLOCKED again (`closure.yaml`).
 
 ## 3. Harness defects found in K7 (none is a Multigres finding, §11.1)
 
@@ -115,6 +127,8 @@ Group `pkgreplay`, no other cluster running. Each package's minimized run was ex
 
 State at the stop of §2.1: 5 of 14 packages replayed. FND-C8-5254b5cb's replay command was interrupted after its third replay. FND-C8-e6b7ca52, FND-C8-ff4475d8, the three C9 packages and the three D1 packages had not started. The class counts of each replay command's summary line are its own target class (for FND-C2-6806aeca, the shared minimized run's `incompatible-order`). The package's class is recounted into `finding.json` by `k7findings` and by cpgate K7.4, and no package's `k7_replay` is written yet. Replay 3 of FND-C2-c7475a73 was INVALID twice (`20261017T042636Z…`, `20261017T043111Z…`: `run-end` "recovery deadline P06 exceeded", as in §11). Per §12.1 it was re-run with the same seed and was valid on its third attempt.
 
+State at the stop of §2.2: still 5 of 14. `pkg-replay-FND-C8-5254b5cb-2` exited 2. Its replays 1–3 are sealed and checked (PASS, PASS, PASS). Replay 4 failed three times because no cluster could start on the host, and those attempts were set aside. Eight packages have not started.
+
 <!-- K7.4-TABLE -->
 
 ## 9. Findings packages (§11.4)
@@ -156,4 +170,5 @@ Four attempts ended INVALID because no recovery insert succeeded within P06 (120
 - `k7findings` counted an INVALID replay attempt as a recorded replay; fixed (`65ff46a`) before any package was written from it.
 - The four "no recovery within P06" attempts are reported as an observation (§11, LIM-45): the contract gives no package to INVALID runs.
 - A second host power-off interrupted K7.4 (§2.1): one replay command had no record, and its three replays were sealed. The command is resumable and is re-executed under the next record name; no sealed run is recomputed. At this resume `make prereq-check` failed R1 (available memory) after the cleanup, so K7 stopped BLOCKED again before any further cluster run.
+- At the next resume (§2.2), with R1 passing, the host's kernel package had been upgraded while the old kernel ran. No cluster could start (veth unavailable), and replay 4 of FND-C8-5254b5cb was INVALID three times for that reason. The three attempts were stored as summaries and set aside so the replay can be made afresh after a reboot. K7 stopped BLOCKED a third time.
 - The owner's decision text of 2026-10-15 gives P25 as 250 MB. The owner's later decision on K7's first BLOCKED closure (2026-10-16, ADR-0047) raised it to 275 MB, and K7 enforces 275 MB.

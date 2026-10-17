@@ -1,0 +1,9 @@
+{"command":"verify-seal","exit_code":0,"files":93,"history_lines":1,"observation_lines":0,"problems":[],"run_dir":"runs/k7-pkg/FND-C8-5254b5cb/20261017T183701Z-C8-10-real-cb16d052","seal_root":"6df355aeb380dc607440b155a395a88a826a92f91780c10b5ab248ed31aae157","valid":true}
+b8cf190bf323727f447369160f671f52f909ebba96bb3040bfba628f14a609cf  evidence/K7/package-replays/20261017T183701Z-C8-10-real-cb16d052.stub.tar.zst
+4775a69959241a3a89656578099d3560bc5bac18e110287ba8cdbd10cd05a139  evidence/K7/package-replays/20261017T183701Z-C8-10-real-cb16d052.checks.json
+{"command":"verify-seal","exit_code":0,"files":93,"history_lines":1,"observation_lines":0,"problems":[],"run_dir":"runs/k7-pkg/FND-C8-5254b5cb/20261017T183704Z-C8-10-real-cb16d052","seal_root":"43d87470a367cb19ce2bf276cec6b3497347caca1bad786186e2288a202094e4","valid":true}
+e325ccaa3f24ffcf9f493b19b19af70afb627c42d9885f2d011726951dcf63d5  evidence/K7/package-replays/20261017T183704Z-C8-10-real-cb16d052.stub.tar.zst
+9a30cf55fe29bbfa213cd15a8aa384f6f1debb8053bbc3531cebbf074ecc6fa2  evidence/K7/package-replays/20261017T183704Z-C8-10-real-cb16d052.checks.json
+{"command":"verify-seal","exit_code":0,"files":93,"history_lines":1,"observation_lines":0,"problems":[],"run_dir":"runs/k7-pkg/FND-C8-5254b5cb/20261017T183709Z-C8-10-real-cb16d052","seal_root":"27266480ed91d1c1cf192dbe0c3655583e139c5cba1c38b3aa7f8b132995f362","valid":true}
+bef5df69e677e109de142f171c39d91f56a4dc6656d8694bdd81f44098fa2301  evidence/K7/package-replays/20261017T183709Z-C8-10-real-cb16d052.stub.tar.zst
+94fb1e3981609813e369705604baa4916ed3f0d7a46f1b04e20b103880239bef  evidence/K7/package-replays/20261017T183709Z-C8-10-real-cb16d052.checks.json

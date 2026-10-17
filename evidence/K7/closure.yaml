@@ -46,10 +46,11 @@ commits:
   - {sha: "2f7437d", message: "fix(scripts): k7-c3-audit reports C3's valid false as false, not null"}
   - {sha: "b241f9b", message: "feat(scripts): K7's cited D3′/D5 runs in full, the final P25 count, the C3 audit as k7-evidence groups (ADR-0047)"}
   - {sha: "43d7d1d", message: "docs(k7): the five new findings' packages, LIMITATIONS (LIM-44, LIM-45), NOTES, README, CHANGELOG, overclaim review, the C3-correction audit; D3′/D5 in full"}
-  # and the commit that adds this closure, NOTES §2.1, the five packages' K7.4 replays and the in-progress claims (the last of the sprint so far)
+  - {sha: "14688db", message: "test(k7): K7 closure — BLOCKED at the resume after the second power-off (prerequisite R1: 10.62 GiB available < 12 GiB)"}
+  # and the commit that adds this closure, NOTES §2.2, the set-aside of replay 4's three INVALID attempts and CLM-0056–CLM-0058 (the last of the sprint so far)
 gate:
   command: "cpgate K7 --evidence evidence/K7 --negative-controls"
-  exit_code: null   # not run: K7 stopped BLOCKED during K7.4 (prerequisite R1), before claims, release documents, CI and the gate
+  exit_code: null   # not run: K7 stopped BLOCKED during K7.4 (the host's kernel module veth unavailable), before claims, release documents, CI and the gate
   criteria: []
   negative_controls: []
 demonstrated:   # each line backed by a claims.yaml id (claims.yaml is in progress; see not_demonstrated)
@@ -61,9 +62,10 @@ demonstrated:   # each line backed by a claims.yaml id (claims.yaml is in progre
   - "P25 (ADR-0047, 275 MB): every K7 run stored once (6 in full, 206 summaries), the cited D3′/D5 real-build runs in full under evidence/K7/cited (seal roots equal to K5's) [CLM-0014, CLM-0018, CLM-0033]; count at this stop below 275 MB (NOTES §12)."
   - "Fourteen findings packages written under findings/ (not published), each README's first line stating whether an acknowledged write was lost in its original run (no, in all 14) [CLM-0040–CLM-0053]."
   - "Four matrix-time attempts and two K7.4 attempts ended INVALID because no recovery insert succeeded within P06 after the last heal; recorded as an observation (LIM-45), not packaged [CLM-0016; NOTES §8, §11]."
-  - "Resume after the first power-off: prereq-check 26/26 after removing only labelled leftovers; cpgate K1–K6 PASS; images equal the lock [CLM-0031, CLM-0032]. Resume after the second power-off: cpgate K1–K6 PASS on copies; images equal the lock [CLM-0055]; prereq-check 25/26 with R1 failing [CLM-0054]."
+  - "Resume after the first power-off: prereq-check 26/26 after removing only labelled leftovers; cpgate K1–K6 PASS; images equal the lock [CLM-0031, CLM-0032]. Resume after the second power-off: cpgate K1–K6 PASS on copies; images equal the lock [CLM-0055]; prereq-check 25/26 with R1 failing [CLM-0054]. Resume after the owner freed memory: prereq-check 26/26, cpgate K1–K6 PASS on copies, images equal the lock [CLM-0056]; all 248 run directories pass verify-seal."
+  - "K7.4, FND-C8-5254b5cb: the resumed replay command reused its sealed replays 1–3 and checked replay 3 (PASS) [CLM-0057]."
 not_demonstrated:
-  - "K7.4 for 9 of 14 packages: FND-C8-5254b5cb's replay command interrupted by the power-off after its third (sealed, unchecked) replay; FND-C8-e6b7ca52, FND-C8-ff4475d8, FND-C9-40b6f05a, FND-C9-2fe9a9fc, FND-C9-90da5532, FND-D1-fb8d0f8c, FND-D1-2e860fd2, FND-D1-a8eb9857 not started. No package's finding.json has its k7_replay written yet; NOTES §8's table is not written."
+  - "K7.4 for 9 of 14 packages: FND-C8-5254b5cb's replay command (pkg-replay-FND-C8-5254b5cb-2, exit 2) stopped at replay 4, INVALID three times because no cluster could start on the host (replays 1–3 sealed and checked, PASS); FND-C8-e6b7ca52, FND-C8-ff4475d8, FND-C9-40b6f05a, FND-C9-2fe9a9fc, FND-C9-90da5532, FND-D1-fb8d0f8c, FND-D1-2e860fd2, FND-D1-a8eb9857 not started. No package's finding.json has its k7_replay written yet; NOTES §8's table is not written."
   - "K7.5: claims.yaml in progress (47 claims; CLM-0019, CLM-0028 and CLM-0034, cited by NOTES/README, not yet written); every package's claim.yaml present."
   - "The final README, LIMITATIONS (LIM-45's count of INVALID attempts now 6), CHANGELOG, overclaim review and runs-index.json with K7.4's replays; the final P25 count (p25-final)."
   - "cpgate K7 with negative controls, every make ci-* target on the release commit, the tag v1.0.0 and its tag check."
@@ -90,7 +92,7 @@ k7_4_replays_so_far:   # summary line of each recorded pkg-replay command (its o
   - {id: FND-C2-6806aeca, record: pkg-replay-FND-C2-6806aeca, of: 20261012T025629Z-C2-3-real-3fb018bf, class: incompatible-order, replays_with_class: 5, reproducibility: REPRODUCED}   # the package's class is non-linearizable: not yet recounted
   - {id: FND-C2-8215101c, record: pkg-replay-FND-C2-8215101c, of: 20261017T002205Z-C2-1-real-316f3877, class: non-linearizable, replays_with_class: 5, reproducibility: REPRODUCED}
   - {id: FND-C2-c7475a73, record: pkg-replay-FND-C2-c7475a73, of: 20261016T173617Z-C2-3-real-9375b700, class: G-nonadjacent, replays_with_class: 0, reproducibility: NOT_REPRODUCED}   # replay 3 INVALID twice (P06), valid on its third attempt
-  - {id: FND-C8-5254b5cb, record: "(interrupted; no record)", of: 20261016T231406Z-C8-10-real-cb16d052, replays_sealed: ["20261017T044657Z-C8-10-real-cb16d052 PASS", "20261017T045015Z-C8-10-real-cb16d052 PASS", "20261017T045333Z-C8-10-real-cb16d052 (sealed 04:56:49Z, not checked)"]}
+  - {id: FND-C8-5254b5cb, record: "pkg-replay-FND-C8-5254b5cb (interrupted by the power-off; no record); pkg-replay-FND-C8-5254b5cb-2 (exit 2)", of: 20261016T231406Z-C8-10-real-cb16d052, replays_sealed: ["20261017T044657Z-C8-10-real-cb16d052 PASS", "20261017T045015Z-C8-10-real-cb16d052 PASS", "20261017T045333Z-C8-10-real-cb16d052 PASS (checked at this resume)"], set_aside: ["20261017T183701Z-C8-10-real-cb16d052 INVALID", "20261017T183704Z-C8-10-real-cb16d052 INVALID", "20261017T183709Z-C8-10-real-cb16d052 INVALID"]}   # replay 4: no cluster could start (the host)
 repeats:   # ADR-0045: every repeat with the fields that matched (runs/k7/campaign-k7.log, event repeat)
   - run: "20261016T175516Z-C2-7-real-cbc4d528"
     cell: "V1"
@@ -233,22 +235,25 @@ deviations_from_prompt:
   - "K7.4 executes each package's P13 replay command (commitproof replay accepts only --times 5); cpgate K7's check corrected (9807b0c), its argv matched by tokens."
   - "The docker-cleanup-resume record was first written with raw newlines in its argv; the line was rejoined with escaped newlines and record-command.sh fixed (748e549)."
   - "INVALID attempts that did not recover within P06 (four during the matrix, two during K7.4) are reported as an observation (LIM-45): §11.1 names this a LIVENESS_OBSERVATION, §12.1 makes the runs INVALID, and no K7 criterion packages INVALID runs."
+  - "At the resume after the owner freed memory (NOTES §2.2), the host's linux package had been upgraded (7.2.9 → 7.2.10, 2026-10-17 18:09:26Z) while kernel 7.2.9 kept running; with its module tree gone, Docker could not create veth pairs and replay 4 of FND-C8-5254b5cb was INVALID three times (cluster up exit 2, no operation run). The three attempts were stored as summaries in package-replays/ and set aside to runs/k7-invalid/k7-pkg-FND-C8-5254b5cb/ (records setaside-c8-10-r4-*, as V1 C2 seed 3's), so that replay 4 is made afresh with the same plan after a reboot; they count toward nothing. make prereq-check does not check veth, so it passed 26/26 after the upgrade."
   - "Work in progress committed though K7 is BLOCKED (the prompt asks to commit everything): claims.yaml and the packages' claim.yaml, the three C8 READMEs' and one triage record's corrections (checked against the sealed histories), K7.4's five completed replay commands and their summaries."
 blocked:
-  condition: "Prerequisite R1 (docs/PREREQUISITES.md, CONTRACT §14) fails on the owner's machine: at least 12 GiB of available memory is required, MemAvailable is 10.62 GiB of 14.91 GiB (the owner's browser holds about 5.6 GiB RSS). make prereq-check is 25/26 after removing only this project's labelled leftovers (D5 fixed). A missing prerequisite on the owner's machine is never resolved by the agent (AGENTS.md §3); no further cluster run was started."
+  condition: "A kernel module is missing on the owner's machine (docs/PREREQUISITES.md, CONTRACT §14; AGENTS.md §3): the linux package was upgraded from 7.2.9.arch1-1 to 7.2.10.arch1-1 at 2026-10-17T18:09:26Z while kernel 7.2.9-arch1-1 kept running; /lib/modules holds only 7.2.10-arch1-1, so the veth module cannot be loaded, and Docker cannot attach any container to a bridge network. No cluster can start: replay 4 of FND-C8-5254b5cb was INVALID three times for this reason. The agent never loads modules or reboots the host; no further cluster run was started."
   evidence:
-    command: "make prereq-check   (record prereq-check-resume-4 in evidence/K7/commands.jsonl, exit 2; result copied to evidence/K7/prereq-resume-4.json, sha256 aa003d29be4887a0766ddb21cc3d35bb2b18d17f14a4d188cc63a2adcf36fe4e)"
-    output_excerpt: "{\"summary\":{\"fail\":1,\"pass\":25,\"total\":26}} {\"id\":\"R1\",\"item\":\"RAM available\",\"observed\":\"MemAvailable=10.62 GiB (MemTotal=14.91 GiB)\",\"requirement\":\">= 12 GiB available\",\"result\":\"FAIL\"}"
+    command: "bash -c 'uname -r; ls /lib/modules; last upgraded-linux line of /var/log/pacman.log; veth in /proc/modules; modinfo -n veth'   (record host-kernel-modules in evidence/K7/commands.jsonl, exit 1; stdout sha256 2be574b831a5e279806a4dc9d4f8fffec2b4b60e119143ea1f2dbdb50aed8926); bin/commitproof replay … (record pkg-replay-FND-C8-5254b5cb-2, exit 2)"
+    output_excerpt: "running kernel: 7.2.9-arch1-1 | module trees installed: 7.2.10-arch1-1 | [2026-10-17T12:09:26-0600] [ALPM] upgraded linux (7.2.9.arch1-1 -> 7.2.10.arch1-1) | veth loaded: 0 | modinfo: ERROR: Module veth not found. || replay: cluster up exit 2: docker compose up: exit 1: … Error response from daemon: failed to set up container networking: failed to create endpoint commitproof-etcd-1 on network commitproof_cpnet: failed to add the host (vethe14b72d) <=> sandbox (veth030d357) pair interfaces: operation not supported | {\"error\":\"replay 4 of 20261016T231406Z-C8-10-real-cb16d052 INVALID 3 times\",\"exit_code\":2}"
   completed_at_this_resume:
-    - "State established (git, campaign, K7.4, Docker, closure) before touching anything (NOTES §2.1)."
-    - "prereq-check-resume-3 (24/26: D5 own cpnet, R1), docker-cleanup-resume-2 (labelled only: 8 containers, 1 network, 7 volumes; images kept), prereq-check-resume-4 (25/26: R1); evidence/K1/prereq.json restored both times."
-    - "precondition-resume-2: cpgate K1–K6 PASS on copies; images-verify-resume-2: images equal the lock."
-    - "Seal sweep: 248 of 248 run directories under runs/k7 and runs/k7-pkg valid; one (FND-C8-5254b5cb's replay 3) without checks.json."
-  owner_action: "Free memory so that MemAvailable is at least 12 GiB (for example, close the Brave browser) and keep it so while K7 finishes (≈ 45 package-replay runs, then the cluster CI targets; one cluster at a time), then re-invoke the K7 resume."
+    - "State established (git 14688db clean, K7.4 5 of 14, no project Docker resource, process or FUSE mount; MemAvailable 12.87 GiB) before touching anything (NOTES §2.2)."
+    - "prereq-check-resume-5: 26/26 (R1 12.83 GiB); evidence/K1/prereq.json restored (copy prereq-resume-5.json); precondition-resume-3: cpgate K1–K6 PASS on copies; images-verify-resume-3: images equal the lock [CLM-0056]."
+    - "Seal sweep: 248 of 248 run directories under runs/k7 and runs/k7-pkg valid; the matrix not re-run."
+    - "pkgreplay: verify-seal-pkg-<id>-2 for the six extracted minimized runs; pkg-replay-FND-C8-5254b5cb-2 reused replays 1–3 and checked replay 3 (PASS); replay 4 INVALID ×3 (the host) [CLM-0057]."
+    - "Cause recorded (host-kernel-modules) [CLM-0058]; the three attempts stored as summaries (store-pkg-invalid-FND-C8-5254b5cb) and set aside (setaside-c8-10-r4-chmod, setaside-c8-10-r4, setaside-c8-10-r4-restore; seals still valid); no project Docker resource left."
+    - "P25 after this store step (p25-count-resume): 261 879 954 B of 275 000 000 B; projection with the 45 remaining replay summaries (mean 59 559 B) and ADR-0045 §5's 5 MB allowance ≈ 269.6 MB, within the limit."
+  owner_action: "Reboot the host into the installed kernel (7.2.10-arch1-1), so that its modules, veth among them, can load; keep MemAvailable at least 12 GiB as before; then re-invoke the K7 resume (next: prereq-check, precondition, images verify, then pkg-replay-FND-C8-5254b5cb-3 and the eight remaining packages)."
 pending_user_actions:
-  - "Free memory to at least 12 GiB available and re-invoke the K7 resume (blocked.owner_action)."
+  - "Reboot into the installed kernel and re-invoke the K7 resume (blocked.owner_action)."
   - "Push the repository and tags when you choose (nothing of K7 is pushed; origin/main is at the K6 closure)."
   - "Enable GitHub Actions and record the first remote CI run in LIMITATIONS LIM-16."
   - "Decide whether to publish each finding upstream (for G10: whether to offer the reproduction on PR #1550); nothing was published."
-  - "Back up runs/k4-full/, runs/k5-full/, runs/k7/, runs/k7-invalid/ and runs/k7-pkg/ (the only full copies of the runs committed as summaries: K7's repeats, the INVALID attempts and K7.4's replays)."
+  - "Back up runs/k4-full/, runs/k5-full/, runs/k7/ (K7's full run archives; there is no runs/k7-full/), runs/k7-invalid/ and runs/k7-pkg/ (the only full copies of the runs committed as summaries: K7's repeats, the INVALID attempts and K7.4's replays)."
 next_sprint_ready: false

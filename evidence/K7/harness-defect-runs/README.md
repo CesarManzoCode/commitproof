@@ -38,6 +38,45 @@ plan and seed. The defect cannot change a run without an `info` recovery
 insert, so the runs sealed before the fix (V1 C1 seeds 1–10, C2 seeds 1–2)
 are unaffected and were reused.
 
+## K7.4, FND-C8-5254b5cb replay 4: INVALID three times because no cluster could start (the host, not a harness defect, not a finding)
+
+`20261017T183701Z-C8-10-real-cb16d052` (seal root `6df355ae…`),
+`20261017T183704Z-C8-10-real-cb16d052` (`43d87470…`) and
+`20261017T183709Z-C8-10-real-cb16d052` (`27266480…`) are the three attempts
+of replay 4 of FND-C8-5254b5cb's minimized run (`replay_of`
+`20261016T231406Z-C8-10-real-cb16d052`, `replay_index` 4, same plan,
+contract 1.9.0, commitproof `e8eca97`, clean), made by record
+`pkg-replay-FND-C8-5254b5cb-2` on 2026-10-17 between 18:37:00 and
+18:37:12 UTC. Each one ended INVALID before any operation (one history
+line, `run-end` invalid): `docker compose up` failed with "failed to set up
+container networking: failed to create endpoint … on network
+commitproof_cpnet: failed to add the host (veth…) <=> sandbox (veth…) pair
+interfaces: operation not supported". The cluster was taken down with no
+leftover.
+
+The cause is on the host (record `host-kernel-modules`). The `linux`
+package was upgraded from 7.2.9 to 7.2.10 at 18:09:26 UTC while kernel
+7.2.9-arch1-1 kept running. Its module tree is gone from `/lib/modules`,
+so the veth module Docker's bridge networks load on demand cannot be
+loaded. A missing kernel module on the owner's machine is a prerequisite
+(AGENTS.md §3): K7 stopped BLOCKED, and the owner's action is to boot the
+installed kernel.
+
+The three attempts were stored as summaries in
+`evidence/K7/package-replays/` (record
+`store-pkg-invalid-FND-C8-5254b5cb`: seal verified, verdict INVALID; stub
+and checks.json, as K7.4 stores replays). They were then moved from
+`runs/k7-pkg/FND-C8-5254b5cb/` to
+`runs/k7-invalid/k7-pkg-FND-C8-5254b5cb/` on this machine, as V1 C2 seed
+3's were: `setaside-c8-10-r4-chmod` added the owner write bit to the three
+sealed directories, `setaside-c8-10-r4` moved them with their checks.json,
+and `setaside-c8-10-r4-restore` restored mode 0555. No file inside changed,
+and each seal still verifies. The driver counts every sealed INVALID attempt
+of a replay index it finds under its output directory. Left there, the
+attempts would make the re-executed command stop at replay 4 at once. After
+the reboot, `pkg-replay-FND-C8-5254b5cb-3` makes replay 4 afresh with the
+same plan, and reuses replays 1–3. The attempts count toward nothing.
+
 ## Interrupted by a host power-off (not a harness defect, not a finding)
 
 `20261016T043817Z-C1-8-real-9f75e28e.unsealed.tar.zst` (sha256
