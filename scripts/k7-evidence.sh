@@ -43,6 +43,14 @@
 #             command executed once more (pkg-replay-<id>); the replays
 #             stored as summaries in evidence/K7/package-replays
 #   pkgreports cpreport page and report excerpt of each package's original run
+#   c3audit   scripts/k7-c3-audit.sh: every committed run held in full with a
+#             C3 result re-checked in runs/.k7/c3audit with this commit's
+#             cpcheck, C3's output compared (the C3 correction, ADR-0047)
+#   cited     the cited D3′/D5 real-build runs in full into evidence/K7/cited
+#             (scripts/k7-store-cited.sh, ADR-0045 §5, ADR-0047) and their
+#             campaign page (render-cited-full)
+#   p25       the P25 count of the tree (scripts/k7-p25-count.sh; exit 4
+#             above 275 MB: BLOCKED, ADR-0047), recorded as p25-final
 #   ci        make lint-workflow; every make ci-* target (attempt ci, ci-2, …)
 #   gate      cpgate K7 --negative-controls (cpgate-k7, cpgate-k7-2, …)
 #   tagcheck  scripts/k7-tag-check.sh on the latest CI's commit
@@ -294,6 +302,20 @@ pkgreports() {
 	done
 }
 
+c3audit() {
+	idle
+	step 0 "$(next c3-audit)" scripts/k7-c3-audit.sh runs/.k7/c3audit
+}
+
+cited() {
+	step 0 "$(next store-cited)" scripts/k7-store-cited.sh runs/k5-full "$EV/cited"
+	step 0 "$(next render-cited-full)" bin/cpreport render "$EV/cited" --out "$EV/report/cited-full"
+}
+
+p25() {
+	step 0 "$(next p25-final)" scripts/k7-p25-count.sh
+}
+
 ci() {
 	step 0 "$(next build)" make build
 	[ "$(recorded lint-workflow)" = 0 ] || step 0 "$(next lint-workflow)" make lint-workflow
@@ -320,10 +342,10 @@ tagcheck() {
 }
 
 case "${1:-}" in
-setup | m1oracle | m1triage | images | start | oracle | store | results | render | triage | pkgreplay | pkgreports | ci | gate | tagcheck) "$1" ;;
+setup | m1oracle | m1triage | images | start | oracle | store | results | render | triage | pkgreplay | pkgreports | c3audit | cited | p25 | ci | gate | tagcheck) "$1" ;;
 wait) wait_campaign ;;
 *)
-	echo "usage: $0 setup|m1oracle|m1triage|images|start|wait|oracle|store|results|render|triage|pkgreplay|pkgreports|ci|gate|tagcheck" >&2
+	echo "usage: $0 setup|m1oracle|m1triage|images|start|wait|oracle|store|results|render|triage|pkgreplay|pkgreports|c3audit|cited|p25|ci|gate|tagcheck" >&2
 	exit 3
 	;;
 esac
