@@ -209,7 +209,9 @@ func replaysOf(m *runInfo, archive string) ([]*runInfo, error) {
 		if err != nil {
 			return nil, err
 		}
-		if str(r.man, "replay_of") == m.Run {
+		// An INVALID attempt counts toward nothing (§12.1); the driver re-ran
+		// it with the same plan.
+		if str(r.man, "replay_of") == m.Run && r.Verdict != "INVALID" {
 			out = append(out, r)
 		}
 	}
