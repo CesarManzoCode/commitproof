@@ -174,13 +174,13 @@ claims:
     result: "10 runs stored; P25 count 247 996 092 → 259 848 618 B ≤ 275 000 000"
     limitations: ["LIM-37", "LIM-43"]
   - id: CLM-0019
-    text: "The final P25 count, after K7.4's replays and the release CI's records, is 264 452 426 B of evidence/ and finding archives, under the 275 000 000 B of ADR-0047."
+    text: "The final P25 count, after K7.4's replays, the release CI's records and the gate's, is 264 512 538 B of evidence/ and finding archives, under the 275 000 000 B of ADR-0047."
     contract: "P25, ADR-0039, ADR-0047"
     target: {system: "this repository's evidence/", commit: "e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73", profile: "baseline", mutant: "none"}
-    command: "scripts/k7-p25-count.sh (record p25-final)"
-    artifact: "evidence/K7/logs/p25-final.stdout"
-    sha256: "c19c270c01276d1ee2098d8a785fdc8cdffa79b505bdca09ead22c5674f8ae5a"
-    result: "264 452 426 B (K7 43 534 768 B); margin 10 547 574 B; exit 0"
+    command: "scripts/k7-p25-count.sh (records p25-final, p25-final-2)"
+    artifact: "evidence/K7/logs/p25-final-2.stdout"
+    sha256: "5709feebacd08789faf80e35eeca66e2dd7e2aba27d09dd20bda642a6fa9396b"
+    result: "264 512 538 B (K7 43 594 880 B); margin 10 487 462 B; exit 0 (p25-final: 264 452 426 B)"
     limitations: ["LIM-43"]
   - id: CLM-0020
     text: "K7's matrix ran complete on the real build: 130 cells (V1: 10 campaigns × 10 runs on baseline; V2: C1, C2, C4 × 5 on slotless; V3: C8 × 10 on buffered; V5: C11 × 5), each with a valid run, 19 FAIL and 111 PASS; INVALID attempts are listed with their causes and not counted."
@@ -442,6 +442,51 @@ claims:
     artifact: "evidence/K7/logs/host-memory-reap.stdout"
     sha256: "7e42e22ca725cb7aa5ab237d37ec13781961e8f8dd0cd0b15702e715cf83568e"
     result: "MemAvailable 14 118 648 kB; /tmp tmpfs 7.5G, 12M used; 0 cpgate temporaries; 0 project containers"
+    limitations: ["LIM-02"]
+  - id: CLM-0069
+    text: "At the resume after the stop for memory, the running kernel was the installed linux package with veth loaded, and make prereq-check passed 26 of 26 (R1: MemAvailable 13.33 GiB of 14.91 GiB)."
+    contract: "§14, PREREQUISITES"
+    target: {system: "the owner's host", commit: "e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73", profile: "baseline", mutant: "none"}
+    command: "bash -c with uname -r, pacman -Q linux, ls /lib/modules, veth in /proc/modules, modinfo -n veth (record host-kernel-modules-3); make prereq-check (record prereq-check-resume-7)"
+    artifact: "evidence/K7/prereq-resume-7.json"
+    sha256: "037145db3c31f0ce46e0cefcbf616d4b98cba4cca93309eb27a96f315a7dab5b"
+    result: "kernel matches package, veth loaded; 26 of 26 PASS"
+    limitations: ["LIM-02"]
+  - id: CLM-0070
+    text: "Every make ci-* target (ci-unit, ci-checkers, ci-cluster-smoke, ci-nemesis-smoke, ci-mutant-smoke, ci-report) exited 0 on the clean build of a4352af, the commit with the gate fixes, with no target skipped; ci-mutant-smoke caught M1 via D1 with C1 lost-write."
+    contract: "§15 K7 (K7.7)"
+    target: {system: "CommitProof a4352af3916d01d3349f78497ad0b5c9ff6fce7b (the release build) on the owner's host", commit: "e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73", profile: "baseline", mutant: "none and M1"}
+    command: "make build (record build-10); make ci-unit ci-checkers ci-cluster-smoke ci-nemesis-smoke ci-mutant-smoke ci-report (record ci-2)"
+    artifact: "evidence/K7/logs/ci-2.stdout"
+    sha256: "514dc4b1aadf86ebcfd205657483703a598e3b6dd0aa3f587ba9fa137676f304"
+    result: "exit 0; binaries buildinfo.Commit=a4352af, Dirty=false; nemesis smoke F1a, F2a, F3a, F7, F4a each verdict PASS"
+    limitations: ["LIM-16", "LIM-05"]
+  - id: CLM-0071
+    text: "The local tag v1.0.0 is an annotated tag on a4352af, the commit ci-2 built; no file outside the release's text and evidence differs between them, and no remote-tracking ref contains K7's first commit."
+    contract: "§15 K7 (K7.7), AGENTS.md §6"
+    target: {system: "this repository (git)", commit: "e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73", profile: "baseline", mutant: "none"}
+    command: "git tag -a v1.0.0 a4352af; scripts/k7-tag-check.sh a4352af… d07fca6… (record tag-check-2)"
+    artifact: "evidence/K7/logs/tag-check-2.stdout"
+    sha256: "79932551b8c93bc0a8904621fa2d63fb2f8260331257d62559ee642d45a19ce5"
+    result: "object_type tag; tag_commit = ci_commit = a4352af; code_diff []; k7_on_remote []"
+    limitations: ["LIM-16"]
+  - id: CLM-0072
+    text: "cpgate K7 with negative controls (binaries of a4352af) passed: every criterion K7.1–K7.7 PASS on the evidence, and each of the seven negative controls failed exactly its target criterion."
+    contract: "§15 K7 (Gate K7), §16"
+    target: {system: "cpgate K7 (CommitProof a4352af3916d01d3349f78497ad0b5c9ff6fce7b) on evidence/K7", commit: "e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73", profile: "baseline, slotless, buffered", mutant: "none"}
+    command: "GOMEMLIMIT=6GiB, TMPDIR=runs/.k7/tmp: bin/cpgate K7 --evidence evidence/K7 --negative-controls (record cpgate-k7-3, exit 0)"
+    artifact: "evidence/K7/logs/cpgate-k7-3.stdout"
+    sha256: "c74ea2582062b871f842ce846ea4db06c4c347ea0a15ad1d06359ec03656263c"
+    result: "result PASS, exit 0; criteria 7 of 7 PASS; negative controls 7 of 7 failing only their target"
+    limitations: ["LIM-16"]
+  - id: CLM-0073
+    text: "MemAvailable, sampled every 5 s through the release steps of this resume, stayed at least 10.11 GiB during ci-2, fell to 3.42 GiB during cpgate-k7-2 (stopped), and stayed at least 5.76 GiB during cpgate-k7-3 under GOMEMLIMIT=6GiB."
+    contract: "§14, P10, PREREQUISITES"
+    target: {system: "the owner's host", commit: "e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73", profile: "baseline", mutant: "none"}
+    command: "a 5 s sampler of /proc/meminfo into evidence/K7/memory-resume-8.log; awk over it with each record's start and end (record memory-resume-8; argv in commands.jsonl)"
+    artifact: "evidence/K7/logs/memory-resume-8.stdout"
+    sha256: "25fba223415e6df7867223c5a6129a028e5d549aade68b93f9587cdd370b34cc"
+    result: "451 samples; minima ci-2 10 603 936 kB, cpgate-k7-2 3 587 020 kB, cpgate-k7-3 6 037 484 kB"
     limitations: ["LIM-02"]
   - id: CLM-0040
     text: "FND-D1-fb8d0f8c (G2b, SAFETY_VIOLATION, INFERRED, high, origin POSTGRES_INHERITED, NEW): reads of an append whose client timed out (info) return a value that the next failover removes; no acknowledged write is lost."

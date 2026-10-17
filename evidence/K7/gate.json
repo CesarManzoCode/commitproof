@@ -77,20 +77,20 @@
       "sha256": "",
       "problems": [],
       "details": [
+        "FND-C9-2fe9a9fc: G10 PROTOCOL_DEVIATION DESIGN medium REPRODUCED, 10 recurrences in K7, K7 replays 5 of 5 with notify-not-resumed (REPRODUCED)",
         "FND-D1-a8eb9857: G2b SAFETY_VIOLATION INFERRED high REPRODUCED, 3 recurrences in K7, K7 replays 3 of 5 with incompatible-order (REPRODUCED)",
+        "FND-C2-2a534585: G2b SAFETY_VIOLATION INFERRED high INTERMITTENT, 3 recurrences in K7, K7 replays 4 of 5 with incompatible-order (REPRODUCED)",
         "FND-C2-6806aeca: G6 SAFETY_VIOLATION DESIGN high REPRODUCED, 3 recurrences in K7, K7 replays 0 of 5 with non-linearizable (NOT_REPRODUCED)",
-        "FND-C2-8215101c: G6 SAFETY_VIOLATION DESIGN high REPRODUCED, 0 recurrences in K7, K7 replays 5 of 5 with non-linearizable (REPRODUCED)",
-        "FND-C2-c7475a73: G5 SAFETY_VIOLATION INFERRED high NOT_REPRODUCED, 0 recurrences in K7, K7 replays 0 of 5 with G-nonadjacent (NOT_REPRODUCED)",
         "FND-C8-5254b5cb: G8 PROTOCOL_DEVIATION DESIGN medium INTERMITTENT, 0 recurrences in K7, K7 replays 0 of 5 with planned-failover-error (NOT_REPRODUCED)",
+        "FND-C8-ff4475d8: G8 PROTOCOL_DEVIATION DESIGN medium INTERMITTENT, 0 recurrences in K7, K7 replays 0 of 5 with planned-failover-error (NOT_REPRODUCED)",
         "FND-C9-40b6f05a: G10 PROTOCOL_DEVIATION DESIGN medium REPRODUCED, 10 recurrences in K7, K7 replays 4 of 5 with notify-not-resumed (REPRODUCED)",
         "FND-C9-90da5532: G10 PROTOCOL_DEVIATION DESIGN medium INTERMITTENT, 10 recurrences in K7, K7 replays 1 of 5 with notify-not-resumed (INTERMITTENT)",
         "FND-D1-2e860fd2: G2b SAFETY_VIOLATION INFERRED high REPRODUCED, 3 recurrences in K7, K7 replays 4 of 5 with incompatible-order (REPRODUCED)",
         "FND-D1-fb8d0f8c: G2b SAFETY_VIOLATION INFERRED high REPRODUCED, 3 recurrences in K7, K7 replays 5 of 5 with incompatible-order (REPRODUCED)",
         "FND-C11-17a344c1: G12 PROTOCOL_DEVIATION DESIGN medium INTERMITTENT, 0 recurrences in K7, K7 replays 3 of 5 with fair-share-starvation (REPRODUCED)",
-        "FND-C2-2a534585: G2b SAFETY_VIOLATION INFERRED high INTERMITTENT, 3 recurrences in K7, K7 replays 4 of 5 with incompatible-order (REPRODUCED)",
-        "FND-C8-e6b7ca52: G8 PROTOCOL_DEVIATION DESIGN medium NOT_REPRODUCED, 0 recurrences in K7, K7 replays 0 of 5 with planned-failover-error (NOT_REPRODUCED)",
-        "FND-C8-ff4475d8: G8 PROTOCOL_DEVIATION DESIGN medium INTERMITTENT, 0 recurrences in K7, K7 replays 0 of 5 with planned-failover-error (NOT_REPRODUCED)",
-        "FND-C9-2fe9a9fc: G10 PROTOCOL_DEVIATION DESIGN medium REPRODUCED, 10 recurrences in K7, K7 replays 5 of 5 with notify-not-resumed (REPRODUCED)"
+        "FND-C2-8215101c: G6 SAFETY_VIOLATION DESIGN high REPRODUCED, 0 recurrences in K7, K7 replays 5 of 5 with non-linearizable (REPRODUCED)",
+        "FND-C2-c7475a73: G5 SAFETY_VIOLATION INFERRED high NOT_REPRODUCED, 0 recurrences in K7, K7 replays 0 of 5 with G-nonadjacent (NOT_REPRODUCED)",
+        "FND-C8-e6b7ca52: G8 PROTOCOL_DEVIATION DESIGN medium NOT_REPRODUCED, 0 recurrences in K7, K7 replays 0 of 5 with planned-failover-error (NOT_REPRODUCED)"
       ]
     },
     {
@@ -121,7 +121,7 @@
       "name": "Release",
       "result": "PASS",
       "evidence": "commands.jsonl",
-      "sha256": "2a9044040d98570c12c39e3432021f7873dc0cd7481b6ca83cb713b6ed501bde",
+      "sha256": "b37f76ce402c519e5c1839b2724ec94f92d9d1fd841ecc4e79225c62117c883d",
       "problems": [],
       "details": [
         "ci-2 exit 0 on a4352af3916d01d3349f78497ad0b5c9ff6fce7b; v1.0.0 (tag) on a4352af3916d01d3349f78497ad0b5c9ff6fce7b; code diff []; remote-tracking refs [refs/remotes/origin/HEAD 5d36270c7c7ed4538a826f384280a8ac5d678fc7 refs/remotes/origin/main 5d36270c7c7ed4538a826f384280a8ac5d678fc7], none with K7's commits"

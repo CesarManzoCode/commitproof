@@ -3,148 +3,66 @@
     "criterion": "K7.1",
     "sabotage": "campaigns/k7.json of the copy lists an eleventh seed for V1's C1 (the cell needs a valid run for it; P15 says 10)",
     "failed": [
-      "K7.1",
-      "K7.2",
-      "K7.3",
-      "K7.4",
-      "K7.5"
+      "K7.1"
     ],
-    "failed_only_target": false,
+    "failed_only_target": true,
     "target_problems": [
       "matrix: C1/baseline has 11 seeds, P15 says 10",
       "C1/baseline/real seed 11: no valid run (attempts: [])",
-      "results.json: no entry for C1/baseline seed 11",
-      "K4: open /tmp/cpgate-K7.1-4019740344/evidence/K4/runs: no such file or directory",
-      "K4: open /tmp/cpgate-K7.1-4019740344/evidence/K4/runs: no such file or directory",
-      "K4: open /tmp/cpgate-K7.1-4019740344/evidence/K4/runs: no such file or directory",
-      "K4: open /tmp/cpgate-K7.1-4019740344/evidence/K4/runs: no such file or directory",
-      "K4: open /tmp/cpgate-K7.1-4019740344/evidence/K4/runs: no such file or directory",
-      "K4: open /tmp/cpgate-K7.1-4019740344/evidence/K4/runs: no such file or directory",
-      "K4: open /tmp/cpgate-K7.1-4019740344/evidence/K4/runs: no such file or directory",
-      "K5: open /tmp/cpgate-K7.1-4019740344/evidence/K5/runs: no such file or directory",
-      "K5: open /tmp/cpgate-K7.1-4019740344/evidence/K5/runs: no such file or directory",
-      "K5: open /tmp/cpgate-K7.1-4019740344/evidence/K5/runs: no such file or directory",
-      "K5: open /tmp/cpgate-K7.1-4019740344/evidence/K5/runs: no such file or directory"
+      "results.json: no entry for C1/baseline seed 11"
     ]
   },
   {
     "criterion": "K7.2",
     "sabotage": "cpreport's data block for K7's first cell reports one more valid run (n + 1); the render record's output hash rewritten to the forged page's",
     "failed": [
-      "K7.1",
-      "K7.2",
-      "K7.3",
-      "K7.4",
-      "K7.5"
+      "K7.2"
     ],
-    "failed_only_target": false,
+    "failed_only_target": true,
     "target_problems": [
-      "C1/baseline/real: n: cpreport 11, cpgate 10",
-      "K4: open /tmp/cpgate-K7.2-1961028309/evidence/K4/runs: no such file or directory",
-      "K5: open /tmp/cpgate-K7.2-1961028309/evidence/K5/runs: no such file or directory"
+      "C1/baseline/real: n: cpreport 11, cpgate 10"
     ]
   },
   {
     "criterion": "K7.3",
     "sabotage": "one oracle record's result rewritten from oracle-disagreement to confirmed (M1 D1 seed 1, where elle-cli gave no answer)",
     "failed": [
-      "K7.1",
-      "K7.2",
-      "K7.3",
-      "K7.4",
-      "K7.5"
+      "K7.3"
     ],
-    "failed_only_target": false,
+    "failed_only_target": true,
     "target_problems": [
-      "oracle/20261011T215900Z-D1-1-M1-59a95336.json says confirmed by \"none\" (elle no answer []), the evidence gives oracle-disagreement by \"none\" (elle no answer [])",
-      "M1 D1 20261011T215900Z-D1-1-M1-59a95336: not in K4's runs or unreadable",
-      "M1 D1 20261011T220118Z-D1-2-M1-8b22bb67: not in K4's runs or unreadable",
-      "M1 D1 20261011T220335Z-D1-3-M1-da159fa0: not in K4's runs or unreadable",
-      "M1 D1 20261011T220553Z-D1-4-M1-ad3fca18: not in K4's runs or unreadable",
-      "M1 D1 20261011T220810Z-D1-5-M1-3319a30c: not in K4's runs or unreadable"
+      "oracle/20261011T215900Z-D1-1-M1-59a95336.json says confirmed by \"none\" (elle no answer []), the evidence gives oracle-disagreement by \"none\" (elle no answer [])"
     ]
   },
   {
     "criterion": "K7.4",
     "sabotage": "the Limitations section removed from the first finding package's README",
     "failed": [
-      "K7.1",
-      "K7.2",
-      "K7.3",
-      "K7.4",
-      "K7.5"
+      "K7.4"
     ],
-    "failed_only_target": false,
+    "failed_only_target": true,
     "target_problems": [
-      "findings/FND-C11-17a344c1: README lacks the section \"## Limitations\"",
-      "findings/FND-C11-17a344c1: original run 20261013T232750Z-C11-2-real-1f5423ed not found or not sound in K4, K5 or K7's runs",
-      "findings/FND-C11-17a344c1: triage \"evidence/K5/triage/20261013T232750Z-C11-2-real-1f5423ed.json\" not found",
-      "findings/FND-C2-2a534585: original run 20261011T231036Z-C2-3-real-f4505b54 not found or not sound in K4, K5 or K7's runs",
-      "findings/FND-C2-2a534585: triage \"evidence/K4/triage/20261011T231036Z-C2-3-real-f4505b54.json\" not found",
-      "findings/FND-C2-6806aeca: original run 20261011T231036Z-C2-3-real-f4505b54 not found or not sound in K4, K5 or K7's runs",
-      "findings/FND-C2-6806aeca: triage \"evidence/K6b/findings/FND-C2-6806aeca.json\" not found",
-      "findings/FND-C9-2fe9a9fc: original run 20261013T230358Z-C9-2-real-b0861f34 not found or not sound in K4, K5 or K7's runs",
-      "findings/FND-C9-2fe9a9fc: triage \"evidence/K5/triage/20261013T230358Z-C9-2-real-b0861f34.json\" not found",
-      "findings/FND-C9-40b6f05a: original run 20261013T230136Z-C9-1-real-21458975 not found or not sound in K4, K5 or K7's runs",
-      "findings/FND-C9-40b6f05a: triage \"evidence/K5/triage/20261013T230136Z-C9-1-real-21458975.json\" not found",
-      "findings/FND-C9-90da5532: original run 20261013T230909Z-C9-3-real-bb8a276f not found or not sound in K4, K5 or K7's runs",
-      "findings/FND-C9-90da5532: triage \"evidence/K5/triage/20261013T230909Z-C9-3-real-bb8a276f.json\" not found",
-      "findings/FND-D1-2e860fd2: original run 20261011T221506Z-D1-3-real-da159fa0 not found or not sound in K4, K5 or K7's runs",
-      "findings/FND-D1-2e860fd2: triage \"evidence/K4/triage/20261011T221506Z-D1-3-real-da159fa0.json\" not found",
-      "findings/FND-D1-a8eb9857: original run 20261011T221728Z-D1-4-real-ad3fca18 not found or not sound in K4, K5 or K7's runs",
-      "findings/FND-D1-a8eb9857: triage \"evidence/K4/triage/20261011T221728Z-D1-4-real-ad3fca18.json\" not found",
-      "findings/FND-D1-fb8d0f8c: original run 20261011T221027Z-D1-1-real-59a95336 not found or not sound in K4, K5 or K7's runs",
-      "findings/FND-D1-fb8d0f8c: triage \"evidence/K4/triage/20261011T221027Z-D1-1-real-59a95336.json\" not found"
+      "findings/FND-C11-17a344c1: README lacks the section \"## Limitations\""
     ]
   },
   {
     "criterion": "K7.5",
     "sabotage": "the sha256 of the first claim of claims.yaml altered",
     "failed": [
-      "K7.1",
-      "K7.2",
-      "K7.3",
-      "K7.4",
       "K7.5"
     ],
-    "failed_only_target": false,
+    "failed_only_target": true,
     "target_problems": [
-      "CLM-0001: artifact evidence/K3/logs/slowfs-overhead.stdout: stat /tmp/cpgate-K7.5-3120405785/evidence/K3/logs/slowfs-overhead.stdout: no such file or directory",
-      "CLM-0002: artifact evidence/K2/gate.json: stat /tmp/cpgate-K7.5-3120405785/evidence/K2/gate.json: no such file or directory",
-      "CLM-0003: artifact evidence/K4/h1.json: stat /tmp/cpgate-K7.5-3120405785/evidence/K4/h1.json: no such file or directory",
-      "CLM-0004: artifact evidence/K5/gate.json: stat /tmp/cpgate-K7.5-3120405785/evidence/K5/gate.json: no such file or directory",
-      "CLM-0005: artifact evidence/K5/logs/c11-window-check.stdout: stat /tmp/cpgate-K7.5-3120405785/evidence/K5/logs/c11-window-check.stdout: no such file or directory",
-      "CLM-0006: artifact evidence/pre-K7/logs/g12-recheck.stdout: stat /tmp/cpgate-K7.5-3120405785/evidence/pre-K7/logs/g12-recheck.stdout: no such file or directory",
-      "CLM-0007: artifact evidence/K3/gate.json: stat /tmp/cpgate-K7.5-3120405785/evidence/K3/gate.json: no such file or directory",
-      "CLM-0008: artifact evidence/K4/gate.json: stat /tmp/cpgate-K7.5-3120405785/evidence/K4/gate.json: no such file or directory",
-      "CLM-0009: artifact evidence/pre-K7/lim33.md: stat /tmp/cpgate-K7.5-3120405785/evidence/pre-K7/lim33.md: no such file or directory",
-      "CLM-0010: artifact evidence/K5/gate.json: stat /tmp/cpgate-K7.5-3120405785/evidence/K5/gate.json: no such file or directory",
-      "CLM-0011: artifact evidence/K5/logs/store-runs-2.stdout: stat /tmp/cpgate-K7.5-3120405785/evidence/K5/logs/store-runs-2.stdout: no such file or directory",
-      "CLM-0012: artifact evidence/pre-K7/logs/scrape-measure.stdout: stat /tmp/cpgate-K7.5-3120405785/evidence/pre-K7/logs/scrape-measure.stdout: no such file or directory",
-      "CLM-0013: artifact evidence/K6b/exporter-ab.md: stat /tmp/cpgate-K7.5-3120405785/evidence/K6b/exporter-ab.md: no such file or directory",
-      "CLM-0040: artifact evidence/K4/runs/20261011T221027Z-D1-1-real-59a95336.tar.zst: stat /tmp/cpgate-K7.5-3120405785/evidence/K4/runs/20261011T221027Z-D1-1-real-59a95336.tar.zst: no such file or directory",
-      "CLM-0041: artifact evidence/K4/runs/20261011T221506Z-D1-3-real-da159fa0.tar.zst: stat /tmp/cpgate-K7.5-3120405785/evidence/K4/runs/20261011T221506Z-D1-3-real-da159fa0.tar.zst: no such file or directory",
-      "CLM-0042: artifact evidence/K4/runs/20261011T221728Z-D1-4-real-ad3fca18.tar.zst: stat /tmp/cpgate-K7.5-3120405785/evidence/K4/runs/20261011T221728Z-D1-4-real-ad3fca18.tar.zst: no such file or directory",
-      "CLM-0043: artifact evidence/K4/runs/20261011T231036Z-C2-3-real-f4505b54.tar.zst: stat /tmp/cpgate-K7.5-3120405785/evidence/K4/runs/20261011T231036Z-C2-3-real-f4505b54.tar.zst: no such file or directory",
-      "CLM-0044: artifact evidence/K4/runs/20261011T231036Z-C2-3-real-f4505b54.tar.zst: stat /tmp/cpgate-K7.5-3120405785/evidence/K4/runs/20261011T231036Z-C2-3-real-f4505b54.tar.zst: no such file or directory",
-      "CLM-0050: artifact evidence/K5/runs/20261013T230136Z-C9-1-real-21458975.tar.zst: stat /tmp/cpgate-K7.5-3120405785/evidence/K5/runs/20261013T230136Z-C9-1-real-21458975.tar.zst: no such file or directory",
-      "CLM-0051: artifact evidence/K5/runs/20261013T230358Z-C9-2-real-b0861f34.tar.zst: stat /tmp/cpgate-K7.5-3120405785/evidence/K5/runs/20261013T230358Z-C9-2-real-b0861f34.tar.zst: no such file or directory",
-      "CLM-0052: artifact evidence/K5/runs/20261013T230909Z-C9-3-real-bb8a276f.tar.zst: stat /tmp/cpgate-K7.5-3120405785/evidence/K5/runs/20261013T230909Z-C9-3-real-bb8a276f.tar.zst: no such file or directory",
-      "CLM-0053: artifact evidence/K5/runs/20261013T232750Z-C11-2-real-1f5423ed.tar.zst: stat /tmp/cpgate-K7.5-3120405785/evidence/K5/runs/20261013T232750Z-C11-2-real-1f5423ed.tar.zst: no such file or directory"
+      "CLM-0001: artifact evidence/K3/logs/slowfs-overhead.stdout hashes to b6211c839cb4378d9423e23dd1810a5457e674d1fa37c502108d04067a73a97b, claims.yaml says 06211c839cb4378d9423e23dd1810a5457e674d1fa37c502108d04067a73a97b"
     ]
   },
   {
     "criterion": "K7.6",
     "sabotage": "the bound of the first §12.3 clean statement in the README altered (one more thousandth)",
     "failed": [
-      "K7.1",
-      "K7.2",
-      "K7.3",
-      "K7.4",
-      "K7.5",
       "K7.6"
     ],
-    "failed_only_target": false,
+    "failed_only_target": true,
     "target_problems": [
       "README lacks §12.3's statement for C1/baseline: \"In 10 valid runs of campaign C1 (profile baseline, Multigres e3cbdbb), exposing 102620 ok writes to 40 confirmed faults of kinds {F2a, F2b, F2c, F2d}, no violation of {C1, C2, C3, C4, C5, C6, C7, C8, C9, P} was observed; at 95% confidence the per-run violation probability under this exact schedule distribution is below 0.259.\""
     ]
@@ -153,14 +71,9 @@
     "criterion": "K7.7",
     "sabotage": "the tag-check record rewritten as if v1.0.0 were a lightweight tag (object type commit)",
     "failed": [
-      "K7.1",
-      "K7.2",
-      "K7.3",
-      "K7.4",
-      "K7.5",
       "K7.7"
     ],
-    "failed_only_target": false,
+    "failed_only_target": true,
     "target_problems": [
       "tag \"v1.0.0\" of object type \"commit\": an annotated v1.0.0 is required"
     ]

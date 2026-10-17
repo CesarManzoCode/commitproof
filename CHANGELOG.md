@@ -4,7 +4,7 @@ All notable changes to CommitProof. The normative specification is `docs/CONTRAC
 
 ## v1.0.0 — 2026-10-17 (sprint K7; contracts 1.8.0, 1.8.1, 1.9.0)
 
-Full campaign, statistics and release; the annotated tag `v1.0.0` is created locally on the release commit once Gate K7 passes (not yet: `evidence/K7/closure.yaml`), nothing is pushed. Results, gate and closure: `evidence/K7/` and its `closure.yaml`.
+Full campaign, statistics and release; the annotated tag `v1.0.0` is local, on `a4352af`, the commit the release CI built; nothing is pushed. Results, gate and closure: `evidence/K7/` and its `closure.yaml`.
 
 - The K7 matrix (`campaigns/k7.json`, `make campaign-k7`, resumable, detached, with a dry run; ADR-0041): cells V1 (C1–C7, C9, C10, C12 on `baseline`, 10 runs each), V2 (C1, C2, C4 on `slotless`, 5 each), V3 (C8 on `buffered`, 10) and V5 (C11 on `baseline`, 5), 130 runs on the real build with ADR-0038's metrics exporter; the directed cells of K4 and K5 cited, not re-run (ADR-0039).
 - Storage under P25: runs a claim or a finding names are committed in full, every other run as a summary (stub and `checks.json`) listed with its seal root in `evidence/K7/runs-index.json` (ADR-0039); a real-build failure that repeats a recorded finding (ADR-0045's predicates over `checks.json`) is counted, triaged and cited as a recurrence, kept as a summary (ADR-0045, contract 1.8.0). P25 raised to 275 MB by the owner after K7's first store step, with the cited D3′/D5 real-build runs committed in full under `evidence/K7/cited/` (ADR-0047, contract 1.9.0).
