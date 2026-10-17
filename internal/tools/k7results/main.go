@@ -7,10 +7,12 @@
 // classes copied verbatim from checks.json, and their INVALID attempts with
 // the reasons cpcheck gave (from the campaign log's cpcheck events); every
 // FAIL primary's ADR-0045 classification (internal/repeats); every new
-// failure's minimization journal. It computes no verdict; cpgate K7
-// re-derives everything from the same files.
+// failure's minimization journal; with --pkg-replays, K7.4's package
+// replays and their INVALID attempts listed in runs-index.json with their
+// seal roots. It computes no verdict; cpgate K7 re-derives everything from
+// the same files.
 //
-// usage: k7results --runs <dir> --matrix campaigns/k7.json --log <campaign log, plain or .zst> --out <dir> [--group <name>]
+// usage: k7results --runs <dir> --matrix campaigns/k7.json --log <campaign log, plain or .zst> --out <dir> [--pkg-replays <dir>]
 package main
 
 import (
@@ -215,36 +217,44 @@ func main() {
 	matrix := flag.String("matrix", "campaigns/k7.json", "the K7 matrix")
 	logPath := flag.String("log", "", "the campaign log (plain or .zst)")
 	out := flag.String("out", "evidence/K7", "output directory")
+	pkgDir := flag.String("pkg-replays", "", "K7.4's package replays (summaries), listed in runs-index.json; results.json does not read them")
 	flag.Parse()
 	fail := func(err error) {
 		fmt.Printf("{\"command\":\"k7results\",\"error\":%q,\"exit_code\":2}\n", err.Error())
 		os.Exit(2)
 	}
-	ents, err := os.ReadDir(*runsDir)
-	if err != nil {
-		fail(err)
-	}
-	var runs []*run
-	byID := map[string]*run{}
-	for _, e := range ents {
-		n := e.Name()
-		var id, stored string
-		switch {
-		case strings.HasSuffix(n, ".stub.tar.zst"):
-			id, stored = strings.TrimSuffix(n, ".stub.tar.zst"), "summary"
-		case strings.HasSuffix(n, ".tar.zst"):
-			id, stored = strings.TrimSuffix(n, ".tar.zst"), "full"
-		default:
-			continue
-		}
-		r, err := load(*runsDir, id, n, stored)
+	// loadDir loads every run archive and stub of a directory, in run-id order.
+	loadDir := func(dir string) []*run {
+		ents, err := os.ReadDir(dir)
 		if err != nil {
 			fail(err)
 		}
-		runs = append(runs, r)
-		byID[id] = r
+		var rs []*run
+		for _, e := range ents {
+			n := e.Name()
+			var id, stored string
+			switch {
+			case strings.HasSuffix(n, ".stub.tar.zst"):
+				id, stored = strings.TrimSuffix(n, ".stub.tar.zst"), "summary"
+			case strings.HasSuffix(n, ".tar.zst"):
+				id, stored = strings.TrimSuffix(n, ".tar.zst"), "full"
+			default:
+				continue
+			}
+			r, err := load(dir, id, n, stored)
+			if err != nil {
+				fail(err)
+			}
+			rs = append(rs, r)
+		}
+		sort.Slice(rs, func(i, j int) bool { return rs[i].ID < rs[j].ID })
+		return rs
 	}
-	sort.Slice(runs, func(i, j int) bool { return runs[i].ID < runs[j].ID })
+	runs := loadDir(*runsDir)
+	byID := map[string]*run{}
+	for _, r := range runs {
+		byID[r.ID] = r
+	}
 	reasons, err := invalidReasons(*logPath)
 	if err != nil {
 		fail(err)
@@ -360,9 +370,24 @@ func main() {
 	if index == nil {
 		index = []any{}
 	}
-	write("runs-index.json", map[string]any{"contract_version": params.ContractVersion, "runs_dir": *runsDir, "matrix": *matrix,
+	ri := map[string]any{"contract_version": params.ContractVersion, "runs_dir": *runsDir, "matrix": *matrix,
 		"storage": "ADR-0039, ADR-0045: full = the original and minimized runs of new findings; summary = stub (manifest, plan, seal) and checks.json, the full archive kept on the machine that ran it",
-		"runs":    index})
+		"runs":    index}
+	// K7.4's replays of each package's minimized run, and their INVALID
+	// attempts: the plan is the package's (its own contract version), the
+	// manifest the version the replay ran under (ADR-0047).
+	if *pkgDir != "" {
+		pkg := []any{}
+		for _, r := range loadDir(*pkgDir) {
+			pkg = append(pkg, map[string]any{"run_id": r.ID, "kind": r.Kind, "of": r.Of, "replay_index": r.Man["replay_index"], "campaign": str(r.Man, "campaign"),
+				"profile": str(r.Man, "profile"), "mutant": str(r.Man, "mutant"), "seed": r.Man["seed"], "plan_sha256": r.PlanSHA,
+				"contract_version": str(r.Plan, "contract_version"), "manifest_contract_version": str(r.Man, "contract_version"),
+				"commitproof_commit": str(r.Man, "commitproof_commit"), "seal_root": r.Seal, "verdict": r.Verdict, "classes": strAny(r.Classes),
+				"stored": r.Stored, "archive": r.Archive, "archive_sha256": r.ArchiveSHA, "checks": r.ID + ".checks.json", "checks_sha256": r.ChecksSHA})
+		}
+		ri["package_replays_dir"], ri["package_replays"] = *pkgDir, pkg
+	}
+	write("runs-index.json", ri)
 	if reps == nil {
 		reps = []any{}
 	}
