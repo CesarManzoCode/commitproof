@@ -1,0 +1,1 @@
+{"command":"k7oracle","run":"20261016T180118Z-C2-9-real-4bafa50d","result":"oracle-disagreement","decided_by":"cpcheck --elle-oracle","elle_valid":"false","needs_triage":true,"exit_code":1}
