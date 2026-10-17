@@ -1,0 +1,123 @@
+{
+  "adr_0045": {
+    "confirmed_fault_kinds": [
+      "F6"
+    ],
+    "groups": [
+      {
+        "classes": [
+          "planned-failover-error"
+        ],
+        "counts": {
+          "planned-failover-error": 1
+        },
+        "fields": {},
+        "guarantee": "G8"
+      }
+    ],
+    "has_exposure": true,
+    "repeat": false,
+    "run_id": "20261016T230045Z-C8-6-real-9601ddce",
+    "seal_root": "b0605bbb4c445d34bfd3df15434aba0c768e28e5f4e88ae43cb7230c76430028",
+    "target": "planned-failover-error",
+    "verdict": "FAIL"
+  },
+  "analysis": "C9 (§10.10) planned-failover-error in the judged switchover f0 (F6, graceful switchover of the leader; the run's first fault, so judged): the explicit transaction i=2408 (append workload, gw-z3) completed info with SQLSTATE 57P03 on the first statement at 70.288–70.296 s, invoked 15 ms after the F6 injection event, not with 40001. Between the injection and the heal's confirmation 64 other explicit transactions failed with 40001, which G8 allows (SQLSTATE does not tell the drain's aborts, S15, from serialization failures), and no single autocommit statement ended fail or info. The completions are row 11 of §6.2 (a SQLSTATE not listed: info); no write of these transactions had executed. Pooler status: the leader stopped answering about 1 s after the injection and a standby became primary about 5 s after it (rule 2.x); the old leader restarted as a standby. Design says (S14, at e3cbdbb): with buffering enabled the gateway buffers or retries only replay-safe errors — no writable primary, MTF01, pre-execution unavailable, and 25006 or recovery 0A000 only for a single autocommit statement or the first statement of a deferred read-write transaction; S15: during a planned failover an open transaction is aborted with 40001. 57P03 (cannot_connect_now) is what PostgreSQL returns while it shuts down or starts; it is not among the errors S14 buffers. Origin hypothesis MULTIGRES: the error is PostgreSQL's, but returning it to the client inside a buffered planned failover is the gateway's behavior, which plain PostgreSQL has no counterpart for. ADR-0045: planned-failover-error (G8) has no predicate (no recorded G8 finding), so the run is a new failure. Minimization (§12.2): 11 candidates, none reproduced the class; the minimized plan is the original's. P13 replays: 0 of 5 show planned-failover-error (5 PASS); the original history is the evidence (§11.1).",
+  "anomaly_class": "planned-failover-error",
+  "campaign": "C8",
+  "cell": "V3",
+  "checks_sha256": "8926c627bcbbe878929ecfa92d3a24f08b63ebaf70c51f3c6e5c267011fce6e9",
+  "classification": [
+    {
+      "claim_level": "DESIGN",
+      "class": "PROTOCOL_DEVIATION",
+      "finding": "FND-C8-e6b7ca52",
+      "guarantee": "G8",
+      "known_status": "NEW",
+      "origin": "MULTIGRES",
+      "reproducibility": "NOT_REPRODUCED",
+      "severity": "medium"
+    }
+  ],
+  "completion_review": [
+    {
+      "checker": "C9",
+      "class": "planned-failover-error",
+      "explanation": "explicit transaction append i=2408 completed info (map[class:57 phase:statement sqlstate:57P03]), not 40001, within switchover f0",
+      "review": [
+        {
+          "client": 2,
+          "complete_t_ns": 70295722540,
+          "completion": "info",
+          "err": {
+            "class": "57",
+            "phase": "statement",
+            "sqlstate": "57P03"
+          },
+          "f": "txn",
+          "gw": "gw-z3",
+          "invoke_t_ns": 70288398870,
+          "op": 2408,
+          "row": 11,
+          "row_reason": "SQLSTATE 57P03 not listed",
+          "why": "named by the anomaly",
+          "wl": "append"
+        }
+      ]
+    }
+  ],
+  "contract_version": "1.8.1",
+  "finding_id": "FND-C8-e6b7ca52",
+  "harness_defect": false,
+  "harness_review": "The run is valid: seal verified, every fault confirmed and healed by its predicates over raw probe outputs, final reads stable (cpcheck verdict FAIL, not INVALID). §6.2 review of the operations each anomaly names (k7triage over the run's full local history): 1 info in row 11. Each completion sits in its §6.2 row; no misclassified completion creates or hides the anomaly: an info completion is never treated as ok or fail by the checkers. Not a HARNESS_DEFECT.",
+  "minimization": {
+    "journal": "evidence/K7/runs/20261016T230045Z-C8-6-real-9601ddce.minimize.json",
+    "minimized_plan_sha256": "9601ddce3ac130d9d9572c9fba4fb97f3f6135e972a75d0f433be72f9ca1e43e",
+    "minimized_run": "20261016T230045Z-C8-6-real-9601ddce",
+    "replays": [
+      {
+        "classes": [],
+        "replay_index": 1,
+        "run_id": "20261017T014853Z-C8-6-real-9601ddce",
+        "seal_root": "538ca4314df5e6abebfc16bb92e016a64abff5ff0d0bb55d75e667597f3ba1fb",
+        "verdict": "PASS"
+      },
+      {
+        "classes": [],
+        "replay_index": 2,
+        "run_id": "20261017T015210Z-C8-6-real-9601ddce",
+        "seal_root": "c7f39b1dc5ea5e76a090243c6bee193b16919d69f1f5e432adaccbf9778bb5ca",
+        "verdict": "PASS"
+      },
+      {
+        "classes": [],
+        "replay_index": 3,
+        "run_id": "20261017T015535Z-C8-6-real-9601ddce",
+        "seal_root": "c11b5b8a06ac5798f7834c3728e625cd198d418248b839797c8f03b332aae18f",
+        "verdict": "PASS"
+      },
+      {
+        "classes": [],
+        "replay_index": 4,
+        "run_id": "20261017T015856Z-C8-6-real-9601ddce",
+        "seal_root": "0be4e6485162d046dd341151c7ddf4a7b0a40e0d8dc7408680802f306d20b6ca",
+        "verdict": "PASS"
+      },
+      {
+        "classes": [],
+        "replay_index": 5,
+        "run_id": "20261017T020217Z-C8-6-real-9601ddce",
+        "seal_root": "d79be3615630a65558bb8ceff46773c5ce243698138d6e92de8d7e210882cef2",
+        "verdict": "PASS"
+      }
+    ],
+    "replays_with_class": 0
+  },
+  "profile": "buffered",
+  "repeat": false,
+  "run_id": "20261016T230045Z-C8-6-real-9601ddce",
+  "seal_root": "b0605bbb4c445d34bfd3df15434aba0c768e28e5f4e88ae43cb7230c76430028",
+  "seed": 6,
+  "triaged_by_hand": true,
+  "verdict": "FAIL"
+}

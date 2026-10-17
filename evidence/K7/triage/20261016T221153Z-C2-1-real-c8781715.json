@@ -1,0 +1,187 @@
+{
+  "adr_0045": {
+    "confirmed_fault_kinds": [
+      "F1b",
+      "F1d"
+    ],
+    "groups": [
+      {
+        "classes": [
+          "non-linearizable"
+        ],
+        "counts": {
+          "non-linearizable": 1
+        },
+        "failed": {
+          "R-G6": [
+            "F1c not among the confirmed fault kinds"
+          ]
+        },
+        "fields": {
+          "confirmed_fault_kinds": [
+            "F1b",
+            "F1d"
+          ],
+          "timeouts": 24,
+          "valid_C1": "true",
+          "valid_C2": "true",
+          "valid_C6": "true"
+        },
+        "guarantee": "G6"
+      }
+    ],
+    "has_exposure": true,
+    "repeat": false,
+    "run_id": "20261016T221153Z-C2-1-real-c8781715",
+    "seal_root": "e0783b2feba2e17571e389340cc9cace5672c3bef7e0f8782bfb1750b0efe5a8",
+    "target": "non-linearizable",
+    "verdict": "FAIL"
+  },
+  "analysis": "C4 (§10.4) non-linearizable on register 4: the earliest offending operation is the final read i=13777, which returned 1127. The write of 1127 completed ok at 77.598 s (gw-z2). The cas 1127→1130 (gw-z3) was invoked right after and completed info at 87.645 s (client P01 deadline, §6.2 row 9). The ok read i=13733 (87.696 s, gw-z3) returned 1130. C6 is valid (no read of a value superseded by a write that completed before it); C1 and C2 are valid; no acknowledged write was lost. Faults: F1b at 10.459–42.226 s ({leader n1, an orchestrator} vs the rest; n2 became primary at 35.26 s, rule 2.0); F1b at 52.456–64.218 s ({a follower, an orchestrator} vs the rest); F1d on the leader n2 at 77.595–108.942 s (one-way drop leader → followers). Pooler status: n1 promoted at 97.28 s (rule 3.0, then 4.0 at 102.27 s); n2's WAL position restarted at 0/50000A0 (111.30 s) and it rejoined as n1's standby at 116.27 s. Mechanism, as FND-C2-6806aeca's: F1d stops WAL from the leader to its synchronous standbys, so the cas's commit waits in synchronous replication; at the client's deadline the wait is cancelled and the commit becomes visible locally (S61); an ok read sees it; the failover to n1, which never received it, removes it (LIM-33 reproduces this on plain PostgreSQL 17.7, 5 of 5). Which cancel acted (the client's CancelRequest through the gateway, or another) is UNDETERMINED, as for the G2b findings. ADR-0045: R-G6 fails only its condition 5 (F1c among the confirmed fault kinds; here F1b and F1d), so the run is a new failure: the mechanism also occurs with the leader reachable from the gateways under F1d. Minimization (§12.2): 7 candidates; the minimized plan keeps only F1d on the leader (step 2) with the duration halved twice (22.5 s), 8 clients: run 20261017T002205Z-C2-1-real-316f3877, FAIL non-linearizable. P13 replays of it: 5 of 5 FAIL with non-linearizable (REPRODUCED).",
+  "anomaly_class": "non-linearizable",
+  "campaign": "C2",
+  "cell": "V2",
+  "checks_sha256": "7ef429925b1143fb1986742677455448504d9bacf85d5c570edb617fc2c597ea",
+  "classification": [
+    {
+      "claim_level": "DESIGN",
+      "class": "SAFETY_VIOLATION",
+      "finding": "FND-C2-8215101c",
+      "guarantee": "G6",
+      "known_status": "NEW",
+      "origin": "POSTGRES_INHERITED",
+      "reproducibility": "REPRODUCED",
+      "severity": "high"
+    }
+  ],
+  "completion_review": [
+    {
+      "checker": "C4",
+      "class": "non-linearizable",
+      "explanation": "register 4: no linearization; the earliest offending operation is final-read i=13777 ({f:read v:0 old:0 new_:0} -> {known:true set:true v:1127 applied:false})",
+      "review": [
+        {
+          "client": 11,
+          "complete_t_ns": 118973157611,
+          "completion": "ok",
+          "f": "final-read",
+          "gw": "gw-z2",
+          "invoke_t_ns": 118971889341,
+          "op": 13777,
+          "row": 1,
+          "row_reason": "success",
+          "why": "named by the anomaly",
+          "wl": "register"
+        },
+        {
+          "client": 4,
+          "complete_t_ns": 77598445002,
+          "completion": "ok",
+          "f": "write",
+          "gw": "gw-z2",
+          "invoke_t_ns": 77594219785,
+          "op": 13690,
+          "row": 1,
+          "row_reason": "success",
+          "why": "writer of value 1127 of register 4, which the offending read returned",
+          "wl": "register"
+        },
+        {
+          "client": 5,
+          "complete_t_ns": 87695761672,
+          "completion": "ok",
+          "f": "read",
+          "gw": "gw-z3",
+          "invoke_t_ns": 87695206826,
+          "op": 13732,
+          "row": 1,
+          "row_reason": "success",
+          "why": "ok read of register 4 returning value 1130, whose write did not complete ok",
+          "wl": "register"
+        },
+        {
+          "client": 5,
+          "complete_t_ns": 87645063588,
+          "completion": "info",
+          "err": {
+            "class": "timeout",
+            "phase": "client-timeout",
+            "sqlstate": ""
+          },
+          "f": "cas",
+          "gw": "gw-z3",
+          "invoke_t_ns": 77644260575,
+          "op": 13707,
+          "row": 9,
+          "row_reason": "client timeout after a write was sent",
+          "why": "writer of value 1130 of register 4 (completion not ok), read by op 13732",
+          "wl": "register"
+        }
+      ]
+    }
+  ],
+  "contract_version": "1.8.1",
+  "finding_id": "FND-C2-8215101c",
+  "harness_defect": false,
+  "harness_review": "The run is valid: seal verified, every fault confirmed and healed by its predicates over raw probe outputs, final reads stable (cpcheck verdict FAIL, not INVALID). §6.2 review of the operations each anomaly names (k7triage over the run's full local history): 1 info in row 9, 3 ok in row 1. Each completion sits in its §6.2 row; no misclassified completion creates or hides the anomaly: an info completion is never treated as ok or fail by the checkers. Not a HARNESS_DEFECT.",
+  "minimization": {
+    "journal": "evidence/K7/runs/20261016T221153Z-C2-1-real-c8781715.minimize.json",
+    "minimized_plan_sha256": "316f38777476090cac8a900822d1037967cda210f8e22c907527251554d51701",
+    "minimized_run": "20261017T002205Z-C2-1-real-316f3877",
+    "replays": [
+      {
+        "classes": [
+          "non-linearizable"
+        ],
+        "replay_index": 1,
+        "run_id": "20261017T002628Z-C2-1-real-316f3877",
+        "seal_root": "b30dae626576e102cbc5f2b0eb6c6af516adad886a6415361a356e0e997f1b36",
+        "verdict": "FAIL"
+      },
+      {
+        "classes": [
+          "non-linearizable"
+        ],
+        "replay_index": 2,
+        "run_id": "20261017T002756Z-C2-1-real-316f3877",
+        "seal_root": "c97f2776f3ac560535c35c787a73e95cbc078731aa8ca7d988e901843f7f4db1",
+        "verdict": "FAIL"
+      },
+      {
+        "classes": [
+          "non-linearizable"
+        ],
+        "replay_index": 3,
+        "run_id": "20261017T002925Z-C2-1-real-316f3877",
+        "seal_root": "bfb0bd61de760e7c85d068ebe7bb6be575e2156cf2a15ae3c126bfe409862753",
+        "verdict": "FAIL"
+      },
+      {
+        "classes": [
+          "non-linearizable"
+        ],
+        "replay_index": 4,
+        "run_id": "20261017T003052Z-C2-1-real-316f3877",
+        "seal_root": "d46b0411f3f2c6af4e43bfe0a0621fb47c1f7c16edf5f8ee86f42b1edcfcac7f",
+        "verdict": "FAIL"
+      },
+      {
+        "classes": [
+          "non-linearizable"
+        ],
+        "replay_index": 5,
+        "run_id": "20261017T003220Z-C2-1-real-316f3877",
+        "seal_root": "7d9c42ad0eb801a4d436f039dc17c45db17dc9215e3019542412d07136c299f3",
+        "verdict": "FAIL"
+      }
+    ],
+    "replays_with_class": 5
+  },
+  "profile": "slotless",
+  "repeat": false,
+  "run_id": "20261016T221153Z-C2-1-real-c8781715",
+  "seal_root": "e0783b2feba2e17571e389340cc9cace5672c3bef7e0f8782bfb1750b0efe5a8",
+  "seed": 1,
+  "triaged_by_hand": true,
+  "verdict": "FAIL"
+}

@@ -1,0 +1,289 @@
+{
+  "analysis": "TODO",
+  "campaign": "C2",
+  "cell": "",
+  "checks_sha256": "e5cd8fdb04aa7fb4d05fb28e01888450c2bb551ce1b6439c967cd9f2d4fd2d7a",
+  "classification": "TODO (§11; ADR-0042 for G2a/G2b)",
+  "completion_review": [
+    {
+      "checker": "C3",
+      "class": "incompatible-order",
+      "explanation": "reads of key 14 are not prefixes of each other: [1 3 4 5 7 8 9 10 12 13 14 15 16 17 19 20 21 22 23 26 28 29 30 33 34 35 36 38 40] (i=3114) and [1 3 4 5 7 8 9 10 12 13 14 15 16 17 19 20 21 22 23 26 28 29 30 33 34 35 36 38 41 43 44 45 46 49 50 51 53 55 56 57 59 61 62 63] (i=3854)",
+      "review": [
+        {
+          "client": 1,
+          "complete_t_ns": 30600790197,
+          "completion": "ok",
+          "f": "txn",
+          "gw": "gw-z2",
+          "invoke_t_ns": 30596639250,
+          "op": 3114,
+          "row": 1,
+          "row_reason": "success",
+          "why": "named by the anomaly",
+          "wl": "append"
+        },
+        {
+          "client": 1,
+          "complete_t_ns": 43333738002,
+          "completion": "ok",
+          "f": "txn",
+          "gw": "gw-z2",
+          "invoke_t_ns": 43324905593,
+          "op": 3854,
+          "row": 1,
+          "row_reason": "success",
+          "why": "named by the anomaly",
+          "wl": "append"
+        },
+        {
+          "client": 1,
+          "complete_t_ns": 20545920413,
+          "completion": "info",
+          "err": {
+            "class": "timeout",
+            "phase": "client-timeout",
+            "sqlstate": ""
+          },
+          "f": "txn",
+          "gw": "gw-z2",
+          "invoke_t_ns": 10544276892,
+          "op": 3072,
+          "row": 9,
+          "row_reason": "client timeout after a write was sent",
+          "why": "writer of value 40 of key 14, absent from the longest read",
+          "wl": "append"
+        }
+      ]
+    },
+    {
+      "checker": "C3",
+      "class": "incompatible-order",
+      "explanation": "reads of key 36 are not prefixes of each other: [1 3 4 5 6] (i=7481) and [1 3 4 5 12 13 14 15 16 17 19 21 22 24 25 26 27 28 29 30 32 31 33 35 36 38 40 42 44 43 45 50 51 53 54 55 57 58 59 60] (i=8647)",
+      "review": [
+        {
+          "client": 1,
+          "complete_t_ns": 75605137888,
+          "completion": "ok",
+          "f": "txn",
+          "gw": "gw-z2",
+          "invoke_t_ns": 75598013206,
+          "op": 7481,
+          "row": 1,
+          "row_reason": "success",
+          "why": "named by the anomaly",
+          "wl": "append"
+        },
+        {
+          "client": 3,
+          "complete_t_ns": 89248350873,
+          "completion": "ok",
+          "f": "txn",
+          "gw": "gw-z1",
+          "invoke_t_ns": 89240381277,
+          "op": 8647,
+          "row": 1,
+          "row_reason": "success",
+          "why": "named by the anomaly",
+          "wl": "append"
+        },
+        {
+          "client": 0,
+          "complete_t_ns": 65597679730,
+          "completion": "info",
+          "err": {
+            "class": "timeout",
+            "phase": "client-timeout",
+            "sqlstate": ""
+          },
+          "f": "txn",
+          "gw": "gw-z1",
+          "invoke_t_ns": 55596539828,
+          "op": 7438,
+          "row": 9,
+          "row_reason": "client timeout after a write was sent",
+          "why": "writer of value 6 of key 36, absent from the longest read",
+          "wl": "append"
+        }
+      ]
+    },
+    {
+      "checker": "C4",
+      "class": "non-linearizable",
+      "explanation": "register 4: no linearization; the earliest offending operation is read i=7620 ({f:read v:0 old:0 new_:0} -> {known:true set:true v:577 applied:false})",
+      "review": [
+        {
+          "client": 4,
+          "complete_t_ns": 86004572059,
+          "completion": "ok",
+          "f": "read",
+          "gw": "gw-z2",
+          "invoke_t_ns": 86003011522,
+          "op": 7620,
+          "row": 1,
+          "row_reason": "success",
+          "why": "named by the anomaly",
+          "wl": "register"
+        },
+        {
+          "client": 4,
+          "complete_t_ns": 54644176969,
+          "completion": "ok",
+          "f": "write",
+          "gw": "gw-z2",
+          "invoke_t_ns": 54637206965,
+          "op": 7138,
+          "row": 1,
+          "row_reason": "success",
+          "why": "writer of value 577 of register 4, which the offending read returned",
+          "wl": "register"
+        },
+        {
+          "client": 5,
+          "complete_t_ns": 65700399002,
+          "completion": "ok",
+          "f": "read",
+          "gw": "gw-z3",
+          "invoke_t_ns": 65699519049,
+          "op": 7475,
+          "row": 1,
+          "row_reason": "success",
+          "why": "ok read of register 4 returning value 602, whose write did not complete ok",
+          "wl": "register"
+        },
+        {
+          "client": 4,
+          "complete_t_ns": 65648353302,
+          "completion": "info",
+          "err": {
+            "class": "timeout",
+            "phase": "client-timeout",
+            "sqlstate": ""
+          },
+          "f": "cas",
+          "gw": "gw-z2",
+          "invoke_t_ns": 55648268811,
+          "op": 7453,
+          "row": 9,
+          "row_reason": "client timeout after a write was sent",
+          "why": "writer of value 602 of register 4 (completion not ok), read by op 7475",
+          "wl": "register"
+        },
+        {
+          "client": 4,
+          "complete_t_ns": 75800964808,
+          "completion": "ok",
+          "f": "read",
+          "gw": "gw-z2",
+          "invoke_t_ns": 75800075985,
+          "op": 7503,
+          "row": 1,
+          "row_reason": "success",
+          "why": "ok read of register 4 returning value 604, whose write did not complete ok",
+          "wl": "register"
+        },
+        {
+          "client": 4,
+          "complete_t_ns": 75648807506,
+          "completion": "info",
+          "err": {
+            "class": "timeout",
+            "phase": "client-timeout",
+            "sqlstate": ""
+          },
+          "f": "write",
+          "gw": "gw-z2",
+          "invoke_t_ns": 65648405711,
+          "op": 7463,
+          "row": 9,
+          "row_reason": "client timeout after a write was sent",
+          "why": "writer of value 604 of register 4 (completion not ok), read by op 7503",
+          "wl": "register"
+        }
+      ]
+    }
+  ],
+  "contract_version": "1.8.1",
+  "harness_review": "TODO",
+  "profile": "slotless",
+  "repeat": {
+    "confirmed_fault_kinds": [
+      "F1c"
+    ],
+    "groups": [
+      {
+        "classes": [
+          "incompatible-order"
+        ],
+        "counts": {
+          "incompatible-order": 2
+        },
+        "fields": {
+          "confirmed_fault_kinds": [
+            "F1c"
+          ],
+          "incompatible_order": [
+            {
+              "absent_from_longest": [
+                40
+              ],
+              "key": 14,
+              "longest_read_i": 3854,
+              "read_i": 3114
+            },
+            {
+              "absent_from_longest": [
+                6
+              ],
+              "key": 36,
+              "longest_read_i": 8647,
+              "read_i": 7481
+            }
+          ],
+          "timeouts": 45,
+          "valid_C1": "true",
+          "valid_C2": "true"
+        },
+        "findings": [
+          "FND-D1-fb8d0f8c",
+          "FND-D1-2e860fd2",
+          "FND-D1-a8eb9857",
+          "FND-C2-2a534585"
+        ],
+        "guarantee": "G2b",
+        "predicate": "R-G2b"
+      },
+      {
+        "classes": [
+          "non-linearizable"
+        ],
+        "counts": {
+          "non-linearizable": 1
+        },
+        "fields": {
+          "confirmed_fault_kinds": [
+            "F1c"
+          ],
+          "timeouts": 45,
+          "valid_C1": "true",
+          "valid_C2": "true",
+          "valid_C6": "true"
+        },
+        "findings": [
+          "FND-C2-6806aeca"
+        ],
+        "guarantee": "G6",
+        "predicate": "R-G6"
+      }
+    ],
+    "has_exposure": true,
+    "repeat": true,
+    "run_id": "20261016T221713Z-C2-3-real-273a1b0c",
+    "seal_root": "4c6dfdf2109b9990115199ea52d468e30ac630346d727900e486f18e2af44f8c",
+    "verdict": "FAIL"
+  },
+  "run_id": "20261016T221713Z-C2-3-real-273a1b0c",
+  "seal_root": "4c6dfdf2109b9990115199ea52d468e30ac630346d727900e486f18e2af44f8c",
+  "seed": 3,
+  "verdict": "FAIL"
+}

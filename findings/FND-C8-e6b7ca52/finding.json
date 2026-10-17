@@ -1,0 +1,87 @@
+{
+  "acknowledged_write_lost": false,
+  "anomaly_class": "planned-failover-error",
+  "campaign": "C8",
+  "classification": {
+    "claim_level": "DESIGN",
+    "class": "PROTOCOL_DEVIATION",
+    "guarantee": "G8",
+    "known_status": "NEW",
+    "origin": "MULTIGRES",
+    "reproducibility": "NOT_REPRODUCED",
+    "severity": "medium"
+  },
+  "id": "FND-C8-e6b7ca52",
+  "k7_replay": {
+    "record": "",
+    "replays_with_class": 0,
+    "reproducibility": "",
+    "runs": []
+  },
+  "minimized_plan_sha256": "9601ddce3ac130d9d9572c9fba4fb97f3f6135e972a75d0f433be72f9ca1e43e",
+  "minimized_run": {
+    "archive": "evidence/K7/runs/20261016T230045Z-C8-6-real-9601ddce.tar.zst",
+    "archive_sha256": "28313de1351b2f97c1650b386cdb7f5fdc86a0b7f29b771fcb1c3b54bf5a3072",
+    "classes": [
+      "planned-failover-error"
+    ],
+    "run_id": "20261016T230045Z-C8-6-real-9601ddce",
+    "seal_root": "b0605bbb4c445d34bfd3df15434aba0c768e28e5f4e88ae43cb7230c76430028",
+    "verdict": "FAIL"
+  },
+  "original_run": {
+    "archive": "evidence/K7/runs/20261016T230045Z-C8-6-real-9601ddce.tar.zst",
+    "archive_sha256": "28313de1351b2f97c1650b386cdb7f5fdc86a0b7f29b771fcb1c3b54bf5a3072",
+    "classes": [
+      "planned-failover-error"
+    ],
+    "run_id": "20261016T230045Z-C8-6-real-9601ddce",
+    "seal_root": "b0605bbb4c445d34bfd3df15434aba0c768e28e5f4e88ae43cb7230c76430028",
+    "verdict": "FAIL"
+  },
+  "recurrences": [],
+  "replays": [
+    {
+      "archive": "evidence/K7/runs/20261017T014853Z-C8-6-real-9601ddce.stub.tar.zst",
+      "archive_sha256": "9b2a5725193e89f92767a79c3495814ad4bcba9a64d97e3244c3a46e36c61281",
+      "classes": [],
+      "run_id": "20261017T014853Z-C8-6-real-9601ddce",
+      "seal_root": "538ca4314df5e6abebfc16bb92e016a64abff5ff0d0bb55d75e667597f3ba1fb",
+      "verdict": "PASS"
+    },
+    {
+      "archive": "evidence/K7/runs/20261017T015210Z-C8-6-real-9601ddce.stub.tar.zst",
+      "archive_sha256": "83e08ea9ef5c9f8d63507f0b000ce2974e23c52ae3c3d8bb4b88716850eb4780",
+      "classes": [],
+      "run_id": "20261017T015210Z-C8-6-real-9601ddce",
+      "seal_root": "c7f39b1dc5ea5e76a090243c6bee193b16919d69f1f5e432adaccbf9778bb5ca",
+      "verdict": "PASS"
+    },
+    {
+      "archive": "evidence/K7/runs/20261017T015535Z-C8-6-real-9601ddce.stub.tar.zst",
+      "archive_sha256": "a6cb2b2d5531a06e4fa42841a8c5b5fa74fbe90eaf40e6324341b10ea46bb64f",
+      "classes": [],
+      "run_id": "20261017T015535Z-C8-6-real-9601ddce",
+      "seal_root": "c11b5b8a06ac5798f7834c3728e625cd198d418248b839797c8f03b332aae18f",
+      "verdict": "PASS"
+    },
+    {
+      "archive": "evidence/K7/runs/20261017T015856Z-C8-6-real-9601ddce.stub.tar.zst",
+      "archive_sha256": "9cb29a5bcfb8deea988dbabfaa8ddc9a63d00751f0d63c7b8124b02473be7ece",
+      "classes": [],
+      "run_id": "20261017T015856Z-C8-6-real-9601ddce",
+      "seal_root": "0be4e6485162d046dd341151c7ddf4a7b0a40e0d8dc7408680802f306d20b6ca",
+      "verdict": "PASS"
+    },
+    {
+      "archive": "evidence/K7/runs/20261017T020217Z-C8-6-real-9601ddce.stub.tar.zst",
+      "archive_sha256": "bac1b85a272474002a098df9208131afe6245b37db81d120643b43a4f569bf9b",
+      "classes": [],
+      "run_id": "20261017T020217Z-C8-6-real-9601ddce",
+      "seal_root": "d79be3615630a65558bb8ceff46773c5ce243698138d6e92de8d7e210882cef2",
+      "verdict": "PASS"
+    }
+  ],
+  "replays_with_class": 0,
+  "triage": "evidence/K7/triage/20261016T230045Z-C8-6-real-9601ddce.json"
+}

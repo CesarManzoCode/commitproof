@@ -1,0 +1,734 @@
+{
+  "adr_0045": {
+    "confirmed_fault_kinds": [
+      "F2a",
+      "F2b",
+      "F6"
+    ],
+    "groups": [
+      {
+        "classes": [
+          "notify-not-resumed"
+        ],
+        "counts": {
+          "notify-not-resumed": 4590
+        },
+        "fields": {
+          "confirmed_fault_kinds": [
+            "F2a",
+            "F2b",
+            "F6"
+          ],
+          "listener_sessions": {
+            "client 26": "11",
+            "client 27": "13",
+            "client 28": "12"
+          }
+        },
+        "findings": [
+          "FND-C9-40b6f05a",
+          "FND-C9-2fe9a9fc",
+          "FND-C9-90da5532"
+        ],
+        "guarantee": "G10",
+        "predicate": "R-G10"
+      }
+    ],
+    "has_exposure": true,
+    "repeat": true,
+    "run_id": "20261016T203413Z-C9-3-real-c2918eba",
+    "seal_root": "f98e8071c4aa1c04b141c5afc1cb791ee05c69ea1eeb55393cf06e259303a74b",
+    "verdict": "FAIL"
+  },
+  "analysis": "G10 (R-G10): notify-not-resumed ({'notify-not-resumed': 4590}) by listeners that kept the session they opened (client 26 LISTEN i=11; client 27 LISTEN i=13; client 28 LISTEN i=12); confirmed faults F2a, F2b, F6: the mechanism of FND-C9-40b6f05a, FND-C9-2fe9a9fc and FND-C9-90da5532 — the gateway re-establishes a session's notification stream only on the client's next LISTEN or UNLISTEN (upstream PR #1550, S53).",
+  "campaign": "C9",
+  "cell": "V1",
+  "checks_sha256": "09840eeda2286dc2a13dad4adf1ef0fe2240c02fffddfa31d6fb26d3c28a6afd",
+  "classification": [
+    {
+      "claim_level": "DESIGN",
+      "class": "PROTOCOL_DEVIATION",
+      "guarantee": "G10",
+      "known_status": "KNOWN",
+      "origin": "MULTIGRES",
+      "predicate": "R-G10",
+      "repeat_of": [
+        "FND-C9-40b6f05a",
+        "FND-C9-2fe9a9fc",
+        "FND-C9-90da5532"
+      ],
+      "severity": "medium"
+    }
+  ],
+  "completion_review": [
+    {
+      "checker": "C8",
+      "class": "notify-not-resumed",
+      "explanation": "NOTIFY 1890 (i=6214) was not received within 10s by listener client 26, whose session (LISTEN i=11) was alive and past its first successful op after recovery",
+      "review": [
+        {
+          "client": 26,
+          "complete_t_ns": 362106836,
+          "completion": "ok",
+          "f": "listen",
+          "gw": "gw-z1",
+          "invoke_t_ns": 351936909,
+          "op": 11,
+          "row": 1,
+          "row_reason": "success",
+          "why": "named by the anomaly",
+          "wl": "notify"
+        },
+        {
+          "client": 25,
+          "complete_t_ns": 19420084036,
+          "completion": "ok",
+          "f": "notify",
+          "gw": "gw-z3",
+          "invoke_t_ns": 19414337371,
+          "op": 6214,
+          "row": 1,
+          "row_reason": "success",
+          "why": "named by the anomaly",
+          "wl": "notify"
+        }
+      ]
+    },
+    {
+      "checker": "C8",
+      "class": "notify-not-resumed",
+      "explanation": "NOTIFY 1890 (i=6214) was not received within 10s by listener client 27, whose session (LISTEN i=13) was alive and past its first successful op after recovery",
+      "review": [
+        {
+          "client": 27,
+          "complete_t_ns": 362084617,
+          "completion": "ok",
+          "f": "listen",
+          "gw": "gw-z2",
+          "invoke_t_ns": 352076174,
+          "op": 13,
+          "row": 1,
+          "row_reason": "success",
+          "why": "named by the anomaly",
+          "wl": "notify"
+        },
+        {
+          "client": 25,
+          "complete_t_ns": 19420084036,
+          "completion": "ok",
+          "f": "notify",
+          "gw": "gw-z3",
+          "invoke_t_ns": 19414337371,
+          "op": 6214,
+          "row": 1,
+          "row_reason": "success",
+          "why": "named by the anomaly",
+          "wl": "notify"
+        }
+      ]
+    },
+    {
+      "checker": "C8",
+      "class": "notify-not-resumed",
+      "explanation": "NOTIFY 1890 (i=6214) was not received within 10s by listener client 28, whose session (LISTEN i=12) was alive and past its first successful op after recovery",
+      "review": [
+        {
+          "client": 28,
+          "complete_t_ns": 362138935,
+          "completion": "ok",
+          "f": "listen",
+          "gw": "gw-z3",
+          "invoke_t_ns": 351969078,
+          "op": 12,
+          "row": 1,
+          "row_reason": "success",
+          "why": "named by the anomaly",
+          "wl": "notify"
+        },
+        {
+          "client": 25,
+          "complete_t_ns": 19420084036,
+          "completion": "ok",
+          "f": "notify",
+          "gw": "gw-z3",
+          "invoke_t_ns": 19414337371,
+          "op": 6214,
+          "row": 1,
+          "row_reason": "success",
+          "why": "named by the anomaly",
+          "wl": "notify"
+        }
+      ]
+    },
+    {
+      "checker": "C8",
+      "class": "notify-not-resumed",
+      "explanation": "NOTIFY 1888 (i=6215) was not received within 10s by listener client 26, whose session (LISTEN i=11) was alive and past its first successful op after recovery",
+      "review": [
+        {
+          "client": 26,
+          "complete_t_ns": 362106836,
+          "completion": "ok",
+          "f": "listen",
+          "gw": "gw-z1",
+          "invoke_t_ns": 351936909,
+          "op": 11,
+          "row": 1,
+          "row_reason": "success",
+          "why": "named by the anomaly",
+          "wl": "notify"
+        },
+        {
+          "client": 23,
+          "complete_t_ns": 19426167239,
+          "completion": "ok",
+          "f": "notify",
+          "gw": "gw-z1",
+          "invoke_t_ns": 19414369100,
+          "op": 6215,
+          "row": 1,
+          "row_reason": "success",
+          "why": "named by the anomaly",
+          "wl": "notify"
+        }
+      ]
+    },
+    {
+      "checker": "C8",
+      "class": "notify-not-resumed",
+      "explanation": "NOTIFY 1888 (i=6215) was not received within 10s by listener client 27, whose session (LISTEN i=13) was alive and past its first successful op after recovery",
+      "review": [
+        {
+          "client": 27,
+          "complete_t_ns": 362084617,
+          "completion": "ok",
+          "f": "listen",
+          "gw": "gw-z2",
+          "invoke_t_ns": 352076174,
+          "op": 13,
+          "row": 1,
+          "row_reason": "success",
+          "why": "named by the anomaly",
+          "wl": "notify"
+        },
+        {
+          "client": 23,
+          "complete_t_ns": 19426167239,
+          "completion": "ok",
+          "f": "notify",
+          "gw": "gw-z1",
+          "invoke_t_ns": 19414369100,
+          "op": 6215,
+          "row": 1,
+          "row_reason": "success",
+          "why": "named by the anomaly",
+          "wl": "notify"
+        }
+      ]
+    },
+    {
+      "checker": "C8",
+      "class": "notify-not-resumed",
+      "explanation": "NOTIFY 1888 (i=6215) was not received within 10s by listener client 28, whose session (LISTEN i=12) was alive and past its first successful op after recovery",
+      "review": [
+        {
+          "client": 28,
+          "complete_t_ns": 362138935,
+          "completion": "ok",
+          "f": "listen",
+          "gw": "gw-z3",
+          "invoke_t_ns": 351969078,
+          "op": 12,
+          "row": 1,
+          "row_reason": "success",
+          "why": "named by the anomaly",
+          "wl": "notify"
+        },
+        {
+          "client": 23,
+          "complete_t_ns": 19426167239,
+          "completion": "ok",
+          "f": "notify",
+          "gw": "gw-z1",
+          "invoke_t_ns": 19414369100,
+          "op": 6215,
+          "row": 1,
+          "row_reason": "success",
+          "why": "named by the anomaly",
+          "wl": "notify"
+        }
+      ]
+    },
+    {
+      "checker": "C8",
+      "class": "notify-not-resumed",
+      "explanation": "NOTIFY 1889 (i=6218) was not received within 10s by listener client 26, whose session (LISTEN i=11) was alive and past its first successful op after recovery",
+      "review": [
+        {
+          "client": 26,
+          "complete_t_ns": 362106836,
+          "completion": "ok",
+          "f": "listen",
+          "gw": "gw-z1",
+          "invoke_t_ns": 351936909,
+          "op": 11,
+          "row": 1,
+          "row_reason": "success",
+          "why": "named by the anomaly",
+          "wl": "notify"
+        },
+        {
+          "client": 24,
+          "complete_t_ns": 19423076750,
+          "completion": "ok",
+          "f": "notify",
+          "gw": "gw-z2",
+          "invoke_t_ns": 19414469216,
+          "op": 6218,
+          "row": 1,
+          "row_reason": "success",
+          "why": "named by the anomaly",
+          "wl": "notify"
+        }
+      ]
+    },
+    {
+      "checker": "C8",
+      "class": "notify-not-resumed",
+      "explanation": "NOTIFY 1889 (i=6218) was not received within 10s by listener client 27, whose session (LISTEN i=13) was alive and past its first successful op after recovery",
+      "review": [
+        {
+          "client": 27,
+          "complete_t_ns": 362084617,
+          "completion": "ok",
+          "f": "listen",
+          "gw": "gw-z2",
+          "invoke_t_ns": 352076174,
+          "op": 13,
+          "row": 1,
+          "row_reason": "success",
+          "why": "named by the anomaly",
+          "wl": "notify"
+        },
+        {
+          "client": 24,
+          "complete_t_ns": 19423076750,
+          "completion": "ok",
+          "f": "notify",
+          "gw": "gw-z2",
+          "invoke_t_ns": 19414469216,
+          "op": 6218,
+          "row": 1,
+          "row_reason": "success",
+          "why": "named by the anomaly",
+          "wl": "notify"
+        }
+      ]
+    },
+    {
+      "checker": "C8",
+      "class": "notify-not-resumed",
+      "explanation": "NOTIFY 1889 (i=6218) was not received within 10s by listener client 28, whose session (LISTEN i=12) was alive and past its first successful op after recovery",
+      "review": [
+        {
+          "client": 28,
+          "complete_t_ns": 362138935,
+          "completion": "ok",
+          "f": "listen",
+          "gw": "gw-z3",
+          "invoke_t_ns": 351969078,
+          "op": 12,
+          "row": 1,
+          "row_reason": "success",
+          "why": "named by the anomaly",
+          "wl": "notify"
+        },
+        {
+          "client": 24,
+          "complete_t_ns": 19423076750,
+          "completion": "ok",
+          "f": "notify",
+          "gw": "gw-z2",
+          "invoke_t_ns": 19414469216,
+          "op": 6218,
+          "row": 1,
+          "row_reason": "success",
+          "why": "named by the anomaly",
+          "wl": "notify"
+        }
+      ]
+    },
+    {
+      "checker": "C8",
+      "class": "notify-not-resumed",
+      "explanation": "NOTIFY 1895 (i=6228) was not received within 10s by listener client 26, whose session (LISTEN i=11) was alive and past its first successful op after recovery",
+      "review": [
+        {
+          "client": 26,
+          "complete_t_ns": 362106836,
+          "completion": "ok",
+          "f": "listen",
+          "gw": "gw-z1",
+          "invoke_t_ns": 351936909,
+          "op": 11,
+          "row": 1,
+          "row_reason": "success",
+          "why": "named by the anomaly",
+          "wl": "notify"
+        },
+        {
+          "client": 25,
+          "complete_t_ns": 19470444380,
+          "completion": "ok",
+          "f": "notify",
+          "gw": "gw-z3",
+          "invoke_t_ns": 19464621847,
+          "op": 6228,
+          "row": 1,
+          "row_reason": "success",
+          "why": "named by the anomaly",
+          "wl": "notify"
+        }
+      ]
+    },
+    {
+      "checker": "C8",
+      "class": "notify-not-resumed",
+      "explanation": "NOTIFY 1895 (i=6228) was not received within 10s by listener client 27, whose session (LISTEN i=13) was alive and past its first successful op after recovery",
+      "review": [
+        {
+          "client": 27,
+          "complete_t_ns": 362084617,
+          "completion": "ok",
+          "f": "listen",
+          "gw": "gw-z2",
+          "invoke_t_ns": 352076174,
+          "op": 13,
+          "row": 1,
+          "row_reason": "success",
+          "why": "named by the anomaly",
+          "wl": "notify"
+        },
+        {
+          "client": 25,
+          "complete_t_ns": 19470444380,
+          "completion": "ok",
+          "f": "notify",
+          "gw": "gw-z3",
+          "invoke_t_ns": 19464621847,
+          "op": 6228,
+          "row": 1,
+          "row_reason": "success",
+          "why": "named by the anomaly",
+          "wl": "notify"
+        }
+      ]
+    },
+    {
+      "checker": "C8",
+      "class": "notify-not-resumed",
+      "explanation": "NOTIFY 1895 (i=6228) was not received within 10s by listener client 28, whose session (LISTEN i=12) was alive and past its first successful op after recovery",
+      "review": [
+        {
+          "client": 28,
+          "complete_t_ns": 362138935,
+          "completion": "ok",
+          "f": "listen",
+          "gw": "gw-z3",
+          "invoke_t_ns": 351969078,
+          "op": 12,
+          "row": 1,
+          "row_reason": "success",
+          "why": "named by the anomaly",
+          "wl": "notify"
+        },
+        {
+          "client": 25,
+          "complete_t_ns": 19470444380,
+          "completion": "ok",
+          "f": "notify",
+          "gw": "gw-z3",
+          "invoke_t_ns": 19464621847,
+          "op": 6228,
+          "row": 1,
+          "row_reason": "success",
+          "why": "named by the anomaly",
+          "wl": "notify"
+        }
+      ]
+    },
+    {
+      "checker": "C8",
+      "class": "notify-not-resumed",
+      "explanation": "NOTIFY 1894 (i=6230) was not received within 10s by listener client 26, whose session (LISTEN i=11) was alive and past its first successful op after recovery",
+      "review": [
+        {
+          "client": 26,
+          "complete_t_ns": 362106836,
+          "completion": "ok",
+          "f": "listen",
+          "gw": "gw-z1",
+          "invoke_t_ns": 351936909,
+          "op": 11,
+          "row": 1,
+          "row_reason": "success",
+          "why": "named by the anomaly",
+          "wl": "notify"
+        },
+        {
+          "client": 24,
+          "complete_t_ns": 19473583537,
+          "completion": "ok",
+          "f": "notify",
+          "gw": "gw-z2",
+          "invoke_t_ns": 19464657816,
+          "op": 6230,
+          "row": 1,
+          "row_reason": "success",
+          "why": "named by the anomaly",
+          "wl": "notify"
+        }
+      ]
+    },
+    {
+      "checker": "C8",
+      "class": "notify-not-resumed",
+      "explanation": "NOTIFY 1894 (i=6230) was not received within 10s by listener client 27, whose session (LISTEN i=13) was alive and past its first successful op after recovery",
+      "review": [
+        {
+          "client": 27,
+          "complete_t_ns": 362084617,
+          "completion": "ok",
+          "f": "listen",
+          "gw": "gw-z2",
+          "invoke_t_ns": 352076174,
+          "op": 13,
+          "row": 1,
+          "row_reason": "success",
+          "why": "named by the anomaly",
+          "wl": "notify"
+        },
+        {
+          "client": 24,
+          "complete_t_ns": 19473583537,
+          "completion": "ok",
+          "f": "notify",
+          "gw": "gw-z2",
+          "invoke_t_ns": 19464657816,
+          "op": 6230,
+          "row": 1,
+          "row_reason": "success",
+          "why": "named by the anomaly",
+          "wl": "notify"
+        }
+      ]
+    },
+    {
+      "checker": "C8",
+      "class": "notify-not-resumed",
+      "explanation": "NOTIFY 1894 (i=6230) was not received within 10s by listener client 28, whose session (LISTEN i=12) was alive and past its first successful op after recovery",
+      "review": [
+        {
+          "client": 28,
+          "complete_t_ns": 362138935,
+          "completion": "ok",
+          "f": "listen",
+          "gw": "gw-z3",
+          "invoke_t_ns": 351969078,
+          "op": 12,
+          "row": 1,
+          "row_reason": "success",
+          "why": "named by the anomaly",
+          "wl": "notify"
+        },
+        {
+          "client": 24,
+          "complete_t_ns": 19473583537,
+          "completion": "ok",
+          "f": "notify",
+          "gw": "gw-z2",
+          "invoke_t_ns": 19464657816,
+          "op": 6230,
+          "row": 1,
+          "row_reason": "success",
+          "why": "named by the anomaly",
+          "wl": "notify"
+        }
+      ]
+    },
+    {
+      "checker": "C8",
+      "class": "notify-not-resumed",
+      "explanation": "NOTIFY 1893 (i=6234) was not received within 10s by listener client 26, whose session (LISTEN i=11) was alive and past its first successful op after recovery",
+      "review": [
+        {
+          "client": 26,
+          "complete_t_ns": 362106836,
+          "completion": "ok",
+          "f": "listen",
+          "gw": "gw-z1",
+          "invoke_t_ns": 351936909,
+          "op": 11,
+          "row": 1,
+          "row_reason": "success",
+          "why": "named by the anomaly",
+          "wl": "notify"
+        },
+        {
+          "client": 23,
+          "complete_t_ns": 19476645787,
+          "completion": "ok",
+          "f": "notify",
+          "gw": "gw-z1",
+          "invoke_t_ns": 19464754892,
+          "op": 6234,
+          "row": 1,
+          "row_reason": "success",
+          "why": "named by the anomaly",
+          "wl": "notify"
+        }
+      ]
+    },
+    {
+      "checker": "C8",
+      "class": "notify-not-resumed",
+      "explanation": "NOTIFY 1893 (i=6234) was not received within 10s by listener client 27, whose session (LISTEN i=13) was alive and past its first successful op after recovery",
+      "review": [
+        {
+          "client": 27,
+          "complete_t_ns": 362084617,
+          "completion": "ok",
+          "f": "listen",
+          "gw": "gw-z2",
+          "invoke_t_ns": 352076174,
+          "op": 13,
+          "row": 1,
+          "row_reason": "success",
+          "why": "named by the anomaly",
+          "wl": "notify"
+        },
+        {
+          "client": 23,
+          "complete_t_ns": 19476645787,
+          "completion": "ok",
+          "f": "notify",
+          "gw": "gw-z1",
+          "invoke_t_ns": 19464754892,
+          "op": 6234,
+          "row": 1,
+          "row_reason": "success",
+          "why": "named by the anomaly",
+          "wl": "notify"
+        }
+      ]
+    },
+    {
+      "checker": "C8",
+      "class": "notify-not-resumed",
+      "explanation": "NOTIFY 1893 (i=6234) was not received within 10s by listener client 28, whose session (LISTEN i=12) was alive and past its first successful op after recovery",
+      "review": [
+        {
+          "client": 28,
+          "complete_t_ns": 362138935,
+          "completion": "ok",
+          "f": "listen",
+          "gw": "gw-z3",
+          "invoke_t_ns": 351969078,
+          "op": 12,
+          "row": 1,
+          "row_reason": "success",
+          "why": "named by the anomaly",
+          "wl": "notify"
+        },
+        {
+          "client": 23,
+          "complete_t_ns": 19476645787,
+          "completion": "ok",
+          "f": "notify",
+          "gw": "gw-z1",
+          "invoke_t_ns": 19464754892,
+          "op": 6234,
+          "row": 1,
+          "row_reason": "success",
+          "why": "named by the anomaly",
+          "wl": "notify"
+        }
+      ]
+    },
+    {
+      "checker": "C8",
+      "class": "notify-not-resumed",
+      "explanation": "NOTIFY 1900 (i=6248) was not received within 10s by listener client 26, whose session (LISTEN i=11) was alive and past its first successful op after recovery",
+      "review": [
+        {
+          "client": 26,
+          "complete_t_ns": 362106836,
+          "completion": "ok",
+          "f": "listen",
+          "gw": "gw-z1",
+          "invoke_t_ns": 351936909,
+          "op": 11,
+          "row": 1,
+          "row_reason": "success",
+          "why": "named by the anomaly",
+          "wl": "notify"
+        },
+        {
+          "client": 25,
+          "complete_t_ns": 19521185337,
+          "completion": "ok",
+          "f": "notify",
+          "gw": "gw-z3",
+          "invoke_t_ns": 19515356155,
+          "op": 6248,
+          "row": 1,
+          "row_reason": "success",
+          "why": "named by the anomaly",
+          "wl": "notify"
+        }
+      ]
+    },
+    {
+      "checker": "C8",
+      "class": "notify-not-resumed",
+      "explanation": "NOTIFY 1900 (i=6248) was not received within 10s by listener client 27, whose session (LISTEN i=13) was alive and past its first successful op after recovery",
+      "review": [
+        {
+          "client": 27,
+          "complete_t_ns": 362084617,
+          "completion": "ok",
+          "f": "listen",
+          "gw": "gw-z2",
+          "invoke_t_ns": 352076174,
+          "op": 13,
+          "row": 1,
+          "row_reason": "success",
+          "why": "named by the anomaly",
+          "wl": "notify"
+        },
+        {
+          "client": 25,
+          "complete_t_ns": 19521185337,
+          "completion": "ok",
+          "f": "notify",
+          "gw": "gw-z3",
+          "invoke_t_ns": 19515356155,
+          "op": 6248,
+          "row": 1,
+          "row_reason": "success",
+          "why": "named by the anomaly",
+          "wl": "notify"
+        }
+      ]
+    }
+  ],
+  "contract_version": "1.8.1",
+  "harness_defect": false,
+  "harness_review": "§6.2 review of 10 distinct reviewed completions (k7triage over the run's full local history): 10 ok in row 1. The 10 operations the anomalies name are ok (row 1: explicit success); the 0 writers of values read but later absent are info, never ok or fail, so no misclassified completion can create or hide the anomaly. The run is valid (seal verified, every fault confirmed and healed, final reads stable). Not a HARNESS_DEFECT.",
+  "profile": "baseline",
+  "repeat": true,
+  "run_id": "20261016T203413Z-C9-3-real-c2918eba",
+  "seal_root": "f98e8071c4aa1c04b141c5afc1cb791ee05c69ea1eeb55393cf06e259303a74b",
+  "seed": 3,
+  "verdict": "FAIL"
+}

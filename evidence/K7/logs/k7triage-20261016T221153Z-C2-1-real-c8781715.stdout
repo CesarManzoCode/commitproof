@@ -1,0 +1,118 @@
+{
+  "analysis": "TODO",
+  "campaign": "C2",
+  "cell": "",
+  "checks_sha256": "7ef429925b1143fb1986742677455448504d9bacf85d5c570edb617fc2c597ea",
+  "classification": "TODO (§11; ADR-0042 for G2a/G2b)",
+  "completion_review": [
+    {
+      "checker": "C4",
+      "class": "non-linearizable",
+      "explanation": "register 4: no linearization; the earliest offending operation is final-read i=13777 ({f:read v:0 old:0 new_:0} -> {known:true set:true v:1127 applied:false})",
+      "review": [
+        {
+          "client": 11,
+          "complete_t_ns": 118973157611,
+          "completion": "ok",
+          "f": "final-read",
+          "gw": "gw-z2",
+          "invoke_t_ns": 118971889341,
+          "op": 13777,
+          "row": 1,
+          "row_reason": "success",
+          "why": "named by the anomaly",
+          "wl": "register"
+        },
+        {
+          "client": 4,
+          "complete_t_ns": 77598445002,
+          "completion": "ok",
+          "f": "write",
+          "gw": "gw-z2",
+          "invoke_t_ns": 77594219785,
+          "op": 13690,
+          "row": 1,
+          "row_reason": "success",
+          "why": "writer of value 1127 of register 4, which the offending read returned",
+          "wl": "register"
+        },
+        {
+          "client": 5,
+          "complete_t_ns": 87695761672,
+          "completion": "ok",
+          "f": "read",
+          "gw": "gw-z3",
+          "invoke_t_ns": 87695206826,
+          "op": 13732,
+          "row": 1,
+          "row_reason": "success",
+          "why": "ok read of register 4 returning value 1130, whose write did not complete ok",
+          "wl": "register"
+        },
+        {
+          "client": 5,
+          "complete_t_ns": 87645063588,
+          "completion": "info",
+          "err": {
+            "class": "timeout",
+            "phase": "client-timeout",
+            "sqlstate": ""
+          },
+          "f": "cas",
+          "gw": "gw-z3",
+          "invoke_t_ns": 77644260575,
+          "op": 13707,
+          "row": 9,
+          "row_reason": "client timeout after a write was sent",
+          "why": "writer of value 1130 of register 4 (completion not ok), read by op 13732",
+          "wl": "register"
+        }
+      ]
+    }
+  ],
+  "contract_version": "1.8.1",
+  "harness_review": "TODO",
+  "profile": "slotless",
+  "repeat": {
+    "confirmed_fault_kinds": [
+      "F1b",
+      "F1d"
+    ],
+    "groups": [
+      {
+        "classes": [
+          "non-linearizable"
+        ],
+        "counts": {
+          "non-linearizable": 1
+        },
+        "failed": {
+          "R-G6": [
+            "F1c not among the confirmed fault kinds"
+          ]
+        },
+        "fields": {
+          "confirmed_fault_kinds": [
+            "F1b",
+            "F1d"
+          ],
+          "timeouts": 24,
+          "valid_C1": "true",
+          "valid_C2": "true",
+          "valid_C6": "true"
+        },
+        "guarantee": "G6"
+      }
+    ],
+    "has_exposure": true,
+    "repeat": false,
+    "run_id": "20261016T221153Z-C2-1-real-c8781715",
+    "seal_root": "e0783b2feba2e17571e389340cc9cace5672c3bef7e0f8782bfb1750b0efe5a8",
+    "target": "non-linearizable",
+    "verdict": "FAIL"
+  },
+  "run_id": "20261016T221153Z-C2-1-real-c8781715",
+  "seal_root": "e0783b2feba2e17571e389340cc9cace5672c3bef7e0f8782bfb1750b0efe5a8",
+  "seed": 1,
+  "verdict": "FAIL"
+}

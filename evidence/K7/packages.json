@@ -214,5 +214,90 @@
     "minimized": "evidence/K5/runs/20261013T232750Z-C11-2-real-1f5423ed.tar.zst",
     "original": "evidence/K5/runs/20261013T232750Z-C11-2-real-1f5423ed.tar.zst",
     "triage": "evidence/K5/triage/20261013T232750Z-C11-2-real-1f5423ed.json"
+  },
+  {
+    "anomaly_class": "G-nonadjacent",
+    "campaign": "C2",
+    "classification": {
+      "claim_level": "INFERRED",
+      "class": "SAFETY_VIOLATION",
+      "guarantee": "G5",
+      "known_status": "NEW",
+      "origin": "UNDETERMINED",
+      "reproducibility": "NOT_REPRODUCED",
+      "severity": "high"
+    },
+    "id": "FND-C2-c7475a73",
+    "minimized": "evidence/K7/runs/20261016T173617Z-C2-3-real-9375b700.tar.zst",
+    "original": "evidence/K7/runs/20261016T173617Z-C2-3-real-9375b700.tar.zst",
+    "triage": "evidence/K7/triage/20261016T173617Z-C2-3-real-9375b700.json"
+  },
+  {
+    "anomaly_class": "non-linearizable",
+    "campaign": "C2",
+    "classification": {
+      "claim_level": "DESIGN",
+      "class": "SAFETY_VIOLATION",
+      "guarantee": "G6",
+      "known_status": "NEW",
+      "origin": "POSTGRES_INHERITED",
+      "reproducibility": "REPRODUCED",
+      "severity": "high"
+    },
+    "id": "FND-C2-8215101c",
+    "minimized": "evidence/K7/runs/20261017T002205Z-C2-1-real-316f3877.tar.zst",
+    "original": "evidence/K7/runs/20261016T221153Z-C2-1-real-c8781715.tar.zst",
+    "triage": "evidence/K7/triage/20261016T221153Z-C2-1-real-c8781715.json"
+  },
+  {
+    "anomaly_class": "planned-failover-error",
+    "campaign": "C8",
+    "classification": {
+      "claim_level": "DESIGN",
+      "class": "PROTOCOL_DEVIATION",
+      "guarantee": "G8",
+      "known_status": "NEW",
+      "origin": "MULTIGRES",
+      "reproducibility": "INTERMITTENT",
+      "severity": "medium"
+    },
+    "id": "FND-C8-ff4475d8",
+    "minimized": "evidence/K7/runs/20261016T225050Z-C8-3-real-537e02d1.tar.zst",
+    "original": "evidence/K7/runs/20261016T225050Z-C8-3-real-537e02d1.tar.zst",
+    "triage": "evidence/K7/triage/20261016T225050Z-C8-3-real-537e02d1.json"
+  },
+  {
+    "anomaly_class": "planned-failover-error",
+    "campaign": "C8",
+    "classification": {
+      "claim_level": "DESIGN",
+      "class": "PROTOCOL_DEVIATION",
+      "guarantee": "G8",
+      "known_status": "NEW",
+      "origin": "MULTIGRES",
+      "reproducibility": "NOT_REPRODUCED",
+      "severity": "medium"
+    },
+    "id": "FND-C8-e6b7ca52",
+    "minimized": "evidence/K7/runs/20261016T230045Z-C8-6-real-9601ddce.tar.zst",
+    "original": "evidence/K7/runs/20261016T230045Z-C8-6-real-9601ddce.tar.zst",
+    "triage": "evidence/K7/triage/20261016T230045Z-C8-6-real-9601ddce.json"
+  },
+  {
+    "anomaly_class": "planned-failover-error",
+    "campaign": "C8",
+    "classification": {
+      "claim_level": "DESIGN",
+      "class": "PROTOCOL_DEVIATION",
+      "guarantee": "G8",
+      "known_status": "NEW",
+      "origin": "MULTIGRES",
+      "reproducibility": "INTERMITTENT",
+      "severity": "medium"
+    },
+    "id": "FND-C8-5254b5cb",
+    "minimized": "evidence/K7/runs/20261016T231406Z-C8-10-real-cb16d052.tar.zst",
+    "original": "evidence/K7/runs/20261016T231406Z-C8-10-real-cb16d052.tar.zst",
+    "triage": "evidence/K7/triage/20261016T231406Z-C8-10-real-cb16d052.json"
   }
 ]

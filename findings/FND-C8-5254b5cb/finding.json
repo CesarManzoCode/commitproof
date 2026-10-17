@@ -1,0 +1,89 @@
+{
+  "acknowledged_write_lost": false,
+  "anomaly_class": "planned-failover-error",
+  "campaign": "C8",
+  "classification": {
+    "claim_level": "DESIGN",
+    "class": "PROTOCOL_DEVIATION",
+    "guarantee": "G8",
+    "known_status": "NEW",
+    "origin": "MULTIGRES",
+    "reproducibility": "INTERMITTENT",
+    "severity": "medium"
+  },
+  "id": "FND-C8-5254b5cb",
+  "k7_replay": {
+    "record": "",
+    "replays_with_class": 0,
+    "reproducibility": "",
+    "runs": []
+  },
+  "minimized_plan_sha256": "cb16d05219d2c878bf1d8d03cbf1447a06759861dd66f0e0aa5d9b69d3280575",
+  "minimized_run": {
+    "archive": "evidence/K7/runs/20261016T231406Z-C8-10-real-cb16d052.tar.zst",
+    "archive_sha256": "005209fd5497115ab4fb659c796a5e817662543ef62a329ea192d3d0edebd79f",
+    "classes": [
+      "planned-failover-error"
+    ],
+    "run_id": "20261016T231406Z-C8-10-real-cb16d052",
+    "seal_root": "2232bb76e0f354ee3bf3055e4d6b770bd5a8cd4f34c510a75134877dde04ee80",
+    "verdict": "FAIL"
+  },
+  "original_run": {
+    "archive": "evidence/K7/runs/20261016T231406Z-C8-10-real-cb16d052.tar.zst",
+    "archive_sha256": "005209fd5497115ab4fb659c796a5e817662543ef62a329ea192d3d0edebd79f",
+    "classes": [
+      "planned-failover-error"
+    ],
+    "run_id": "20261016T231406Z-C8-10-real-cb16d052",
+    "seal_root": "2232bb76e0f354ee3bf3055e4d6b770bd5a8cd4f34c510a75134877dde04ee80",
+    "verdict": "FAIL"
+  },
+  "recurrences": [],
+  "replays": [
+    {
+      "archive": "evidence/K7/runs/20261017T023903Z-C8-10-real-cb16d052.stub.tar.zst",
+      "archive_sha256": "e375ff2ec1e92393773faa318eaf90d6f57b11278cc34c3d66b2e22e655c22e2",
+      "classes": [
+        "planned-failover-error"
+      ],
+      "run_id": "20261017T023903Z-C8-10-real-cb16d052",
+      "seal_root": "f8c223c43934e13b6be5780d26254a6e9d3aca225fd61d0e2a4f2f08f0cbbcf7",
+      "verdict": "FAIL"
+    },
+    {
+      "archive": "evidence/K7/runs/20261017T024220Z-C8-10-real-cb16d052.stub.tar.zst",
+      "archive_sha256": "070fb25cf0ab9854ea38651b390b3f69d69c2e7e25ffb5cddcc3f3a7f91e6fea",
+      "classes": [],
+      "run_id": "20261017T024220Z-C8-10-real-cb16d052",
+      "seal_root": "fd5b5db7055104e33688c9359f94ab011a3a39f2793b04572ab81fdd85228946",
+      "verdict": "PASS"
+    },
+    {
+      "archive": "evidence/K7/runs/20261017T024538Z-C8-10-real-cb16d052.stub.tar.zst",
+      "archive_sha256": "1f6767b54c546d16603d0cb6b06d6652d8b445c7d90be3831f569ebe8fa03190",
+      "classes": [],
+      "run_id": "20261017T024538Z-C8-10-real-cb16d052",
+      "seal_root": "e2565b1180c863780f778324c011684a6463b022bef1be5759356c7fee7ed66b",
+      "verdict": "PASS"
+    },
+    {
+      "archive": "evidence/K7/runs/20261017T024903Z-C8-10-real-cb16d052.stub.tar.zst",
+      "archive_sha256": "4188b33f9bc16c49fde075da25309ddf99a989523fe04af20193265f69aad1a8",
+      "classes": [],
+      "run_id": "20261017T024903Z-C8-10-real-cb16d052",
+      "seal_root": "bad07a70782ae163f400077b291bf462e2f50b2a0d3458d321cc928a4844d43e",
+      "verdict": "PASS"
+    },
+    {
+      "archive": "evidence/K7/runs/20261017T025228Z-C8-10-real-cb16d052.stub.tar.zst",
+      "archive_sha256": "a4bae420e1c33115aa1272d6604d5b8379d64719d773034e5364fb2a4c40417b",
+      "classes": [],
+      "run_id": "20261017T025228Z-C8-10-real-cb16d052",
+      "seal_root": "b1cc87b7424ad4ad785b95c98d51d93bd968d7e18c981e428368bd9e29c7eccb",
+      "verdict": "PASS"
+    }
+  ],
+  "replays_with_class": 1,
+  "triage": "evidence/K7/triage/20261016T231406Z-C8-10-real-cb16d052.json"
+}

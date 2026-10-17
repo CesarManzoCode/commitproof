@@ -1,0 +1,89 @@
+{
+  "analysis": "TODO",
+  "campaign": "C8",
+  "cell": "",
+  "checks_sha256": "a55fe9eeac2ae7c8d1a0f6d786f1d0e3897ce5c1f4df65f564a62560fdd33d07",
+  "classification": "TODO (§11; ADR-0042 for G2a/G2b)",
+  "completion_review": [
+    {
+      "checker": "C9",
+      "class": "planned-failover-error",
+      "explanation": "explicit transaction append i=2410 completed info (map[class:57 phase:statement sqlstate:57P03]), not 40001, within switchover f0",
+      "review": [
+        {
+          "client": 0,
+          "complete_t_ns": 70295971903,
+          "completion": "info",
+          "err": {
+            "class": "57",
+            "phase": "statement",
+            "sqlstate": "57P03"
+          },
+          "f": "txn",
+          "gw": "gw-z1",
+          "invoke_t_ns": 70292305251,
+          "op": 2410,
+          "row": 11,
+          "row_reason": "SQLSTATE 57P03 not listed",
+          "why": "named by the anomaly",
+          "wl": "append"
+        }
+      ]
+    },
+    {
+      "checker": "C9",
+      "class": "planned-failover-error",
+      "explanation": "explicit transaction append i=2411 completed info (map[class:57 phase:statement sqlstate:57P03]), not 40001, within switchover f0",
+      "review": [
+        {
+          "client": 1,
+          "complete_t_ns": 70296008262,
+          "completion": "info",
+          "err": {
+            "class": "57",
+            "phase": "statement",
+            "sqlstate": "57P03"
+          },
+          "f": "txn",
+          "gw": "gw-z2",
+          "invoke_t_ns": 70292355590,
+          "op": 2411,
+          "row": 11,
+          "row_reason": "SQLSTATE 57P03 not listed",
+          "why": "named by the anomaly",
+          "wl": "append"
+        }
+      ]
+    }
+  ],
+  "contract_version": "1.8.1",
+  "harness_review": "TODO",
+  "profile": "buffered",
+  "repeat": {
+    "confirmed_fault_kinds": [
+      "F6"
+    ],
+    "groups": [
+      {
+        "classes": [
+          "planned-failover-error"
+        ],
+        "counts": {
+          "planned-failover-error": 2
+        },
+        "fields": {},
+        "guarantee": "G8"
+      }
+    ],
+    "has_exposure": true,
+    "repeat": false,
+    "run_id": "20261016T225050Z-C8-3-real-537e02d1",
+    "seal_root": "3638579c2d8a74ab522bc2d32e8508a3384d44359b15f8bc2460e28efdd1ed87",
+    "target": "planned-failover-error",
+    "verdict": "FAIL"
+  },
+  "run_id": "20261016T225050Z-C8-3-real-537e02d1",
+  "seal_root": "3638579c2d8a74ab522bc2d32e8508a3384d44359b15f8bc2460e28efdd1ed87",
+  "seed": 3,
+  "verdict": "FAIL"
+}

@@ -48,7 +48,29 @@
     "reproducibility": "REPRODUCED",
     "severity": "critical"
   },
-  "recurrences": [],
+  "recurrences": [
+    {
+      "cell": "V1",
+      "predicate": "R-G2b",
+      "run_id": "20261016T175837Z-C2-8-real-65087015",
+      "seal_root": "48d4079baeecf6cac6d13771c058e2ba7bf1f6f9abf41fe6ebdb4594f34d8dba",
+      "seed": 8
+    },
+    {
+      "cell": "V1",
+      "predicate": "R-G2b",
+      "run_id": "20261016T180118Z-C2-9-real-4bafa50d",
+      "seal_root": "75c53226ee75f4ac01b934e2d74e5424a47d89ca956156bb2a3750b5fdaffc89",
+      "seed": 9
+    },
+    {
+      "cell": "V2",
+      "predicate": "R-G2b",
+      "run_id": "20261016T221713Z-C2-3-real-273a1b0c",
+      "seal_root": "4c6dfdf2109b9990115199ea52d468e30ac630346d727900e486f18e2af44f8c",
+      "seed": 3
+    }
+  ],
   "replays": [
     {
       "archive": "evidence/K4/runs/20261012T015125Z-D1-1-real-6625432a.tar.zst",
