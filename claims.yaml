@@ -425,6 +425,24 @@ claims:
     sha256: "6593b4b0e54f7ce5c80180c43bf06a51a0637c9b45b87132015cfeaf5df8b848"
     result: "exit 0; binaries buildinfo.Commit=77c5f6c, Dirty=false; nemesis smoke F1a, F2a, F3a, F7, F4a each verdict PASS"
     limitations: ["LIM-16", "LIM-05"]
+  - id: CLM-0067
+    text: "cpgate K7 with negative controls on the evidence at 5a69aa9 (tag v1.0.0, no code difference from the CI's 77c5f6c): every criterion K7.1–K7.7 PASS on the evidence; the negative controls did not isolate their targets (every control's copy failed K7.1–K7.5 besides its target), so the run exited 1."
+    contract: "§15 K7 (Gate K7), §16"
+    target: {system: "cpgate K7 (CommitProof 77c5f6ca0ad555d9a957f601a1fc89155a295f52) on evidence/K7", commit: "e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73", profile: "baseline, slotless, buffered", mutant: "none"}
+    command: "bin/cpgate K7 --evidence evidence/K7 --negative-controls (record cpgate-k7, exit 1); scripts/k7-tag-check.sh (record tag-check)"
+    artifact: "evidence/K7/logs/cpgate-k7.stdout"
+    sha256: "319a2d84c6c871998e6de9c989e392296fffab893a07fb478d700a72aec2df22"
+    result: "criteria 7 of 7 PASS; negative controls 0 of 7 failing only their target (harness defects, fixed in 9056ede); gate exit 1"
+    limitations: ["LIM-16"]
+  - id: CLM-0068
+    text: "After the session stopped a background gate verification for low memory, this project's temporaries were removed from /tmp (tmpfs, 7.5 GB of RAM): MemAvailable 14 118 648 kB of 15 635 100 kB, no cpgate temporary and no project container left."
+    contract: "§14, PREREQUISITES, P10"
+    target: {system: "the owner's host", commit: "e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73", profile: "baseline", mutant: "none"}
+    command: "bash -c with /proc/meminfo, findmnt and df of /tmp, the count of /tmp/cpgate-* and of project containers (record host-memory-reap; argv in commands.jsonl)"
+    artifact: "evidence/K7/logs/host-memory-reap.stdout"
+    sha256: "7e42e22ca725cb7aa5ab237d37ec13781961e8f8dd0cd0b15702e715cf83568e"
+    result: "MemAvailable 14 118 648 kB; /tmp tmpfs 7.5G, 12M used; 0 cpgate temporaries; 0 project containers"
+    limitations: ["LIM-02"]
   - id: CLM-0040
     text: "FND-D1-fb8d0f8c (G2b, SAFETY_VIOLATION, INFERRED, high, origin POSTGRES_INHERITED, NEW): reads of an append whose client timed out (info) return a value that the next failover removes; no acknowledged write is lost."
     contract: "§3 G2b, §11, §11.4"

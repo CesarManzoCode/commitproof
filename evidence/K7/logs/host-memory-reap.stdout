@@ -1,0 +1,7 @@
+MemTotal:       15635100 kB
+MemAvailable:   14118648 kB
+Shmem:              9280 kB
+/tmp: tmpfs  7.5G
+tmpfs           7.5G   12M  7.5G   1% /tmp
+cpgate temporaries in /tmp: 0
+project containers: 0
