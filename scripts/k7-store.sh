@@ -19,18 +19,18 @@
 #
 # P25: the count is every byte under evidence/ plus every run archive
 # (*.tar.zst) under findings/, in bytes/10⁶ MB. The step refuses (exit 2,
-# nothing written) when the count after it would exceed 250 MB. After it
+# nothing written) when the count after it would exceed P25 (275 MB, ADR-0047). After it
 # writes, it reports the count and ADR-0045 §5's projection: count + pending
 # runs × the mean size of K7's stored summaries (95 KB while there is none)
 # + 5 MB of K7's remaining records and text; exit 4 when the projection
-# exceeds 250 MB (the caller stops BLOCKED).
+# exceeds P25 (the caller stops BLOCKED).
 #
 # usage: k7-store.sh <runs-dir> <dest> [--pending N]
 set -euo pipefail
 shopt -s nullglob
 dir=${1:?runs directory} dest=${2:?destination} pending=0
 [ "${3:-}" = --pending ] && pending=${4:?N}
-budget=250000000
+budget=275000000 # P25 (ADR-0047; 250 MB under ADR-0034 until K7's first store step)
 mkdir -p "$dest"
 stage=$(mktemp -d runs/.k7-store-XXXXXX)
 trap 'chmod -R u+w "$stage" 2>/dev/null; rm -rf "$stage"' EXIT

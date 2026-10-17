@@ -23,8 +23,9 @@ import (
 // status KNOWN and records the G6 finding of K4's C2 seed 3 run; 1.7.0
 // (ADR-0044) puts a run's §12.3 exposure into C9's stats; 1.8.0 (ADR-0045)
 // keeps K7 failures that repeat a recorded finding as summaries; 1.8.1
-// (ADR-0046) fixes how K7 runs elle-cli on C3 anomalies.
-const ContractVersion = "1.8.1"
+// (ADR-0046) fixes how K7 runs elle-cli on C3 anomalies; 1.9.0 (ADR-0047)
+// raises P25 to 275 MB for K7.
+const ContractVersion = "1.9.0"
 
 // K4RunsContractVersion is the contract version of the K4 runs made before
 // ADR-0027. Contract 1.0.7 changes only M2's directed schedule, and as a new
@@ -114,7 +115,7 @@ const (
 	MetricsScrapeInterval = 1 * time.Second  // P23
 	MetricsPort           = 9464             // P23 (ADR-0038)
 	ObservationInterval   = 1 * time.Second  // P24
-	EvidenceBudgetMB      = 250              // P25 (ADR-0034)
+	EvidenceBudgetMB      = 275              // P25 (ADR-0047)
 	DockerSubnet          = "10.77.0.0/24"   // P26
 	FaultConfirmDeadline  = 15 * time.Second // P27
 	HealConfirmDeadline   = 30 * time.Second // P28
@@ -186,7 +187,7 @@ func Table() []Param {
 			[]string{s(MetricsScrapeInterval) + " (", fmt.Sprintf("port %d", MetricsPort)}},
 		{"P24", "Observation interval", "1 s",
 			[]string{s(ObservationInterval)}},
-		{"P25", "Evidence size budget in git", "≤ 250 MB total under `evidence/` and the run archives under `findings/` (ADR-0039)",
+		{"P25", "Evidence size budget in git", "≤ 275 MB total under `evidence/` and the run archives under `findings/` (ADR-0039, ADR-0047)",
 			[]string{fmt.Sprintf("≤ %d MB", EvidenceBudgetMB)}},
 		{"P26", "Docker subnet", "10.77.0.0/24",
 			[]string{DockerSubnet}},

@@ -35,7 +35,7 @@
 | [0031](0031-d3-commits-in-flight-proposed.md) | D3′: hold commits in synchronous replication when the leader is killed (amendment of §9.2 D3 for M3) | Approved by the owner (K5); accepted with another composition by ADR-0033 |
 | [0032](0032-k5-storage-exceeds-p25-proposed.md) | K5's runs do not fit P25 under ADR-0030's storage: measurements and options | Decided by the owner (K5): option 1, applied by ADR-0034 |
 | [0033](0033-d3-prime-followers-acks-delayed.md) | D3′: the leader is killed while every commit waits for its delayed standby acknowledgement (amendment of §9.2 D3) | Accepted by the owner (K5, contract 1.0.10) |
-| [0034](0034-p25-raised-to-250-mb.md) | P25 raised to 250 MB; K5 stored as ADR-0030 prescribes (owner decision on ADR-0032) | Accepted by the owner (K5, contract 1.1.0) |
+| [0034](0034-p25-raised-to-250-mb.md) | P25 raised to 250 MB; K5 stored as ADR-0030 prescribes (owner decision on ADR-0032) | Accepted by the owner (K5, contract 1.1.0); its 250 MB superseded by ADR-0047 |
 | [0035](0035-g12-fault-windows-proposed.md) | G12's ok fraction excludes operations invoked inside fault windows (clarification of §10.9) | Proposed (K5); accepted by the owner prospectively for K7 only, applied by ADR-0037 |
 | [0036](0036-k6-report-definitions.md) | K6 report: the reference run, the failover metrics, the campaign statistics and the gate's cross-check, fixed before any K6 render | Accepted (K6, contract 1.1.1); exposure amended by ADR-0044 |
 | [0037](0037-g12-judged-outside-fault-windows.md) | G12 is judged outside fault windows from contract 1.2.0 on; both fractions are reported (owner decision on ADR-0035) | Accepted by the owner (pre-K7, contract 1.2.0); version confirmed by the owner (K6b) |
@@ -46,7 +46,8 @@
 | [0042](0042-g2-split-g2a-g2b.md) | G2 is split into G2a (acknowledged write lost under split brain, EXPLICIT) and G2b (a read observes a write that later disappears, INFERRED), prospectively | Accepted by the owner (K6b, contract 1.5.0) |
 | [0043](0043-findings-known-status-g6-g10-packaging.md) | Known status `KNOWN` (an open upstream fix), the G6 finding of C2 seed 3, and how G10 is packaged | Accepted by the owner (K6b, contract 1.6.0) |
 | [0044](0044-exposure-in-checks-json.md) | A run's §12.3 exposure travels in its checks.json (C9's stats) from contract 1.7.0, so that runs kept as summaries still give a cell its clean statement | Accepted (K6b, contract 1.7.0); accepted by the owner (K7, decision 3) |
-| [0045](0045-k7-repeats-of-recorded-findings-stay-summaries.md) | K7 under P25: a real-build failure that repeats a recorded finding stays a summary; the repeat predicates, the store step and the D3′/D5 decision | Accepted by the owner (K7, contract 1.8.0) |
+| [0045](0045-k7-repeats-of-recorded-findings-stay-summaries.md) | K7 under P25: a real-build failure that repeats a recorded finding stays a summary; the repeat predicates, the store step and the D3′/D5 decision | Accepted by the owner (K7, contract 1.8.0); P25's figure 275 MB from ADR-0047 |
 | [0046](0046-k7-oracle-on-c3-anomalies-and-m1-d1.md) | K7.3: elle-cli on every C3 anomaly of K7, on M1's five D1 runs, and on histories where elle-cli runs out of memory | Accepted by the owner (K7, contract 1.8.1) |
+| [0047](0047-p25-raised-to-275-mb-for-k7.md) | P25 raised to 275 MB; K7 resumes from its store step, with the cited D3′/D5 runs in full (owner decision on K7's BLOCKED closure) | Accepted by the owner (K7, contract 1.9.0) |
 
 New ADRs continue the numbering. Each ADR: Context, Decision, Alternatives rejected, Consequences, Sources.
