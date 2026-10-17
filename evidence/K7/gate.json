@@ -1,0 +1,131 @@
+{
+  "sprint": "K7",
+  "contract_version": "1.9.0",
+  "evidence": "evidence/K7",
+  "result": "PASS",
+  "criteria": [
+    {
+      "id": "K7.1",
+      "name": "Matrix complete",
+      "result": "PASS",
+      "evidence": "results.json",
+      "sha256": "f2971c93fa14a17a7a93485f32b213ee72ad01d07f2131ee7923d66670b89c9f",
+      "problems": [],
+      "details": [
+        "130 matrix cells with a valid run; 15 INVALID attempts listed with causes",
+        "11 cited directed cells, 5 valid runs each"
+      ]
+    },
+    {
+      "id": "K7.2",
+      "name": "Statistics",
+      "result": "PASS",
+      "evidence": "report/k7/index.html",
+      "sha256": "a349946747f91a849cf4c64675b597d6984be9a26fed0993fafaf00942d6a4ee",
+      "problems": [],
+      "details": [
+        "C1/baseline: N 10 (PASS 10, FAIL 0, UNKNOWN 0, INVALID 0) classes map[]; exposure over 0 full + 10 checks.json runs: 128862 ops, 102620 ok writes, faults map[F2a:9 F2b:8 F2c:10 F2d:13]",
+        "C1/slotless: N 5 (PASS 5, FAIL 0, UNKNOWN 0, INVALID 0) classes map[]; exposure over 0 full + 5 checks.json runs: 64586 ops, 52879 ok writes, faults map[F2a:5 F2b:4 F2c:6 F2d:5]",
+        "C10/baseline: N 10 (PASS 10, FAIL 0, UNKNOWN 0, INVALID 2) classes map[]; exposure over 0 full + 10 checks.json runs: 143746 ops, 57949 ok writes, faults map[F1c:10 F2a:10 F2b:10 F6:10]",
+        "C11/baseline: N 5 (PASS 5, FAIL 0, UNKNOWN 0, INVALID 0) classes map[]; exposure over 0 full + 5 checks.json runs: 41419 ops, 17669 ok writes, faults map[F2a:2]",
+        "C12/baseline: N 10 (PASS 10, FAIL 0, UNKNOWN 0, INVALID 1) classes map[]; exposure over 0 full + 10 checks.json runs: 142824 ops, 107917 ok writes, faults map[F1a:2 F1b:1 F1c:1 F1d:2 F2a:1 F2b:2 F2c:2 F2d:2 F2e:1 F3a:1 F3b:1 F4a:1 F5a:10 F5b:10 F6:1 F7:2]",
+        "C2/baseline: N 10 (PASS 6, FAIL 4, UNKNOWN 0, INVALID 3) classes map[G-nonadjacent:1 G-single:1 G2-item:1 incompatible-order:3 non-linearizable:2]; exposure over 1 full + 9 checks.json runs: 65023 ops, 54075 ok writes, faults map[F1a:6 F1b:8 F1c:10 F1d:6]",
+        "C2/slotless: N 5 (PASS 3, FAIL 2, UNKNOWN 0, INVALID 0) classes map[incompatible-order:1 non-linearizable:2]; exposure over 1 full + 4 checks.json runs: 36223 ops, 30088 ok writes, faults map[F1a:4 F1b:5 F1c:4 F1d:2]",
+        "C3/baseline: N 10 (PASS 10, FAIL 0, UNKNOWN 0, INVALID 1) classes map[]; exposure over 0 full + 10 checks.json runs: 109824 ops, 93713 ok writes, faults map[F3a:14 F3b:16]",
+        "C4/baseline: N 10 (PASS 10, FAIL 0, UNKNOWN 0, INVALID 1) classes map[]; exposure over 0 full + 10 checks.json runs: 90082 ops, 81378 ok writes, faults map[F1a:5 F2a:6 F3a:6 F5a:10 F5b:10]",
+        "C4/slotless: N 5 (PASS 5, FAIL 0, UNKNOWN 0, INVALID 2) classes map[]; exposure over 0 full + 5 checks.json runs: 46010 ops, 40757 ok writes, faults map[F1a:2 F2a:3 F3a:2 F5a:5 F5b:5]",
+        "C5/baseline: N 10 (PASS 10, FAIL 0, UNKNOWN 0, INVALID 0) classes map[]; exposure over 0 full + 10 checks.json runs: 88107 ops, 47945 ok writes, faults map[F2a:30 F4a:30]",
+        "C6/baseline: N 10 (PASS 10, FAIL 0, UNKNOWN 0, INVALID 0) classes map[]; exposure over 0 full + 10 checks.json runs: 92202 ops, 75680 ok writes, faults map[F2a:40]",
+        "C7/baseline: N 10 (PASS 10, FAIL 0, UNKNOWN 0, INVALID 0) classes map[]; exposure over 0 full + 10 checks.json runs: 63677 ops, 35100 ok writes, faults map[F1b:20 F2a:20]",
+        "C8/buffered: N 10 (PASS 7, FAIL 3, UNKNOWN 0, INVALID 0) classes map[planned-failover-error:3]; exposure over 3 full + 7 checks.json runs: 102735 ops, 88780 ok writes, faults map[F6:30]",
+        "C9/baseline: N 10 (PASS 0, FAIL 10, UNKNOWN 0, INVALID 5) classes map[notify-not-resumed:10]; exposure over 0 full + 10 checks.json runs: 144026 ops, 28092 ok writes, faults map[F2a:10 F2b:10 F6:10]",
+        "5 K7 runs held in full: their checks.json exposure equals cpgate's recomputation from the history",
+        "cited K4 D1/baseline/M1: N 5 FAIL 5 classes map[incompatible-order:5 lost-write:5]; exposure over 5 of 5 runs held in full",
+        "cited K4 D1/baseline/real: N 5 FAIL 3 classes map[incompatible-order:3]; exposure over 5 of 5 runs held in full",
+        "cited K4 D2p/baseline/M2: N 5 FAIL 4 classes map[lost-write:4]; exposure over 5 of 5 runs held in full",
+        "cited K4 D2p/baseline/real: N 5 FAIL 0 classes map[]; exposure over 5 of 5 runs held in full",
+        "cited K4 DH1/h1/real: N 5 FAIL 0 classes map[]; exposure over 5 of 5 runs held in full",
+        "cited K4 claims/baseline/M4: N 5 FAIL 5 classes map[p1-not-rejected:5]; exposure over 5 of 5 runs held in full",
+        "cited K4 claims/baseline/real: N 5 FAIL 0 classes map[]; exposure over 5 of 5 runs held in full",
+        "cited K5 D3p/buffered/M3: N 5 FAIL 4 classes map[g1a:4]; exposure over 0 of 5 runs held in full",
+        "cited K5 D3p/buffered/real: N 5 FAIL 0 classes map[]; exposure over 0 of 5 runs held in full",
+        "cited K5 D5/baseline/M5: N 5 FAIL 5 classes map[cdc-phantom:5]; exposure over 0 of 5 runs held in full",
+        "cited K5 D5/baseline/real: N 5 FAIL 0 classes map[]; exposure over 0 of 5 runs held in full"
+      ]
+    },
+    {
+      "id": "K7.3",
+      "name": "Oracle on findings",
+      "result": "PASS",
+      "evidence": "oracle",
+      "sha256": "",
+      "problems": [],
+      "details": [
+        "4 K7 matrix runs with C3 anomalies, each with its oracle record",
+        "M1 D1 20261011T215900Z-D1-1-M1-59a95336: oracle-disagreement (none)",
+        "M1 D1 20261011T220118Z-D1-2-M1-8b22bb67: oracle-disagreement (none)",
+        "M1 D1 20261011T220335Z-D1-3-M1-da159fa0: oracle-disagreement (cpcheck --elle-oracle)",
+        "M1 D1 20261011T220553Z-D1-4-M1-ad3fca18: oracle-disagreement (cpcheck --elle-oracle)",
+        "M1 D1 20261011T220810Z-D1-5-M1-3319a30c: oracle-disagreement (none)"
+      ]
+    },
+    {
+      "id": "K7.4",
+      "name": "Findings packages",
+      "result": "PASS",
+      "evidence": "findings",
+      "sha256": "",
+      "problems": [],
+      "details": [
+        "FND-C2-2a534585: G2b SAFETY_VIOLATION INFERRED high INTERMITTENT, 3 recurrences in K7, K7 replays 4 of 5 with incompatible-order (REPRODUCED)",
+        "FND-C2-6806aeca: G6 SAFETY_VIOLATION DESIGN high REPRODUCED, 3 recurrences in K7, K7 replays 0 of 5 with non-linearizable (NOT_REPRODUCED)",
+        "FND-C2-c7475a73: G5 SAFETY_VIOLATION INFERRED high NOT_REPRODUCED, 0 recurrences in K7, K7 replays 0 of 5 with G-nonadjacent (NOT_REPRODUCED)",
+        "FND-C8-5254b5cb: G8 PROTOCOL_DEVIATION DESIGN medium INTERMITTENT, 0 recurrences in K7, K7 replays 0 of 5 with planned-failover-error (NOT_REPRODUCED)",
+        "FND-C8-ff4475d8: G8 PROTOCOL_DEVIATION DESIGN medium INTERMITTENT, 0 recurrences in K7, K7 replays 0 of 5 with planned-failover-error (NOT_REPRODUCED)",
+        "FND-C9-40b6f05a: G10 PROTOCOL_DEVIATION DESIGN medium REPRODUCED, 10 recurrences in K7, K7 replays 4 of 5 with notify-not-resumed (REPRODUCED)",
+        "FND-D1-fb8d0f8c: G2b SAFETY_VIOLATION INFERRED high REPRODUCED, 3 recurrences in K7, K7 replays 5 of 5 with incompatible-order (REPRODUCED)",
+        "FND-C11-17a344c1: G12 PROTOCOL_DEVIATION DESIGN medium INTERMITTENT, 0 recurrences in K7, K7 replays 3 of 5 with fair-share-starvation (REPRODUCED)",
+        "FND-C2-8215101c: G6 SAFETY_VIOLATION DESIGN high REPRODUCED, 0 recurrences in K7, K7 replays 5 of 5 with non-linearizable (REPRODUCED)",
+        "FND-C8-e6b7ca52: G8 PROTOCOL_DEVIATION DESIGN medium NOT_REPRODUCED, 0 recurrences in K7, K7 replays 0 of 5 with planned-failover-error (NOT_REPRODUCED)",
+        "FND-C9-2fe9a9fc: G10 PROTOCOL_DEVIATION DESIGN medium REPRODUCED, 10 recurrences in K7, K7 replays 5 of 5 with notify-not-resumed (REPRODUCED)",
+        "FND-C9-90da5532: G10 PROTOCOL_DEVIATION DESIGN medium INTERMITTENT, 10 recurrences in K7, K7 replays 1 of 5 with notify-not-resumed (INTERMITTENT)",
+        "FND-D1-2e860fd2: G2b SAFETY_VIOLATION INFERRED high REPRODUCED, 3 recurrences in K7, K7 replays 4 of 5 with incompatible-order (REPRODUCED)",
+        "FND-D1-a8eb9857: G2b SAFETY_VIOLATION INFERRED high REPRODUCED, 3 recurrences in K7, K7 replays 3 of 5 with incompatible-order (REPRODUCED)"
+      ]
+    },
+    {
+      "id": "K7.5",
+      "name": "Claims audit",
+      "result": "PASS",
+      "evidence": "claims.yaml",
+      "sha256": "",
+      "problems": [],
+      "details": [
+        "61 claims, 1 hypotheses; every tagged line of [README.md docs/LIMITATIONS.md evidence/K7/NOTES.md] resolves"
+      ]
+    },
+    {
+      "id": "K7.6",
+      "name": "Overclaim correction",
+      "result": "PASS",
+      "evidence": "overclaim-review.md",
+      "sha256": "17c3f2a8ca293033e1d860253fe61189fa1e01d81998b9eb1b036ffe2ae04fe1",
+      "problems": [],
+      "details": [
+        "overclaim review: 22 changed statements",
+        "16 clean cells, each with its §12.3 statement in the README"
+      ]
+    },
+    {
+      "id": "K7.7",
+      "name": "Release",
+      "result": "PASS",
+      "evidence": "commands.jsonl",
+      "sha256": "7271808f257dd3d82b46bed992b4a89defa8424bdfef36ab3163e1d44ba32357",
+      "problems": [],
+      "details": [
+        "ci exit 0 on 77c5f6ca0ad555d9a957f601a1fc89155a295f52; v1.0.0 (tag) on 5a69aa98a2c1bf21a1e144d2b1e45f497a5ace08; code diff []; remote-tracking refs [refs/remotes/origin/HEAD 5d36270c7c7ed4538a826f384280a8ac5d678fc7 refs/remotes/origin/main 5d36270c7c7ed4538a826f384280a8ac5d678fc7], none with K7's commits"
+      ]
+    }
+  ]
+}
