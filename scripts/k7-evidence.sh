@@ -61,7 +61,9 @@
 #   p25       the P25 count of the tree (scripts/k7-p25-count.sh; exit 4
 #             above 275 MB: BLOCKED, ADR-0047), recorded as p25-final
 #   ci        make lint-workflow; every make ci-* target (attempt ci, ci-2, …)
-#   gate      cpgate K7 --negative-controls (cpgate-k7, cpgate-k7-2, …)
+#   gate      cpgate K7 --negative-controls (cpgate-k7, cpgate-k7-2, …), with
+#             TMPDIR on disk (runs/.k7/tmp): it extracts run archives and
+#             copies the evidence once per control, and /tmp may be tmpfs
 #   tagcheck  scripts/k7-tag-check.sh on the latest CI's commit
 set -u -o pipefail
 export GOTOOLCHAIN=go1.26.9 CGO_ENABLED=0
@@ -366,7 +368,8 @@ lastci() { # the latest ci record's name
 }
 
 gate() {
-	"${REC[@]}" "$(next cpgate-k7)" -- bin/cpgate K7 --evidence "$EV" --negative-controls
+	mkdir -p "$SCRATCH/tmp"
+	TMPDIR="$PWD/$SCRATCH/tmp" "${REC[@]}" "$(next cpgate-k7)" -- bin/cpgate K7 --evidence "$EV" --negative-controls
 }
 
 tagcheck() {
