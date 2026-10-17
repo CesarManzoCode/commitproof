@@ -9,6 +9,7 @@ it can run again) and touches nothing else.
 
 usage: k7-package-k7-sections.py <findings/<id>> [evidence/K7/results.json]
 """
+import glob
 import io
 import json
 import re
@@ -23,6 +24,21 @@ def replay_manifest(run_id):
         data = zstd.decompress(fh.read())
     with tarfile.open(fileobj=io.BytesIO(data)) as t:
         return json.load(t.extractfile(f"{run_id}/manifest.json"))
+
+
+def invalid_attempts(minimized):
+    """K7.4's INVALID attempts at replaying a minimized run: the summaries in
+    evidence/K7/package-replays whose checks.json says INVALID and whose
+    manifest replays that run, in run-id order."""
+    out = []
+    for p in sorted(glob.glob("evidence/K7/package-replays/*.checks.json")):
+        c = json.load(open(p, encoding="utf-8"))
+        if c.get("verdict") != "INVALID":
+            continue
+        m = replay_manifest(c["run_id"])
+        if m.get("replay_of") == minimized:
+            out.append((c["run_id"], m, c))
+    return out
 
 
 def fields_text(g):
@@ -92,6 +108,16 @@ def main():
         out.append("")
         out.append(f"**{k['replays_with_class']} of {len(k['runs'])}** show `{f['anomaly_class']}` (§11.1 on these replays: {k['reproducibility']}). "
                    f"The recorded classification stays {cl['reproducibility']} ({f['replays_with_class']} of 5 recorded replays): this re-execution is reported beside it, not instead of it.")
+        inv = invalid_attempts(f["minimized_run"]["run_id"])
+        if inv:
+            out.append("")
+            out.append(f"{len(inv)} INVALID attempt(s) of these replays were re-run with the same plan (§12.1) and count toward nothing; "
+                       "each is stored as a summary beside the replays, and its cause is in `evidence/K7/NOTES.md` §8:")
+            out.append("")
+            out.append("| Attempt | Replay | Verdict | Seal root |")
+            out.append("|---|---|---|---|")
+            for run_id, m, c in inv:
+                out.append(f"| `{run_id}` | {m.get('replay_index')} | {c['verdict']} | `{c['seal_root'][:16]}…` |")
     rep_text = "\n".join(out)
 
     p = f"{pkg}/README.md"

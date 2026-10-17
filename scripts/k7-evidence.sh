@@ -42,6 +42,15 @@
 #             extracted into runs/k7-pkg/<id>/ and the package's replay
 #             command executed once more (pkg-replay-<id>); the replays
 #             stored as summaries in evidence/K7/package-replays
+#   liveness  K7.4's INVALID replay attempts that ended "recovery deadline
+#             P06 exceeded" (runs/k7-pkg): scripts/k7-liveness.py on each,
+#             then the summary of every liveness record (LIM-45)
+#   index     k7results again with --pkg-replays: runs-index.json lists
+#             K7.4's replays and INVALID attempts with their seal roots
+#             (results.json must come out byte-identical)
+#   packages  k7findings (finding.json's k7_replay) and each package's
+#             README sections Recurrences in K7 and K7 replay
+#             (scripts/k7-package-k7-sections.py)
 #   pkgreports cpreport page and report excerpt of each package's original run
 #   c3audit   scripts/k7-c3-audit.sh: every committed run held in full with a
 #             C3 result re-checked in runs/.k7/c3audit with this commit's
@@ -302,6 +311,33 @@ pkgreports() {
 	done
 }
 
+liveness() {
+	local d id names=()
+	for d in runs/k7-pkg/*/20*/; do
+		d=${d%/}
+		[ -f "$d/seal.json" ] || continue
+		tail -n 1 "$d/history.jsonl" | grep -q '"reason":"recovery deadline P06 exceeded"' || continue
+		id=$(basename "$d")
+		step 0 "liveness-$id" python3 -I scripts/k7-liveness.py "$d"
+	done
+	while read -r id; do names+=("$EV/logs/$id.stdout"); done < <(grep -oE '"name":"liveness-20[^"]*"' "$EV/commands.jsonl" | sed 's/"name":"\(.*\)"/\1/' | sort -u)
+	step 0 "$(next liveness-summary)" jq -c '{run_id, campaign, seed, last_healed_s, recovery: (.recovery_attempts|map_values({ok,info,fail})), nodes: (.nodes_after_last_heal|map_values({role: .last.role, rule: .last.rule, wal_moved}))}' "${names[@]}"
+}
+
+index() {
+	step 0 "$(next k7results)" go run ./internal/tools/k7results --runs "$EV/runs" --matrix campaigns/k7.json --log "$EV/campaign-k7.log.zst" --out "$EV" \
+		--pkg-replays "$EV/package-replays"
+}
+
+packages() {
+	local d
+	step 0 "$(next k7findings)" go run ./internal/tools/k7findings --packages "$EV/packages.json" --out findings
+	for d in findings/*/; do
+		d=${d%/}
+		step 0 "$(next "pkg-sections-$(basename "$d")")" python3 -I scripts/k7-package-k7-sections.py "$d"
+	done
+}
+
 c3audit() {
 	idle
 	step 0 "$(next c3-audit)" scripts/k7-c3-audit.sh runs/.k7/c3audit
@@ -342,10 +378,10 @@ tagcheck() {
 }
 
 case "${1:-}" in
-setup | m1oracle | m1triage | images | start | oracle | store | results | render | triage | pkgreplay | pkgreports | c3audit | cited | p25 | ci | gate | tagcheck) "$1" ;;
+setup | m1oracle | m1triage | images | start | oracle | store | results | render | triage | pkgreplay | liveness | index | packages | pkgreports | c3audit | cited | p25 | ci | gate | tagcheck) "$1" ;;
 wait) wait_campaign ;;
 *)
-	echo "usage: $0 setup|m1oracle|m1triage|images|start|wait|oracle|store|results|render|triage|pkgreplay|pkgreports|c3audit|cited|p25|ci|gate|tagcheck" >&2
+	echo "usage: $0 setup|m1oracle|m1triage|images|start|wait|oracle|store|results|render|triage|pkgreplay|liveness|index|packages|pkgreports|c3audit|cited|p25|ci|gate|tagcheck" >&2
 	exit 3
 	;;
 esac
