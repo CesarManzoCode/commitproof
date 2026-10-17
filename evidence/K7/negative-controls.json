@@ -71,10 +71,9 @@
     "criterion": "K7.7",
     "sabotage": "the tag-check record rewritten as if v1.0.0 were a lightweight tag (object type commit)",
     "failed": [
-      "K7.5",
       "K7.7"
     ],
-    "failed_only_target": false,
+    "failed_only_target": true,
     "target_problems": [
       "tag \"v1.0.0\" of object type \"commit\": an annotated v1.0.0 is required"
     ]

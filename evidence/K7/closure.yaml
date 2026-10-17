@@ -1,5 +1,5 @@
 sprint: K7
-status: BLOCKED
+status: DONE
 contract_version: "1.9.0"   # ADR-0047 (after the matrix); every K7 matrix plan carries 1.8.1, K7.4's replays record 1.9.0
 commits:
   - {sha: "d07fca6", message: "docs(contract): K7 failures that repeat a recorded finding stay summaries (ADR-0045)"}
@@ -62,41 +62,66 @@ commits:
   - {sha: "9056ede", message: "fix(gate): K7's negative controls reach every sprint's evidence; K7.2's forgery isolates its target; K7.7 reads the latest tag check"}
   - {sha: "36d25e6", message: "fix(k7): the gate group runs cpgate with TMPDIR on disk"}
   - {sha: "732e4ec", message: "test(k7): K7 closure — BLOCKED before the release CI and gate re-run (the session stopped a gate verification at critical memory pressure)"}
+  - {sha: "0415b52", message: "test(k7): the closure lists its own commit 732e4ec"}
+  - {sha: "a4352af", message: "test(k7): resume after the memory stop — kernel and veth, prereq-check 26/26"}
+  - {sha: "3ac20a6", message: "build(images): lock the runner image of the release build (a4352af, v1.0.0)"}
+  - {sha: "482d618", message: "test(k7): CI on the fixed commit — every make ci-* target exits 0 on a4352af (ci-2); v1.0.0 tagged there"}
+  - {sha: "9f642ec", message: "test(k7): tag check of v1.0.0 at a4352af (tag-check-2); cpgate-k7-2 stopped for memory during the negative controls"}
+  - {sha: "3a5ea81", message: "docs(k7): the release — CI on a4352af, v1.0.0 there, Gate K7 passed with every negative control on target"}
+  - {sha: "2593d9a", message: "test(k7): cpgate-k7-4 on the final documents — K7.1–K7.7 PASS; K7.7's control also failed K7.5 (exit 1)"}
+  - {sha: "cb69c0b", message: "fix(gate): K7.7's forgery carries the claim hash of the tag check it forges"}   # v1.0.0 (annotated, local)
+  - {sha: "998d5a1", message: "build(images): lock the runner image of the release build (cb69c0b, v1.0.0)"}
+  - {sha: "934db48", message: "test(k7): CI on cb69c0b (ci-3) — every make ci-* target exits 0; v1.0.0 moved there from a4352af"}
+  - {sha: "cc5a1c6", message: "docs(k7): the release on cb69c0b — ci-3, v1.0.0 there, the K7.7 control fix; claims and NOTES before the gate's last run"}
+  - {sha: "(this commit)", message: "test(k7): K7 closure — DONE: Gate K7 PASS with every negative control on target (cpgate-k7-5), v1.0.0 on cb69c0b"}
 gate:
   command: "cpgate K7 --evidence evidence/K7 --negative-controls"
-  record: "cpgate-k7 (on 5a69aa9; binaries of 77c5f6c, before the controls' fixes)"
-  exit_code: 1
-  criteria: [{K7.1: PASS}, {K7.2: PASS}, {K7.3: PASS}, {K7.4: PASS}, {K7.5: PASS}, {K7.6: PASS}, {K7.7: PASS}]
-  negative_controls:   # each control's copy failed K7.1–K7.5 besides its target: harness defects (dangling relative links, K2/K3/pre-K7 not linked; K7.2's forgery left CLM-0021's hash), fixed in 9056ede; not yet re-run
-    - {criterion: K7.1, failed: [K7.1, K7.2, K7.3, K7.4, K7.5], failed_only_target: false}
-    - {criterion: K7.2, failed: [K7.1, K7.2, K7.3, K7.4, K7.5], failed_only_target: false}
-    - {criterion: K7.3, failed: [K7.1, K7.2, K7.3, K7.4, K7.5], failed_only_target: false}
-    - {criterion: K7.4, failed: [K7.1, K7.2, K7.3, K7.4, K7.5], failed_only_target: false}
-    - {criterion: K7.5, failed: [K7.1, K7.2, K7.3, K7.4, K7.5], failed_only_target: false}
-    - {criterion: K7.6, failed: [K7.1, K7.2, K7.3, K7.4, K7.5, K7.6], failed_only_target: false}
-    - {criterion: K7.7, failed: [K7.1, K7.2, K7.3, K7.4, K7.5, K7.7], failed_only_target: false}
-  note: "The gate is not passed: Gate K7 requires the negative controls to fail exactly their targets. With the fixes, a verification on a scratch copy (not recorded) had six of seven controls isolating their target and K7.2's also failing K7.5, which led to the third fix; the run after it was stopped by the session for low memory."
+  record: "cpgate-k7-5 (binaries of cb69c0b; TMPDIR=runs/.k7/tmp on disk, GOMEMLIMIT=6GiB; on cc5a1c6's evidence and documents; 22:58–23:13Z)"
+  exit_code: 0
+  result: PASS
+  criteria:
+    - {id: "K7.1", result: PASS, evidence: "evidence/K7/results.json", sha256: "f2971c93fa14a17a7a93485f32b213ee72ad01d07f2131ee7923d66670b89c9f"}
+    - {id: "K7.2", result: PASS, evidence: "evidence/K7/report/k7/index.html", sha256: "a349946747f91a849cf4c64675b597d6984be9a26fed0993fafaf00942d6a4ee"}
+    - {id: "K7.3", result: PASS, evidence: "evidence/K7/oracle/", sha256: "(directory)"}
+    - {id: "K7.4", result: PASS, evidence: "findings/", sha256: "(directory)"}
+    - {id: "K7.5", result: PASS, evidence: "claims.yaml", sha256: "4f8bdb412d95581da21c2ab6f0819e21b5a9b8b324aae6dffe26ff1f5f7f8f27"}
+    - {id: "K7.6", result: PASS, evidence: "evidence/K7/overclaim-review.md", sha256: "17c3f2a8ca293033e1d860253fe61189fa1e01d81998b9eb1b036ffe2ae04fe1"}
+    - {id: "K7.7", result: PASS, evidence: "evidence/K7/commands.jsonl", sha256: "6978003a2eccf392a95fbd4463291776757f04d12b877d98e6b576cc67e6f359"}   # as cpgate read it, before its own record
+  negative_controls:
+    - {criterion: "K7.1", sabotage: "campaigns/k7.json of the copy lists an eleventh seed for V1's C1 (the cell needs a valid run for it; P15 says 10)", failed_only_target: true}
+    - {criterion: "K7.2", sabotage: "cpreport's data block for K7's first cell reports one more valid run (n + 1); the render record's output hash rewritten to the forged page's", failed_only_target: true}
+    - {criterion: "K7.3", sabotage: "one oracle record's result rewritten from oracle-disagreement to confirmed (M1 D1 seed 1, where elle-cli gave no answer)", failed_only_target: true}
+    - {criterion: "K7.4", sabotage: "the Limitations section removed from the first finding package's README", failed_only_target: true}
+    - {criterion: "K7.5", sabotage: "the sha256 of the first claim of claims.yaml altered", failed_only_target: true}
+    - {criterion: "K7.6", sabotage: "the bound of the first §12.3 clean statement in the README altered (one more thousandth)", failed_only_target: true}
+    - {criterion: "K7.7", sabotage: "the tag-check record rewritten as if v1.0.0 were a lightweight tag (object type commit)", failed_only_target: true}
+  files: {gate.json: "c041eda2f33b4c9cfcf3377fc0a6db68a3608aae7cd04b867b66a59d98151335", negative-controls.json: "58f7d72fcae97204bf1f3dd112a5f34b23010230095fd21fb697bc0354b4e91b"}
+  earlier_runs:   # every record kept; none counts toward the gate
+    - "cpgate-k7 (5a69aa9, binaries of 77c5f6c): criteria 7/7 PASS; controls defective (dangling links, K2/K3/pre-K7 not linked, K7.2's forgery, K7.7's single tag check) → fixed in 9056ede; exit 1 [CLM-0067]"
+    - "cpgate-k7-2 (binaries of a4352af): evaluation of the evidence 7/7 PASS; stopped with SIGTERM during the controls when MemAvailable fell to 3.42 GiB; exit 143 [CLM-0073]"
+    - "cpgate-k7-3 (binaries of a4352af, GOMEMLIMIT=6GiB): PASS, every control on target; exit 0 [CLM-0072]"
+    - "cpgate-k7-4 (binaries of a4352af, on the documents written after cpgate-k7-3): criteria 7/7 PASS; K7.7's control also failed K7.5 (CLM-0071 names the hash its sabotage forges) → fixed in cb69c0b; exit 1 [CLM-0074]"
 demonstrated:   # each line backed by a claims.yaml id
-  - "K7's matrix ran complete on the real build (Multigres e3cbdbb, contract 1.8.1, with the metrics exporter): 130 valid runs, 19 FAIL, 111 PASS [CLM-0020]; all 248 run directories of runs/k7 and runs/k7-pkg pass verify-seal [CLM-0061]."
+  - "K7's matrix ran complete on the real build (Multigres e3cbdbb, contract 1.8.1, with the metrics exporter): 130 valid runs, 19 FAIL, 111 PASS, INVALID attempts listed with causes and not counted [CLM-0020]; all 248 run directories of runs/k7 and runs/k7-pkg pass verify-seal [CLM-0061]."
+  - "Statistics per §12.3 for every cell, recomputed by cpgate from checks.json and matching cpreport's pages; the cited K4/K5 cells with their contract versions [CLM-0021, CLM-0022, CLM-0023, CLM-0024]."
   - "No acknowledged write was lost in any valid K7 run, in any finding's original run, or in any of K7.4's replays: C1 valid, no C1 anomaly [CLM-0025, CLM-0034, CLM-0063]."
   - "ADR-0045's predicates classified 14 FAIL runs as repeats of recorded findings and 5 as new failures, each minimized, replayed 5× by the driver, stored in full and packaged as a new finding [CLM-0026, CLM-0045–CLM-0049]."
   - "K7.3: every C3 anomaly of the four matrix runs and of M1's five D1 runs labelled oracle-disagreement with a triage [CLM-0027]."
-  - "Harness defects fixed with regression tests: runner final reads (1f1f60b), C3 cycle reporting (32b660a; no verdict, C3 validity or class set changed in 172 committed runs), the gate's K7.4 contract version (9bf9005), the gate's negative-control harness and K7.7's tag-check attempts (9056ede) [CLM-0029, CLM-0030, CLM-0015, CLM-0067]."
+  - "Harness defects fixed with regression tests: runner final reads (1f1f60b), C3 cycle reporting (32b660a; no verdict, C3 validity or class set changed in 172 committed runs), the gate's K7.4 contract version (9bf9005), the gate's negative-control harness and K7.7's tag-check attempts (9056ede), K7.7's forgery and the claim hash (cb69c0b) [CLM-0029, CLM-0030, CLM-0015, CLM-0067, CLM-0074]."
   - "K7.4 complete: every package's replay command executed once more (14 records, each exit 0, five valid replays each); per package's own class: FND-D1-fb8d0f8c 5, FND-D1-2e860fd2 4, FND-D1-a8eb9857 3, FND-C2-2a534585 4, FND-C2-6806aeca 0, FND-C2-8215101c 5, FND-C2-c7475a73 0, FND-C8-ff4475d8 0, FND-C8-e6b7ca52 0, FND-C8-5254b5cb 0, FND-C9-40b6f05a 4, FND-C9-2fe9a9fc 5, FND-C9-90da5532 1, FND-C11-17a344c1 3, each of 5; recorded classifications unchanged, the result written beside them [CLM-0062]."
   - "K7.4's 70 valid replays and 5 INVALID attempts stored as summaries and listed in runs-index.json; results.json byte-identical [CLM-0028]."
   - "Six INVALID attempts (four at matrix time, two in K7.4) did not recover within P06, each with the same state; recorded as an observation (LIM-45), not packaged [CLM-0016]."
   - "Fourteen findings packages under findings/ (not published), each with finding.json k7_replay, the README's K7 sections and claim.yaml naming its K7.4 record [CLM-0040–CLM-0053, CLM-0062]."
-  - "claims.yaml complete: 63 claims and 1 hypothesis; every claim line of README, LIMITATIONS and NOTES tagged and every tag resolving; cpgate-k7 K7.5 PASS [CLM-0067]."
-  - "Final P25 count 264 452 426 B of 275 000 000 B [CLM-0019]."
-  - "make lint-workflow and every make ci-* target exit 0 on the clean build of 77c5f6c, no target skipped [CLM-0066]; every K7.1–K7.7 criterion PASS on the evidence in cpgate-k7 [CLM-0067]."
-  - "Resume after the reboot into the installed kernel: kernel equals the installed package, veth loaded, bridge probe started [CLM-0059]; prereq-check 26/26, cpgate K1–K6 PASS on copies, images equal the lock [CLM-0060]."
+  - "claims.yaml: 71 claims and 1 hypothesis; every claim line of README, LIMITATIONS and NOTES tagged, every tag resolving, every artifact hash matching (cpgate-k7-5 K7.5)."
+  - "Final P25 count 264 559 418 B of 275 000 000 B [CLM-0019]."
+  - "Every make ci-* target exited 0 on the clean build of cb69c0b, no target skipped [CLM-0075]; make lint-workflow exited 0 (workflow and Makefile unchanged since) [CLM-0066]."
+  - "v1.0.0 is an annotated local tag on cb69c0b, the commit ci-3 built; no code difference; no remote-tracking ref contains K7's first commit; nothing pushed [CLM-0076]."
+  - "Gate K7 PASS: cpgate-k7-5 exit 0, criteria K7.1–K7.7 PASS, each of the seven negative controls failing exactly its target (gate.json, negative-controls.json; the same result as cpgate-k7-3 [CLM-0072])."
+  - "Host prerequisites at the last resume: kernel equals the installed package, veth loaded, prereq-check 26/26 [CLM-0069]; MemAvailable sampled through the release steps, minima recorded per step [CLM-0073]."
 not_demonstrated:
-  - "Gate K7 with negative controls failing exactly their targets: the fixed harness (9056ede) has not run on the evidence (the session stopped its verification for low memory)."
-  - "make ci-* on a commit that contains the gate fixes (ci-2): the CI of record (ci, 77c5f6c) predates them, and K7.7 compares the tag's code with the latest CI's."
-  - "The annotated local tag v1.0.0: created on 5a69aa9 and checked (tag-check), then withdrawn (tag-withdraw) because the gate did not pass and the fixes change code."
   - "Triage, elle-cli cross-check and §11 classification of classes K7.4's replays show beyond each package's class (FND-C2-6806aeca replay 1, FND-D1-a8eb9857 replay 5: C3 cycle classes); recorded only (LIM-46, HYP-0001)."
-  - "Whether the six attempts that did not recover within P06 reproduce: an observation only (§12.1 makes them INVALID)."
-  - "Remote CI on GitHub (LIM-16)."
+  - "Whether the six attempts that did not recover within P06 reproduce, and why replication stopped: an observation only (§12.1 makes them INVALID; LIM-45)."
+  - "Remote CI on GitHub (LIM-16): nothing is pushed; the CI evidence is local."
 findings:   # 14 packages; classification from each findings/<id>/finding.json; the README orders them: G1 line, then by severity
   - {id: FND-D1-fb8d0f8c, class: SAFETY_VIOLATION, guarantee: G2b, claim_level: INFERRED, reproducibility: REPRODUCED, severity: high, origin: POSTGRES_INHERITED, known_status: NEW}
   - {id: FND-D1-2e860fd2, class: SAFETY_VIOLATION, guarantee: G2b, claim_level: INFERRED, reproducibility: REPRODUCED, severity: high, origin: POSTGRES_INHERITED, known_status: NEW}
@@ -278,22 +303,14 @@ deviations_from_prompt:
   - "The first cpgate K7 run with negative controls (cpgate-k7) exited 1: the criteria passed, but the controls' harness had three defects (dangling links under a relative --evidence and K2/K3/pre-K7 not linked; K7.2's forgery left CLM-0021's hash of the forged page; K7.7 accepted only one tag check). Fixed with regression tests (9056ede); no criterion, threshold or control relaxed. gate.json and negative-controls.json of that run committed as written (f3f465c)."
   - "v1.0.0 was tagged locally on 5a69aa9 and checked (tag-check); after the gate run it was withdrawn (record tag-withdraw; never pushed), since the gate did not pass and the fixes change code. It is to be re-created on the release commit after CI runs on a commit with the fixes."
   - "While the fixed gate was being verified on a scratch copy in this session, the session stopped the run because the system was critically low on memory. /tmp is tmpfs on this host; this session's scratch copies (914 MB) and the gate's extracted runs (650 directories, about 1.3 GB) were measured and removed (this project's own temporaries only); MemAvailable then 14.1 GB (host-memory-reap). The gate group now uses TMPDIR on disk (36d25e6)."
-blocked:
-  condition: "Memory on the owner's machine (docs/PREREQUISITES.md, CONTRACT §14, P10; AGENTS.md §3): during the release step the session stopped a background cpgate K7 verification because the system was critically low on memory, with the instruction not to restart such work unasked since memory may still be short. Every remaining step is heavy (make ci-* with cluster runs, then cpgate K7's eight evaluations), so K7 stopped before them. The gate fixes they must cover are committed (9056ede, 36d25e6)."
-  evidence:
-    command: "the session's background-task notification (gate verification on a scratch copy stopped for low memory; not a recorded command); bash -c with /proc/meminfo, findmnt/df of /tmp, counts of cpgate temporaries and project containers (record host-memory-reap in evidence/K7/commands.jsonl, exit 0; stdout sha256 7e42e22ca725cb7aa5ab237d37ec13781961e8f8dd0cd0b15702e715cf83568e)"
-    output_excerpt: "Background command \"Re-verify gate and controls on scratch copy\" was stopped because the system is running low on memory || before cleanup: /tmp tmpfs 7.5G, 2.2G used (650 /tmp/cpgate-* directories, 1.3 GB; this session's scratch copies 914 MB); MemAvailable 12 040 636 kB || after: MemAvailable 14 118 648 kB, /tmp 12M used, 0 cpgate temporaries, 0 project containers"
-  completed_at_this_resume:
-    - "State established before touching anything (git 12cdaef clean; K7.4: 5 of 14 packages; no project Docker resource, process or FUSE mount); host checks before any cluster run [CLM-0059, CLM-0060]; seal sweep [CLM-0061]."
-    - "K7.4 finished: pkg-replay-FND-C8-5254b5cb-3 and the eight remaining packages, every record exit 0 [CLM-0062]; liveness-summary-2 [CLM-0016]; k7results-2 (runs-index.json with the package replays, results.json byte-identical) [CLM-0028]; k7findings-3 and pkg-sections-<id>; p25-count-resume-2 [CLM-0065]."
-    - "claims.yaml complete (CLM-0019, CLM-0028, CLM-0034 written; CLM-0062–CLM-0068; HYP-0001); package claim.yaml files, README (K7.4 column), LIMITATIONS (LIM-45 six attempts, LIM-46), CHANGELOG, overclaim review, NOTES §2.3, §2.4, §8, §11, §12, §14, §15."
-    - "build-9, lint-workflow, ci: exit 0 on 77c5f6c [CLM-0066]; images.lock.json's runner entry committed (484abd7); p25-final 264 452 426 B [CLM-0019]."
-    - "Tag v1.0.0 on 5a69aa9, tag-check, cpgate-k7 (criteria 7 of 7 PASS; negative controls defective; exit 1) [CLM-0067]; the three harness defects fixed with regression tests (9056ede); TMPDIR on disk for the gate group (36d25e6); the tag withdrawn (tag-withdraw)."
-  owner_action: "Make sure the host keeps memory free for the rest of K7 (the session stopped a gate run at critical memory pressure; keep MemAvailable at least 12 GiB with other heavy applications closed), then re-invoke the K7 resume. Its next steps, all with one cluster at a time: bash scripts/k7-evidence.sh ci (build-10, ci-2 on the current HEAD), commit images.lock.json and the records, p25 (p25-final-2) and the claims that cite the CI and P25, the release commit, git tag -a v1.0.0 on it, tagcheck (tag-check-2), gate (cpgate-k7-2, TMPDIR on disk), closure."
+  - "That stop ended K7 BLOCKED (closure 732e4ec). Fifth resume (NOTES §2.5): the owner freed memory and authorized restarting the gate; kernel/veth and prereq-check 26/26 re-checked, evidence/K1/prereq.json restored; MemAvailable sampled every 5 s; each heavy step started only with at least 12 GiB available and ran alone."
+  - "cpgate-k7-2 was stopped with SIGTERM between two evaluations when MemAvailable fell to 3.42 GiB (cpgate about 8.6 GiB resident; the gate has no parallelism to reduce). The gate was re-run with the Go runtime's soft memory limit GOMEMLIMIT=6GiB, which changes no verdict (cpgate near 5.7 GiB, MemAvailable at least 4.90 GiB in every later run; cpgate-k7-5: at least 5 834 792 kB, 5.56 GiB). The sampler's full log is memory-resume-8-final.log."
+  - "v1.0.0 tags the commit the release CI built, as the owner asked, not the final commit (the prompt says the final commit): the closure records the CI, the tag check and the gate run on the tagged code, so it cannot precede them; the commits after cb69c0b change only evidence, documents, claims.yaml and images.lock.json."
+  - "A fourth harness defect surfaced when the gate ran on the documents written after cpgate-k7-3: K7.7's sabotage did not rewrite the claim hash of the tag check it forges (CLM-0071). Fixed with a regression test (cb69c0b); CI (ci-3), the tag (moved from a4352af, record tag-withdraw-2; never pushed) and the gate (cpgate-k7-5) were redone on it. No criterion, threshold or control relaxed."
+  - "The gate's last run (cpgate-k7-5) ran on the final README, LIMITATIONS, NOTES and claims.yaml; its own result is reported here and in gate.json, not as a claim in the audited files, since a claim about a run cannot precede it."
 pending_user_actions:
-  - "Keep memory free and re-invoke the K7 resume (blocked.owner_action)."
-  - "Push the repository and tags when you choose (nothing of K7 is pushed; origin/main is at the K6 closure; no tag v1.0.0 exists yet)."
-  - "Enable GitHub Actions and record the first remote CI run in LIMITATIONS LIM-16."
-  - "Decide whether to publish each finding upstream (for G10: whether to offer the reproduction on PR #1550); nothing was published."
-  - "Back up runs/k4-full/, runs/k5-full/, runs/k7/ (K7's full run archives; there is no runs/k7-full/), runs/k7-invalid/ and runs/k7-pkg/ (the only full copies of the runs committed as summaries: K7's repeats, the INVALID attempts and K7.4's replays)."
-next_sprint_ready: false
+  - "Push the repository and the tag v1.0.0 when you choose (nothing of K7 is pushed; origin/main is at the K6 closure, 5d36270)."
+  - "Enable GitHub Actions and record the first remote CI run in LIMITATIONS LIM-16 (whether GitHub's runner has /dev/fuse decides F4a in CI, LIM-05)."
+  - "Decide whether to publish each finding upstream (for G10: whether to offer the reproduction on PR #1550); nothing was published or sent to the Multigres project."
+  - "Back up runs/k4-full/, runs/k5-full/, runs/k7/ (K7's full run archives; there is no runs/k7-full/), runs/k7-invalid/ and runs/k7-pkg/: the only full copies of the runs committed as summaries (K7's repeats, the INVALID attempts and K7.4's replays)."
+next_sprint_ready: true   # K7 is the last sprint of the contract (§15); v1.0.0 is tagged locally
