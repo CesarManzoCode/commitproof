@@ -8,7 +8,11 @@ K7's matrix ran under contract **1.8.1** (every matrix plan carries it). After t
 
 The first run with negative controls (`cpgate-k7`, exit 1, on `5a69aa9`) passed K7.1–K7.7 on the evidence, but no control isolated its target: every control's copy also failed K7.1–K7.5. The controls' harness had three defects. Its links to the other sprints' evidence dangled under a relative `--evidence`, and it linked only K4, K5 and K6b while `claims.yaml` cites K2, K3 and pre-K7 artifacts. K7.2's forgery left CLM-0021's hash of the forged page unchanged, so K7.5 caught it too. K7.7 accepted only one tag check. All three were fixed with regression tests in `9056ede` (§2.4). [CLM-0067]
 
-With the fixes (binaries of `a4352af`), `cpgate-k7-3` passed: every criterion on the evidence, and each negative control failed exactly its target. It ran with `TMPDIR` on disk and `GOMEMLIMIT=6GiB` (§2.5). A run before it, `cpgate-k7-2`, was stopped during the controls to keep the host's memory from running out. The gate was then run once more on the final documents of this file, README, LIMITATIONS and `claims.yaml` (`cpgate-k7-4`; its result is in `gate.json` and the closure). [CLM-0072]
+With the fixes (binaries of `a4352af`), `cpgate-k7-3` passed: every criterion on the evidence, and each negative control failed exactly its target. It ran with `TMPDIR` on disk and `GOMEMLIMIT=6GiB` (§2.5). A run before it, `cpgate-k7-2`, was stopped during the controls to keep the host's memory from running out. [CLM-0072]
+
+`cpgate-k7-4`, on the documents written after it, again passed every criterion, but K7.7's control also failed K7.5. A claim added since (CLM-0071) names the hash of the tag check that K7.7's sabotage forges, and the sabotage did not rewrite claim hashes as K7.2's does. That fourth harness defect was fixed with a regression test in `cb69c0b`; CI and the tag were redone on that commit (§2.5). [CLM-0074]
+
+The gate's last run, `cpgate-k7-5` (binaries of `cb69c0b`, same settings), ran on the final documents of this file, README, LIMITATIONS and `claims.yaml`. Its result is in `gate.json`, `negative-controls.json` and the closure.
 
 ## 2. Resume after the host power-off
 
@@ -83,7 +87,11 @@ The owner freed memory, kept it free, and authorized restarting the stopped gate
 4. As the owner asked, the annotated tag `v1.0.0` was created on `a4352af`, the commit CI built. `tag-check-2`: object type tag, the tag's commit equal to the CI's, no code difference, no remote-tracking ref holding K7's first commit. [CLM-0071]
 5. `cpgate-k7-2` (`TMPDIR` on disk, so `/tmp` stayed at 13 MB) passed every criterion in its evaluation of the evidence (`gate.json` as written). During the controls' evaluations, cpgate's resident set grew to about 8.6 GiB, and MemAvailable fell from 13.0 to 3.42 GiB. The gate's evaluations run one after another, with no parallelism to reduce. It was stopped with SIGTERM between two evaluations (exit 143), before the system reached critical pressure, and its temporaries on disk were removed. [CLM-0073]
 6. `cpgate-k7-3` ran with `GOMEMLIMIT=6GiB`, the Go runtime's soft memory limit, which makes the collector work harder and changes no verdict. cpgate stayed near 5.7 GiB, MemAvailable at least 5.76 GiB, 15 min. Result: every criterion on the evidence, and each negative control failing exactly its target, exit 0. [CLM-0072] [CLM-0073]
-7. `p25-final-2`: 264 512 538 B of 275 000 000 B. The claims and documents of this resume were written, and the gate was run once more on them (`cpgate-k7-4`, same settings) before the closure. [CLM-0019]
+7. The claims and documents of this resume were written (`p25-final-2`). The gate was run once more on them: `cpgate-k7-4`, same settings, MemAvailable at least 4.90 GiB. Every criterion passed, six controls failed only their target, and K7.7's also failed K7.5, because CLM-0071 names the hash of the tag check its sabotage forges. Exit 1; `gate.json` and `negative-controls.json` committed as written (`2593d9a`). [CLM-0074] [CLM-0073]
+8. K7.7's sabotage now rewrites the claim hash of the tag check it forges, as K7.2's does for the page (`cb69c0b`, `TestK7SabotageK77ClaimHash`, which fails without the fix). No criterion, threshold or control was relaxed.
+9. That fix changes code, so CI ran again: `ci-3` (after `build-11`) exited 0 on the clean build of `cb69c0b`, with no target skipped; MemAvailable stayed at least 9.70 GiB. The runner image's lock entry was committed (`998d5a1`). [CLM-0075] [CLM-0073]
+10. The local tag `v1.0.0` on `a4352af`, never pushed, was deleted (`tag-withdraw-2`) and created again, annotated, on `cb69c0b`. `tag-check-3`: the tag's commit equals the CI's, no code difference, no remote-tracking ref holding K7's first commit. [CLM-0076] [CLM-0071]
+11. `p25-final-3`: 264 559 418 B of 275 000 000 B. The documents were brought up to date, and the gate's last run, `cpgate-k7-5`, used the binaries of `cb69c0b` and the same settings. Its result is in `gate.json` and the closure. [CLM-0019]
 
 ## 3. Harness defects found in K7 (none is a Multigres finding, §11.1)
 
@@ -211,7 +219,7 @@ Six attempts ended INVALID because no recovery insert succeeded within P06 (120 
 - K7.4's 70 valid replays and 5 INVALID attempts are stored as summaries in `package-replays/` (stub and `checks.json`) and listed in `runs-index.json` under `package_replays` (`k7results-2`; `results.json` byte-identical). Their full archives stay in `runs/k7-pkg/` and `runs/k7-invalid/` on this machine. [CLM-0028]
 - P25 after K7.4's store steps: `p25-count-resume` 261 879 954 B [CLM-0064], `p25-count-resume-2` 264 326 805 B [CLM-0065].
 
-- Final count (`p25-final-2`, after K7.4, the release CI's records and the gate's): 264 512 538 B of 275 000 000 B, margin 10 487 462 B (K7's share 43 594 880 B). The earlier `p25-final` read 264 452 426 B. What is committed after it (the last gate run's records, the closure) is a few kilobytes of text. [CLM-0019]
+- Final count (`p25-final-3`, after K7.4 and the release's CI, tag and gate records): 264 559 418 B of 275 000 000 B, margin 10 440 582 B (K7's share 43 641 760 B). The earlier counts `p25-final` and `p25-final-2` read 264 452 426 B and 264 512 538 B. What is committed after it (the last gate run's records, the closure) is a few kilobytes of text. [CLM-0019]
 
 ## 13. Claims, overclaims, public documents
 
@@ -226,7 +234,9 @@ Six attempts ended INVALID because no recovery insert succeeded within P06 (120 
 
 The first release attempt tagged `v1.0.0` on `5a69aa9` (record `tag-check`). `cpgate-k7` then exited 1 because of the controls' defects (§1, §2.4), whose fix changed code, so that tag was withdrawn. [CLM-0067]
 
-The release: every `make ci-*` target exited 0 on the clean build of `a4352af`, which contains the fixes (record `ci-2`, after `build-10`) [CLM-0070]. The annotated local tag `v1.0.0` is on `a4352af` itself; `tag-check-2` found no code difference and no remote-tracking ref with K7's commits [CLM-0071]. `cpgate-k7-3` passed with every negative control failing exactly its target [CLM-0072]. The commits after `a4352af` change only evidence, documents, `claims.yaml` and `images.lock.json` (`3ac20a6`, the runner image CI rebuilt). Nothing was pushed.
+The second attempt: `ci-2` exited 0 on `a4352af` [CLM-0070], the tag was created there and checked (`tag-check-2`) [CLM-0071], and `cpgate-k7-3` passed [CLM-0072]. `cpgate-k7-4` then found the K7.7 control defect, whose fix (`cb69c0b`) changed code. [CLM-0074]
+
+The release: every `make ci-*` target exited 0 on the clean build of `cb69c0b`, which contains every gate fix (record `ci-3`, after `build-11`) [CLM-0075]. The annotated local tag `v1.0.0` is on `cb69c0b` itself; `tag-check-3` found no code difference and no remote-tracking ref with K7's commits [CLM-0076]. The commits after `cb69c0b` change only evidence, documents, `claims.yaml` and `images.lock.json` (`998d5a1`, the runner image CI rebuilt). The gate's last run on them is `cpgate-k7-5`. Nothing was pushed.
 
 ## 15. Deviations from the prompt
 
@@ -240,8 +250,8 @@ The release: every `make ci-*` target exited 0 on the clean build of `a4352af`, 
 - The owner rebooted into the installed kernel, and K7 resumed a fourth time (§2.3). Kernel, veth and a bridge probe were checked before any cluster run. K7.4 was finished without relaunching the matrix: one replay command resumed, eight run for the first time. [CLM-0059] [CLM-0062]
 - `cpgate K7` held K7.4's replays to the matrix's contract version. The gate was corrected with a regression test (`9bf9005`) after the last replay; the criterion is not relaxed: each runs directory must carry exactly its own version.
 - K7.4's replays are recorded, not triaged: two of them report C3 cycle classes that no criterion cross-checks (§8, LIM-46). [CLM-0062]
-- `v1.0.0` tags `a4352af`, the commit the release CI built, as the owner asked, not the final commit. The commits after it add only evidence, documents, `claims.yaml` and the runner image's lock entry. The closure records the CI, the tag check and the gate, so it cannot precede them.
-- A fifth resume, after the stop for memory (§2.5): CI on the fixed commit, the tag, and the gate. `cpgate-k7-2` was stopped during its controls when MemAvailable fell to 3.42 GiB. The gate was re-run with the Go runtime's soft memory limit (`GOMEMLIMIT=6GiB`) and passed (`cpgate-k7-3`), then ran once more on the final documents (`cpgate-k7-4`). [CLM-0072] [CLM-0073]
+- `v1.0.0` tags `cb69c0b`, the commit the release CI built, as the owner asked, not the final commit. The commits after it add only evidence, documents, `claims.yaml` and the runner image's lock entry. The closure records the CI, the tag check and the gate, so it cannot precede them.
+- A fifth resume, after the stop for memory (§2.5): CI on the fixed commit, the tag, and the gate. `cpgate-k7-2` was stopped during its controls when MemAvailable fell to 3.42 GiB. The gate was re-run with the Go runtime's soft memory limit (`GOMEMLIMIT=6GiB`) and passed (`cpgate-k7-3`). Its run on the updated documents (`cpgate-k7-4`) found a fourth harness defect, in K7.7's control. That was fixed with a regression test (`cb69c0b`), and CI (`ci-3`), the tag (moved from `a4352af`, `tag-withdraw-2`) and the gate (`cpgate-k7-5`) were redone on it. [CLM-0072] [CLM-0073] [CLM-0074] [CLM-0076]
 - The first gate run with negative controls exited 1 because of three defects in the controls' harness, fixed with regression tests (`9056ede`; §2.4). No criterion, threshold or control was relaxed: the copies now hold the evidence every criterion reads, and K7.2's forgery is made consistent so that only K7.2's recomputation can catch it. K7.7 reads the latest tag check as it reads the latest CI. [CLM-0067]
 - The local tag `v1.0.0` (on `5a69aa9`, never pushed) was withdrawn after the gate run, because its gate did not pass and the fix changes code. A session stop for low memory then ended the sprint BLOCKED before the CI and the gate could run again (§2.4). [CLM-0068]
 - The owner's decision text of 2026-10-15 gives P25 as 250 MB. The owner's later decision on K7's first BLOCKED closure (2026-10-16, ADR-0047) raised it to 275 MB, and K7 enforces 275 MB.

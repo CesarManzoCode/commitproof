@@ -174,13 +174,13 @@ claims:
     result: "10 runs stored; P25 count 247 996 092 → 259 848 618 B ≤ 275 000 000"
     limitations: ["LIM-37", "LIM-43"]
   - id: CLM-0019
-    text: "The final P25 count, after K7.4's replays, the release CI's records and the gate's, is 264 512 538 B of evidence/ and finding archives, under the 275 000 000 B of ADR-0047."
+    text: "The final P25 count, after K7.4's replays and the release's CI, tag and gate records, is 264 559 418 B of evidence/ and finding archives, under the 275 000 000 B of ADR-0047."
     contract: "P25, ADR-0039, ADR-0047"
     target: {system: "this repository's evidence/", commit: "e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73", profile: "baseline", mutant: "none"}
-    command: "scripts/k7-p25-count.sh (records p25-final, p25-final-2)"
-    artifact: "evidence/K7/logs/p25-final-2.stdout"
-    sha256: "5709feebacd08789faf80e35eeca66e2dd7e2aba27d09dd20bda642a6fa9396b"
-    result: "264 512 538 B (K7 43 594 880 B); margin 10 487 462 B; exit 0 (p25-final: 264 452 426 B)"
+    command: "scripts/k7-p25-count.sh (records p25-final, p25-final-2, p25-final-3)"
+    artifact: "evidence/K7/logs/p25-final-3.stdout"
+    sha256: "d04808282a42a45d02e3ad0080fcf39c6f978c335bd1f0386ce123ca1a90de67"
+    result: "264 559 418 B (K7 43 641 760 B); margin 10 440 582 B; exit 0"
     limitations: ["LIM-43"]
   - id: CLM-0020
     text: "K7's matrix ran complete on the real build: 130 cells (V1: 10 campaigns × 10 runs on baseline; V2: C1, C2, C4 × 5 on slotless; V3: C8 × 10 on buffered; V5: C11 × 5), each with a valid run, 19 FAIL and 111 PASS; INVALID attempts are listed with their causes and not counted."
@@ -462,10 +462,10 @@ claims:
     result: "exit 0; binaries buildinfo.Commit=a4352af, Dirty=false; nemesis smoke F1a, F2a, F3a, F7, F4a each verdict PASS"
     limitations: ["LIM-16", "LIM-05"]
   - id: CLM-0071
-    text: "The local tag v1.0.0 is an annotated tag on a4352af, the commit ci-2 built; no file outside the release's text and evidence differs between them, and no remote-tracking ref contains K7's first commit."
+    text: "The local tag v1.0.0 as first created at this resume was an annotated tag on a4352af, the commit ci-2 built, with no code difference from it and no remote-tracking ref containing K7's first commit; it was moved to cb69c0b after the K7.7 control fix (CLM-0076)."
     contract: "§15 K7 (K7.7), AGENTS.md §6"
     target: {system: "this repository (git)", commit: "e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73", profile: "baseline", mutant: "none"}
-    command: "git tag -a v1.0.0 a4352af; scripts/k7-tag-check.sh a4352af… d07fca6… (record tag-check-2)"
+    command: "git tag -a v1.0.0 a4352af; scripts/k7-tag-check.sh a4352af… d07fca6… (record tag-check-2); git tag -d v1.0.0 (record tag-withdraw-2)"
     artifact: "evidence/K7/logs/tag-check-2.stdout"
     sha256: "79932551b8c93bc0a8904621fa2d63fb2f8260331257d62559ee642d45a19ce5"
     result: "object_type tag; tag_commit = ci_commit = a4352af; code_diff []; k7_on_remote []"
@@ -480,14 +480,41 @@ claims:
     result: "result PASS, exit 0; criteria 7 of 7 PASS; negative controls 7 of 7 failing only their target"
     limitations: ["LIM-16"]
   - id: CLM-0073
-    text: "MemAvailable, sampled every 5 s through the release steps of this resume, stayed at least 10.11 GiB during ci-2, fell to 3.42 GiB during cpgate-k7-2 (stopped), and stayed at least 5.76 GiB during cpgate-k7-3 under GOMEMLIMIT=6GiB."
+    text: "MemAvailable, sampled every 5 s through the release steps of this resume, stayed at least 10.11 GiB during ci-2 and 9.70 GiB during ci-3, fell to 3.42 GiB during cpgate-k7-2 (stopped), and stayed at least 5.76 GiB during cpgate-k7-3 and 4.90 GiB during cpgate-k7-4, both under GOMEMLIMIT=6GiB."
     contract: "§14, P10, PREREQUISITES"
     target: {system: "the owner's host", commit: "e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73", profile: "baseline", mutant: "none"}
-    command: "a 5 s sampler of /proc/meminfo into evidence/K7/memory-resume-8.log; awk over it with each record's start and end (record memory-resume-8; argv in commands.jsonl)"
-    artifact: "evidence/K7/logs/memory-resume-8.stdout"
-    sha256: "25fba223415e6df7867223c5a6129a028e5d549aade68b93f9587cdd370b34cc"
-    result: "451 samples; minima ci-2 10 603 936 kB, cpgate-k7-2 3 587 020 kB, cpgate-k7-3 6 037 484 kB"
+    command: "a 5 s sampler of /proc/meminfo, its log copied to evidence/K7/memory-resume-8b.log; awk over it with each record's start and end (record memory-resume-8b; argv in commands.jsonl)"
+    artifact: "evidence/K7/logs/memory-resume-8b.stdout"
+    sha256: "0edac091dfc9626de7b0141fadda6ac25278334ba27a0e9f264fe771cc2cf649"
+    result: "879 samples; minima ci-2 10 603 936 kB, cpgate-k7-2 3 587 020 kB, cpgate-k7-3 6 037 484 kB, cpgate-k7-4 5 139 656 kB, ci-3 10 169 776 kB"
     limitations: ["LIM-02"]
+  - id: CLM-0074
+    text: "cpgate-k7-4, run on the documents written after cpgate-k7-3 (binaries of a4352af), passed every criterion K7.1–K7.7 on the evidence; six negative controls failed exactly their target, and K7.7's also failed K7.5 because CLM-0071 named the hash of the tag check its sabotage forges, so the run exited 1."
+    contract: "§15 K7 (Gate K7), §16"
+    target: {system: "cpgate K7 (CommitProof a4352af3916d01d3349f78497ad0b5c9ff6fce7b) on evidence/K7", commit: "e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73", profile: "baseline, slotless, buffered", mutant: "none"}
+    command: "GOMEMLIMIT=6GiB, TMPDIR=runs/.k7/tmp: bin/cpgate K7 --evidence evidence/K7 --negative-controls (record cpgate-k7-4, exit 1)"
+    artifact: "evidence/K7/logs/cpgate-k7-4.stdout"
+    sha256: "5fcb22f9ce2d32a04792ef35d577e755b92ba1378ac70e5b55ef809576d972b3"
+    result: "criteria 7 of 7 PASS; controls 6 of 7 failing only their target (K7.7's failed K7.5 and K7.7; fixed in cb69c0b); exit 1"
+    limitations: ["LIM-16"]
+  - id: CLM-0075
+    text: "Every make ci-* target (ci-unit, ci-checkers, ci-cluster-smoke, ci-nemesis-smoke, ci-mutant-smoke, ci-report) exited 0 on the clean build of cb69c0b, the commit with every gate fix, with no target skipped; ci-mutant-smoke caught M1 via D1 with C1 lost-write."
+    contract: "§15 K7 (K7.7)"
+    target: {system: "CommitProof cb69c0b3f59bb711acc7c63a46ac71bbbd7e4ccc (the release build) on the owner's host", commit: "e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73", profile: "baseline", mutant: "none and M1"}
+    command: "make build (record build-11); make ci-unit ci-checkers ci-cluster-smoke ci-nemesis-smoke ci-mutant-smoke ci-report (record ci-3)"
+    artifact: "evidence/K7/logs/ci-3.stdout"
+    sha256: "00853e32d92bf7fc01cc679d96c3be91686d854a8d26861a7f5d2e4358b236d4"
+    result: "exit 0; binaries buildinfo.Commit=cb69c0b, Dirty=false; nemesis smoke F1a, F2a, F3a, F7, F4a each verdict PASS"
+    limitations: ["LIM-16", "LIM-05"]
+  - id: CLM-0076
+    text: "The local tag v1.0.0 is an annotated tag on cb69c0b, the commit ci-3 built; no file outside the release's text and evidence differs between them, and no remote-tracking ref contains K7's first commit."
+    contract: "§15 K7 (K7.7), AGENTS.md §6"
+    target: {system: "this repository (git)", commit: "e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73", profile: "baseline", mutant: "none"}
+    command: "git tag -a v1.0.0 cb69c0b; scripts/k7-tag-check.sh cb69c0b… d07fca6… (record tag-check-3)"
+    artifact: "evidence/K7/logs/tag-check-3.stdout"
+    sha256: "e6b7672cb7740c7cbf7d334dcbc125d079193ac6481e6af7dae65287c76340e7"
+    result: "object_type tag; tag_commit = ci_commit = cb69c0b; code_diff []; k7_on_remote []"
+    limitations: ["LIM-16"]
   - id: CLM-0040
     text: "FND-D1-fb8d0f8c (G2b, SAFETY_VIOLATION, INFERRED, high, origin POSTGRES_INHERITED, NEW): reads of an append whose client timed out (info) return a value that the next failover removes; no acknowledged write is lost."
     contract: "§3 G2b, §11, §11.4"
