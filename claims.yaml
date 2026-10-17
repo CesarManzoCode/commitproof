@@ -173,6 +173,15 @@ claims:
     sha256: "47986750fa4f23fe808b7a965853e7febba8ff9d8081cda93485d1bd551ae052"
     result: "10 runs stored; P25 count 247 996 092 → 259 848 618 B ≤ 275 000 000"
     limitations: ["LIM-37", "LIM-43"]
+  - id: CLM-0019
+    text: "The final P25 count, after K7.4's replays and the release CI's records, is 264 452 426 B of evidence/ and finding archives, under the 275 000 000 B of ADR-0047."
+    contract: "P25, ADR-0039, ADR-0047"
+    target: {system: "this repository's evidence/", commit: "e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73", profile: "baseline", mutant: "none"}
+    command: "scripts/k7-p25-count.sh (record p25-final)"
+    artifact: "evidence/K7/logs/p25-final.stdout"
+    sha256: "c19c270c01276d1ee2098d8a785fdc8cdffa79b505bdca09ead22c5674f8ae5a"
+    result: "264 452 426 B (K7 43 534 768 B); margin 10 547 574 B; exit 0"
+    limitations: ["LIM-43"]
   - id: CLM-0020
     text: "K7's matrix ran complete on the real build: 130 cells (V1: 10 campaigns × 10 runs on baseline; V2: C1, C2, C4 × 5 on slotless; V3: C8 × 10 on buffered; V5: C11 × 5), each with a valid run, 19 FAIL and 111 PASS; INVALID attempts are listed with their causes and not counted."
     contract: "§12.1, §15 K7 (K7.1)"
@@ -407,6 +416,15 @@ claims:
     sha256: "aace025fdc4e58bc061d046d390452fcf6fcc2d65378e723195d5141b99a07be"
     result: "264 326 805 B; margin 10 673 195 B"
     limitations: ["LIM-43"]
+  - id: CLM-0066
+    text: "make lint-workflow and every make ci-* target (ci-unit, ci-checkers, ci-cluster-smoke, ci-nemesis-smoke, ci-mutant-smoke, ci-report) exited 0 on the clean build of 77c5f6c, with no target skipped; ci-mutant-smoke caught M1 via D1 with C1 lost-write."
+    contract: "§15 K7 (K7.7)"
+    target: {system: "CommitProof 77c5f6ca0ad555d9a957f601a1fc89155a295f52 (the release build) on the owner's host", commit: "e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73", profile: "baseline", mutant: "none and M1"}
+    command: "make build (record build-9); make lint-workflow (record lint-workflow); make ci-unit ci-checkers ci-cluster-smoke ci-nemesis-smoke ci-mutant-smoke ci-report (record ci)"
+    artifact: "evidence/K7/logs/ci.stdout"
+    sha256: "6593b4b0e54f7ce5c80180c43bf06a51a0637c9b45b87132015cfeaf5df8b848"
+    result: "exit 0; binaries buildinfo.Commit=77c5f6c, Dirty=false; nemesis smoke F1a, F2a, F3a, F7, F4a each verdict PASS"
+    limitations: ["LIM-16", "LIM-05"]
   - id: CLM-0040
     text: "FND-D1-fb8d0f8c (G2b, SAFETY_VIOLATION, INFERRED, high, origin POSTGRES_INHERITED, NEW): reads of an append whose client timed out (info) return a value that the next failover removes; no acknowledged write is lost."
     contract: "§3 G2b, §11, §11.4"

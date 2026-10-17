@@ -187,7 +187,7 @@ Six attempts ended INVALID because no recovery insert succeeded within P06 (120 
 - K7.4's 70 valid replays and 5 INVALID attempts are stored as summaries in `package-replays/` (stub and `checks.json`) and listed in `runs-index.json` under `package_replays` (`k7results-2`; `results.json` byte-identical). Their full archives stay in `runs/k7-pkg/` and `runs/k7-invalid/` on this machine. [CLM-0028]
 - P25 after K7.4's store steps: `p25-count-resume` 261 879 954 B [CLM-0064], `p25-count-resume-2` 264 326 805 B [CLM-0065].
 
-<!-- P25-FINAL -->
+- Final count (`p25-final`, after K7.4 and the release CI's records): 264 452 426 B of 275 000 000 B, margin 10 547 574 B (K7's share 43 534 768 B). What is committed after it (the tag check, the gate's files, the closure) is a few kilobytes of text. [CLM-0019]
 
 ## 13. Claims, overclaims, public documents
 
@@ -198,7 +198,9 @@ Six attempts ended INVALID because no recovery insert succeeded within P06 (120 
 
 ## 14. CI and release
 
-`make lint-workflow` and every `make ci-*` target (`ci-unit`, `ci-checkers`, `ci-cluster-smoke`, `ci-nemesis-smoke`, `ci-mutant-smoke`, `ci-report`) ran on the release commit's clean build (record `ci…`). The annotated tag `v1.0.0` is local (`git tag -a`); `scripts/k7-tag-check.sh` records its object type, its commit, that its code equals the CI's, and that no remote-tracking ref contains K7's first commit. Nothing was pushed.
+`make lint-workflow` (record `lint-workflow`) and every `make ci-*` target (`ci-unit`, `ci-checkers`, `ci-cluster-smoke`, `ci-nemesis-smoke`, `ci-mutant-smoke`, `ci-report`; record `ci`) exited 0 on the clean build of `77c5f6c` (record `build-9`, `Dirty=false`), 20:43–21:00Z, with no target skipped. [CLM-0066]
+
+`ci-cluster-smoke` rebuilt the runner image from that commit, and its lock entry was committed (`484abd7`). The commits after `77c5f6c` change only evidence, documents, `claims.yaml` and `images.lock.json`, which K7.7 leaves out of the code comparison. The annotated tag `v1.0.0` is local (`git tag -a`), on the release commit that adds the final P25 count. `scripts/k7-tag-check.sh` (record `tag-check`, after `ci`) records the tag's object type, its commit, that its code equals the CI's, and that no remote-tracking ref contains K7's first commit. `cpgate K7 --negative-controls` ran after the tag check; the closure commit that adds its result and `closure.yaml` follows the tagged commit (§15). Nothing was pushed.
 
 ## 15. Deviations from the prompt
 
@@ -212,4 +214,5 @@ Six attempts ended INVALID because no recovery insert succeeded within P06 (120 
 - The owner rebooted into the installed kernel, and K7 resumed a fourth time (§2.3). Kernel, veth and a bridge probe were checked before any cluster run. K7.4 was finished without relaunching the matrix: one replay command resumed, eight run for the first time. [CLM-0059] [CLM-0062]
 - `cpgate K7` held K7.4's replays to the matrix's contract version. The gate was corrected with a regression test (`9bf9005`) after the last replay; the criterion is not relaxed: each runs directory must carry exactly its own version.
 - K7.4's replays are recorded, not triaged: two of them report C3 cycle classes that no criterion cross-checks (§8, LIM-46). [CLM-0062]
+- `v1.0.0` tags the release commit, not the closure commit after it: the closure records the tag check and the gate run on the tagged tree, so it cannot precede them. The two commits differ only in evidence (`gate.json`, `negative-controls.json`, the records, `closure.yaml`).
 - The owner's decision text of 2026-10-15 gives P25 as 250 MB. The owner's later decision on K7's first BLOCKED closure (2026-10-16, ADR-0047) raised it to 275 MB, and K7 enforces 275 MB.
