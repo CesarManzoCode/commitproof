@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CommitProof campaign summary</title>
+<style>
+:root{--ok:#2a9d4b;--fail:#d62828;--info:#e79a00;--ink:#1d2433;--mute:#5c6577;--line:#d9dde5;--bg:#ffffff;--panel:#f5f7fa;--hl:#0b57d0}
+*{box-sizing:border-box}
+body{margin:0;padding:16px;font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg)}
+h1{font-size:20px;margin:0 0 4px}h2{font-size:16px;margin:28px 0 8px;border-bottom:1px solid var(--line);padding-bottom:4px}
+h3{font-size:14px;margin:16px 0 6px}
+p{margin:6px 0}code,pre,.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px}
+pre{white-space:pre-wrap;word-break:break-all;background:var(--panel);padding:8px;border-radius:4px;max-height:320px;overflow:auto}
+nav a{margin-right:12px}
+table{border-collapse:collapse;margin:6px 0 10px;font-size:13px}
+th,td{border:1px solid var(--line);padding:3px 7px;text-align:left;vertical-align:top}
+th{background:var(--panel);font-weight:600}td.n{text-align:right;font-variant-numeric:tabular-nums}
+.verdict{display:inline-block;padding:1px 8px;border-radius:3px;font-weight:600;color:#fff;background:var(--mute)}
+.v-PASS{background:var(--ok)}.v-FAIL{background:var(--fail)}.v-UNKNOWN,.v-INVALID{background:var(--info)}
+.legend span{display:inline-block;margin-right:14px}.sw{display:inline-block;width:12px;height:10px;margin-right:4px;vertical-align:-1px}
+.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:4px;background:#fff}
+svg text{font:11px system-ui,sans-serif;fill:var(--ink)}
+svg .lbl{fill:var(--mute)}
+.ok{fill:var(--ok)}.fail{fill:var(--fail)}.info{fill:var(--info)}
+.mk{stroke:#8a93a6;stroke-width:1;stroke-dasharray:2 3}
+.fb{fill:#b9c4d6;fill-opacity:.25}.f-a{fill:#e9b44c}.f-b{fill:#c0392b}.f-c{fill:#6c8ebf}
+.ph{fill:#1d2433}.ph-bad{fill:var(--fail)}
+.st-primary{fill:#1f4e9c}.st-standby{fill:#9bb7e0}.st-error{fill:var(--fail)}.st-down{fill:#555}
+.sl-ready{fill:#3b8f6a}.sl-not{fill:#d9a400}
+.cobs{fill:#7d4ea8}
+.grid{stroke:#eef0f4;stroke-width:1}
+.axis{stroke:#9aa3b5;stroke-width:1}
+.series{fill:none;stroke-width:1.5}
+.bar{fill:var(--fail);fill-opacity:.6}
+:target{stroke:var(--hl);stroke-width:3;outline:2px solid var(--hl)}
+li:target,tr:target{background:#e8f0fe}
+.anoms li{margin:4px 0}
+.small{font-size:12px;color:var(--mute)}
+</style>
+</head>
+<body>
+<header><h1>Campaign summary</h1>
+<p class="small">cpreport-format 1 · 10 sealed runs verified (10 primary). Statistics per CONTRACT §12.3 with ADR-0036's cells, exposure and integer arithmetic: Wilson 95 % intervals (lower end rounded down, upper end up) and, for a cell without failures, the one-sided bound 1 − 0.05^(1/N) (rounded up). Verdicts are cpcheck's (checks.json); INVALID runs are listed and never counted (§12.1); minimization candidates and replays (§12.2) are listed apart.</p></header>
+<h2 id="cells">Cells</h2>
+<table><tr><th>campaign</th><th>profile</th><th>build</th><th>N valid</th><th>INVALID</th><th>PASS</th><th>FAIL</th><th>UNKNOWN</th><th>violations k/N [Wilson 95 %]</th><th>bound if k = 0</th><th>operations</th><th>ok writes</th><th>confirmed faults</th><th>fault-time (s)</th><th>exposure over</th></tr>
+<tr id="cell-D3p-buffered-real"><td>D3p</td><td>buffered</td><td>real</td><td class="n">5</td><td class="n">0</td><td class="n">5</td><td class="n">0</td><td class="n">0</td><td>none</td><td class="n">0.451</td><td class="n">63125</td><td class="n">53281</td><td>F2a ×15, F7 ×30</td><td class="n">29.150</td><td class="n">5 of 5 runs</td></tr>
+<tr id="cell-D5-baseline-real"><td>D5</td><td>baseline</td><td>real</td><td class="n">5</td><td class="n">0</td><td class="n">5</td><td class="n">0</td><td class="n">0</td><td>none</td><td class="n">0.451</td><td class="n">16443</td><td class="n">2654</td><td>F1b ×5, F2a ×5, F2b ×5</td><td class="n">426.067</td><td class="n">5 of 5 runs</td></tr>
+</table>
+<p class="small">Exposure counts only runs held in full; a stub (manifest, plan, seal) is verified and counted by its checks.json verdict but its history is not in the directory (CONTRACT §13; LIMITATIONS LIM-30, LIM-37). ok writes = ok ledger inserts + appended elements of ok append operations + ok register writes and CAS + ok bank transfers; fault-time = Σ (heal − confirmed) (ADR-0036).</p>
+<h2 id="statements">Clean-result statements (§12.3)</h2>
+<p class="small">For real-build cells whose valid runs all PASS and are held in full; mutant cells are detection experiments (§12.4), not clean results.</p>
+<ul>
+<li>In 5 valid runs of campaign D3p (profile buffered, Multigres e3cbdbb), exposing 53281 ok writes to 45 confirmed faults of kinds {F2a, F7}, no violation of {C1, C2, C3, C4, C5, C6, C7, C8, C9, P} was observed; at 95% confidence the per-run violation probability under this exact schedule distribution is below 0.451. Not tested: see docs/LIMITATIONS.md.</li>
+<li>In 5 valid runs of campaign D5 (profile baseline, Multigres e3cbdbb), exposing 2654 ok writes to 15 confirmed faults of kinds {F1b, F2a, F2b}, no violation of {C1, C2, C3, C4, C5, C6, C7, C8, C9, P} was observed; at 95% confidence the per-run violation probability under this exact schedule distribution is below 0.451. Not tested: see docs/LIMITATIONS.md.</li>
+</ul>
+<h2 id="runs">Runs per cell</h2>
+<details><summary>D3p · buffered · real — 5 runs</summary>
+<table><tr><th>run</th><th>seed</th><th>verdict</th><th>violation classes</th><th>held</th><th>seal root</th></tr>
+<tr><td class="mono">20261015T020809Z-D3p-1-real-84dccb5a</td><td class="n">1</td><td><span class="verdict v-PASS">PASS</span></td><td></td><td>full</td><td class="mono">861c4906d711d3ab613b6841ab49e5ea101c864195d863663adb735136486dc4</td></tr>
+<tr><td class="mono">20261015T021130Z-D3p-2-real-f75f6098</td><td class="n">2</td><td><span class="verdict v-PASS">PASS</span></td><td></td><td>full</td><td class="mono">38eda79417a766497747ada47194bc8dec31506fb764fdaee7baaca732521a9b</td></tr>
+<tr><td class="mono">20261015T021446Z-D3p-3-real-bc177144</td><td class="n">3</td><td><span class="verdict v-PASS">PASS</span></td><td></td><td>full</td><td class="mono">b5bbff99e4145beb84d96efbbabf59798465eb6194f17c94f5070c80131b5548</td></tr>
+<tr><td class="mono">20261015T021802Z-D3p-4-real-c83b3282</td><td class="n">4</td><td><span class="verdict v-PASS">PASS</span></td><td></td><td>full</td><td class="mono">f523ed60842aa32eb9945f2d7a4ae7a1ce7dcc3681e75ff8e7a323fb89d6c92b</td></tr>
+<tr><td class="mono">20261015T022122Z-D3p-5-real-87fb0b83</td><td class="n">5</td><td><span class="verdict v-PASS">PASS</span></td><td></td><td>full</td><td class="mono">8f10c38a833cb44e701cbecce121f717a1a263c07cefb7898793dcbb984351d3</td></tr>
+</table></details>
+<details><summary>D5 · baseline · real — 5 runs</summary>
+<table><tr><th>run</th><th>seed</th><th>verdict</th><th>violation classes</th><th>held</th><th>seal root</th></tr>
+<tr><td class="mono">20261014T001925Z-D5-1-real-ad688688</td><td class="n">1</td><td><span class="verdict v-PASS">PASS</span></td><td></td><td>full</td><td class="mono">3b0e5bece1aae925e9f7e0805e095ac77a50925780b1adfe27568d08d033d3da</td></tr>
+<tr><td class="mono">20261014T002154Z-D5-2-real-aca068c8</td><td class="n">2</td><td><span class="verdict v-PASS">PASS</span></td><td></td><td>full</td><td class="mono">08bdbee70f20804d1bf93b2820a6f28d8510fada52575f01737d99623eab0a45</td></tr>
+<tr><td class="mono">20261014T002426Z-D5-3-real-d95fb90a</td><td class="n">3</td><td><span class="verdict v-PASS">PASS</span></td><td></td><td>full</td><td class="mono">6874953764d4637fda393002afec0a6cf64041a20ce8b6b32ea325a72cacdfb6</td></tr>
+<tr><td class="mono">20261014T002722Z-D5-4-real-c5f146f4</td><td class="n">4</td><td><span class="verdict v-PASS">PASS</span></td><td></td><td>full</td><td class="mono">3c317019c8f1be8161b74a9f0a33ef178290fcfe8f96ee5702f8519fe67f9db8</td></tr>
+<tr><td class="mono">20261014T002954Z-D5-5-real-e9fd481e</td><td class="n">5</td><td><span class="verdict v-PASS">PASS</span></td><td></td><td>full</td><td class="mono">d593758581221bd105dc73b04abc47a0c3e1403f22989d8559466db8c3b5a472</td></tr>
+</table></details>
+<h2 id="follow-ups">Minimization candidates and replays (not counted)</h2>
+<table><tr><th>run</th><th>kind</th><th>of</th><th>verdict</th><th>violation classes</th><th>held</th></tr>
+</table>
+<script type="application/json" id="cp-data">{"cells":[{"campaign":"D3p","classes":{},"exposure":{"confirmed_faults":{"F2a":15,"F7":30},"fault_time_ns":29149726340,"ok_writes":53281,"operations":63125,"runs_full":5},"fail":0,"invalid":0,"mutant":"real","n":5,"pass":5,"profile":"buffered","runs":["20261015T020809Z-D3p-1-real-84dccb5a","20261015T021130Z-D3p-2-real-f75f6098","20261015T021446Z-D3p-3-real-bc177144","20261015T021802Z-D3p-4-real-c83b3282","20261015T022122Z-D3p-5-real-87fb0b83"],"unknown":0,"zero_failure_bound":"0.451","zero_failure_bound_e12":450719728347},{"campaign":"D5","classes":{},"exposure":{"confirmed_faults":{"F1b":5,"F2a":5,"F2b":5},"fault_time_ns":426066883159,"ok_writes":2654,"operations":16443,"runs_full":5},"fail":0,"invalid":0,"mutant":"real","n":5,"pass":5,"profile":"baseline","runs":["20261014T001925Z-D5-1-real-ad688688","20261014T002154Z-D5-2-real-aca068c8","20261014T002426Z-D5-3-real-d95fb90a","20261014T002722Z-D5-4-real-c5f146f4","20261014T002954Z-D5-5-real-e9fd481e"],"unknown":0,"zero_failure_bound":"0.451","zero_failure_bound_e12":450719728347}],"follow_ups":[],"format":"cpreport-format 1","runs":10}</script>
+</body>
+</html>

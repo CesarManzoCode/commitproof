@@ -1,0 +1,9 @@
+{"run_id":"20261011T215900Z-D1-1-M1-59a95336","source":"D1 on M1 (K4, cited by K7; ADR-0039)","result":"oracle-disagreement","decided_by":"none","elle_valid":"no answer","elle_classes":null}
+{"run_id":"20261011T220118Z-D1-2-M1-8b22bb67","source":"D1 on M1 (K4, cited by K7; ADR-0039)","result":"oracle-disagreement","decided_by":"none","elle_valid":"no answer","elle_classes":null}
+{"run_id":"20261011T220335Z-D1-3-M1-da159fa0","source":"D1 on M1 (K4, cited by K7; ADR-0039)","result":"oracle-disagreement","decided_by":"cpcheck --elle-oracle","elle_valid":"false","elle_classes":["G-single","G0","incompatible-order"]}
+{"run_id":"20261011T220553Z-D1-4-M1-ad3fca18","source":"D1 on M1 (K4, cited by K7; ADR-0039)","result":"oracle-disagreement","decided_by":"cpcheck --elle-oracle","elle_valid":"false","elle_classes":["G-single","G0","incompatible-order"]}
+{"run_id":"20261011T220810Z-D1-5-M1-3319a30c","source":"D1 on M1 (K4, cited by K7; ADR-0039)","result":"oracle-disagreement","decided_by":"none","elle_valid":"no answer","elle_classes":null}
+{"run_id":"20261016T173617Z-C2-3-real-9375b700","source":"K7 C2/baseline seed 3 (matrix)","result":"oracle-disagreement","decided_by":"elle-cli validity pass","elle_valid":"false","elle_classes":["G-single","cycle-search-timeout","incompatible-order"]}
+{"run_id":"20261016T175837Z-C2-8-real-65087015","source":"K7 C2/baseline seed 8 (matrix)","result":"oracle-disagreement","decided_by":"none","elle_valid":"no answer","elle_classes":null}
+{"run_id":"20261016T180118Z-C2-9-real-4bafa50d","source":"K7 C2/baseline seed 9 (matrix)","result":"oracle-disagreement","decided_by":"cpcheck --elle-oracle","elle_valid":"false","elle_classes":["G-single","G1c-process","G1c-realtime","incompatible-order"]}
+{"run_id":"20261016T221713Z-C2-3-real-273a1b0c","source":"K7 C2/slotless seed 3 (matrix)","result":"oracle-disagreement","decided_by":"none","elle_valid":"no answer","elle_classes":null}

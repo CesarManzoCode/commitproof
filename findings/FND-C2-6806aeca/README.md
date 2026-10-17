@@ -2,7 +2,7 @@
 
 # multipooler/multigateway: primary-port register reads return a value that the next failover removes
 
-| Dimension | Value (contract 1.8.1; ADR-0043) | Derivation |
+| Dimension | Value (contract 1.9.0; ADR-0043) | Derivation |
 |---|---|---|
 | Finding | FND-C2-6806aeca | §11.3: sha256(`SAFETY_VIOLATION\|G6\|non-linearizable\|<minimized plan>`)[:8]; recorded in K6b (`evidence/K6b/findings/FND-C2-6806aeca.json`); K4 had described it inside FND-C2-2a534585's analysis |
 | Guarantee | **G6** — single-key autocommit reads and writes through the primary port are linearizable (§3) | C4 `non-linearizable` on registers 1 and 4 |

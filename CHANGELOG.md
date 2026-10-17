@@ -2,16 +2,16 @@
 
 All notable changes to CommitProof. The normative specification is `docs/CONTRACT.md` (version in its header); every change to it is an ADR (`docs/adr/`). Each sprint's results, gate and closure report are under `evidence/K<n>/`; this file lists what each sprint added, not its results.
 
-## Unreleased — v1.0.0 pending (sprint K7; contract 1.8.1)
+## v1.0.0 — 2026-10-17 (sprint K7; contracts 1.8.0, 1.8.1, 1.9.0)
 
-Draft. K7 stopped BLOCKED at its store step (P25); no tag exists. Planned: full campaign, statistics and release, with the local annotated tag `v1.0.0`; nothing pushed.
+Full campaign, statistics and release; the annotated tag `v1.0.0` is local, nothing is pushed. Results, gate and closure: `evidence/K7/` and its `closure.yaml`.
 
-- The K7 matrix (`campaigns/k7.json`, `make campaign-k7`, resumable, detached, with a dry run; ADR-0041): cells V1 (C1–C7, C9, C10, C12 on `baseline`, 10 runs each), V2 (C1, C2, C4 on `slotless`, 5 each), V3 (C8 on `buffered`, 10) and V5 (C11 on `baseline`, 5), 130 runs on the real build; the directed cells of K4 and K5 cited, not re-run (ADR-0039).
-- Storage under P25 (ADR-0039, ADR-0045): runs a claim or a finding names are committed in full; every other run as a summary (stub and `checks.json`), listed with its seal root in `evidence/K7/runs-index.json`. A real-build failure that repeats a recorded finding is counted, triaged and cited as a recurrence, kept as a summary and not minimized (`internal/repeats`, predicates fixed before any K7 run).
-- elle-cli on every C3 anomaly of the matrix and on M1's five D1 runs (ADR-0046).
-- Findings packages under `findings/` (§11.4), each with its replay command executed once more in K7 (K7.4); `claims.yaml` (§17); the overclaim review (`evidence/K7/overclaim-review.md`); the public `README.md`; final `docs/LIMITATIONS.md`.
-- `cpgate K7` (criteria K7.1–K7.7 with negative controls); tools `k7results`, `k7findings`, `k7triage`, `k7oracle`.
-- Fixes: the runner's final reads continue on the process recovery ended with (a recovery insert that ends `info` had made the run INVALID; `1f1f60b`); `record-command.sh` escapes newlines in argv; K7.4 executes the package's P13 replay command.
+- The K7 matrix (`campaigns/k7.json`, `make campaign-k7`, resumable, detached, with a dry run; ADR-0041): cells V1 (C1–C7, C9, C10, C12 on `baseline`, 10 runs each), V2 (C1, C2, C4 on `slotless`, 5 each), V3 (C8 on `buffered`, 10) and V5 (C11 on `baseline`, 5), 130 runs on the real build with ADR-0038's metrics exporter; the directed cells of K4 and K5 cited, not re-run (ADR-0039).
+- Storage under P25: runs a claim or a finding names are committed in full, every other run as a summary (stub and `checks.json`) listed with its seal root in `evidence/K7/runs-index.json` (ADR-0039); a real-build failure that repeats a recorded finding (ADR-0045's predicates over `checks.json`) is counted, triaged and cited as a recurrence, kept as a summary (ADR-0045, contract 1.8.0). P25 raised to 275 MB by the owner after K7's first store step, with the cited D3′/D5 real-build runs committed in full under `evidence/K7/cited/` (ADR-0047, contract 1.9.0).
+- elle-cli on every C3 anomaly of the matrix and on M1's five D1 runs, with a triage for each disagreement (ADR-0046, contract 1.8.1).
+- Fourteen findings packages under `findings/` (§11.4; nine recorded, five new), each with its replay command executed once more (K7.4); `claims.yaml` (§17) with a `claim.yaml` per package; the overclaim review (`evidence/K7/overclaim-review.md`); the C3-correction audit (`evidence/K7/c3-correction-audit.md`); the public `README.md`; final `docs/LIMITATIONS.md` (LIM-44, LIM-45 added).
+- `cpgate K7` (criteria K7.1–K7.7 with negative controls); tools `k7results`, `k7findings`, `k7triage`, `k7oracle`; scripts `k7-evidence.sh`, `k7-store.sh`, `k7-store-cited.sh`, `k7-c3-audit.sh`, `k7-p25-count.sh`, `k7-tag-check.sh`.
+- Fixes: the runner's final reads continue on the process recovery ended with (`1f1f60b`); C3 reports every transaction of a cycle (`32b660a`; verdicts and classes unchanged, `c3-correction-audit.md`); `record-command.sh` escapes newlines in argv (`748e549`); K7.4 executes the package's P13 replay command (`9807b0c`); `k7findings` does not count an INVALID replay attempt (`65ff46a`).
 
 ## Sprint K6b and pre-K7 — 2026-10-15 (contract 1.2.0 → 1.7.0)
 

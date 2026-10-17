@@ -2,7 +2,7 @@
 
 # multipooler: steady-role operations refused while the leader's PostgreSQL restarts inside a connection storm (G12 literal rule)
 
-| Dimension | Value (contract 1.8.1; as recorded in K5, contract 1.0.9) |
+| Dimension | Value (contract 1.9.0; as recorded in K5, contract 1.0.9) |
 |---|---|
 | Finding | FND-C11-17a344c1 |
 | Guarantee | **G12** — per-user pools share fairly: under a connection storm by one role, another role with steady demand still obtains connections and completes operations; overload alone does not trigger a failover (§3) |

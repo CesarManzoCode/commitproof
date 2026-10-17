@@ -9,9 +9,20 @@ it can run again) and touches nothing else.
 
 usage: k7-package-k7-sections.py <findings/<id>> [evidence/K7/results.json]
 """
+import io
 import json
 import re
 import sys
+import tarfile
+from compression import zstd
+
+
+def replay_manifest(run_id):
+    """The manifest of a K7.4 replay, from its stub in evidence/K7/package-replays."""
+    with open(f"evidence/K7/package-replays/{run_id}.stub.tar.zst", "rb") as fh:
+        data = zstd.decompress(fh.read())
+    with tarfile.open(fileobj=io.BytesIO(data)) as t:
+        return json.load(t.extractfile(f"{run_id}/manifest.json"))
 
 
 def fields_text(g):
@@ -67,8 +78,11 @@ def main():
         out.append("Not yet executed.")
     else:
         cl = f["classification"]
+        ms = [replay_manifest(r["run_id"]) for r in k["runs"]]
+        commits = sorted({m["commitproof_commit"][:7] for m in ms})
+        versions = sorted({m["contract_version"] for m in ms})
         out.append(f"The package's replay command was executed once more in K7 (record `{k['record']}` in `evidence/K7/commands.jsonl`; "
-                   f"CommitProof built from a later commit, contract 1.8.1, with ADR-0038's metrics exporter on every Multigres component, LIM-41). "
+                   f"CommitProof `{', '.join(commits)}`, contract {', '.join(versions)} (ADR-0047), with ADR-0038's metrics exporter on every Multigres component, LIM-41). "
                    f"The plan replayed is this package's minimized plan, unchanged. Its five replays are stored as summaries in `evidence/K7/package-replays/`:")
         out.append("")
         out.append("| Replay | Verdict | Classes | Seal root |")

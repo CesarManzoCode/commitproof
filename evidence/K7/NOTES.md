@@ -1,116 +1,140 @@
 # K7 NOTES — Full campaign, statistics and release
 
-Contract **1.8.1** (unchanged during K7: every K7 plan carries it). Evidence produced by `scripts/k7-evidence.sh` (groups setup, m1oracle, m1triage, images, start, wait, oracle, store), the resume steps of §2 and the fixes of §3, every command recorded in `commands.jsonl` (argv, exit code, stdout/stderr sha256), 2026-10-15 22:03 CST – 2026-10-17 03:05 UTC, one cluster at a time. No `claims.yaml` exists yet (K7.5 comes after the stop): every statement names its record, run id or file; "design says" cites RESEARCH ids, "system did" cites runs and records.
-
-**Status: BLOCKED** at the store step, by the owner's decision 1 (ADR-0045 §5): after storing every K7 run, the P25 count is 246 678 804 bytes and the projection 251 678 804 bytes, above 250 MB (§8). Nothing stored was dropped. The matrix is complete (130 valid runs), K7.3's oracle records are written; the work that follows the store step (§9) waits for the owner's decision.
+K7's matrix ran under contract **1.8.1** (every matrix plan carries it). After the matrix, the owner's decision on K7's BLOCKED closure raised P25 to 275 MB (ADR-0047, contract **1.9.0**). K7.4's replays ran under 1.9.0 with their packages' plans unchanged. Evidence produced by `scripts/k7-evidence.sh` (groups setup, m1oracle, m1triage, images, start, wait, oracle, store, results, render, triage, cited, c3audit, pkgreports, pkgreplay, p25, ci, gate, tagcheck), the resume steps of §2 and the fixes of §3. Every command is recorded in `commands.jsonl` (argv, exit code, stdout/stderr sha256), 2026-10-15 22:03 CST – 2026-10-17 UTC, one cluster at a time. Every statement that reports a result carries its `claims.yaml` id. "Design says" cites RESEARCH ids; "system did" cites runs and records.
 
 ## 1. Gate
 
-Not run: K7 stopped BLOCKED before its statistics, packages, claims audit and release (§9). `cpgate K7` exists (`c017e83`, `1b66d40`, K7.4 fixed in `9807b0c`).
+`cpgate K7 --evidence evidence/K7 --negative-controls` (records `cpgate-k7…`): its result is `gate.json` and `negative-controls.json`, and the closure (`closure.yaml`) reports it. `cpgate K7` was written before the matrix (`c017e83`, `1b66d40`). Its K7.4 replay check was corrected in `9807b0c` to the P13 replay command (§13).
 
 ## 2. Resume after the host power-off
 
-The owner's machine was powered off during K7's matrix: `last -x` shows "shutdown system down" at 2026-10-15 22:39 CST and `journalctl --list-boots` ends that boot at 2026-10-16T04:39:31Z; the next boot started at 16:56:25Z. State found before anything was touched:
+The owner's machine was powered off during K7's matrix: `last -x` shows "shutdown system down" at 2026-10-15 22:39 CST and `journalctl --list-boots` ends that boot at 2026-10-16T04:39:31Z. State found before anything was touched:
 
-- **Git**: `main`, 67 commits ahead of `origin/main`, nothing pushed. The P25/repeats ADR (ADR-0045, `d07fca6`) and the K7.3/elle-cli ADR (ADR-0046, `6d06b73`, `49c541b`) had been committed before the matrix started. The matrix file and tooling had been committed in K6b (`09355f3`), the repeat-skipping driver in `a9d9a5d`, elle-cli on M1's D1 runs in `8788818`, the image lock in `d40cce9`, and cpgate K7 in `c017e83` and `1b66d40`. Not committed: the two records of the matrix start (`k7-dry-run`, `campaign-start`) and their logs. Nothing of `findings/`, `claims.yaml`, README, the overclaim review or CHANGELOG existed.
-- **Campaign**: `runs/k7` held seven sealed runs, V1 C1 seeds 1–7 (`cpcheck verify-seal` valid, cpcheck PASS), and one unsealed directory, C1 seed 8's first attempt `20261016T043817Z-C1-8-real-9f75e28e` (no seal, `verify-seal` exit 2, its history ending in `run-end` `{"reason":"nemesis interrupted","status":"invalid"}`). The dry run showed 123 of 130 runs still to make.
-- **Docker**: 26 exited project containers, the network `commitproof_cpnet` and seven project volumes; no stale FUSE mount of our containers, no stuck process.
-- **Closure**: none.
+- **Git**: `main`, 67 commits ahead of `origin/main`, nothing pushed; ADR-0045 (`d07fca6`) and ADR-0046 (`6d06b73`, `49c541b`) committed before the matrix started.
+- **Campaign**: `runs/k7` held seven sealed runs (V1 C1 seeds 1–7) and one unsealed directory, C1 seed 8's first attempt `20261016T043817Z-C1-8-real-9f75e28e` (no seal; its history ends in `run-end` `{"reason":"nemesis interrupted","status":"invalid"}`).
+- **Docker**: 26 exited project containers, the network `commitproof_cpnet` and seven project volumes.
 
-Resume protocol (as in K4, K5 and K6b), every step recorded in `commands.jsonl`:
+Resume protocol (as in K4, K5 and K6b):
 
-1. `prereq-check-resume` exit 2: 25/26, D5 FAIL — the only occupant of 10.77.0.0/24 was this project's `commitproof_cpnet` (`prereq-resume-1.json`). `docker-cleanup-resume` removed only the resources labelled `com.docker.compose.project=commitproof` (26 containers, the network, 7 volumes; images kept, no sudo). `prereq-check-resume-2`: 26/26 PASS (`prereq-resume-2.json`). `make prereq-check` writes `evidence/K1/prereq.json`; that file was restored to its committed content both times. The `docker-cleanup-resume` record was first written with raw newlines in its argv (`record-command.sh` did not escape them); the line was rejoined with escaped newlines, and `record-command.sh` was fixed (`748e549`).
-2. `precondition-resume`: cpgate K1–K6 on copies of the closed evidence, every criterion PASS. `images-verify-resume`: the local images equal the lock.
-3. The unsealed C1 seed 8 attempt was archived unchanged (`harness-defect-runs/`, README there), moved out of `runs/k7`, and re-run from scratch with the same plan and seed by the resumed campaign (`campaign-start-2`): `20261016T170819Z-C1-8-real-9f75e28e`, same `plan_sha256` `9f75e28e…`.
+1. `prereq-check-resume` exit 2: 25 of 26 checks, D5 failing on this project's own leftover `commitproof_cpnet`. `docker-cleanup-resume` removed only the resources labelled `com.docker.compose.project=commitproof` (images kept, no sudo). `prereq-check-resume-2`: 26 of 26 (`prereq-resume-2.json`). `evidence/K1/prereq.json` was restored to its committed content both times. [CLM-0031]
+2. `precondition-resume`: cpgate K1–K6 on copies of the closed evidence, every criterion PASS; `images-verify-resume`: the local images equal the lock. [CLM-0032]
+3. The unsealed attempt was archived unchanged (`harness-defect-runs/`) and re-run with the same plan and seed (`20261016T170819Z-C1-8-real-9f75e28e`, same `plan_sha256`).
+
+The `docker-cleanup-resume` record was first written with raw newlines in its argv; the line was rejoined with escaped newlines and `record-command.sh` fixed (`748e549`).
 
 ## 3. Harness defects found in K7 (none is a Multigres finding, §11.1)
 
-1. **The runner's final reads reused a retired process.** After a recovery insert ended `info`, the recovery loop moved to a fresh process (§6.1), but `finalReads` restarted on process 10 + g. `verify-seal` then rejected the history ("proc 10 invokes after an info completion"). V1 C2 seed 3 was INVALID three times for this reason, a persistent HARNESS_DEFECT (§12.1). Fixed in `1f1f60b` (recovery and final reads share each gateway's process), with a regression test that fails on the old behaviour with the same message. The driver was stopped with SIGTERM right after the third attempt's cpcheck event; the next run stopped in its preflight before creating a run directory. Binaries and the runner image were rebuilt (`build-5`, `images-build-2`; only the runner image changed), the three attempts were set aside and stored as summaries (`harness-defect-runs/README.md`), and the campaign resumed (`campaign-start-3`). A run without an `info` recovery insert is unchanged by the fix, so the twelve runs sealed before it were reused.
-2. **C3 dropped one transaction of every reported cycle.** `find()` built a reported cycle from the anchor path without its last node and from the closing walk without its final node, so the anchor's endpoint was in neither. A two-transaction G-single read "cycle i=53 -rw-> i=53" with ops [53], on the K2 corpus too: K2.1 compares class sets only, so this had gone unnoticed since K2. Its consequences: the anomaly's ops and explanation were wrong, and `simple()` ran on the shortened list, so a closed walk that revisits that node could be reported with the walk's shape instead of a simple cycle's. Whether a closed walk exists, hence the FAIL under the serializable model, did not depend on it. It was found in the triage of the re-run C2 seed 3, whose G-single read "cycle i=3230 -rw-> i=3230". Fixed in `32b660a`. Regression tests: a two- and a four-transaction cycle, with expected ops and explanations written from §10.3, and every cycle of the K2 W1 corpus naming one transaction per edge; all three fail on the old code. `make ci-checkers` with the fix is clean (record `ci-checkers-c3fix`: K2 corpus 807 entries, 350 compared with elle-cli, 0 disagreements; the K5 and G12 corpora too), so no expected classification changed. The driver was stopped again at a run boundary, binaries and the runner image were rebuilt (`build-6`, `images-build-3`), and the 15 sealed K7 runs were re-checked (`recheck-c3fix`): 0 verdicts and 0 class sets changed, and one checks.json changed (C2 seed 3's cycle explanations). The campaign then resumed (`campaign-start-4`). The checks.json committed by K2 and K4, and K7's copies of M1's D1 checks, keep their recorded explanations (closed evidence). The K4 runs' cycles are observations (`-process`, `-realtime` and SI `G2-item` cycles), which no verdict reads.
+1. **The runner's final reads reused a retired process.** After a recovery insert ended `info`, the recovery loop moved to a fresh process (§6.1), but `finalReads` restarted on process 10 + g; `verify-seal` rejected such a history ("proc 10 invokes after an info completion"). V1 C2 seed 3 was INVALID three times for this reason, a persistent HARNESS_DEFECT (§12.1). Fixed in `1f1f60b`, with a regression test that fails on the old behaviour. The driver was stopped at a run boundary, the runner image rebuilt (`build-5`, `images-build-2`), and the three attempts set aside as summaries (`harness-defect-runs/README.md`). The twelve runs sealed before the fix had no `info` recovery insert and were reused. [CLM-0029]
+2. **C3 dropped one transaction of every reported cycle.** A reported cycle lacked the anchor's endpoint, so the anomaly's ops and explanation were wrong and the shape step ran on the shortened list. Whether a cycle exists, hence a FAIL under the serializable model, did not depend on it. Fixed in `32b660a` with three regression tests. `make ci-checkers` with the fix is clean (`ci-checkers-c3fix`). The 15 K7 runs sealed before it were re-checked before any was committed (`recheck-c3fix`): no verdict or class set changed, and one `checks.json` (V1 C2 seed 3's cycle explanations) was rewritten. What it changes in the committed evidence is §10. [CLM-0030]
 
-## 4. The matrix (§15 K7; `campaigns/k7.json`, `make campaign-k7`)
+## 4. The stop, the owner's decision and the resumption (ADR-0047)
 
-Records `campaign-start` … `campaign-start-4`, `campaign-wait`, `campaign-wait-2` (exit 1: the matrix has FAILs). The driver's summary: 130 cells complete, 19 FAIL, 111 PASS; the final dry run (`make campaign-k7 DRY_RUN=1`): 130 valid, 0 to make. Runs made with commitproof `8788818` (12 primaries: V1 C1 seeds 1–10, C2 seeds 1–2), `1f1f60b` (3 primaries: V1 C2 seeds 3–5, re-checked with the fixed C3, §3) and `32b660a` (every other run: 127 primaries and INVALID attempts, 43 minimization candidates, 27 replays); every manifest says contract 1.8.1, clean tree. K7's runs ran with ADR-0038's metrics exporter (LIM-41).
+K7 first closed BLOCKED at its store step (record `store`, exit 4; closure at `fb5d22f`): the P25 projection after storing every K7 run was 251 678 804 bytes, above 250 MB. Nothing stored was dropped. The owner then approved P25 = 275 000 000 bytes, asked that the cited D3′/D5 runs be kept in full, and asked for an audit of the claims the C3 correction affects. ADR-0047 records the decision verbatim (contract 1.9.0, `566d1af`). K7 resumed from the store step: `store-2` stored nothing new and reported a projection of 251 729 547 bytes against 275 000 000 (exit 0). [CLM-0014] [CLM-0033]
 
-| Cell | Campaign / profile | Valid runs | FAIL | Classes of the FAIL runs |
+## 5. The matrix (§15 K7; `campaigns/k7.json`, `make campaign-k7`)
+
+Records `campaign-start` … `campaign-start-4`, `campaign-wait`, `campaign-wait-2`. The final dry run reported 130 valid and 0 to make. Runs were made with commitproof `8788818` (12 primaries), `1f1f60b` (3 primaries, re-checked with the fixed C3) and `32b660a` (every other run). Every manifest says contract 1.8.1, clean tree, and every run had ADR-0038's metrics exporter (LIM-41). `k7results` wrote `results.json` and `runs-index.json` (215 stored K7 runs with their seal roots); `render-k7` wrote the campaign page with §12.3's statistics. [CLM-0020]
+
+| Cell | Campaign / profile | Valid runs | Failing runs | Classes of the failing runs |
 |---|---|---|---|---|
-| V1 | C1 / baseline | 10 | 0 | — |
-| V1 | C2 / baseline | 10 | 4 | seed 3: G-nonadjacent, G-single, G2-item, incompatible-order; seed 7: non-linearizable; seed 8: incompatible-order; seed 9: incompatible-order, non-linearizable |
-| V1 | C3, C4, C5, C6, C7, C10, C12 / baseline | 10 each | 0 | — |
-| V1 | C9 / baseline | 10 | 10 | notify-not-resumed (all) |
-| V2 | C1, C4 / slotless | 5 each | 0 | — |
-| V2 | C2 / slotless | 5 | 2 | seed 1: non-linearizable; seed 3: incompatible-order, non-linearizable |
-| V3 | C8 / buffered | 10 | 3 | planned-failover-error (seeds 3, 6, 10) |
-| V5 | C11 / baseline | 5 | 0 | — |
+| V1 | C1 / baseline | 10 | 0 | — [CLM-0020] |
+| V1 | C2 / baseline | 10 | 4 | seed 3: G-nonadjacent, G-single, G2-item, incompatible-order; seed 7: non-linearizable; seed 8: incompatible-order; seed 9: incompatible-order, non-linearizable [CLM-0020] |
+| V1 | C3, C4, C5, C6, C7, C10, C12 / baseline | 10 each | 0 | — [CLM-0020] |
+| V1 | C9 / baseline | 10 | 10 | notify-not-resumed (all) [CLM-0020] |
+| V2 | C1, C4 / slotless | 5 each | 0 | — [CLM-0020] |
+| V2 | C2 / slotless | 5 | 2 | seed 1: non-linearizable; seed 3: incompatible-order, non-linearizable [CLM-0020] |
+| V3 | C8 / buffered | 10 | 3 | planned-failover-error (seeds 3, 6, 10) [CLM-0020] |
+| V5 | C11 / baseline | 5 | 0 | — [CLM-0020] |
 
-**No acknowledged write was lost in any valid K7 run**: C1 (lost-acked-writes, final-read divergence) is `valid: true` in all 130 valid primaries' checks.json (`evidence/K7/runs/`).
+**No acknowledged write was lost in any valid K7 run**: C1 is valid in all 130 valid primaries. [CLM-0025]
 
-INVALID attempts (re-run with the same seed, §12.1; none counted; each stored as a summary with its checks.json; causes from cpcheck's summaries in `runs/k7/campaign-k7.log`):
+INVALID attempts were re-run with the same seed (§12.1) and none is counted; each is stored as a summary with its checks.json, and `results.json` lists each one with its cause [CLM-0020]:
 
 | Cause | Attempts |
 |---|---|
-| harness defect: final reads on a retired process (§3 item 1) | V1 C2 seed 3 ×3 (set aside, `harness-defect-runs/README.md`) |
-| F6 not confirmed within 60 s (the decided rule's leader did not change) | V1 C9 seeds 2, 4; V1 C10 seed 4 ×2; V3 C8 seed 10 |
-| F5b not confirmed within 120 s (the leader's `synchronous_standby_names` still named n4) | V1 C4 seed 2; V1 C12 seed 7; V2 C4 seed 2 ×2 |
-| no recovery within P06 (final reads not completed) | V1 C9 seed 3 ×2; V1 C9 seed 5; one replay attempt of V1 C2 seed 3 (§7) |
-| F3a not heal-confirmed within 30 s | V1 C3 seed 8 |
+| harness defect: final reads on a retired process (§3 item 1) | V1 C2 seed 3 ×3 |
+| F6 not confirmed within 60 s (the decided rule's leader did not change) | V1 C9 seeds 2, 4; V1 C10 seed 4 ×2 [CLM-0020] |
+| F5b not confirmed within 120 s | V1 C4 seed 2; V1 C12 seed 7; V2 C4 seed 2 ×2 [CLM-0020] |
+| no recovery within P06 (final reads not completed; §11) | V1 C9 seed 3 ×2; V1 C9 seed 5 |
+| F3a not heal-confirmed within 30 s | V1 C3 seed 8 [CLM-0020] |
 
 Every cell reached a valid run within its three attempts.
 
-## 5. Failures: repeats and new failures (ADR-0045)
+## 6. Failures: repeats and new failures (ADR-0045)
 
-ADR-0045's predicates (`internal/repeats`, fixed before any K7 run) classified the 19 FAIL runs:
+ADR-0045's predicates (`internal/repeats`, fixed before any K7 run) classified the 19 failing runs [CLM-0026]:
 
-- **14 repeats**, counted in their cells and stored as summaries, not minimized: V1 C2 seed 7 (R-G6), seed 8 (R-G2b), seed 9 (R-G2b and R-G6); V1 C9 seeds 1–10 (R-G10); V2 C2 seed 3 (R-G2b and R-G6). They are to be cited as recurrences by the packages of FND-D1-fb8d0f8c, FND-D1-2e860fd2, FND-D1-a8eb9857, FND-C2-2a534585 (R-G2b), FND-C2-6806aeca (R-G6) and FND-C9-40b6f05a, FND-C9-2fe9a9fc, FND-C9-90da5532 (R-G10).
-- **5 new failures**, minimized and replayed 5× by the driver (journals `<run>.minimize.json`, all `done: true`), their original and minimized runs stored in full. Not yet triaged or packaged (§9); what the checkers and the driver recorded:
+- **14 repeats**, counted in their cells, stored as summaries and not minimized: V1 C2 seed 7 (R-G6), seed 8 (R-G2b), seed 9 (R-G2b and R-G6); V1 C9 seeds 1–10 (R-G10); V2 C2 seed 3 (R-G2b and R-G6). Each has a triage record (`triage/<run>.json`, `scripts/k7-triage-final.py`: §6.2 review, oracle record for C3, §11 classification), and each is listed with its matched fields as a recurrence in the packages its predicates stand for. [CLM-0026]
+- **5 new failures**, minimized and replayed 5× by the driver, original and minimized runs stored in full, triaged by hand (`triage/<run>.json`) and packaged as new findings (§9) [CLM-0026]:
 
-| Run | Target class | Why no predicate matched | Minimized run | Replays with the class |
+| Run | Finding | Why no predicate matched | Minimized run | Recorded replays with the class |
 |---|---|---|---|---|
-| V1 C2 seed 3 `20261016T173617Z-C2-3-real-9375b700` | G-nonadjacent | three C3 cycle groups (G-nonadjacent, G-single, G2-item) have no predicate; its incompatible-order group matches R-G2b | the original (no candidate kept G-nonadjacent; 11 candidates) | 0 of 5 |
-| V2 C2 seed 1 `20261016T221153Z-C2-1-real-c8781715` | non-linearizable | R-G6 condition 5: F1c not among the confirmed faults (F1b, F1d) | `20261017T002205Z-C2-1-real-316f3877` | 5 of 5 |
-| V3 C8 seed 3 `20261016T225050Z-C8-3-real-537e02d1` | planned-failover-error | G8 has no predicate | the original (11 candidates) | 2 of 5 |
-| V3 C8 seed 6 `20261016T230045Z-C8-6-real-9601ddce` | planned-failover-error | as above | the original | 0 of 5 |
-| V3 C8 seed 10 `20261016T231406Z-C8-10-real-cb16d052` | planned-failover-error | as above | the original | 1 of 5 |
+| V1 C2 seed 3 `20261016T173617Z-C2-3-real-9375b700` | FND-C2-c7475a73 (G5) | its C3 cycle groups have no predicate (its incompatible-order group matches R-G2b) | the original (11 candidates) | 0 of 5 G-nonadjacent [CLM-0046] |
+| V2 C2 seed 1 `20261016T221153Z-C2-1-real-c8781715` | FND-C2-8215101c (G6) | R-G6's condition 5: F1c not among the confirmed faults (F1b, F1d) | `20261017T002205Z-C2-1-real-316f3877` (F1d alone, 22.5 s) | 5 of 5 [CLM-0045] |
+| V3 C8 seed 3 `20261016T225050Z-C8-3-real-537e02d1` | FND-C8-ff4475d8 (G8) | G8 has no predicate | the original (11 candidates) | 2 of 5 [CLM-0047] |
+| V3 C8 seed 6 `20261016T230045Z-C8-6-real-9601ddce` | FND-C8-e6b7ca52 (G8) | as above | the original | 0 of 5 [CLM-0048] |
+| V3 C8 seed 10 `20261016T231406Z-C8-10-real-cb16d052` | FND-C8-5254b5cb (G8) | as above | the original | 1 of 5 [CLM-0049] |
 
-Preliminary reading (system did; not yet a triage). C2 seed 3: an `info` transaction's appends (i=3178, 62 to key 12 and 63 to key 13) were read by `ok` transactions and later absent from the final reads; C3 infers key 12's version order from the transactions' reads only (LIM-22), so the vanish appears as dependency cycles; elle-cli finds the same G-single on keys 12 and 13 (§6). C8 seed 3: two explicit transactions invoked 19 ms after a judged switchover's injection got `57P03` on their first statement (`info`), not `40001`. Their classification by §11 (guarantee, origin, known status) is the triage still to do.
+The triage, in short:
 
-## 6. K7.3: elle-cli on the matrix's C3 anomalies (ADR-0046)
+- **FND-C2-c7475a73.** Every cycle runs through the `info` transaction i=3178, whose key-12 element was read by `ok` transactions and is absent from the final reads after the failover to n3. C3 infers key 12's version order from the transactions' reads (LIM-22). Origin UNDETERMINED: the cycles may be the vanish's effect on that order; the replays reproduced the vanish without cycles. [CLM-0046]
+- **FND-C2-8215101c.** FND-C2-6806aeca's mechanism with the leader reachable through F1d instead of F1c: a `cas` whose client timed out became visible, was read by an `ok` read, and was removed by the failover. POSTGRES_INHERITED. [CLM-0045]
+- **The three C8 findings.** Explicit transactions that began 15–20 ms after a judged switchover's injection received `57P03` on a statement after `BEGIN`, not `40001`. S14 lists the errors the gateway buffers, and `57P03` is not one of them. Origin hypothesis MULTIGRES; the routing is not traced. [CLM-0047] [CLM-0048] [CLM-0049]
 
-Group `oracle` (records `oracle-…`, `check-…`, `elle-validity-…`, `elle-validity-xmx9g-…`, `elle-process-…`, `k7oracle-…`), no cluster running. Four matrix runs have C3 anomalies; none is a plain confirmation, each is triaged in its record (`evidence/K7/oracle/<run-id>.json`):
+## 7. K7.3: elle-cli on C3 anomalies (ADR-0046)
+
+Group `oracle` (no cluster running). Four matrix runs have C3 anomalies; each is labelled oracle-disagreement with a triage in `oracle/<run-id>.json` [CLM-0027]:
 
 | Run | elle-cli | Result |
 |---|---|---|
-| V1 C2 seed 3 | validity pass: invalid; incompatible-order, G-single (same keys 12 and 13 as C3's G-single, record `cycle-keys-…`), cycle-search-timeout; no answer for G-nonadjacent, G2-item | oracle-disagreement |
-| V1 C2 seed 8 | out of memory (default heap and 9 GB) | oracle-disagreement (no answer, LIM-31) |
-| V1 C2 seed 9 | invalid; incompatible-order, plus a G-single through key 42, whose reads are incompatible (record `cycle-keys-…`), as K4's D1 seed 3 | oracle-disagreement |
-| V2 C2 seed 3 | out of memory (default heap and 9 GB) | oracle-disagreement (no answer, LIM-31) |
+| V1 C2 seed 3 | validity pass: invalid; incompatible-order and the same G-single as C3 (keys 12 and 13); cycle search timed out, no answer for G-nonadjacent and G2-item | oracle-disagreement [CLM-0027] |
+| V1 C2 seed 8 | out of memory (default heap and 9 GB) | oracle-disagreement, no answer (LIM-31) [CLM-0027] |
+| V1 C2 seed 9 | invalid; incompatible-order plus a G-single through key 42, whose reads are incompatible | oracle-disagreement [CLM-0027] |
+| V2 C2 seed 3 | out of memory (default heap and 9 GB) | oracle-disagreement, no answer (LIM-31) [CLM-0027] |
 
-M1's five D1 runs (records of 2026-10-16 04:12–04:21Z, `evidence/K7/oracle/20261011T*-D1-*-M1-*.json`): three labelled oracle-disagreement because elle-cli did not complete (seeds 1, 2, 5), two because elle-cli adds G0 and G-single cycles through incompatible keys (seeds 3, 4).
+M1's five D1 runs (records of 2026-10-16 04:12–04:21Z): three oracle-disagreement because elle-cli did not complete (seeds 1, 2, 5), two because elle-cli adds G0 and G-single cycles through incompatible keys (seeds 3, 4). [CLM-0027]
 
-## 7. Observation: no recovery within P06 in four INVALID attempts
+## 8. K7.4: each package's replay command executed once more
 
-Four attempts ended INVALID because no recovery insert succeeded within P06 (120 s) after the final heal (§4). Records `liveness-<run>` (`scripts/k7-liveness.py` over each sealed run's history and observations) show the same state in all four: one node is (or becomes) PRIMARY of the latest rule with its WAL position moving, every other node reports REPLICA with its WAL position frozen from the final heal to the end, and all 33 recovery inserts (11 per gateway) end `info` at the client deadline. In three of them the decided cohort had shrunk to two members. With `AT_LEAST_2` a commit on the primary then waits for a standby that does not replicate. In C9 the same plans produced valid runs on a later attempt. §11.1 names "no recovery within P06" a LIVENESS_OBSERVATION; §12.1 makes such a run INVALID (its final reads cannot complete), so these attempts count toward nothing and no K7 criterion packages them. They are reported here for the owner; their full archives are in `runs/k7/` on this machine.
+Group `pkgreplay`, no other cluster running. Each package's minimized run was extracted from its committed archive (seal verified against `finding.json`), and `commitproof replay <minimized run> --times 5` was executed (record `pkg-replay-<id>`; P13's command, the only count the CLI accepts). CommitProof `e8eca97`, contract 1.9.0, ran with the metrics exporter. The replays are stored as summaries in `package-replays/`, and `k7findings` wrote their results into each `finding.json` (`k7_replay`). The recorded reproducibility stands; this is reported beside it.
 
-## 8. Storage and P25: the stop
+<!-- K7.4-TABLE -->
 
-Record `store` (`scripts/k7-store.sh runs/k7 evidence/K7/runs --pending 0`, exit 4): 212 run directories stored once — **6 in full** (the five new failures' originals, V2 C2 seed 1's minimized run; ADR-0045) and **206 summaries** (stub and checks.json: the other matrix runs, every repeat, every INVALID attempt, every minimization candidate and replay). Measured:
+## 9. Findings packages (§11.4)
 
-| Quantity | Bytes |
-|---|---|
-| P25 count after the store step (every byte under `evidence/`; no run archive under `findings/`) | 246 678 804 |
-| ADR-0045 §5 projection: count + 0 pending runs × 85 420 (mean summary) + 5 000 000 (K7's remaining records and text) | **251 678 804** |
-| Not in that projection: K7.4's re-execution of the replay command of 14 packages (9 recorded + 5 new) × 5 replays as summaries ≈ 70 × 85 420 | ≈ 5 979 400 (→ ≈ 257 658 204) |
-| The cited D3′ and D5 real-build runs in full (decision 2, only if P25 holds) | ≈ 11 830 000 (→ ≈ 269 488 204) |
+Fourteen packages under `findings/` (written, not published): the nine recorded findings, with the classifications ADR-0042 and ADR-0043 gave them and the recorded classification beside them, and the five new findings of §6. Each holds README (upstream issue format, S50; first line G1), `finding.json`, `plan.json` (minimized plan), `checks.json` (original run's), `report-excerpt.md` (from cpreport's page of the original run, `render-pkg-<id>`, `excerpt-<id>`) and `claim.yaml`. [CLM-0040] [CLM-0041] [CLM-0042] [CLM-0043] [CLM-0044] [CLM-0045] [CLM-0046] [CLM-0047] [CLM-0048] [CLM-0049] [CLM-0050] [CLM-0051] [CLM-0052] [CLM-0053]
 
-The projection exceeds 250 MB, so K7 stops BLOCKED (the owner's decision 1). Before K7, `evidence/` held 222 011 297 bytes (2026-10-16 11:00 CST), 222 399 038 before the store step; the store added 24 279 766. The five new failures add about 9.4 MB in full. Options for the owner are in the closure.
+## 10. What the C3 correction changes (`c3-correction-audit.md`)
 
-## 9. Not done (after the store step), and drafts
+`scripts/k7-c3-audit.sh` re-checked, in scratch copies, every committed run held in full that has a C3 result, with the corrected cpcheck (record `c3-audit-2`). Of 172 runs, none changed its verdict, C3 validity, anomaly classes, class totals or observation classes; 166 are identical. In 6 K4 runs only the operations and explanations of cycles changed, all of them `-process`, `-realtime` or SI observations that no verdict reads. One of them is FND-D1-a8eb9857's original run, whose package `checks.json` must stay byte-identical; its README now says so. No README, LIMITATIONS row, finding or claim quotes a C3 cycle's operations from before the fix. LIM-44 records it. [CLM-0015]
 
-Not done, in prompts/K7.md's order: `results.json` and `runs-index.json` (`k7results`), the campaign pages (`render-k7`, `render-cited-k4`, `render-cited-k5`), the triage records of the 19 FAIL runs (`scripts/k7-triage-final.py` for repeats; the five new failures by hand), the packages of the five new findings, K7.4's replays, `claims.yaml`, the final README, LIMITATIONS and CHANGELOG, `cpgate K7`, the CI targets, the tag `v1.0.0`, and the decision on D3′/D5. Drafts committed for the resumed K7, not final: `findings/` (the nine recorded findings' packages without their K7 sections, recurrences and K7 replays), `README.md`, `CHANGELOG.md`, `evidence/K7/overclaim-review.md`, and LIMITATIONS' LIM-16 and LIM-43.
+## 11. Observation: no recovery within P06 in four INVALID attempts
 
-## 10. Deviations from the prompt
+Four attempts ended INVALID because no recovery insert succeeded within P06 (120 s) after the last heal: V1 C9 seed 3 ×2, V1 C9 seed 5, and replay 4 of V1 C2 seed 3. Records `liveness-<run>` (`scripts/k7-liveness.py`) and `liveness-summary` show the same state in all four. One node is PRIMARY of the latest rule with its WAL position moving; every other node reports REPLICA with its WAL position frozen from the last heal to the end; all 33 recovery inserts (11 per gateway) end `info` at the client deadline. With `AT_LEAST_2`, a commit then waits for a standby that does not replicate. §11.1 names this a LIVENESS_OBSERVATION; §12.1 makes the run INVALID, so these attempts count toward nothing and no criterion packages them (LIM-45). Each cell reached a valid run on a later attempt. Why replication stopped is not determined; the full archives are in `runs/k7/` on this machine. [CLM-0016]
 
-- K7.4 executes each package's P13 replay command (`--times 5`): the CLI accepts no other count, and cpgate K7's check is corrected accordingly (`9807b0c`). That adds about 6 MB of replay summaries to finish K7 (§8).
-- Two harness defects were fixed during the matrix (§3); the driver was stopped twice at a run boundary to rebuild, and the sealed runs were re-checked, not recomputed.
-- The four "no recovery within P06" attempts are reported as an observation (§7); the contract gives no package for INVALID runs.
+## 12. Storage and P25 (ADR-0039, ADR-0045, ADR-0047)
 
+- Store step (`store`): 212 run directories stored once, 6 in full (the five new failures' originals and V2 C2 seed 1's minimized run) and 206 as summaries (stub and `checks.json`). [CLM-0014]
+- The cited D3′ and D5 real-build runs in full (`store-cited`): 10 archives from `runs/k5-full/` into `cited/`, each manifest, plan and seal byte-identical to K5's stub, its seal verified and its root equal to K5's `checks.json`. K5's stubs are untouched. Their campaign page (`render-cited-full`) gives both cells exposure from the histories and §12.3's statement. [CLM-0018]
+- K7.4's 70 replays are stored as summaries in `package-replays/`. [CLM-0028]
+
+<!-- P25-FINAL -->
+
+## 13. Claims, overclaims, public documents
+
+- `claims.yaml` (§17) holds every claim of README, LIMITATIONS and this file, each with contract section, target, command, artifact, the artifact's sha256 (a run archive: its seal root), result and limitations. Each package's `claim.yaml` is its entry there.
+- `overclaim-review.md` lists every statement changed from earlier sprints' drafts, K7's BLOCKED draft included, and why.
+- README: the §4 matrix verbatim, results per cell with §12.3's statement for every clean cell (K7's 11 and the cited D2′, P1, DH1, D3′ and D5 real-build cells), mutants beside the real build, H1, the findings ordered by severity after the G1 line, and the limitations summary.
+- LIMITATIONS: no row PENDING; LIM-16 OPEN (owner action: the first remote CI run); new rows LIM-44 (C3 correction) and LIM-45 (liveness is recorded, not judged).
+
+## 14. CI and release
+
+`make lint-workflow` and every `make ci-*` target (`ci-unit`, `ci-checkers`, `ci-cluster-smoke`, `ci-nemesis-smoke`, `ci-mutant-smoke`, `ci-report`) ran on the release commit's clean build (record `ci…`). The annotated tag `v1.0.0` is local (`git tag -a`); `scripts/k7-tag-check.sh` records its object type, its commit, that its code equals the CI's, and that no remote-tracking ref contains K7's first commit. Nothing was pushed.
+
+## 15. Deviations from the prompt
+
+- K7 stopped once BLOCKED at the store step (owner decision 1) and resumed after the owner raised P25 to 275 MB (ADR-0047, contract 1.9.0). The version changed after the matrix, not while it ran. K7.4's replays record 1.9.0 in their manifests and replay their packages' plans unchanged.
+- K7.4 executes each package's P13 replay command (`--times 5`): the CLI accepts no other count, and cpgate K7's check was corrected to it (`9807b0c`).
+- Two harness defects were fixed during the matrix (§3); the driver was stopped twice at a run boundary, and the sealed runs were re-checked, not recomputed.
+- `k7findings` counted an INVALID replay attempt as a recorded replay; fixed (`65ff46a`) before any package was written from it.
+- The four "no recovery within P06" attempts are reported as an observation (§11, LIM-45): the contract gives no package to INVALID runs.

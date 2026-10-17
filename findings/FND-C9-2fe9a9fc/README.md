@@ -4,7 +4,7 @@
 
 This package is an **independent reproduction** supporting the open upstream pull request #1550 (S53, "fix(multigateway): re-establish LISTEN notification stream after leader change"), not a new issue (ADR-0043): the known status is `KNOWN`. Nothing was posted upstream.
 
-| Dimension | Value (contract 1.8.1) | Recorded in K5 (contract 1.0.9) |
+| Dimension | Value (contract 1.9.0) | Recorded in K5 (contract 1.0.9) |
 |---|---|---|
 | Finding | FND-C9-2fe9a9fc | FND-C9-2fe9a9fc |
 | Guarantee | **G10** — LISTEN subscriptions resume after a failover: notifications sent after recovery are delivered (§3) | G10 |
