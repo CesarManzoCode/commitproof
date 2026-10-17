@@ -1,0 +1,7 @@
+running kernel: 7.2.10-arch1-1
+installed linux package: 7.2.10.arch1-1
+module trees installed: 7.2.10-arch1-1 
+[2026-10-17T12:09:26-0600] [ALPM] upgraded linux (7.2.9.arch1-1 -> 7.2.10.arch1-1)
+veth loaded: 1
+/lib/modules/7.2.10-arch1-1/kernel/drivers/net/veth.ko.zst
+kernel matches package; veth available and loaded

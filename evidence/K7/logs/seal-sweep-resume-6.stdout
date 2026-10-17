@@ -1,0 +1,7 @@
+NOT VALID: runs/k7-invalid/20261016T172043Z-C2-3-real-9375b700
+NOT VALID: runs/k7-invalid/20261016T172408Z-C2-3-real-9375b700
+NOT VALID: runs/k7-invalid/20261016T172745Z-C2-3-real-9375b700
+runs/k7: 212 run directories
+runs/k7-pkg: 36 run directories
+runs/k7-invalid: 6 run directories
+{"run_directories":254,"seal_valid":251,"not_valid":3}
