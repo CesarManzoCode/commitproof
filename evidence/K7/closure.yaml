@@ -61,7 +61,7 @@ commits:
   - {sha: "f3f465c", message: "test(k7): tag check of v1.0.0 at 5a69aa9; first cpgate K7 run — K7.1–K7.7 PASS, negative controls defective (exit 1)"}
   - {sha: "9056ede", message: "fix(gate): K7's negative controls reach every sprint's evidence; K7.2's forgery isolates its target; K7.7 reads the latest tag check"}
   - {sha: "36d25e6", message: "fix(k7): the gate group runs cpgate with TMPDIR on disk"}
-  - {sha: "(this commit)", message: "test(k7): K7 closure — BLOCKED before the release CI and gate re-run (the session stopped a gate verification at critical memory pressure)"}
+  - {sha: "732e4ec", message: "test(k7): K7 closure — BLOCKED before the release CI and gate re-run (the session stopped a gate verification at critical memory pressure)"}
 gate:
   command: "cpgate K7 --evidence evidence/K7 --negative-controls"
   record: "cpgate-k7 (on 5a69aa9; binaries of 77c5f6c, before the controls' fixes)"
