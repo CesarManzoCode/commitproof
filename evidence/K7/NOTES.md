@@ -22,6 +22,21 @@ Resume protocol (as in K4, K5 and K6b):
 
 The `docker-cleanup-resume` record was first written with raw newlines in its argv; the line was rejoined with escaped newlines and `record-command.sh` fixed (`748e549`).
 
+### 2.1 The second host power-off (during K7.4) and its resume
+
+The owner's machine was powered off a second time, during K7.4 (§8): `last -x` shows "shutdown system down" at 2026-10-16 22:57 CST, and `journalctl -b -1` ends that boot with systemd unmounting the file systems at 2026-10-17T04:57:02Z. The next boot started at 16:59:11Z. State found before anything was touched:
+
+- **Git**: `main` at `43d7d1d`, nothing pushed. Uncommitted: K7.4's records, logs and replay summaries of five packages; `claims.yaml` and each package's `claim.yaml` (in progress); wording corrections in the three C8 packages' READMEs and in V3 C8 seed 3's triage record. Each correction was checked against the sealed histories: seed 3's i=2411 ran on gw-z2, seed 6's i=2408 on gw-z3, seed 10's i=2409 and i=2410 on gw-z1 and i=2411 on gw-z3.
+- **Campaign**: the matrix is complete. 130 valid primaries (19 FAIL, 111 PASS) carry 1.8.1 plans, and all 248 run directories under `runs/k7` and `runs/k7-pkg` pass `cpcheck verify-seal`. A dry run with today's binaries lists 130 runs to make. That is only because those binaries make 1.9.0 plans (ADR-0047), whose sha256 differs from the matrix's 1.8.1 plans. The matrix is not re-run.
+- **K7.4**: `pkg-replay-<id>` exited 0 for FND-C11-17a344c1, FND-C2-2a534585, FND-C2-6806aeca, FND-C2-8215101c and FND-C2-c7475a73. `pkg-replay-FND-C8-5254b5cb` (started 04:46:56Z) has logs and no record. Its replays 1 and 2 are sealed and checked (PASS, PASS). Replay 3, `20261017T045333Z-C8-10-real-cb16d052`, was sealed at 04:56:49Z (verify-seal valid, `run-end` complete) but never checked. Its cluster was being taken down when the host shut down. No run directory is unsealed, so nothing is archived. `commitproof replay` reuses the sealed replays of the same plan and provenance, and checks the unchecked one. The command is re-executed under the next record name (`pkg-replay-FND-C8-5254b5cb-2`; cpgate K7.4 reads the latest). Eight packages had not started.
+- **Docker**: 8 exited project containers, `commitproof_cpnet` and seven project volumes. No project process was running, and no FUSE mount was left over.
+
+Resume protocol:
+
+1. `prereq-check-resume-3` exited 2 with 24 of 26 checks: D5 failed on this project's leftover `commitproof_cpnet`, and R1 failed with MemAvailable 10.61 GiB against at least 12 GiB. `docker-cleanup-resume-2` removed only the resources labelled `com.docker.compose.project=commitproof`: 8 containers, 1 network, 7 volumes. Images were kept, and no sudo was used. `prereq-check-resume-4` passed 25 of 26. **R1 still failed**: MemAvailable 10.62 GiB of 14.91 GiB, with the owner's browser holding about 5.6 GiB RSS. `evidence/K1/prereq.json` was restored to its committed content both times (copies `prereq-resume-3.json`, `prereq-resume-4.json`). [CLM-0054]
+2. `precondition-resume-2`: cpgate K1–K6 on copies of the closed evidence, every criterion PASS. `images-verify-resume-2`: the local images equal the lock. [CLM-0055]
+3. R1 is a prerequisite of the owner's machine (AGENTS.md §3). K7 stopped BLOCKED before any further cluster run (`closure.yaml`).
+
 ## 3. Harness defects found in K7 (none is a Multigres finding, §11.1)
 
 1. **The runner's final reads reused a retired process.** After a recovery insert ended `info`, the recovery loop moved to a fresh process (§6.1), but `finalReads` restarted on process 10 + g; `verify-seal` rejected such a history ("proc 10 invokes after an info completion"). V1 C2 seed 3 was INVALID three times for this reason, a persistent HARNESS_DEFECT (§12.1). Fixed in `1f1f60b`, with a regression test that fails on the old behaviour. The driver was stopped at a run boundary, the runner image rebuilt (`build-5`, `images-build-2`), and the three attempts set aside as summaries (`harness-defect-runs/README.md`). The twelve runs sealed before the fix had no `info` recovery insert and were reused. [CLM-0029]
@@ -98,6 +113,8 @@ M1's five D1 runs (records of 2026-10-16 04:12–04:21Z): three oracle-disagreem
 
 Group `pkgreplay`, no other cluster running. Each package's minimized run was extracted from its committed archive (seal verified against `finding.json`), and `commitproof replay <minimized run> --times 5` was executed (record `pkg-replay-<id>`; P13's command, the only count the CLI accepts). CommitProof `e8eca97`, contract 1.9.0, ran with the metrics exporter. The replays are stored as summaries in `package-replays/`, and `k7findings` wrote their results into each `finding.json` (`k7_replay`). The recorded reproducibility stands; this is reported beside it.
 
+State at the stop of §2.1: 5 of 14 packages replayed. FND-C8-5254b5cb's replay command was interrupted after its third replay. FND-C8-e6b7ca52, FND-C8-ff4475d8, the three C9 packages and the three D1 packages had not started. The class counts of each replay command's summary line are its own target class (for FND-C2-6806aeca, the shared minimized run's `incompatible-order`). The package's class is recounted into `finding.json` by `k7findings` and by cpgate K7.4, and no package's `k7_replay` is written yet. Replay 3 of FND-C2-c7475a73 was INVALID twice (`20261017T042636Z…`, `20261017T043111Z…`: `run-end` "recovery deadline P06 exceeded", as in §11). Per §12.1 it was re-run with the same seed and was valid on its third attempt.
+
 <!-- K7.4-TABLE -->
 
 ## 9. Findings packages (§11.4)
@@ -138,3 +155,5 @@ Four attempts ended INVALID because no recovery insert succeeded within P06 (120
 - Two harness defects were fixed during the matrix (§3); the driver was stopped twice at a run boundary, and the sealed runs were re-checked, not recomputed.
 - `k7findings` counted an INVALID replay attempt as a recorded replay; fixed (`65ff46a`) before any package was written from it.
 - The four "no recovery within P06" attempts are reported as an observation (§11, LIM-45): the contract gives no package to INVALID runs.
+- A second host power-off interrupted K7.4 (§2.1): one replay command had no record, and its three replays were sealed. The command is resumable and is re-executed under the next record name; no sealed run is recomputed. At this resume `make prereq-check` failed R1 (available memory) after the cleanup, so K7 stopped BLOCKED again before any further cluster run.
+- The owner's decision text of 2026-10-15 gives P25 as 250 MB. The owner's later decision on K7's first BLOCKED closure (2026-10-16, ADR-0047) raised it to 275 MB, and K7 enforces 275 MB.

@@ -1,0 +1,10 @@
+# The §17 claim of this package; the same entry is CLM-0048 in claims.yaml.
+id: CLM-0048
+text: "FND-C8-e6b7ca52 (G8, PROTOCOL_DEVIATION, DESIGN, medium, origin MULTIGRES, NEW): explicit transactions that began during a judged buffered switchover received 57P03, not 40001."
+contract: "§3 G8, §11, §11.4"
+target: {system: "multigres", commit: "e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73", profile: "buffered", mutant: "none"}
+command: "cpcheck check on the original run; bin/commitproof replay 20261016T230045Z-C8-6-real-9601ddce --times 5 (P13; K7.4 record pending)"
+artifact: "evidence/K7/runs/20261016T230045Z-C8-6-real-9601ddce.tar.zst"
+sha256: "b0605bbb4c445d34bfd3df15434aba0c768e28e5f4e88ae43cb7230c76430028"
+result: "original run 20261016T230045Z-C8-6-real-9601ddce: FAIL planned-failover-error; recorded replays 0 of 5 with planned-failover-error (NOT_REPRODUCED); 0 K7 recurrences"
+limitations: ["LIM-25", "LIM-01", "LIM-41"]

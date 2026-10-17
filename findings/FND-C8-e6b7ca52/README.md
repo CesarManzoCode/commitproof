@@ -17,7 +17,7 @@ Cross-reference: the same mechanism in K7's V3 C8 seeds 3, 10 (FND-C8-ff4475d8, 
 
 ## Summary
 
-In K7's V3 C8 seed 6 (profile `buffered`) on the real build, the run's first F6 gracefully switched the leader n1 over to n2. The explicit transaction i=2408 (gw-z3) began 15 ms after the switchover began and received SQLSTATE `57P03` (cannot_connect_now) on a statement after `BEGIN`, before any of its reads returned a result, not `40001`. G8 allows an explicit transaction in a buffered switchover `40001` and nothing else (§10.10: C9 `planned-failover-error`). In the same window 64 other explicit transactions failed with `40001`, and every single autocommit statement completed `ok`. No acknowledged write was lost (C1 valid). The class appeared in 0 of 5 replays of the run's plan.
+In K7's V3 C8 seed 6 (profile `buffered`) on the real build, the run's first F6 gracefully switched the leader n1 over to n2. The explicit transaction i=2408 (gw-z3) began 15 ms after the switchover began and received SQLSTATE `57P03` (cannot_connect_now) on a statement after `BEGIN`, before any of its reads returned a result, not `40001`. G8 allows an explicit transaction in a buffered switchover `40001` and nothing else (§10.10: C9 `planned-failover-error`). In the same window 64 other explicit transactions failed with `40001`, and no single autocommit statement ended `fail` or `info`. No acknowledged write was lost (C1 valid). The class appeared in 0 of 5 replays of the run's plan.
 
 ## Version and environment
 

@@ -1,0 +1,10 @@
+# The §17 claim of this package; the same entry is CLM-0043 in claims.yaml.
+id: CLM-0043
+text: "FND-C2-2a534585 (G2b, SAFETY_VIOLATION, INFERRED, high, origin POSTGRES_INHERITED, NEW): reads of an append whose client timed out (info) return a value that the next failover removes; no acknowledged write is lost."
+contract: "§3 G2b, §11, §11.4"
+target: {system: "multigres", commit: "e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73", profile: "baseline", mutant: "none"}
+command: "cpcheck check on the original run; bin/commitproof replay 20261012T025629Z-C2-3-real-3fb018bf --times 5 (P13; K7.4 record pending)"
+artifact: "evidence/K4/runs/20261011T231036Z-C2-3-real-f4505b54.tar.zst"
+sha256: "a5472bd9c4212b63ab9397b7ff513a05ba7efe81aeeed54c7da492d6b20c4969"
+result: "original run 20261011T231036Z-C2-3-real-f4505b54: FAIL incompatible-order, non-linearizable; recorded replays 2 of 5 with incompatible-order (INTERMITTENT); 3 K7 recurrences"
+limitations: ["LIM-33", "LIM-22", "LIM-01"]

@@ -1,0 +1,10 @@
+# The §17 claim of this package; the same entry is CLM-0045 in claims.yaml.
+id: CLM-0045
+text: "FND-C2-8215101c (G6, SAFETY_VIOLATION, DESIGN, high, origin POSTGRES_INHERITED, NEW): an ok register read returns a value whose write ended info and that the next failover removes."
+contract: "§3 G6, §11, §11.4"
+target: {system: "multigres", commit: "e3cbdbbb0b94453ca2ec43c9c40c05c98ed7bb73", profile: "slotless", mutant: "none"}
+command: "cpcheck check on the original run; bin/commitproof replay 20261017T002205Z-C2-1-real-316f3877 --times 5 (P13; K7.4 record pending)"
+artifact: "evidence/K7/runs/20261016T221153Z-C2-1-real-c8781715.tar.zst"
+sha256: "e0783b2feba2e17571e389340cc9cace5672c3bef7e0f8782bfb1750b0efe5a8"
+result: "original run 20261016T221153Z-C2-1-real-c8781715: FAIL non-linearizable; recorded replays 5 of 5 with non-linearizable (REPRODUCED); 0 K7 recurrences"
+limitations: ["LIM-33", "LIM-08", "LIM-01"]
