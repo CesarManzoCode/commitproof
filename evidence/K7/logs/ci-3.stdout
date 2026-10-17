@@ -1,0 +1,89 @@
+go vet ./...
+go tool -modfile=tools/go.mod staticcheck ./...
+go test -count=1 ./...
+?   	github.com/CesarManzoCode/commitproof/cmd/commitproof	[no test files]
+?   	github.com/CesarManzoCode/commitproof/cmd/cpcheck	[no test files]
+?   	github.com/CesarManzoCode/commitproof/cmd/cpgate	[no test files]
+?   	github.com/CesarManzoCode/commitproof/cmd/cpnet	[no test files]
+?   	github.com/CesarManzoCode/commitproof/cmd/cpreport	[no test files]
+ok  	github.com/CesarManzoCode/commitproof/cmd/quorumxcheck	0.014s
+?   	github.com/CesarManzoCode/commitproof/cmd/slowfs	[no test files]
+?   	github.com/CesarManzoCode/commitproof/internal/buildinfo	[no test files]
+ok  	github.com/CesarManzoCode/commitproof/internal/campaign	0.539s
+ok  	github.com/CesarManzoCode/commitproof/internal/canonjson	0.005s
+ok  	github.com/CesarManzoCode/commitproof/internal/checker	1.923s
+?   	github.com/CesarManzoCode/commitproof/internal/checker/elle	[no test files]
+?   	github.com/CesarManzoCode/commitproof/internal/checker/output	[no test files]
+?   	github.com/CesarManzoCode/commitproof/internal/cluster	[no test files]
+?   	github.com/CesarManzoCode/commitproof/internal/cmdlog	[no test files]
+ok  	github.com/CesarManzoCode/commitproof/internal/gate	0.060s
+ok  	github.com/CesarManzoCode/commitproof/internal/history	0.021s
+?   	github.com/CesarManzoCode/commitproof/internal/history/historytest	[no test files]
+?   	github.com/CesarManzoCode/commitproof/internal/host	[no test files]
+?   	github.com/CesarManzoCode/commitproof/internal/images	[no test files]
+ok  	github.com/CesarManzoCode/commitproof/internal/independence	4.847s
+ok  	github.com/CesarManzoCode/commitproof/internal/nemesis	0.008s
+ok  	github.com/CesarManzoCode/commitproof/internal/netprobe	0.008s
+ok  	github.com/CesarManzoCode/commitproof/internal/observe	0.010s
+ok  	github.com/CesarManzoCode/commitproof/internal/params	0.006s
+ok  	github.com/CesarManzoCode/commitproof/internal/plan	12.681s
+ok  	github.com/CesarManzoCode/commitproof/internal/repeats	0.008s
+ok  	github.com/CesarManzoCode/commitproof/internal/report	0.024s
+ok  	github.com/CesarManzoCode/commitproof/internal/runner	5.013s
+ok  	github.com/CesarManzoCode/commitproof/internal/slowfs	0.005s
+ok  	github.com/CesarManzoCode/commitproof/internal/stats	0.007s
+?   	github.com/CesarManzoCode/commitproof/internal/synth	[no test files]
+?   	github.com/CesarManzoCode/commitproof/internal/tools/derivcheck	[no test files]
+?   	github.com/CesarManzoCode/commitproof/internal/tools/gencorpus	[no test files]
+?   	github.com/CesarManzoCode/commitproof/internal/tools/k2check	[no test files]
+?   	github.com/CesarManzoCode/commitproof/internal/tools/k3obs	[no test files]
+?   	github.com/CesarManzoCode/commitproof/internal/tools/k4obs	[no test files]
+?   	github.com/CesarManzoCode/commitproof/internal/tools/k4orch	[no test files]
+?   	github.com/CesarManzoCode/commitproof/internal/tools/k4results	[no test files]
+?   	github.com/CesarManzoCode/commitproof/internal/tools/k4triage	[no test files]
+?   	github.com/CesarManzoCode/commitproof/internal/tools/k5obs	[no test files]
+?   	github.com/CesarManzoCode/commitproof/internal/tools/k5results	[no test files]
+?   	github.com/CesarManzoCode/commitproof/internal/tools/k7bounds	[no test files]
+?   	github.com/CesarManzoCode/commitproof/internal/tools/k7findings	[no test files]
+?   	github.com/CesarManzoCode/commitproof/internal/tools/k7oracle	[no test files]
+?   	github.com/CesarManzoCode/commitproof/internal/tools/k7results	[no test files]
+?   	github.com/CesarManzoCode/commitproof/internal/tools/k7triage	[no test files]
+?   	github.com/CesarManzoCode/commitproof/internal/tools/metricscheck	[no test files]
+ok  	github.com/CesarManzoCode/commitproof/internal/workload	8.834s
+?   	github.com/CesarManzoCode/commitproof/runs/devtools/remap	[no test files]
+go build -trimpath -ldflags "-X github.com/CesarManzoCode/commitproof/internal/buildinfo.Commit=cb69c0b3f59bb711acc7c63a46ac71bbbd7e4ccc -X github.com/CesarManzoCode/commitproof/internal/buildinfo.Dirty=false" -o bin/ ./cmd/commitproof ./cmd/cpcheck ./cmd/cpgate ./cmd/cpreport ./cmd/quorumxcheck
+scripts/elle-oracle.sh
+{"base":"clojure:temurin-21-lein-2.13.0-bookworm@sha256:724a7f5840394bf9e659730e5039bf7498f31185e747e3586dbab626b717c34f","command":"elle-oracle","elle_cli_commit":"9c2a18b3719f573dab06ae05c955c9c9d5225673","exit_code":0,"image":"commitproof/elle-oracle:9c2a18b","image_id":"sha256:2d51fa76c0cc772986cd1e55c79f2c76fd37b8c7851180e8c0e5c752fc943d6e","jar_sha256":"8916c46d799d638111314263dd8dce7e7e655114362bee454e140d8263966209","version":"elle-cli 0.1.11"}
+scripts/ci-checkers.sh
+{"command":"gencorpus-verify","identical":true}
+{"command":"k2check","set":"k2","entries":807,"elle_compared":350,"elle_disagreements":0,"sabotage_rules":9,"problems":0}
+{"command":"gencorpus-verify","identical":true}
+{"command":"k2check","set":"k5","entries":157,"elle_compared":0,"elle_disagreements":0,"sabotage_rules":12,"problems":0}
+{"command":"gencorpus-verify","identical":true}
+{"command":"k2check","set":"k7","entries":31,"elle_compared":0,"elle_disagreements":0,"sabotage_rules":3,"problems":0}
+scripts/ci-cluster-smoke.sh
+{"command":"images build","exit_code":0,"images":{"commitproof/multigres:M1":"sha256:66bb502d682e0f96f4e060e9c56097e29b0e13f0887749ae51a3d7ba780afe5c","commitproof/multigres:M2":"sha256:dd149c4f5d3891ce1febf2bb538e08d9f032296a22e7b49de715e00b3a6a8e46","commitproof/multigres:M3":"sha256:3aa747e11e9c95029725c104987e42dddc9d3077c00cc215394e499924ad4d09","commitproof/multigres:M4":"sha256:ac9df7aa90457b2e5dd4551d54fbd73ac0b44df15933945e19194312ea1bc262","commitproof/multigres:M5":"sha256:fed22b72a441c4ae06da1967713daa3cacaa1d9080c8573c208a3840b103346e","commitproof/multigres:h1":"sha256:a62b5a8ff27d906f89dfb867305fca23951826e51bc71c89903bec6db1783637","commitproof/multigres:real":"sha256:6b2a6b1c547be5a1139a0bacb817dfc84f8cd49aba4bf584d5585ed25c6841cb","commitproof/nemesis:real":"sha256:79d950c771f9248bbc03f6a9d3a264652d266744f81817ef167448b3b122573d","commitproof/pgctld-upstream:h1":"sha256:59b0b854887ca60f18e85b105a293cd5feae22b9008773ab1e230b1559e8a858","commitproof/pgctld-upstream:real":"sha256:c5c53fbe093cb448373460fbe1f7439660c3238408a644f6c7d91c990d35d88f","commitproof/pgctld:h1":"sha256:e5e32bc470e65ea4a9e7f054f8869507cdf46a2c0202eb999fc3c770d082843e","commitproof/pgctld:real":"sha256:7e7552b8a250944adfde63cf60074adce24f68f0a1d35aca12b48252741db229","commitproof/runner:real":"sha256:654327bfd019524aee536c3ee863a3ad077fe8afebe808570af7c77edcd73227"},"lock":"images.lock.json","lock_sha256":"10b3f994b809b39b302db2ba8f50f6ecce4ba6bf8ad4fcb87ecc3a665bd2d458","no_cache":false,"variant":""}
+{"command":"cluster up","compose_up_exit":0,"deadline_ms":300000,"elapsed_ms":31257,"evaluations":25,"exit_code":0,"healthy":true,"predicate":{"a":"","b":"","c":{"gw-z1":"","gw-z2":"","gw-z3":""},"d":"","healthy":true,"rule":{"cohort":["n1","n2","n3"],"coordinator_term":2,"leader":"n2","leader_subterm":0,"policy":"policy_name:\"AT_LEAST_2\" quorum_type:QUORUM_TYPE_AT_LEAST_N required_count:2"},"statuses":[{"decision":{"cohort":["n1","n2","n3"],"coordinator_term":2,"leader":"n2","leader_subterm":0,"policy":"policy_name:\"AT_LEAST_2\" quorum_type:QUORUM_TYPE_AT_LEAST_N required_count:2"},"initialized":true,"latency_ms":53,"name":"n1","node":"n1","ok":true,"pooler_type":"REPLICA","postgres_ready":true,"postgres_running":true,"postgres_status":"POSTGRES_STATUS_STANDBY","proposal":null,"src":"pooler-status","wal_position":"0/4007058"},{"decision":{"cohort":["n1","n2","n3"],"coordinator_term":2,"leader":"n2","leader_subterm":0,"policy":"policy_name:\"AT_LEAST_2\" quorum_type:QUORUM_TYPE_AT_LEAST_N required_count:2"},"initialized":true,"latency_ms":51,"name":"n2","node":"n2","ok":true,"pooler_type":"PRIMARY","postgres_ready":true,"postgres_running":true,"postgres_status":"POSTGRES_STATUS_PRIMARY","proposal":null,"src":"pooler-status","wal_position":"0/4007058"},{"decision":{"cohort":["n1","n2","n3"],"coordinator_term":2,"leader":"n2","leader_subterm":0,"policy":"policy_name:\"AT_LEAST_2\" quorum_type:QUORUM_TYPE_AT_LEAST_N required_count:2"},"initialized":true,"latency_ms":50,"name":"n3","node":"n3","ok":true,"pooler_type":"REPLICA","postgres_ready":true,"postgres_running":true,"postgres_status":"POSTGRES_STATUS_STANDBY","proposal":null,"src":"pooler-status","wal_position":"0/4007058"}],"version":"Multigres 0.1.0-SNAPSHOT (e3cbdbbb0b94, 2026-10-09) built with go1.26.9"},"preexisting":{"containers":[],"networks":[],"volumes":[]},"profile":"baseline","variant":"real","version":"Multigres 0.1.0-SNAPSHOT (e3cbdbbb0b94, 2026-10-09) built with go1.26.9"}
+{"command":"cluster verify","exit_code":0,"healthy":true,"image_mismatches":[],"predicate":{"a":"","b":"","c":{"gw-z1":"","gw-z2":"","gw-z3":""},"d":"","healthy":true,"rule":{"cohort":["n1","n2","n3"],"coordinator_term":2,"leader":"n2","leader_subterm":0,"policy":"policy_name:\"AT_LEAST_2\" quorum_type:QUORUM_TYPE_AT_LEAST_N required_count:2"},"statuses":[{"decision":{"cohort":["n1","n2","n3"],"coordinator_term":2,"leader":"n2","leader_subterm":0,"policy":"policy_name:\"AT_LEAST_2\" quorum_type:QUORUM_TYPE_AT_LEAST_N required_count:2"},"initialized":true,"latency_ms":55,"name":"n1","node":"n1","ok":true,"pooler_type":"REPLICA","postgres_ready":true,"postgres_running":true,"postgres_status":"POSTGRES_STATUS_STANDBY","proposal":null,"src":"pooler-status","wal_position":"0/402BF30"},{"decision":{"cohort":["n1","n2","n3"],"coordinator_term":2,"leader":"n2","leader_subterm":0,"policy":"policy_name:\"AT_LEAST_2\" quorum_type:QUORUM_TYPE_AT_LEAST_N required_count:2"},"initialized":true,"latency_ms":51,"name":"n2","node":"n2","ok":true,"pooler_type":"PRIMARY","postgres_ready":true,"postgres_running":true,"postgres_status":"POSTGRES_STATUS_PRIMARY","proposal":null,"src":"pooler-status","wal_position":"0/402C000"},{"decision":{"cohort":["n1","n2","n3"],"coordinator_term":2,"leader":"n2","leader_subterm":0,"policy":"policy_name:\"AT_LEAST_2\" quorum_type:QUORUM_TYPE_AT_LEAST_N required_count:2"},"initialized":true,"latency_ms":51,"name":"n3","node":"n3","ok":true,"pooler_type":"REPLICA","postgres_ready":true,"postgres_running":true,"postgres_status":"POSTGRES_STATUS_STANDBY","proposal":null,"src":"pooler-status","wal_position":"0/402C000"}],"version":"Multigres 0.1.0-SNAPSHOT (e3cbdbbb0b94, 2026-10-09) built with go1.26.9"},"profile":"baseline","running":["commitproof-etcd-1","commitproof-gw-z1-1","commitproof-gw-z2-1","commitproof-gw-z3-1","commitproof-nem-etcd-1","commitproof-nem-gw-z1-1","commitproof-nem-gw-z2-1","commitproof-nem-gw-z3-1","commitproof-nem-orch-z1-1","commitproof-nem-orch-z2-1","commitproof-nem-orch-z3-1","commitproof-nem-pg-n1-1","commitproof-nem-pg-n2-1","commitproof-nem-pg-n3-1","commitproof-orch-z1-1","commitproof-orch-z2-1","commitproof-orch-z3-1","commitproof-pg-n1-1","commitproof-pg-n2-1","commitproof-pg-n3-1","commitproof-pooler-n1-1","commitproof-pooler-n2-1","commitproof-pooler-n3-1"],"version":"Multigres 0.1.0-SNAPSHOT (e3cbdbbb0b94, 2026-10-09) built with go1.26.9"}
+{"command":"cluster down","compose_down_exit":0,"exit_code":0,"leftover":{"containers":[],"networks":[],"volumes":[]},"profile":"baseline"}
+{"campaign":"smoke","cluster_down":{"exit":0,"leftover":{"containers":[],"networks":[],"volumes":[]}},"cluster_up":{"elapsed_ms":27701,"exit":0,"healthy":true},"command":"run","exit_code":0,"history_lines":17030,"mutant":"real","observation_lines":1366,"ok_counts":{"append":2630,"bank":1630,"ledger":1782,"register":1782},"profile":"baseline","reason":"","run_dir":"runs/20261017T224346Z-smoke-42-real-4dfd8962","run_id":"20261017T224346Z-smoke-42-real-4dfd8962","sabotage":[],"seal_root":"450e496edcd1161f7d22d81934305680c3ddea254a28b7bc052dc580952919c3","seal_valid":true,"seed":42,"status":"complete"}
+{"command":"verify-seal","exit_code":0,"files":97,"history_lines":17030,"observation_lines":1366,"problems":[],"run_dir":"runs/20261017T224346Z-smoke-42-real-4dfd8962","seal_root":"450e496edcd1161f7d22d81934305680c3ddea254a28b7bc052dc580952919c3","valid":true}
+scripts/ci-nemesis-smoke.sh
+{"campaign":"nsmoke-f1a","cluster_down":{"exit":0,"leftover":{"containers":[],"networks":[],"volumes":[]}},"cluster_up":{"elapsed_ms":26503,"exit":0,"healthy":true},"command":"run","exit_code":0,"history_lines":12224,"mutant":"real","observation_lines":1941,"ok_counts":{"append":1675,"bank":913,"ledger":1124,"register":1121},"profile":"baseline","reason":"","run_dir":"runs/20261017T224525Z-nsmoke-f1a-1-real-6ee7f268","run_id":"20261017T224525Z-nsmoke-f1a-1-real-6ee7f268","sabotage":[],"seal_root":"cc4b78da609410c66371eb8eea243e15e94f2fe3bcf1a4efb11c489b0ebb86cb","seal_valid":true,"seed":1,"status":"complete"}
+ci-nemesis-smoke: nsmoke-f1a verdict PASS
+{"campaign":"nsmoke-f2a","cluster_down":{"exit":0,"leftover":{"containers":[],"networks":[],"volumes":[]}},"cluster_up":{"elapsed_ms":37033,"exit":0,"healthy":true},"command":"run","exit_code":0,"history_lines":16520,"mutant":"real","observation_lines":1598,"ok_counts":{"append":2579,"bank":1351,"ledger":1702,"register":1702},"profile":"baseline","reason":"","run_dir":"runs/20261017T224701Z-nsmoke-f2a-1-real-856f8834","run_id":"20261017T224701Z-nsmoke-f2a-1-real-856f8834","sabotage":[],"seal_root":"175ebcafc09a0889a10d60426f32651b3b63a3e053004b7ccf8637299e315a64","seal_valid":true,"seed":1,"status":"complete"}
+ci-nemesis-smoke: nsmoke-f2a verdict PASS
+{"campaign":"nsmoke-f3a","cluster_down":{"exit":0,"leftover":{"containers":[],"networks":[],"volumes":[]}},"cluster_up":{"elapsed_ms":28229,"exit":0,"healthy":true},"command":"run","exit_code":0,"history_lines":13932,"mutant":"real","observation_lines":1403,"ok_counts":{"append":2093,"bank":1060,"ledger":1538,"register":1540},"profile":"baseline","reason":"","run_dir":"runs/20261017T224842Z-nsmoke-f3a-1-real-0bbd702e","run_id":"20261017T224842Z-nsmoke-f3a-1-real-0bbd702e","sabotage":[],"seal_root":"13a1aa339130ee3a7bb46c01978cc49c3eda375b0217b608c0c961da84a3f936","seal_valid":true,"seed":1,"status":"complete"}
+ci-nemesis-smoke: nsmoke-f3a verdict PASS
+{"campaign":"nsmoke-f7","cluster_down":{"exit":0,"leftover":{"containers":[],"networks":[],"volumes":[]}},"cluster_up":{"elapsed_ms":28134,"exit":0,"healthy":true},"command":"run","exit_code":0,"history_lines":13770,"mutant":"real","observation_lines":1206,"ok_counts":{"append":1955,"bank":1204,"ledger":1564,"register":1628},"profile":"baseline","reason":"","run_dir":"runs/20261017T225015Z-nsmoke-f7-1-real-da0f9219","run_id":"20261017T225015Z-nsmoke-f7-1-real-da0f9219","sabotage":[],"seal_root":"b935863a3484ec26111574c270219a9c78b39602ec71dd1275441c5046804d8c","seal_valid":true,"seed":1,"status":"complete"}
+ci-nemesis-smoke: nsmoke-f7 verdict PASS
+{"campaign":"nsmoke-f4a","cluster_down":{"exit":0,"leftover":{"containers":[],"networks":[],"volumes":[]}},"cluster_up":{"elapsed_ms":27287,"exit":0,"healthy":true},"command":"run","exit_code":0,"history_lines":12040,"mutant":"real","observation_lines":1384,"ok_counts":{"append":1726,"bank":916,"ledger":1326,"register":1340},"profile":"baseline","reason":"","run_dir":"runs/20261017T225148Z-nsmoke-f4a-1-real-2b3932fe","run_id":"20261017T225148Z-nsmoke-f4a-1-real-2b3932fe","sabotage":[],"seal_root":"9fb54b107ee7451d62981cc5ea4d531ededb7bec9f6acc32c48543e505357333","seal_valid":true,"seed":1,"status":"complete"}
+ci-nemesis-smoke: nsmoke-f4a verdict PASS
+ci-nemesis-smoke: OK (f1a f2a f3a f7 f4a)
+scripts/ci-mutant-smoke.sh
+{"campaign":"D1","cluster_down":{"exit":0,"leftover":{"containers":[],"networks":[],"volumes":[]}},"cluster_up":{"elapsed_ms":28507,"exit":0,"healthy":true},"command":"run","exit_code":0,"history_lines":19128,"mutant":"M1","observation_lines":2585,"ok_counts":{"append":4631,"bank":0,"ledger":3560,"register":0},"profile":"baseline","reason":"","run_dir":"runs/20261017T225325Z-D1-1-M1-f3790916","run_id":"20261017T225325Z-D1-1-M1-f3790916","sabotage":[],"seal_root":"6e792477ea279db6268f0c13a3ac71aaf4ef3027e0285a6e3497dfdc203ee131","seal_valid":true,"seed":1,"status":"complete"}
+{"checkers":{"C1":false,"C2":true,"C3":false,"C4":true,"C5":true,"C6":true,"C7":true,"C8":true,"C9":true,"P":true},"checks":"runs/20261017T225325Z-D1-1-M1-f3790916.checks.json","checks_sha256":"42b482c92d8d4f304f218eeb61a1636c71d1592f90f7fa656ae7091a56f4d45e","command":"check","exit_code":1,"invalid_reasons":[],"run_dir":"runs/20261017T225325Z-D1-1-M1-f3790916","seal_root":"6e792477ea279db6268f0c13a3ac71aaf4ef3027e0285a6e3497dfdc203ee131","verdict":"FAIL"}
+ci-mutant-smoke: OK (M1 via D1: FAIL with C1 lost-write)
+scripts/ci-report.sh
+{"command":"render","exit_code":0,"input":"20261011T231036Z-C2-3-real-f4505b54.tar.zst","mode":"run","outputs":[{"bytes":841275,"file":"20261011T231036Z-C2-3-real-f4505b54.html","sha256":"35dc3e484d12349a16546967d953001065287c0f015c5ac0a878c1c67118c94c"}],"run_id":"20261011T231036Z-C2-3-real-f4505b54","seal_root":"a5472bd9c4212b63ab9397b7ff513a05ba7efe81aeeed54c7da492d6b20c4969","verdict":"FAIL"}
+ci-report: 20261011T231036Z-C2-3-real-f4505b54.html identical to the committed example (35dc3e484d12349a16546967d953001065287c0f015c5ac0a878c1c67118c94c)
