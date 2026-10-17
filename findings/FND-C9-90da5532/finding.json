@@ -1,0 +1,98 @@
+{
+  "acknowledged_write_lost": false,
+  "anomaly_class": "notify-not-resumed",
+  "campaign": "C9",
+  "classification": {
+    "claim_level": "DESIGN",
+    "class": "PROTOCOL_DEVIATION",
+    "guarantee": "G10",
+    "known_status": "KNOWN",
+    "origin": "MULTIGRES",
+    "reproducibility": "INTERMITTENT",
+    "severity": "medium"
+  },
+  "id": "FND-C9-90da5532",
+  "k7_replay": {
+    "record": "",
+    "replays_with_class": 0,
+    "reproducibility": "",
+    "runs": []
+  },
+  "minimized_plan_sha256": "52de89e000ae61abe5cc73da686b3e908ded9face2c68849fbc770f0f6c4bc35",
+  "minimized_run": {
+    "archive": "evidence/K5/runs/20261014T012149Z-C9-3-real-52de89e0.tar.zst",
+    "archive_sha256": "7cd523bf151ead75fc9d7b62e0f15761e3391115db565f52f76a8cc77b5c1891",
+    "classes": [
+      "notify-not-resumed"
+    ],
+    "run_id": "20261014T012149Z-C9-3-real-52de89e0",
+    "seal_root": "4f4428554728f0719d37b2431fdc748c4146a406eaba211d2ba12fdb253719fc",
+    "verdict": "FAIL"
+  },
+  "original_run": {
+    "archive": "evidence/K5/runs/20261013T230909Z-C9-3-real-bb8a276f.tar.zst",
+    "archive_sha256": "932fddc402a849aa0a95ce123e6acdde0ffaad83f18b0081c9af70f7d71fa2a3",
+    "classes": [
+      "notify-not-resumed"
+    ],
+    "run_id": "20261013T230909Z-C9-3-real-bb8a276f",
+    "seal_root": "b2d189b9510ccab37b20788a3bf43ce21d22669b2ebb39bd7b4bc9faa41a24b9",
+    "verdict": "FAIL"
+  },
+  "recorded_classification": {
+    "claim_level": "DESIGN",
+    "class": "PROTOCOL_DEVIATION",
+    "guarantee": "G10",
+    "known_status": "NEW",
+    "origin": "MULTIGRES",
+    "reproducibility": "INTERMITTENT",
+    "severity": "medium"
+  },
+  "recurrences": [],
+  "replays": [
+    {
+      "archive": "evidence/K5/runs/20261014T012559Z-C9-3-real-52de89e0.stub.tar.zst",
+      "archive_sha256": "8d65de7dfa283ae5bfa44ef6768821b6f12208a79d50e89e7d5c09e8c74cb9e3",
+      "classes": [],
+      "run_id": "20261014T012559Z-C9-3-real-52de89e0",
+      "seal_root": "149d94fd6299ac14095578eef430bc6b300741c5418b8f5a210d5326c4fd2617",
+      "verdict": "PASS"
+    },
+    {
+      "archive": "evidence/K5/runs/20261014T012726Z-C9-3-real-52de89e0.stub.tar.zst",
+      "archive_sha256": "30856a6a1dcb48cb33a6711b91fade4ca2407d246e7c83594c7f8a2110405f3f",
+      "classes": [],
+      "run_id": "20261014T012726Z-C9-3-real-52de89e0",
+      "seal_root": "700bcf28179499ac130ad62364a41406cf2ad3b114d4253a0e33956cae4dc9d2",
+      "verdict": "PASS"
+    },
+    {
+      "archive": "evidence/K5/runs/20261014T012859Z-C9-3-real-52de89e0.stub.tar.zst",
+      "archive_sha256": "fe1221daafc283529bda3d9dd94a0bedc65ff33de4191bc88472f8fd101bbf62",
+      "classes": [
+        "notify-not-resumed"
+      ],
+      "run_id": "20261014T012859Z-C9-3-real-52de89e0",
+      "seal_root": "ae2dbbb4cb0ba6167c20445f00daa614e2a2f891b3d0b0ac343dd958e3c2f61e",
+      "verdict": "FAIL"
+    },
+    {
+      "archive": "evidence/K5/runs/20261014T013010Z-C9-3-real-52de89e0.stub.tar.zst",
+      "archive_sha256": "7403d5c8d3b50f191da672864bf824b1c16642dd3b1cc5c974e9edb55a3a2380",
+      "classes": [],
+      "run_id": "20261014T013010Z-C9-3-real-52de89e0",
+      "seal_root": "80b2915a9f887af8d8578afcdf262faf46d9b8e6f4fffdb57db13fd8c2603af4",
+      "verdict": "PASS"
+    },
+    {
+      "archive": "evidence/K5/runs/20261014T013141Z-C9-3-real-52de89e0.stub.tar.zst",
+      "archive_sha256": "f26fea5eafdca8d658579eea375781f8237a63fcc91d3f155ad8bb4541d2ad86",
+      "classes": [],
+      "run_id": "20261014T013141Z-C9-3-real-52de89e0",
+      "seal_root": "20f111aebec10bda476d983ccf3f7579b43c39b306862e64a6fcc96262b3eb24",
+      "verdict": "PASS"
+    }
+  ],
+  "replays_with_class": 1,
+  "triage": "evidence/K5/triage/20261013T230909Z-C9-3-real-bb8a276f.json"
+}

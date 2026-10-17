@@ -1,0 +1,104 @@
+{
+  "acknowledged_write_lost": false,
+  "anomaly_class": "incompatible-order",
+  "campaign": "D1",
+  "classification": {
+    "claim_level": "INFERRED",
+    "class": "SAFETY_VIOLATION",
+    "guarantee": "G2b",
+    "known_status": "NEW",
+    "origin": "POSTGRES_INHERITED",
+    "reproducibility": "REPRODUCED",
+    "severity": "high"
+  },
+  "id": "FND-D1-2e860fd2",
+  "k7_replay": {
+    "record": "",
+    "replays_with_class": 0,
+    "reproducibility": "",
+    "runs": []
+  },
+  "minimized_plan_sha256": "fb2e37782d44c0539e00490762563debdea8e2b1730289d0f8c9690e96dc733f",
+  "minimized_run": {
+    "archive": "evidence/K4/runs/20261012T020127Z-D1-3-real-fb2e3778.tar.zst",
+    "archive_sha256": "7d421313bb7c26b1d3e24acb9ce33ba55e43833b0cc6a5a68bc0de07271f1e08",
+    "classes": [
+      "incompatible-order"
+    ],
+    "run_id": "20261012T020127Z-D1-3-real-fb2e3778",
+    "seal_root": "ed3534485fd36726bbc70e5fb33a81aa5efe2972d01f5400c3f184b5089ba2fa",
+    "verdict": "FAIL"
+  },
+  "original_run": {
+    "archive": "evidence/K4/runs/20261011T221506Z-D1-3-real-da159fa0.tar.zst",
+    "archive_sha256": "7186ed859268863a17ec4b5576c7a614e4bfdcc11f5641ff796cc9ecdb2f88e6",
+    "classes": [
+      "incompatible-order"
+    ],
+    "run_id": "20261011T221506Z-D1-3-real-da159fa0",
+    "seal_root": "7926f6cb4aeea04a8732c8e40aeba5d3671f083604b5db00b87bde490f3c5a96",
+    "verdict": "FAIL"
+  },
+  "recorded_classification": {
+    "claim_level": "EXPLICIT",
+    "class": "SAFETY_VIOLATION",
+    "guarantee": "G2",
+    "known_status": "NEW",
+    "origin": "UNDETERMINED",
+    "reproducibility": "REPRODUCED",
+    "severity": "critical"
+  },
+  "recurrences": [],
+  "replays": [
+    {
+      "archive": "evidence/K4/runs/20261012T020619Z-D1-3-real-fb2e3778.tar.zst",
+      "archive_sha256": "fc0f192adfa5fcc2483cc7be5960404849569651a8e22e2f4cc4228d6159bde7",
+      "classes": [
+        "incompatible-order"
+      ],
+      "run_id": "20261012T020619Z-D1-3-real-fb2e3778",
+      "seal_root": "d74cba9861d06a150ee48d35322905e491280952b04e33ac5687e60dd7c7572f",
+      "verdict": "FAIL"
+    },
+    {
+      "archive": "evidence/K4/runs/20261012T020804Z-D1-3-real-fb2e3778.tar.zst",
+      "archive_sha256": "83a08c95dbc24ddb83eb7c6c68e5bc241840ebb07bd97aa9abd1908085c76595",
+      "classes": [
+        "incompatible-order"
+      ],
+      "run_id": "20261012T020804Z-D1-3-real-fb2e3778",
+      "seal_root": "a1d217025b32d928889a6507bc676bc8d2d9a3e567efa1db7b4613944ff24bd6",
+      "verdict": "FAIL"
+    },
+    {
+      "archive": "evidence/K4/runs/20261012T020935Z-D1-3-real-fb2e3778.tar.zst",
+      "archive_sha256": "6090dec25ba048821cdd48e433370628d60549697dc5f9382412c1532a4951b8",
+      "classes": [
+        "incompatible-order"
+      ],
+      "run_id": "20261012T020935Z-D1-3-real-fb2e3778",
+      "seal_root": "f0e341a05d7f176b205635de67f5b7d2b2370a661d1333c1e3caa63f7d683e47",
+      "verdict": "FAIL"
+    },
+    {
+      "archive": "evidence/K4/runs/20261012T021110Z-D1-3-real-fb2e3778.tar.zst",
+      "archive_sha256": "a94ffaded43784b359372959467bc3dc7bb82e4c525369cfcd2c5f272d4fe215",
+      "classes": [
+        "incompatible-order"
+      ],
+      "run_id": "20261012T021110Z-D1-3-real-fb2e3778",
+      "seal_root": "e4c549643a5cac700a0682bc680fdf07c4d5c0928c6a8d22fad236f946c0660a",
+      "verdict": "FAIL"
+    },
+    {
+      "archive": "evidence/K4/runs/20261012T021245Z-D1-3-real-fb2e3778.tar.zst",
+      "archive_sha256": "0072d60c6a011de344256c18888f9d33f0f27c32d48a551d503f984dd6aa32cd",
+      "classes": [],
+      "run_id": "20261012T021245Z-D1-3-real-fb2e3778",
+      "seal_root": "97f8de8dde99cfd96ed43610939503c9a0e1fb20e1fbcc6be5613b34eb3f370c",
+      "verdict": "PASS"
+    }
+  ],
+  "replays_with_class": 4,
+  "triage": "evidence/K4/triage/20261011T221506Z-D1-3-real-da159fa0.json"
+}
