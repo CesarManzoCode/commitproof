@@ -25,6 +25,11 @@ const (
 	// version every K7 run's manifest carries (no bump while the matrix
 	// ran, ADR-0041 / prompts/K7.md).
 	k7MatrixVersion = "1.8.1"
+	// k7ReplayVersion is the contract version K7.4's package replays ran
+	// under: ADR-0047 bumped the contract after the matrix, and the runner
+	// records 1.9.0 in the manifests of the runs made after it (the K7.4
+	// replays, which reuse their packages' plans).
+	k7ReplayVersion = "1.9.0"
 	k7RunsSub       = "runs"            // matrix runs, their follow-ups
 	k7PkgSub        = "package-replays" // K7.4's replays of each package
 	k7CitedSub      = "cited"           // D3′/D5 real-build runs in full, if committed (ADR-0045 §5)
@@ -33,6 +38,15 @@ const (
 func k7Root(e *Evidence) string { return filepath.Dir(filepath.Dir(filepath.Clean(e.Dir))) }
 
 func k7ContractOK(_, version string) bool { return version == k7MatrixVersion }
+
+func k7ReplayContractOK(_, version string) bool { return version == k7ReplayVersion }
+
+// k7IndexContract: the contract version each K7 runs directory's manifests
+// must carry.
+var k7IndexContract = map[string]func(campaign, version string) bool{
+	k7RunsSub: k7ContractOK,
+	k7PkgSub:  k7ReplayContractOK,
+}
 
 func (e *Evidence) runIndexIn(key, sub string, contractOK func(campaign, version string) bool) *k4Index {
 	if e.memo == nil {
@@ -46,8 +60,13 @@ func (e *Evidence) runIndexIn(key, sub string, contractOK func(campaign, version
 	return ix
 }
 
-func (e *Evidence) k7() *k4Index    { return e.runIndexIn("k7", k7RunsSub, k7ContractOK) }
-func (e *Evidence) k7pkg() *k4Index { return e.runIndexIn("k7pkg", k7PkgSub, k7ContractOK) }
+func (e *Evidence) k7() *k4Index {
+	return e.runIndexIn("k7", k7RunsSub, k7IndexContract[k7RunsSub])
+}
+
+func (e *Evidence) k7pkg() *k4Index {
+	return e.runIndexIn("k7pkg", k7PkgSub, k7IndexContract[k7PkgSub])
+}
 
 // k7Cited loads the evidence of an earlier sprint K7 cites (K4, K5).
 func (e *Evidence) k7Cited(sprint string) (*Evidence, *k4Index) {
