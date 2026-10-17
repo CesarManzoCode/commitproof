@@ -1,0 +1,1 @@
+{"command":"campaign-k7","action":"wait","matrix":"campaigns/k7.json","out":"runs/k7","log":"runs/k7/campaign-k7.log","runs_started_since_last_start":197,"campaign":{"cells":130,"command":"campaign","complete":true,"exit_code":1,"matrix":"k7","out":"runs/k7","verdicts":{"FAIL":19,"PASS":111}},"exit_code":1}
