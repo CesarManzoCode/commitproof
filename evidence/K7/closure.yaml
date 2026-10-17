@@ -73,7 +73,7 @@ commits:
   - {sha: "998d5a1", message: "build(images): lock the runner image of the release build (cb69c0b, v1.0.0)"}
   - {sha: "934db48", message: "test(k7): CI on cb69c0b (ci-3) — every make ci-* target exits 0; v1.0.0 moved there from a4352af"}
   - {sha: "cc5a1c6", message: "docs(k7): the release on cb69c0b — ci-3, v1.0.0 there, the K7.7 control fix; claims and NOTES before the gate's last run"}
-  - {sha: "(this commit)", message: "test(k7): K7 closure — DONE: Gate K7 PASS with every negative control on target (cpgate-k7-5), v1.0.0 on cb69c0b"}
+  - {sha: "358f200", message: "test(k7): K7 closure — DONE: Gate K7 PASS with every negative control on target (cpgate-k7-5), v1.0.0 on cb69c0b"}
 gate:
   command: "cpgate K7 --evidence evidence/K7 --negative-controls"
   record: "cpgate-k7-5 (binaries of cb69c0b; TMPDIR=runs/.k7/tmp on disk, GOMEMLIMIT=6GiB; on cc5a1c6's evidence and documents; 22:58–23:13Z)"
